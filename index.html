@@ -9,6 +9,8 @@
 
 <!-- Video.js CSS -->
 <link href="https://vjs.zencdn.net/8.9.0/video-js.css" rel="stylesheet" />
+<!-- FONT-AWESOME İKONLARI -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
 
 <style>
 :root{
@@ -26,6 +28,91 @@ body{
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
   transition:background .22s,color .22s;
   padding-top:72px;
+}
+  /* Menyu üçün ümumi tənzimləmələr */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Varela Round", sans-serif;
+  line-height: 1.6;
+}
+
+/* --- DESKTOP MENYU (Təkmilləşdirilmiş Animasiya) --- */
+.menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 1000px;
+  margin: 40px auto;
+  list-style: none;
+  padding: 0;
+}
+
+.menu li {
+  width: 125px;
+  height: 50px;
+  text-align: center;
+  position: relative;
+  overflow: hidden; /* Animasiyanın kənara çıxmaması üçün */
+  /* SVG-ni başlanğıcda ekranın kənarında gizlədirik */
+  background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEi%0D%0AIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhs%0D%0AaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0%0D%0AaD0iMzkwcHgiIGhlaWdodD0iNTBweCIgdmlld0JveD0iMCAwIDM5MCA1MCIgZW5hYmxlLWJhY2tn%0D%0Acm91bmQ9Im5ldyAwIDAgMzkwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHBhdGggZmlsbD0i%0D%0Abm9uZSIgc3Ryb2tlPSIjZDk0ZjVjIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGlt%0D%0AaXQ9IjEwIiBkPSJNMCw0Ny41ODVjMCwwLDk3LjUsMCwxMzAsMAoJYzEzLjc1LDAsMjguNzQtMzgu%0D%0ANzc4LDQ2LjE2OC0xOS40MTZDMTkyLjY2OSw0Ni41LDI0My42MDMsNDcuNTg1LDI2MCw0Ny41ODVj%0D%0AMzEuODIxLDAsMTMwLDAsMTMwLDAiLz4KPC9zdmc+Cg==");
+  background-repeat: no-repeat;
+  background-size: 390px 50px;
+  background-position: -390px bottom; /* Başlanğıcda solda gizli */
+  transition: background-position 0.6s ease-out; /* Daha axıcı keçid */
+}
+
+.menu li a {
+  font-size: 18px;
+  color: var(--muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  transition: color 0.3s;
+}
+
+/* Hover etdikdə xətt sürüşərək gəlir */
+.menu li:hover {
+  background-position: 0px bottom; /* Xətt tam mərkəzə gəlir */
+}
+
+.menu li:hover a {
+  color: #d94f5c;
+}
+
+.menu li:not(:last-child) {
+  margin-right: 20px;
+}
+
+/* --- MOBİL ÜÇÜN (Media Query hissəsi eyni qalır) --- */
+@media (max-width: 768px) {
+  .menu {
+    flex-direction: column;
+    width: 100%;
+  }
+  .menu li {
+    width: 100%;
+    background-image: none !important; /* Mobildə şəkli tam ləğv edirik */
+    height: auto;
+    margin-right: 0 !important;
+    border-bottom: 1px solid var(--glass);
+  }
+  .menu li a {
+    padding: 15px 0;
+  }
+  .menu li:hover {
+    background-color: var(--glass);
+    border-bottom: 2px solid #d94f5c;
+  }
 }
 
 /* Header: logo left, center empty, controls right (Info -> Search -> Theme) */
@@ -443,68 +530,6 @@ header{
   object-fit: contain;
 }
     /* === BÖLMƏLƏRİN CSS KODLARI === */
-  @import url("https://fonts.googleapis.com/css?family=Varela+Round");
-html {
-  box-sizing: border-box;
-}
-
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
-  padding: 0;
-  margin: 0;
-  letter-spacing: 1.1px;
-}
-
-body,
-html {
-  width: 100%;
-  height: 100%;
-  font-family: "Varela Round", sans-serif;
-}
-
-.menu {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  max-width: 720px;
-  margin: 0 auto;
-  list-style: none;
-}
-
-.menu li {
-  width: 125px;
-  height: 50px;
-  transition: background-position-x 0.9s linear;
-  text-align: center;
-
-  a {
-    font-size: 22px;
-    color: #777;
-    text-decoration: none;
-    transition: all 0.45s;
-  }
-
-  &:hover {
-    background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEi%0D%0AIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhs%0D%0AaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0%0D%0AaD0iMzkwcHgiIGhlaWdodD0iNTBweCIgdmlld0JveD0iMCAwIDM5MCA1MCIgZW5hYmxlLWJhY2tn%0D%0Acm91bmQ9Im5ldyAwIDAgMzkwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHBhdGggZmlsbD0i%0D%0Abm9uZSIgc3Ryb2tlPSIjZDk0ZjVjIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGlt%0D%0AaXQ9IjEwIiBkPSJNMCw0Ny41ODVjMCwwLDk3LjUsMCwxMzAsMAoJYzEzLjc1LDAsMjguNzQtMzgu%0D%0ANzc4LDQ2LjE2OC0xOS40MTZDMTkyLjY2OSw0Ni41LDI0My42MDMsNDcuNTg1LDI2MCw0Ny41ODVj%0D%0AMzEuODIxLDAsMTMwLDAsMTMwLDAiLz4KPC9zdmc+Cg==");
-    animation: line 1s;
-  }
-
-  &:hover a {
-    color: #d94f5c;
-  }
-
-  &:not(:last-child) {
-    margin-right: 30px;
-  }
-}
-
-@keyframes line {
-  0% {
-    background-position-x: 390px;
-  }
-}
   
 </style>
 </head>
@@ -538,10 +563,10 @@ html {
 <main class="container" id="main">
   <nav>
   <ul class="menu">
-    <li><a href="#!">Home</a></li>
-    <li><a href="#!">About</a></li>
-    <li><a href="#!">Contact</a></li>
-    <li><a href="#!">Faq</a></li>
+    <li><a href="kinoflixplus.html">KINOFLIX+</a></li>
+    <li><a href="about.html">HAQQIMIZDA</a></li>
+    <li><a href="contact.html">ƏLAQƏ</a></li>
+    <li><a href="editor.html">KOD SAHƏSİ</a></li>
   </ul>
 </nav>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
