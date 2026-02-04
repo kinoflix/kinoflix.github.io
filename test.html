@@ -443,7 +443,7 @@ header{
   object-fit: contain;
 }
     /* === BÖLMƏLƏRİN CSS KODLARI === */
-  @import url("https://fonts.googleapis.com/css?family=Varela+Round");
+ @import url("https://fonts.googleapis.com/css?family=Varela+Round");
 
 html {
   box-sizing: border-box;
@@ -463,16 +463,18 @@ html {
   width: 100%;
   height: 100%;
   font-family: "Varela Round", sans-serif;
+  background-color: #f4f4f4; /* Arxa fon əlavə etdim ki, menyu görünsün */
 }
 
+/* --- MENYU ƏSAS KODLARI --- */
 .menu {
   display: flex;
   justify-content: center;
   align-items: center;
   max-width: 720px;
-  margin: 0 auto;
+  margin: 50px auto; /* Yuxarıdan biraz boşluq verdim */
   list-style: none;
-  flex-wrap: wrap; /* Mobil üçün elementlərin alt sıraya keçməsini təmin edir */
+  padding: 0;
 }
 
 .menu li {
@@ -480,56 +482,62 @@ html {
   height: 50px;
   transition: background-position-x 0.9s linear;
   text-align: center;
+  position: relative;
+}
+
+/* SCSS-dən çıxarılıb standart hala gətirilən hissə */
+.menu li a {
+  font-size: 18px; /* 22px çox böyük ola bilər, biraz kiçiltdim */
+  color: #777;
+  text-decoration: none;
+  transition: all 0.45s;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  a {
-    font-size: 22px;
-    color: #777;
-    text-decoration: none;
-    transition: all 0.45s;
-    display: block;
-    width: 100%;
-  }
-
-  &:hover {
-    background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEi%0D%0AIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhs%0D%0AaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0%0D%0AaD0iMzkwcHgiIGhlaWdodD0iNTBweCIgdmlld0JveD0iMCAwIDM5MCA1MCIgZW5hYmxlLWJhY2tn%0D%0Acm91bmQ9Im5ldyAwIDAgMzkwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHBhdGggZmlsbD0i%0D%0Abm9uZSIgc3Ryb2tlPSIjZDk0ZjVjIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGlt%0D%0AaXQ9IjEwIiBkPSJNMCw0Ny41ODVjMCwwLDk3LjUsMCwxMzAsMAoJYzEzLjc1LDAsMjguNzQtMzgu%0D%0ANzc4LDQ2LjE2OC0xOS40MTZDMTkyLjY2OSw0Ni41LDI0My42MDMsNDcuNTg1LDI2MCw0Ny41ODVj%0D%0AMzEuODIxLDAsMTMwLDAsMTMwLDAiLz4KPC9zdmc+Cg==");
-    animation: line 1s;
-    background-repeat: no-repeat;
-    background-position: bottom;
-  }
-
-  &:hover a {
-    color: #d94f5c;
-  }
-
-  &:not(:last-child) {
-    margin-right: 30px;
-  }
+  width: 100%;
+  height: 100%;
 }
 
-/* --- MOBİL UYĞUNLUQ (768px-dən kiçik ekranlar üçün) --- */
-@media (max-width: 768px) {
-  .menu {
-    flex-direction: column; /* Menyu elementləri alt-alta düzülsün */
-    padding: 20px 0;
-  }
+/* Hover effektləri */
+.menu li:hover {
+  background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEi%0D%0AIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhs%0D%0AaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0%0D%0AaD0iMzkwcHgiIGhlaWdodD0iNTBweCIgdmlld0JveD0iMCAwIDM5MCA1MCIgZW5hYmxlLWJhY2tn%0D%0Acm91bmQ9Im5ldyAwIDAgMzkwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHBhdGggZmlsbD0i%0D%0Abm9uZSIgc3Ryb2tlPSIjZDk0ZjVjIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGlt%0D%0AaXQ9IjEwIiBkPSJNMCw0Ny41ODVjMCwwLDk3LjUsMCwxMzAsMAoJYzEzLjc1LDAsMjguNzQtMzgu%0D%0ANzc4LDQ2LjE2OC0xOS40MTZDMTkyLjY2OSw0Ni41LDI0My42MDMsNDcuNTg1LDI2MCw0Ny41ODVj%0D%0AMzEuODIxLDAsMTMwLDAsMTMwLDAiLz4KPC9zdmc+Cg==");
+  animation: line 1s;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+}
 
-  .menu li {
-    width: 100%; /* Mobil ekranda tam genişlik */
-    margin-right: 0 !important; /* Sağdakı boşluğu ləğv edirik */
-    margin-bottom: 20px; /* Elementlər arasına şaquli boşluq */
-    
-    &:hover {
-        background-size: contain; /* SVG-nin mobil ekrana sığması üçün */
-    }
-  }
+.menu li:hover a {
+  color: #d94f5c;
+}
+
+.menu li:not(:last-child) {
+  margin-right: 30px;
 }
 
 @keyframes line {
   0% {
     background-position-x: 390px;
+  }
+}
+
+/* --- MOBİL ÜÇÜN DÜZƏLİŞLƏR (768px-dən aşağı) --- */
+@media screen and (max-width: 768px) {
+  .menu {
+    flex-direction: column; /* Yan-yana yox, alt-alta düzür */
+    width: 90%; /* Ekranın 90%-ni tutsun */
+  }
+
+  .menu li {
+    width: 100%; /* Tam genişlik */
+    margin-right: 0 !important; /* Sağ boşluğu ləğv et */
+    margin-bottom: 15px; /* Aşağıya boşluq ver */
+    border-bottom: 1px solid #ddd; /* Ayrıcı xətt (istəyə bağlı) */
+  }
+  
+  /* Mobildə SVG animasiyası bəzən problem yaradır, sadə hover veririk */
+  .menu li:hover {
+    background: none; 
+    background-color: #fff;
   }
 }
   
