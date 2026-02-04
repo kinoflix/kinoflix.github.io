@@ -443,74 +443,107 @@ header{
   object-fit: contain;
 }
   /* =========================
-   SIMPLE SUB MENU
+   FLOATING CIRCULAR MENU
    ========================= */
 
-.simple-submenu {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+.floating-menu {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 8000;
+}
 
-  margin: 14px 0 22px;
-  padding: 10px 12px;
+/* Main Button */
+.fm-btn {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 22px;
+  cursor: pointer;
 
   background: linear-gradient(
     180deg,
-    rgba(15,23,32,.6),
-    rgba(2,6,23,.6)
+    rgba(56,189,248,.95),
+    rgba(14,165,233,.95)
   );
 
-  border-radius: 14px;
-  backdrop-filter: blur(10px);
+  color: #020617;
+  box-shadow:
+    0 10px 30px rgba(2,6,23,.6),
+    inset 0 0 0 1px rgba(255,255,255,.35);
+
+  transition: transform .25s ease;
+}
+
+/* Rotate icon when open */
+#fm-toggle:checked + .fm-btn {
+  transform: rotate(90deg);
+}
+
+/* Menu Items Wrapper */
+.fm-items {
+  position: absolute;
+  bottom: 70px;
+  right: 4px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px) scale(.95);
+
+  transition: all .25s ease;
+}
+
+/* Show menu when checked */
+#fm-toggle:checked ~ .fm-items {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+/* Individual Item */
+.fm-items a {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-decoration: none;
+  font-size: 20px;
+
+  background: rgba(15,23,32,.95);
+  color: var(--text,#e6eef6);
+
+  backdrop-filter: blur(8px);
 
   box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.04),
-    0 10px 30px rgba(0,0,0,.35);
+    0 6px 20px rgba(0,0,0,.45),
+    inset 0 0 0 1px rgba(255,255,255,.06);
+
+  transition: transform .2s ease, background .2s ease;
 }
 
-.simple-submenu a {
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 600;
-
-  padding: 6px 12px;
-  border-radius: 999px;
-
-  color: var(--text,#e6eef6);
-  opacity: .75;
-
-  transition:
-    background .2s ease,
-    opacity .2s ease;
+.fm-items a:hover {
+  transform: scale(1.08);
+  background: rgba(30,41,59,.95);
 }
 
-.simple-submenu a:hover {
-  background: rgba(255,255,255,.08);
-  opacity: 1;
-}
-
-/* Aktiv filter */
-.simple-submenu a.active {
-  background: linear-gradient(
-    180deg,
-    rgba(56,189,248,.35),
-    rgba(14,165,233,.25)
-  );
-  opacity: 1;
-}
-
-/* =========================
-   MOBILE OPTIMIZATION
-   ========================= */
+/* Mobile safe spacing */
 @media (max-width: 520px) {
-  .simple-submenu {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    scrollbar-width: none;
-  }
-
-  .simple-submenu::-webkit-scrollbar {
-    display: none;
+  .floating-menu {
+    right: 14px;
+    bottom: 14px;
   }
 }
 
@@ -524,6 +557,7 @@ header{
   <img id="logoImg" src="logo.png" alt="aligoshgar.github.io" />
     </a>
   </div>
+
   <div class="header-center"></div>
 
   <div class="header-right">
@@ -543,16 +577,6 @@ header{
 </header>
 
 <main class="container" id="main">
-  <nav class="simple-submenu" aria-label="Film alt menyusu">
-  <a href="#" class="active">Hamısı</a>
-  <a href="#">Yeni</a>
-  <a href="#">Ən çox baxılan</a>
-  <a href="#">IMDb 8+</a>
-  <a href="#">2025</a>
-  <a href="#">Aksiyon</a>
-  <a href="#">Drama</a>
-</nav>
-
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
     <h2 style="margin:0">Filmlər</h2>
 
@@ -2428,6 +2452,23 @@ function sharePlayer(){
   }
 }
 </script>
+<!-- Floating Menu -->
+<div class="floating-menu">
+  <input type="checkbox" id="fm-toggle" hidden>
+
+  <!-- Main Button -->
+  <label for="fm-toggle" class="fm-btn" aria-label="Menu aç / bağla">
+    ☰
+  </label>
+
+  <!-- Menu Items -->
+  <div class="fm-items">
+    <a href="https://example.com" title="Ana səhifə">🏠</a>
+    <a href="https://example.com/films" title="Filmlər">🎬</a>
+    <a href="https://example.com/series" title="Seriallar">📺</a>
+    <a href="https://example.com/contact" title="Əlaqə">✉️</a>
+  </div>
+</div>
 
 </body>
 </html>
