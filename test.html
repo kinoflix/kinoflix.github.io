@@ -442,97 +442,75 @@ header{
   max-height: calc(100vh - 80px); /* safe default: viewport minus header+margins */
   object-fit: contain;
 }
-    /* === BÖLMƏLƏRİN CSS KODLARI === */
-  @import url("https://fonts.googleapis.com/css?family=Varela+Round");
+  /* =========================
+   SIMPLE SUB MENU
+   ========================= */
 
-/* Reset */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html,
-body {
-  width: 100%;
-  min-height: 100%;
-  font-family: "Varela Round", sans-serif;
-}
-
-/* MENU – mobile first */
-.menu {
+.simple-submenu {
   display: flex;
-  flex-direction: column;        /* mobil: alt-alta */
-  align-items: center;
-  list-style: none;
-  padding: 20px 0;
-  gap: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  margin: 14px 0 22px;
+  padding: 10px 12px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(15,23,32,.6),
+    rgba(2,6,23,.6)
+  );
+
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.04),
+    0 10px 30px rgba(0,0,0,.35);
 }
 
-/* MENU ITEM */
-.menu li {
-  width: 90%;
-  max-width: 320px;
-  height: 48px;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* LINK */
-.menu li a {
-  font-size: 18px;
-  color: #777;
+.simple-submenu a {
   text-decoration: none;
-  transition: color 0.3s ease;
+  font-size: 13px;
+  font-weight: 600;
+
+  padding: 6px 12px;
+  border-radius: 999px;
+
+  color: var(--text,#e6eef6);
+  opacity: .75;
+
+  transition:
+    background .2s ease,
+    opacity .2s ease;
 }
 
-/* MOBİL TOUCH FEEDBACK */
-.menu li:active a {
-  color: #d94f5c;
+.simple-submenu a:hover {
+  background: rgba(255,255,255,.08);
+  opacity: 1;
 }
 
-/* DESKTOP */
-@media (min-width: 768px) {
-  .menu {
-    flex-direction: row;         /* yan-yana */
-    justify-content: center;
-    max-width: 720px;
-    margin: 0 auto;
-    gap: 30px;
-    height: 100vh;
-  }
-
-  .menu li {
-    width: 125px;
-    height: 50px;
-  }
-
-  .menu li a {
-    font-size: 22px;
-  }
-
-  /* HOVER ANİMASİYA – yalnız desktop */
-  .menu li:hover {
-    background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzOTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCAzOTAgNTAiPgo8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiNkOTRmNWMiIHN0cm9rZS13aWR0aD0iMS41IiBkPSJNMCw0Ny41ODVjMCwwLDk3LjUsMCwxMzAsMGMxMy43NSwwLDI4Ljc0LTM4Ljc3OCw0Ni4xNjgtMTkuNDE2QzE5Mi42NjksNDYuNSwyNDMuNjAzLDQ3LjU4NSwyNjAsNDcuNTg1YzMxLjgyMSwwLDEzMCwwLDEzMCwwIi8+Cjwvc3ZnPg==");
-    animation: line 1s;
-  }
-
-  .menu li:hover a {
-    color: #d94f5c;
-  }
+/* Aktiv filter */
+.simple-submenu a.active {
+  background: linear-gradient(
+    180deg,
+    rgba(56,189,248,.35),
+    rgba(14,165,233,.25)
+  );
+  opacity: 1;
 }
 
-/* ANIMATION */
-@keyframes line {
-  from {
-    background-position-x: 390px;
+/* =========================
+   MOBILE OPTIMIZATION
+   ========================= */
+@media (max-width: 520px) {
+  .simple-submenu {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
   }
-  to {
-    background-position-x: 0;
+
+  .simple-submenu::-webkit-scrollbar {
+    display: none;
   }
 }
 
@@ -546,7 +524,6 @@ body {
   <img id="logoImg" src="logo.png" alt="aligoshgar.github.io" />
     </a>
   </div>
-
   <div class="header-center"></div>
 
   <div class="header-right">
@@ -566,14 +543,16 @@ body {
 </header>
 
 <main class="container" id="main">
-  <nav>
-  <ul class="menu">
-    <li><a href="#!">Home</a></li>
-    <li><a href="#!">About</a></li>
-    <li><a href="#!">Contact</a></li>
-    <li><a href="#!">Faq</a></li>
-  </ul>
+  <nav class="simple-submenu" aria-label="Film alt menyusu">
+  <a href="#" class="active">Hamısı</a>
+  <a href="#">Yeni</a>
+  <a href="#">Ən çox baxılan</a>
+  <a href="#">IMDb 8+</a>
+  <a href="#">2025</a>
+  <a href="#">Aksiyon</a>
+  <a href="#">Drama</a>
 </nav>
+
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
     <h2 style="margin:0">Filmlər</h2>
 
