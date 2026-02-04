@@ -27,7 +27,7 @@ body{
   transition:background .22s,color .22s;
   padding-top:72px;
 }
-  /* MENYU ÜÇÜNÜmumi tənzimləmələr */
+  /* Menyu üçün ümumi tənzimləmələr */
 * {
   box-sizing: border-box;
   padding: 0;
@@ -41,7 +41,7 @@ body {
   line-height: 1.6;
 }
 
-/* --- YENİ RESPONSIVE MENYU --- */
+/* --- DESKTOP MENYU (Təkmilləşdirilmiş Animasiya) --- */
 .menu {
   display: flex;
   justify-content: center;
@@ -50,71 +50,64 @@ body {
   margin: 40px auto;
   list-style: none;
   padding: 0;
-  flex-wrap: wrap;
 }
 
 .menu li {
   width: 125px;
   height: 50px;
   text-align: center;
-  transition: background-position-x 0.9s linear;
+  position: relative;
+  overflow: hidden; /* Animasiyanın kənara çıxmaması üçün */
+  /* SVG-ni başlanğıcda ekranın kənarında gizlədirik */
+  background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEi%0D%0AIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhs%0D%0AaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0%0D%0AaD0iMzkwcHgiIGhlaWdodD0iNTBweCIgdmlld0JveD0iMCAwIDM5MCA1MCIgZW5hYmxlLWJhY2tn%0D%0Acm91bmQ9Im5ldyAwIDAgMzkwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHBhdGggZmlsbD0i%0D%0Abm9uZSIgc3Ryb2tlPSIjZDk0ZjVjIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGlt%0D%0AaXQ9IjEwIiBkPSJNMCw0Ny41ODVjMCwwLDk3LjUsMCwxMzAsMAoJYzEzLjc1LDAsMjguNzQtMzgu%0D%0ANzc4LDQ2LjE2OC0xOS40MTZDMTkyLjY2OSw0Ni41LDI0My42MDMsNDcuNTg1LDI2MCw0Ny41ODVj%0D%0AMzEuODIxLDAsMTMwLDAsMTMwLDAiLz4KPC9zdmc+Cg==");
   background-repeat: no-repeat;
-  background-position: center bottom;
+  background-size: 390px 50px;
+  background-position: -390px bottom; /* Başlanğıcda solda gizli */
+  transition: background-position 0.6s ease-out; /* Daha axıcı keçid */
 }
 
 .menu li a {
   font-size: 18px;
   color: var(--muted);
   text-decoration: none;
-  transition: all 0.45s;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
   width: 100%;
+  transition: color 0.3s;
 }
 
-/* Hover Animasiyası */
+/* Hover etdikdə xətt sürüşərək gəlir */
 .menu li:hover {
-  background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEi%0D%0AIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhs%0D%0AaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0%0D%0AaD0iMzkwcHgiIGhlaWdodD0iNTBweCIgdmlld0JveD0iMCAwIDM5MCA1MCIgZW5hYmxlLWJhY2tn%0D%0Acm91bmQ9Im5ldyAwIDAgMzkwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHBhdGggZmlsbD0i%0D%0Abm9uZSIgc3Ryb2tlPSIjZDk0ZjVjIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGlt%0D%0AaXQ9IjEwIiBkPSJNMCw0Ny41ODVjMCwwLDk3LjUsMCwxMzAsMAoJYzEzLjc1LDAsMjguNzQtMzgu%0D%0ANzc4LDQ2LjE2OC0xOS40MTZDMTkyLjY2OSw0Ni41LDI0My42MDMsNDcuNTg1LDI2MCw0Ny41ODVj%0D%0AMzEuODIxLDAsMTMwLDAsMTMwLDAiLz4KPC9zdmc+Cg==");
-  animation: line 1s;
+  background-position: 0px bottom; /* Xətt tam mərkəzə gəlir */
 }
 
 .menu li:hover a {
   color: #d94f5c;
 }
 
-@keyframes line {
-  0% { background-position-x: 390px; }
-}
-
 .menu li:not(:last-child) {
   margin-right: 20px;
 }
 
-/* --- MOBİL ÜÇÜN ÖZƏL CSS --- */
+/* --- MOBİL ÜÇÜN (Media Query hissəsi eyni qalır) --- */
 @media (max-width: 768px) {
   .menu {
-    flex-direction: column; /* Yan-yana olan menyunu alt-alta yığır */
+    flex-direction: column;
     width: 100%;
-    margin: 20px 0;
   }
-
   .menu li {
-    width: 100%; /* Mobil ekranı tam tutsun */
+    width: 100%;
+    background-image: none !important; /* Mobildə şəkli tam ləğv edirik */
+    height: auto;
     margin-right: 0 !important;
-    margin-bottom: 5px;
     border-bottom: 1px solid var(--glass);
   }
-
   .menu li a {
     padding: 15px 0;
-    font-size: 16px;
   }
-
-  /* Mobildə mürəkkəb SVG animasiyasını sabit rənglə əvəz edirik (çünki SVG dartılır) */
   .menu li:hover {
-    background-image: none;
     background-color: var(--glass);
     border-bottom: 2px solid #d94f5c;
   }
