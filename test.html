@@ -530,6 +530,63 @@ body {
     font-size: 22px;
   }
 }
+  /* ===== MOBİL-FIRST MENYU ===== */
+.film-menu {
+  display: flex;
+  gap: 20px;
+  padding: 14px 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  background: transparent;
+  white-space: nowrap;
+}
+
+/* link */
+.film-menu a {
+  position: relative;
+  font-size: 16px;
+  color: #9aa4b2;
+  text-decoration: none;
+  padding-bottom: 6px;
+  flex-shrink: 0;
+}
+
+/* alt xətt */
+.film-menu a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: #d94f5c;
+  transform: scaleX(0);
+  transition: transform .3s ease;
+}
+
+/* hover + touch */
+.film-menu a:hover,
+.film-menu a:focus {
+  color: #fff;
+}
+
+.film-menu a:hover::after,
+.film-menu a:focus::after {
+  transform: scaleX(1);
+}
+
+/* DESKTOP */
+@media (min-width: 768px) {
+  .film-menu {
+    justify-content: center;
+    overflow-x: visible;
+  }
+
+  .film-menu a {
+    font-size: 20px;
+  }
+}
 
   
 </style>
