@@ -445,149 +445,93 @@ header{
     /* === BÖLMƏLƏRİN CSS KODLARI === */
   @import url("https://fonts.googleapis.com/css?family=Varela+Round");
 
-/* RESET */
-* {
+html {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
-body {
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+  padding: 0;
+  margin: 0;
+  letter-spacing: 1.1px;
+}
+
+body,
+html {
+  width: 100%;
+  height: 100%;
   font-family: "Varela Round", sans-serif;
 }
 
-/* WRAPPER */
-.nav-wrap {
-  width: 100%;
-  overflow-x: auto; /* MOBİL üçün */
-  -webkit-overflow-scrolling: touch;
-  background: transparent;
-}
-
-/* MENU */
 .menu {
   display: flex;
-  gap: 28px;
-  padding: 12px 16px;
-  list-style: none;
-  min-width: max-content; /* MOBİL üçün vacib */
   justify-content: center;
+  align-items: center;
+  max-width: 720px;
+  margin: 0 auto;
+  list-style: none;
+  flex-wrap: wrap; /* Mobil üçün elementlərin alt sıraya keçməsini təmin edir */
 }
 
-/* ITEM */
 .menu li {
-  position: relative;
-}
-
-/* LINK */
-.menu a {
-  display: inline-block;
-  font-size: 18px;
-  color: #777;
-  text-decoration: none;
-  padding: 10px 4px;
-  transition: color 0.3s ease;
-  white-space: nowrap;
-}
-
-/* ALT XƏTT (ANİMASİYA) */
-.menu a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 2px;
-  background: #d94f5c;
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 0.4s ease;
-}
-
-/* HOVER + TOUCH */
-.menu a:hover,
-.menu a:focus {
-  color: #d94f5c;
-}
-
-.menu a:hover::after,
-.menu a:focus::after {
-  transform: scaleX(1);
-  transform-origin: left;
-}
-
-/* DESKTOP */
-@media (min-width: 768px) {
-  .nav-wrap {
-    overflow-x: visible;
-  }
-
-  .menu {
-    justify-content: center;
-  }
-
-  .menu a {
-    font-size: 22px;
-  }
-}
-  /* ===== MOBİL-FIRST MENYU ===== */
-.film-menu {
+  width: 125px;
+  height: 50px;
+  transition: background-position-x 0.9s linear;
+  text-align: center;
   display: flex;
-  gap: 20px;
-  padding: 14px 12px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  align-items: center;
+  justify-content: center;
 
-  background: transparent;
-  white-space: nowrap;
-}
-
-/* link */
-.film-menu a {
-  position: relative;
-  font-size: 16px;
-  color: #9aa4b2;
-  text-decoration: none;
-  padding-bottom: 6px;
-  flex-shrink: 0;
-}
-
-/* alt xətt */
-.film-menu a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 2px;
-  background: #d94f5c;
-  transform: scaleX(0);
-  transition: transform .3s ease;
-}
-
-/* hover + touch */
-.film-menu a:hover,
-.film-menu a:focus {
-  color: #fff;
-}
-
-.film-menu a:hover::after,
-.film-menu a:focus::after {
-  transform: scaleX(1);
-}
-
-/* DESKTOP */
-@media (min-width: 768px) {
-  .film-menu {
-    justify-content: center;
-    overflow-x: visible;
+  a {
+    font-size: 22px;
+    color: #777;
+    text-decoration: none;
+    transition: all 0.45s;
+    display: block;
+    width: 100%;
   }
 
-  .film-menu a {
-    font-size: 20px;
+  &:hover {
+    background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEi%0D%0AIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhs%0D%0AaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0%0D%0AaD0iMzkwcHgiIGhlaWdodD0iNTBweCIgdmlld0JveD0iMCAwIDM5MCA1MCIgZW5hYmxlLWJhY2tn%0D%0Acm91bmQ9Im5ldyAwIDAgMzkwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHBhdGggZmlsbD0i%0D%0Abm9uZSIgc3Ryb2tlPSIjZDk0ZjVjIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGlt%0D%0AaXQ9IjEwIiBkPSJNMCw0Ny41ODVjMCwwLDk3LjUsMCwxMzAsMAoJYzEzLjc1LDAsMjguNzQtMzgu%0D%0ANzc4LDQ2LjE2OC0xOS40MTZDMTkyLjY2OSw0Ni41LDI0My42MDMsNDcuNTg1LDI2MCw0Ny41ODVj%0D%0AMzEuODIxLDAsMTMwLDAsMTMwLDAiLz4KPC9zdmc+Cg==");
+    animation: line 1s;
+    background-repeat: no-repeat;
+    background-position: bottom;
+  }
+
+  &:hover a {
+    color: #d94f5c;
+  }
+
+  &:not(:last-child) {
+    margin-right: 30px;
   }
 }
 
+/* --- MOBİL UYĞUNLUQ (768px-dən kiçik ekranlar üçün) --- */
+@media (max-width: 768px) {
+  .menu {
+    flex-direction: column; /* Menyu elementləri alt-alta düzülsün */
+    padding: 20px 0;
+  }
+
+  .menu li {
+    width: 100%; /* Mobil ekranda tam genişlik */
+    margin-right: 0 !important; /* Sağdakı boşluğu ləğv edirik */
+    margin-bottom: 20px; /* Elementlər arasına şaquli boşluq */
+    
+    &:hover {
+        background-size: contain; /* SVG-nin mobil ekrana sığması üçün */
+    }
+  }
+}
+
+@keyframes line {
+  0% {
+    background-position-x: 390px;
+  }
+}
   
 </style>
 </head>
@@ -619,16 +563,14 @@ body {
 </header>
 
 <main class="container" id="main">
-  <nav class="nav-wrap">
+  <nav>
   <ul class="menu">
-    <li><a href="#">Filmlər</a></li>
-    <li><a href="#">Seriallar</a></li>
-    <li><a href="#">Janr</a></li>
-    <li><a href="#">Yeni</a></li>
-    <li><a href="#">Əlaqə</a></li>
+    <li><a href="#!">Home</a></li>
+    <li><a href="#!">About</a></li>
+    <li><a href="#!">Contact</a></li>
+    <li><a href="#!">Faq</a></li>
   </ul>
 </nav>
-
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
     <h2 style="margin:0">Filmlər</h2>
 
