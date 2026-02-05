@@ -66,12 +66,12 @@ body {
 }
 
 /* Hover etdikdə xətt sürüşərək gəlir */
-.menu li:hover {
+.menu li:hover,
 .menu li.active {
   background-position: 0px bottom; /* Xətt tam mərkəzə gəlir */
 }
 
-.menu li:hover a {
+.menu li:hover a,
 .menu li.active {
   color: #d94f5c;
 }
