@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="az">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>KINOFLIX+</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #08101a; --surface: #0f1720; --muted: #94a3b8; --accent: #1db954; 
+            --text: #e6eef6; --glass: rgba(255,255,255,0.03); --radius: 12px; 
+            --card-sh: 0 8px 28px rgba(2,6,23,0.6); --header-bg: rgba(8, 16, 26, 0.8);
+            --hover-red: #d94f5c;
+        }
+
+        [data-theme="light"] {
+            --bg: #f6f8fb; --surface: #ffffff; --muted: #475569; --accent: #0b74ff; 
+            --text: #071026; --glass: rgba(0,0,0,0.04); --header-bg: rgba(246, 248, 251, 0.8);
+        }
+
+        * { box-sizing: border-box; padding: 0; margin: 0; }
+        body { background: var(--bg); color: var(--text); font-family: "Varela Round", sans-serif; transition: background 0.3s; line-height: 1.6; }
+
+        /* HEADER */
+        header {
+            position: fixed; top: 0; width: 100%; height: 72px; /* Ana səhifəyə uyğun */
+            background: var(--header-bg); backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 18px; z-index: 1000; border-bottom: 1px solid var(--glass);
+        }
+        /* DÜZƏLİŞ: Loqo ölçüsü kiçildildi */
+        .logo img { height: 38px; width: auto; transition: 0.3s; }
+        
+        .icon-btn {
+            background: var(--glass); border: none; color: var(--text);
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+        }
+
+        /* MENYU (Desktop) */
+        .menu-container { margin-top: 100px; }
+        .menu { display: flex; justify-content: center; list-style: none; padding: 0; }
+        
+        .menu li {
+            width: 125px; /* DÜZƏLİŞ: Menyu eni ana səhifəyə uyğun (125px) */
+            height: 50px; text-align: center; position: relative;
+            background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEi%0D%0AIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhs%0D%0AaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0%0D%0AaD0iMzkwcHgiIGhlaWdodD0iNTBweCIgdmlld0JveD0iMCAwIDM5MCA1MCIgZW5hYmxlLWJhY2tn%0D%0Acm91bmQ9Im5ldyAwIDAgMzkwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHBhdGggZmlsbD0i%0D%0Abm9uZSIgc3Ryb2tlPSIjZDk0ZjVjIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGlt%0D%0AaXQ9IjEwIiBkPSJNMCw0Ny41ODVjMCwwLDk3LjUsMCwxMzAsMAoJYzEzLjc1LDAsMjguNzQtMzgu%0D%0ANzc4LDQ2LjE2OC0xOS40MTZDMTkyLjY2OSw0Ni41LDI0My42MDMsNDcuNTg1LDI2MCw0Ny41ODVj%0D%0AMzEuODIxLDAsMTMwLDAsMTMwLDAiLz4KPC9zdmc+Cg==");
+            background-repeat: no-repeat; background-size: 390px 50px;
+            background-position: -390px bottom; transition: background-position 0.6s ease-out;
+            overflow: hidden;
+        }
+
+        .menu li:not(:last-child) { margin-right: 20px; }
+
+        .menu li:hover, .menu li.active { background-position: 0 bottom; }
+
+        /* DÜZƏLİŞ: Menyu font ölçüsü ana səhifəyə uyğun (18px) */
+        .menu li a { text-decoration: none; color: var(--muted); display: flex; align-items: center; justify-content: center; height: 100%; transition: 0.3s; font-size: 18px; }
+        .menu li:hover a, .menu li.active a { color: var(--hover-red); }
+
+        /* MOBİL MENYU */
+        @media (max-width: 768px) {
+            .menu { flex-direction: column; align-items: center; gap: 0; }
+            .menu li { 
+                width: 100%; max-width: 300px; background-image: none !important; 
+                border-bottom: 1px solid var(--glass); overflow: visible;
+                margin-right: 0 !important;
+            }
+            .menu li::after {
+                content: ""; position: absolute; bottom: 0; left: 50%;
+                width: 0; height: 2px; background: var(--hover-red);
+                transition: 0.3s ease; transform: translateX(-50%);
+            }
+            .menu li:hover::after, .menu li.active::after { width: 80%; }
+            .menu li a { padding: 15px 0; }
+        }
+
+        /* STANDART MƏZMUN SAHƏSİ */
+        .main-content {
+            max-width: 1000px; margin: 30px auto; padding: 40px;
+            background: var(--surface); border-radius: var(--radius);
+            box-shadow: var(--card-sh); min-height: 400px;
+        }
+        /* DÜZƏLİŞ: Başlıq xətti temaya uyğun mavi/yaşıl edildi */
+        .main-content h1 { color: var(--text); border-left: 5px solid var(--accent); padding-left: 15px; margin-bottom: 25px; transition: border-color 0.3s; }
+        .main-content p { color: var(--text); font-size: 1.1rem; margin-bottom: 15px; opacity: 0.9; }
+        .main-content a { color: var(--accent); text-decoration: none; font-weight: bold; transition: 0.2s; }
+        .main-content a:hover { color: var(--hover-red); text-decoration: underline; }
+        
+        .info-card { background: var(--glass); padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body data-theme="dark">
+
+<header>
+    <a href="../index.html" class="logo">
+        <img id="siteLogo" src="../FILES/IMG/logos/white.png" alt="KINOFLIX">
+    </a>
+    <button id="themeToggle" class="icon-btn">☀️</button>
+</header>
+
+<div class="menu-container">
+    <ul class="menu" id="mainMenu">
+        <li><a href="../index.html">ƏSAS SƏHİFƏ</a></li>
+        <li><a href="kinoflixplus">KINOFLIX+</a></li>
+        <li class="active"><a href="about.html">HAQQIMIZDA</a></li>
+        <li><a href="contact.html">ƏLAQƏ</a></li>
+    </ul>
+</div>
+
+<main class="main-content">
+    <h1>Əlaqə</h1>
+    
+    <div class="author-profile" style="display: flex; align-items: center; gap: 20px; margin-bottom: 40px; flex-wrap: wrap;">
+        <div class="author-avatar" style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 2px solid var(--accent);">
+            <img src="../FILES/IMG/profile.html" alt="Əliqoşqar Kərimli" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div>
+            <a href="../PAGES/messages.html" style="text-decoration: none; color: inherit;">
+                <h2 style="color: var(--text); margin-bottom: 5px; cursor: pointer; transition: color 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text)'">
+                    Əliqoşqar Kərimli
+                </h2>
+            </a>
+            <p style="opacity: 0.8; font-size: 0.95rem;">KINOFLIX+ Platformasının Qurucusu və Tərtibatçısı</p>
+        </div>
+    </div>
+
+    <p>Salam! Mən Əliqoşqar. Rəqəmsal dünyada yaradıcılığı və texnologiyanı birləşdirərək istifadəçilər üçün ən yaxşı təcrübəni yaratmağa çalışıram. Layihələrimlə bağlı suallarınız və ya təklifləriniz üçün aşağıdakı vasitələrlə mənimlə əlaqə saxlaya bilərsiniz.</p>
+
+    <div class="contact-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px;">
+        
+        <a href="mailto:aligoshgar@gmail.com" style="text-decoration: none; color: inherit;">
+            <div class="info-card" style="margin-top: 0; transition: transform 0.3s ease; cursor: pointer; height: 100%;">
+                <h3 style="color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                    <span>📧</span> E-poçt
+                </h3>
+                <p style="font-size: 1rem; word-break: break-all;">aligoshgar@gmail.com</p>
+            </div>
+        </a>
+
+        <a href="tel:+994772094969" style="text-decoration: none; color: inherit;">
+            <div class="info-card" style="margin-top: 0; transition: transform 0.3s ease; cursor: pointer; height: 100%;">
+                <h3 style="color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                    <span>📱</span> Əlaqə Nömrəsi
+                </h3>
+                <p style="font-size: 1rem;">+994 77 209 49 69</p>
+            </div>
+        </a>
+
+    </div>
+
+    <div style="margin-top: 40px; padding: 20px; background: var(--glass); border-radius: var(--radius); text-align: center; border: 1px dashed var(--muted); opacity: 0.6;">
+        <p style="font-size: 0.9rem;">Yaxın zamanlarda yeni layihələr və yeniliklərlə qarşınızda olacağıq!</p>
+    </div>
+</main>
+
+<script>
+    const themeToggle = document.getElementById('themeToggle');
+    const siteLogo = document.getElementById('siteLogo');
+    const body = document.body;
+
+    themeToggle.addEventListener('click', () => {
+        const isDark = body.getAttribute('data-theme') === 'dark';
+        
+        if (isDark) {
+            body.setAttribute('data-theme', 'light');
+            themeToggle.textContent = '🌙'; 
+            siteLogo.src = '../FILES/IMG/logos/black.png';
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            themeToggle.textContent = '☀️';
+            siteLogo.src = '../FILES/IMG/logos/white.png';
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const currentPath = window.location.pathname.split("/").pop();
+        const menuLinks = document.querySelectorAll(".menu li a");
+        
+        menuLinks.forEach(link => {
+            if(link.getAttribute("href") === currentPath) {
+                document.querySelectorAll(".menu li").forEach(li => li.classList.remove("active"));
+                link.parentElement.classList.add("active");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
