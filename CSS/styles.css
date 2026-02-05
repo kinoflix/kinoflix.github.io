@@ -67,10 +67,12 @@ body {
 
 /* Hover etdikdə xətt sürüşərək gəlir */
 .menu li:hover {
+.menu li.active {
   background-position: 0px bottom; /* Xətt tam mərkəzə gəlir */
 }
 
 .menu li:hover a {
+.menu li.active {
   color: #d94f5c;
 }
 
@@ -122,7 +124,10 @@ body {
     border-bottom: 1px solid transparent; 
   }
 }
-
+.menu li.active::after {
+        width: 80%; /* Alt xətt aktiv səhifədə həmişə açıq qalır */
+    }
+}
 /* Header: logo left, center empty, controls right (Info -> Search -> Theme) */
 header{
   position:fixed;top:0;left:0;right:0;height:72px;display:flex;align-items:center;
