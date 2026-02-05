@@ -3,144 +3,88 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>KINOFLIX+</title>
+    <title>Səhifə Başlığı - Əliqoşqar Kərimli</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
     <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
 
     <style>
-        /* --- DƏYİŞƏNLƏR --- */
         :root {
-            --bg: #08101a; 
-            --surface: #0f1720; 
-            --muted: #94a3b8; 
-            --accent: #1db954; 
-            --text: #e6eef6; 
-            --glass: rgba(255,255,255,0.03);
-            --radius: 12px; 
-            --card-sh: 0 8px 28px rgba(2,6,23,0.6);
-            --header-bg: rgba(8, 16, 26, 0.8);
+            --bg: #08101a; --surface: #0f1720; --muted: #94a3b8; --accent: #1db954; 
+            --text: #e6eef6; --glass: rgba(255,255,255,0.03); --radius: 12px; 
+            --card-sh: 0 8px 28px rgba(2,6,23,0.6); --header-bg: rgba(8, 16, 26, 0.8);
+            --hover-red: #d94f5c;
         }
 
         [data-theme="light"] {
-            --bg: #f6f8fb; 
-            --surface: #ffffff; 
-            --muted: #475569; 
-            --accent: #0b74ff; 
-            --text: #071026; 
-            --glass: rgba(0,0,0,0.04);
-            --header-bg: rgba(246, 248, 251, 0.8);
+            --bg: #f6f8fb; --surface: #ffffff; --muted: #475569; --accent: #0b74ff; 
+            --text: #071026; --glass: rgba(0,0,0,0.04); --header-bg: rgba(246, 248, 251, 0.8);
         }
 
-        /* --- RESET --- */
         * { box-sizing: border-box; padding: 0; margin: 0; }
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: "Varela Round", sans-serif;
-            transition: background 0.3s, color 0.3s;
-            line-height: 1.6;
-        }
+        body { background: var(--bg); color: var(--text); font-family: "Varela Round", sans-serif; transition: background 0.3s; line-height: 1.6; }
 
-        /* --- HEADER & LOGO --- */
+        /* HEADER */
         header {
             position: fixed; top: 0; width: 100%; height: 75px;
-            background: var(--header-bg);
-            backdrop-filter: blur(10px);
+            background: var(--header-bg); backdrop-filter: blur(10px);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 5%; z-index: 1000;
-            border-bottom: 1px solid var(--glass);
+            padding: 0 5%; z-index: 1000; border-bottom: 1px solid var(--glass);
         }
-
-        .logo img {
-            height: 45px; /* Loqonun ölçüsü */
-            width: auto;
-            transition: opacity 0.3s;
-        }
-
-        .controls { display: flex; gap: 15px; align-items: center; }
-        
+        .logo img { height: 45px; transition: 0.3s; }
         .icon-btn {
             background: var(--glass); border: none; color: var(--text);
-            padding: 10px; border-radius: 50%; cursor: pointer; font-size: 1.2rem;
-            transition: 0.3s; width: 45px; height: 45px;
-            display: flex; align-items: center; justify-content: center;
+            width: 45px; height: 45px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
         }
 
-        /* --- MENYU --- */
+        /* MENYU (Desktop) */
         .menu-container { margin-top: 110px; }
-        .menu { display: flex; justify-content: center; list-style: none; gap: 10px; flex-wrap: wrap; }
-
+        .menu { display: flex; justify-content: center; list-style: none; gap: 10px; }
+        
         .menu li {
-            width: 130px; height: 50px; text-align: center;
+            width: 130px; height: 50px; text-align: center; position: relative;
             background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEi%0D%0AIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhs%0D%0AaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0%0D%0AaD0iMzkwcHgiIGhlaWdodD0iNTBweCIgdmlld0JveD0iMCAwIDM5MCA1MCIgZW5hYmxlLWJhY2tn%0D%0Acm91bmQ9Im5ldyAwIDAgMzkwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHBhdGggZmlsbD0i%0D%0Abm9uZSIgc3Ryb2tlPSIjZDk0ZjVjIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGlt%0D%0AaXQ9IjEwIiBkPSJNMCw0Ny41ODVjMCwwLDk3LjUsMCwxMzAsMAoJYzEzLjc1LDAsMjguNzQtMzgu%0D%0ANzc4LDQ2LjE2OC0xOS40MTZDMTkyLjY2OSw0Ni41LDI0My42MDMsNDcuNTg1LDI2MCw0Ny41ODVj%0D%0AMzEuODIxLDAsMTMwLDAsMTMwLDAiLz4KPC9zdmc+Cg==");
             background-repeat: no-repeat; background-size: 390px 50px;
             background-position: -390px bottom; transition: background-position 0.6s ease-out;
+            overflow: hidden;
         }
 
-        .menu li:hover { background-position: 0 bottom; }
-        .menu li a {
-            text-decoration: none; color: var(--muted); font-weight: 500;
-            display: flex; align-items: center; justify-content: center; height: 100%; font-size: 15px;
-        }
-        .menu li:hover a { color: #d94f5c; }
+        /* Hover və Active üçün Desktop Animasiyası */
+        .menu li:hover, .menu li.active { background-position: 0 bottom; }
 
-        /* --- MƏZMUN --- */
-        .main-content {
-            max-width: 900px; margin: 40px auto; padding: 40px;
-            background: var(--surface); border-radius: var(--radius);
-            box-shadow: var(--card-sh);
-        }
+        .menu li a { text-decoration: none; color: var(--muted); display: flex; align-items: center; justify-content: center; height: 100%; transition: 0.3s; font-size: 15px; font-weight: 500; }
+        .menu li:hover a, .menu li.active a { color: var(--hover-red); }
 
-        .main-content h1 { color: var(--text); margin-bottom: 20px; font-size: 2.2rem; }
-        .main-content p { color: var(--muted); margin-bottom: 20px; font-size: 1.1rem; }
-        
-        .custom-link { color: var(--accent); font-weight: bold; text-decoration: none; }
-        .custom-link:hover { text-decoration: underline; }
-
-        /* --- MOBİL --- */
+        /* MOBİL MENYU */
         @media (max-width: 768px) {
-  .menu {
-    flex-direction: column;
-    width: 100%;
-  }
-  .menu li {
-    width: 100%;
-    background-image: none !important;
-    height: auto;
-    margin-right: 0 !important;
-    border-bottom: 1px solid var(--glass);
-    
-    /* Animasiya üçün vacib olan sətir */
-    position: relative; 
-  }
-  
-  .menu li a {
-    padding: 15px 0;
-  }
+            .menu { flex-direction: column; align-items: center; gap: 0; }
+            .menu li { 
+                width: 100%; max-width: 280px; background-image: none !important; 
+                border-bottom: 1px solid var(--glass); overflow: visible;
+            }
+            /* Mobildə aktiv və hover xətti */
+            .menu li::after {
+                content: ""; position: absolute; bottom: 0; left: 50%;
+                width: 0; height: 2px; background: var(--hover-red);
+                transition: 0.3s ease; transform: translateX(-50%);
+            }
+            .menu li:hover::after, .menu li.active::after { width: 80%; }
+            .menu li a { padding: 15px 0; }
+            .menu li:hover { background-color: var(--glass); }
+        }
 
-  /* --- MOBİLDE AÇILAN QIRMIZI XƏTT KODU (::after) --- */
-  .menu li::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;           /* Başlanğıcda eni sıfırdır */
-    height: 2px;        /* Xəttin qalınlığı */
-    background: #d94f5c; 
-    transition: width 0.4s ease; /* Genişlənmə sürəti */
-    transform: translateX(-50%); /* Tam mərkəzə düzləyir */
-  }
-
-  .menu li:hover::after {
-    width: 80%;         /* Toxunanda xətt mərkəzdən açılır */
-  }
-
-  .menu li:hover {
-    background-color: var(--glass);
-    /* Köhnə border-bottom-u silirik ki, yeni animasiyalı xətt görünsün */
-    border-bottom: 1px solid transparent; 
-  }
-}
+        /* STANDART MƏZMUN SAHƏSİ */
+        .main-content {
+            max-width: 900px; margin: 30px auto; padding: 40px;
+            background: var(--surface); border-radius: var(--radius);
+            box-shadow: var(--card-sh); min-height: 400px;
+        }
+        .main-content h1 { color: var(--text); border-left: 5px solid var(--hover-red); padding-left: 15px; margin-bottom: 25px; }
+        .main-content p { color: var(--text); font-size: 1.1rem; margin-bottom: 15px; opacity: 0.9; }
+        .main-content a { color: var(--accent); text-decoration: none; font-weight: bold; transition: 0.2s; }
+        .main-content a:hover { color: var(--hover-red); text-decoration: underline; }
+        
+        .info-card { background: var(--glass); padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body data-theme="dark">
@@ -149,25 +93,26 @@
     <a href="index.html" class="logo">
         <img id="siteLogo" src="../FILES/IMG/logos/white.png" alt="Logo">
     </a>
-    <div class="controls">
-        <button id="themeToggle" class="icon-btn">☀️</button>
-    </div>
+    <button id="themeToggle" class="icon-btn">☀️</button>
 </header>
 
 <div class="menu-container">
-    <ul class="menu">
-        <li><a href="index.html">ANA SƏHİFƏ</a></li>
-        <li><a href="#">FİLMLƏR</a></li>
-        <li><a href="#">HAQQIMIZDA</a></li>
-        <li><a href="#">ƏLAQƏ</a></li>
+    <ul class="menu" id="mainMenu">
+        <li class="active"><a href="kinoflixplus">KINOFLIX+</a></li>
+        <li><a href="messages.html">MESAJLAR</a></li>
+        <li><a href="about.html">HAQQIMIZDA</a></li>
+        <li><a href="contact.html">ƏLAQƏ</a></li>
     </ul>
 </div>
 
 <main class="main-content">
-    <h1>Səhifə Başlığı</h1>
-    <p>Bu sizin hər səhifədə istifadə edə biləcəyiniz standart şablonunuzdur. Mətnləriniz və linkləriniz burada yerləşəcək.</p>
+    <h1>KINOFLIX+</h1>
+    <p>KINOFLIX+ ilə bir çox premium xidmət sizin üçün əlçatandır!</p>
     
-    <p>Məsələn, <a href="#" class="custom-link">bu bir nümunə linkdir</a>.</p>
+    <div class="info-card">
+        <p><strong>KINOFLIX+</strong> tərəfindən təqdim olunan premium xidmətlər:</p>
+        <a href="ahdimolsun">Ebru Gündeş - Ahdım olsun</a>
+    </div>
 </main>
 
 <script>
@@ -175,24 +120,33 @@
     const siteLogo = document.getElementById('siteLogo');
     const body = document.body;
 
-    // Loqo yollarını bura təyin edirik
-    const LOGO_WHITE = '../FILES/IMG/logos/white.png';
-    const LOGO_BLACK = '../FILES/IMG/logos/black.png';
-
+    // Tema dəyişmə məntiqi
     themeToggle.addEventListener('click', () => {
         const isDark = body.getAttribute('data-theme') === 'dark';
         
         if (isDark) {
-            // Gündüz rejiminə keçid
             body.setAttribute('data-theme', 'light');
             themeToggle.textContent = '🌙'; 
-            siteLogo.src = LOGO_BLACK;
+            siteLogo.src = '../FILES/IMG/logos/black.png';
         } else {
-            // Gecə rejiminə keçid
             body.setAttribute('data-theme', 'dark');
             themeToggle.textContent = '☀️';
-            siteLogo.src = LOGO_WHITE;
+            siteLogo.src = '../FILES/IMG/logos/white.png';
         }
+    });
+
+    // Avtomatik Aktiv Klass Təyini (İstəyə bağlı)
+    document.addEventListener("DOMContentLoaded", () => {
+        const currentPath = window.location.pathname.split("/").pop();
+        const menuLinks = document.querySelectorAll(".menu li a");
+        
+        menuLinks.forEach(link => {
+            if(link.getAttribute("href") === currentPath) {
+                // Əvvəlki active-ləri sil və yenisini əlavə et
+                document.querySelectorAll(".menu li").forEach(li => li.classList.remove("active"));
+                link.parentElement.classList.add("active");
+            }
+        });
     });
 </script>
 
