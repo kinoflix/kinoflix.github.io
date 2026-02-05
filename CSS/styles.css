@@ -86,17 +86,40 @@ body {
   }
   .menu li {
     width: 100%;
-    background-image: none !important; /* Mobildə şəkli tam ləğv edirik */
+    background-image: none !important;
     height: auto;
     margin-right: 0 !important;
     border-bottom: 1px solid var(--glass);
+    
+    /* Animasiya üçün vacib olan sətir */
+    position: relative; 
   }
+  
   .menu li a {
     padding: 15px 0;
   }
+
+  /* --- MOBİLDE AÇILAN QIRMIZI XƏTT KODU (::after) --- */
+  .menu li::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;           /* Başlanğıcda eni sıfırdır */
+    height: 2px;        /* Xəttin qalınlığı */
+    background: #d94f5c; 
+    transition: width 0.4s ease; /* Genişlənmə sürəti */
+    transform: translateX(-50%); /* Tam mərkəzə düzləyir */
+  }
+
+  .menu li:hover::after {
+    width: 80%;         /* Toxunanda xətt mərkəzdən açılır */
+  }
+
   .menu li:hover {
     background-color: var(--glass);
-    border-bottom: 2px solid #d94f5c;
+    /* Köhnə border-bottom-u silirik ki, yeni animasiyalı xətt görünsün */
+    border-bottom: 1px solid transparent; 
   }
 }
 
