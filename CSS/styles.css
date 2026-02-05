@@ -28,7 +28,7 @@ body {
   line-height: 1.6;
 }
 
-/* --- DESKTOP MENYU (Təkmilləşdirilmiş Animasiya) --- */
+/* --- DESKTOP MENYU --- */
 .menu {
   display: flex;
   justify-content: center;
@@ -44,13 +44,18 @@ body {
   height: 50px;
   text-align: center;
   position: relative;
-  overflow: hidden; /* Animasiyanın kənara çıxmaması üçün */
-  /* SVG-ni başlanğıcda ekranın kənarında gizlədirik */
+  overflow: hidden;
   background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEi%0D%0AIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhs%0D%0AaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0%0D%0AaD0iMzkwcHgiIGhlaWdodD0iNTBweCIgdmlld0JveD0iMCAwIDM5MCA1MCIgZW5hYmxlLWJhY2tn%0D%0Acm91bmQ9Im5ldyAwIDAgMzkwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHBhdGggZmlsbD0i%0D%0Abm9uZSIgc3Ryb2tlPSIjZDk0ZjVjIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGlt%0D%0AaXQ9IjEwIiBkPSJNMCw0Ny41ODVjMCwwLDk3LjUsMCwxMzAsMAoJYzEzLjc1LDAsMjguNzQtMzgu%0D%0ANzc4LDQ2LjE2OC0xOS40MTZDMTkyLjY2OSw0Ni41LDI0My42MDMsNDcuNTg1LDI2MCw0Ny41ODVj%0D%0AMzEuODIxLDAsMTMwLDAsMTMwLDAiLz4KPC9zdmc+Cg==");
   background-repeat: no-repeat;
   background-size: 390px 50px;
-  background-position: -390px bottom; /* Başlanğıcda solda gizli */
-  transition: background-position 0.6s ease-out; /* Daha axıcı keçid */
+  background-position: -390px bottom;
+  transition: background-position 0.6s ease-out;
+}
+
+/* Hover və Active vəziyyəti birlikdə */
+.menu li:hover, 
+.menu li.active {
+  background-position: 0px bottom;
 }
 
 .menu li a {
@@ -65,14 +70,9 @@ body {
   transition: color 0.3s;
 }
 
-/* Hover etdikdə xətt sürüşərək gəlir */
-.menu li:hover,
-.menu li.active {
-  background-position: 0px bottom; /* Xətt tam mərkəzə gəlir */
-}
-
-.menu li:hover a,
-.menu li.active {
+/* Link rəngi Hover və Active halında */
+.menu li:hover a, 
+.menu li.active a {
   color: #d94f5c;
 }
 
@@ -80,7 +80,7 @@ body {
   margin-right: 20px;
 }
 
-/* --- MOBİL ÜÇÜN (Media Query hissəsi eyni qalır) --- */
+/* --- MOBİL ÜÇÜN --- */
 @media (max-width: 768px) {
   .menu {
     flex-direction: column;
@@ -92,8 +92,6 @@ body {
     height: auto;
     margin-right: 0 !important;
     border-bottom: 1px solid var(--glass);
-    
-    /* Animasiya üçün vacib olan sətir */
     position: relative; 
   }
   
@@ -101,33 +99,29 @@ body {
     padding: 15px 0;
   }
 
-  /* --- MOBİLDE AÇILAN QIRMIZI XƏTT KODU (::after) --- */
   .menu li::after {
     content: "";
     position: absolute;
     bottom: 0;
     left: 50%;
-    width: 0;           /* Başlanğıcda eni sıfırdır */
-    height: 2px;        /* Xəttin qalınlığı */
+    width: 0;
+    height: 2px;
     background: #d94f5c; 
-    transition: width 0.4s ease; /* Genişlənmə sürəti */
-    transform: translateX(-50%); /* Tam mərkəzə düzləyir */
+    transition: width 0.4s ease;
+    transform: translateX(-50%);
   }
 
-  .menu li:hover::after {
-    width: 80%;         /* Toxunanda xətt mərkəzdən açılır */
+  /* Hover və ya Active olanda xətt görünsün */
+  .menu li:hover::after, 
+  .menu li.active::after {
+    width: 80%;
   }
 
   .menu li:hover {
     background-color: var(--glass);
-    /* Köhnə border-bottom-u silirik ki, yeni animasiyalı xətt görünsün */
     border-bottom: 1px solid transparent; 
   }
-}
-.menu li.active::after {
-        width: 80%; /* Alt xətt aktiv səhifədə həmişə açıq qalır */
-    }
-}
+} 
 /* Header: logo left, center empty, controls right (Info -> Search -> Theme) */
 header{
   position:fixed;top:0;left:0;right:0;height:72px;display:flex;align-items:center;
