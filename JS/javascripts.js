@@ -2,7 +2,7 @@
    MOVIES data
    =========================== */
 const MOVIES = [
-  {title:"Eşref Rüya - 31. Bölüm", cover:"https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://www.dailymotion.com/video/x9z9sfg", year:2025, genre:"Dram", id: "esrefruya"},
+  {title:"Eşref Rüya - 31. Bölüm", cover:"https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://www.dailymotion.com/video/x9zbprw", year:2025, genre:"Dram", id: "esrefruya"},
   {title:"Gerçek sahtekar / The Big Fake", cover:"https://m.media-amazon.com/images/M/MV5BYzk1MmRiODctMGFkMy00MTlmLTgyZjQtYTc1MWUyZjU5MTU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/11018481830505", year:2026, genre:"Dram", id: "thebigfake"},
   {title:"The Rip", cover:"https://m.media-amazon.com/images/M/MV5BNjIzMGY3MzMtNDVlMS00MGU1LTkyNTItMmI4Mzk0Mjg3OTBkXkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/10869573814889", year:2026, genre:"Aksiyon", id: "therip"},
   {title:"Tatilde tanıştığımız insanlar / People We Meet on Vacation", cover:"https://m.media-amazon.com/images/M/MV5BM2ZmZWEyOGItYzVjYi00N2Q3LTlmNDItYmUwZjFhMTJmMzgzXkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/10745464162921", year:2026, genre:"Romantik", id: "peoplewemeetonvacation"},
