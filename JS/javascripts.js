@@ -186,8 +186,8 @@ let theme = localStorage.getItem('flix-theme') || 'dark';
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme', t);
   localStorage.setItem('flix-theme', t);
-  if(t === 'dark'){ logoImg.src = 'FILES/IMG/logos/white.png'; themeToggle.textContent = '🌙'; }
-  else { logoImg.src = 'FILES/IMG/logos/black.png'; themeToggle.textContent = '☀️'; }
+  if(t === 'dark'){ logoImg.src = '../FILES/IMG/logos/white.png'; themeToggle.textContent = '🌙'; }
+  else { logoImg.src = '../FILES/IMG/logos/black.png'; themeToggle.textContent = '☀️'; }
 }
 //OFF:logoImg.addEventListener('click', ()=>{ theme = theme === 'dark' ? 'light' : 'dark'; applyTheme(theme); });
 themeToggle.addEventListener('click', ()=>{ theme = theme === 'dark' ? 'light' : 'dark'; applyTheme(theme); });
