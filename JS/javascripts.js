@@ -181,18 +181,42 @@ function populateGenres() {
 populateGenres(); // Səhifə yüklənəndə funksiyanı çağır
 /* === SON === */
 
-/* Theme handling + logo swapping */
+/* Theme handling + logo swapping - YENİLƏNDİ */
 let theme = localStorage.getItem('flix-theme') || 'dark';
-function applyTheme(t){
+
+function applyTheme(t) {
   document.documentElement.setAttribute('data-theme', t);
   localStorage.setItem('flix-theme', t);
-  if(t === 'dark'){ logoImg.src = '../FILES/IMG/logos/white.png'; themeToggle.textContent = '🌙'; }
-  else { logoImg.src = '../FILES/IMG/logos/black.png'; themeToggle.textContent = '☀️'; }
-}
-//OFF:logoImg.addEventListener('click', ()=>{ theme = theme === 'dark' ? 'light' : 'dark'; applyTheme(theme); });
-themeToggle.addEventListener('click', ()=>{ theme = theme === 'dark' ? 'light' : 'dark'; applyTheme(theme); });
-applyTheme(theme);
 
+  const isDark = t === 'dark';
+
+  // 1. Loqo dəyişimi (Yolun düzgünlüyündən əmin ol)
+  // Əgər loqo tapılmazsa (onerror), alternativ yolu yoxlayır
+  if (typeof logoImg !== 'undefined') {
+    const color = isDark ? 'white' : 'black';
+    logoImg.src = `../FILES/IMG/logos/${color}.png`;
+    
+    logoImg.onerror = function() {
+      this.src = `FILES/IMG/logos/${color}.png`;
+      this.onerror = null;
+    };
+  }
+
+  // 2. İkon dəyişimi (Emoji əvəzinə FontAwesome istifadə edirik)
+  if (typeof themeToggle !== 'undefined') {
+    themeToggle.innerHTML = isDark 
+      ? '<i class="fa-solid fa-sun"></i>' 
+      : '<i class="fa-solid fa-moon"></i>';
+  }
+}
+
+themeToggle.addEventListener('click', () => {
+  theme = theme === 'dark' ? 'light' : 'dark';
+  applyTheme(theme);
+});
+
+// Səhifə yüklənəndə tətbiq et
+applyTheme(theme);
 /* Toast helper */
 function showToast(msg, ms=2000){
   toast.textContent = msg; toast.classList.add('show'); toast.style.display='block';
@@ -1804,31 +1828,4 @@ function sharePlayer(){
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text + " " + shareUrl)}`;
     window.open(whatsappUrl, '_blank');
   }
-}
-/* ==========================================
-   TEMA YAMAĞI - QƏTİ HƏLL (OVERRIDE METHOD)
-   ========================================== */
-if (typeof applyTheme === 'function') {
-    // Köhnə funksiyanı yadda saxlayırıq
-    const originalApplyTheme = applyTheme;
-
-    // Funksiyanı yenidən təyin edirik
-    applyTheme = function(t) {
-        // Əvvəl sənin köhnə kodun işləyir (Loqo dəyişir, localStorage yazılır)
-        originalApplyTheme(t);
-
-        // Sonra biz dərhal ikonları Font Awesome ilə əvəzləyirik
-        const themeToggle = document.getElementById('themeToggle');
-        if (themeToggle) {
-            if (t === 'dark') {
-                themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
-            } else {
-                themeToggle.innerHTML = '<i class="fa-solid fa-moon"></i>';
-            }
-        }
-    };
-
-    // Səhifə yüklənəndə mövcud temanı yoxla və ikonu bərpa et
-    const currentTheme = localStorage.getItem('flix-theme') || 'dark';
-    applyTheme(currentTheme);
 }
