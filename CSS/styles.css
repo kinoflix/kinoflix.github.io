@@ -536,39 +536,52 @@ header{
   max-height: calc(100vh - 80px); /* safe default: viewport minus header+margins */
   object-fit: contain;
 }
-/* --- TEMA İKONU QƏTİ HƏLL --- */
+/* --- TEMA DÜYMƏSİ MOBİL VƏ DESKTOP QƏTİ HƏLL --- */
+
+/* 1. Ümumi forma və rəng tənzimləməsi */
 #themeToggle {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     width: 44px !important;
     height: 44px !important;
-    border-radius: 50% !important;
+    min-width: 44px !important; /* Mobildə sıxılmaması üçün */
+    border-radius: 50% !important; /* Məcburi dairəvi */
     background: var(--surface) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    cursor: pointer !important;
-    font-size: 1.2rem !important;
+    cursor: pointer;
+    transition: all 0.3s ease !important;
     padding: 0 !important;
-    line-height: 1 !important;
-    position: relative !important;
 }
 
-/* Mobildə (max-width: 520px) düymə ölçüsünü qoru */
+/* 2. Hover (Desktop) və Active (Mobil toxunma) vəziyyəti */
+#themeToggle:hover, 
+#themeToggle:active, 
+#themeToggle:focus {
+    background: var(--accent) !important; /* Yaşıl/Mavi rəng */
+    color: white !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 15px var(--accent) !important;
+    outline: none !important;
+}
+
+/* 3. Mobil ölçülər üçün spesifik düzəliş */
 @media (max-width: 520px) {
-    .icon-btn#themeToggle {
+    header .header-right #themeToggle {
         width: 40px !important;
         height: 40px !important;
-        display: inline-flex !important;
+        min-width: 40px !important;
+        border-radius: 50% !important; /* Mobildə kvadrat olmasının qarşısını alır */
     }
 }
 
-/* İkonun rəngi */
-#themeToggle i {
-    color: var(--text) !important;
-    pointer-events: none !important;
+/* 4. Light mode üçün sərhəd rəngi */
+[data-theme="light"] #themeToggle {
+    border-color: rgba(0, 0, 0, 0.1) !important;
 }
 
-#themeToggle:hover {
-    background: var(--accent) !important;
-    transform: scale(1.1) !important;
+/* 5. Loqo kölgəsi bərpası */
+#logoImg {
+    box-shadow: 0 8px 28px rgba(2,6,23,0.6) !important;
+    display: block !important;
 }
