@@ -536,3 +536,36 @@ header{
   max-height: calc(100vh - 80px); /* safe default: viewport minus header+margins */
   object-fit: contain;
 }
+/* --- TEMA DÜYMƏSİ YAMAĞI --- */
+#themeToggle {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important; /* Tam dairəvi edir */
+    background: var(--surface) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-size: 1.2rem !important;
+    padding: 0 !important;
+    outline: none !important;
+}
+
+#themeToggle:hover {
+    background: var(--accent) !important;
+    color: white !important;
+    transform: scale(1.1) rotate(15deg) !important;
+    box-shadow: 0 0 15px var(--accent) !important;
+}
+
+/* Əgər loqo kölgəsi v*r yazıldığı üçün itibsə, bu onu bərpa edir */
+#logoImg {
+    box-shadow: 0 8px 28px rgba(2,6,23,0.6) !important;
+}
+
+/* Light mode-da düymənin daxili rəngini tənzimlə */
+[data-theme="light"] #themeToggle {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
