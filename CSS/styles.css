@@ -536,36 +536,39 @@ header{
   max-height: calc(100vh - 80px); /* safe default: viewport minus header+margins */
   object-fit: contain;
 }
-/* --- TEMA DÜYMƏSİ YAMAĞI --- */
+/* --- TEMA İKONU QƏTİ HƏLL --- */
 #themeToggle {
     display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
+    align-items: center !important;
+    justify-content: center !important;
     width: 44px !important;
     height: 44px !important;
-    border-radius: 50% !important; /* Tam dairəvi edir */
+    border-radius: 50% !important;
     background: var(--surface) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer !important;
     font-size: 1.2rem !important;
     padding: 0 !important;
-    outline: none !important;
+    line-height: 1 !important;
+    position: relative !important;
+}
+
+/* Mobildə (max-width: 520px) düymə ölçüsünü qoru */
+@media (max-width: 520px) {
+    .icon-btn#themeToggle {
+        width: 40px !important;
+        height: 40px !important;
+        display: inline-flex !important;
+    }
+}
+
+/* İkonun rəngi */
+#themeToggle i {
+    color: var(--text) !important;
+    pointer-events: none !important;
 }
 
 #themeToggle:hover {
     background: var(--accent) !important;
-    color: white !important;
-    transform: scale(1.1) rotate(15deg) !important;
-    box-shadow: 0 0 15px var(--accent) !important;
-}
-
-/* Əgər loqo kölgəsi v*r yazıldığı üçün itibsə, bu onu bərpa edir */
-#logoImgSONDURULDU {
-    box-shadow: 0 8px 28px rgba(2,6,23,0.6) !important;
-}
-
-/* Light mode-da düymənin daxili rəngini tənzimlə */
-[data-theme="light"] #themeToggle {
-    border-color: rgba(0, 0, 0, 0.1) !important;
+    transform: scale(1.1) !important;
 }
