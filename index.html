@@ -27,25 +27,9 @@
 
   <div class="header-right">
     <!-- Info -> Search -> Theme -->
-    <button id="themeToggle" class="icon-btn" aria-label="Toggle Theme">
-  <i class="fa-solid fa-sun"></i>
-</button>
+    <button id="themeToggle" class="icon-btn" title="Tema dəyişdir" aria-label="Tema dəyişdir">🌙</button>
+    <button id="infoBtn" class="icon-btn" title="Məlumat" aria-label="Məlumat">©️</button>
 
-    
-  </div>
-</header>
-
-<main class="container" id="main">
-  <nav>
-  <ul class="menu">
-    <li class="active"><a href="../index.html">ƏSAS SƏHİFƏ</a></li>
-    <li><a href="kinoflixplus">KINOFLIX+</a></li>
-    <li><a href="PAGES/messages.html">YENİLİKLƏR</a></li>
-    <li><a href="PAGES/about.html">HAQQIMIZDA</a></li>
-    <li><a href="PAGES/contact.html">ƏLAQƏ</a></li>
-  </ul>
-</nav>
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
     <div class="search" role="search" aria-label="Film axtar">
       <button id="searchBtn" class="search-btn" aria-label="Axtar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -53,13 +37,20 @@
       <input id="searchInput" class="search-input" type="search" placeholder="Film adı yazın..." aria-label="Film axtar" />
     </div>
 
+    
+  </div>
+</header>
+
+<main class="container" id="main">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <h2 style="margin:0">Filmlər</h2>
+
     <select id="genreFilter" aria-label="Janr üzrə filtr" class="filter-select">
       <option value="">Bütün janrlar</option>
     </select>
   </div>
 
   <section id="gallery">
-    <h2 style="margin:0">Filmlər</h2>
     <div id="grid" class="grid" aria-live="polite"></div>
 
     <div id="loader" class="loader" style="display:none">
