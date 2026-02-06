@@ -6,6 +6,7 @@
     <title>KINOFLIX+</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
     <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
@@ -90,6 +91,23 @@
         .main-content a:hover { color: var(--hover-red); text-decoration: underline; }
         
         .info-card { background: var(--glass); padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        
+    #themeToggle {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease !important;
+}
+
+#themeToggle:hover {
+    transform: scale(1.1) rotate(15deg);
+    background: var(--accent) !important;
+    color: #fff !important;
+}
+
+#themeToggle i {
+    pointer-events: none; /* Klik hadisəsinin düyməyə keçməsi üçün */
+}
     </style>
 </head>
 <body data-theme="dark">
@@ -124,22 +142,50 @@
 
 <script>
     const themeToggle = document.getElementById('themeToggle');
-    const siteLogo = document.getElementById('siteLogo');
-    const body = document.body;
+const siteLogo = document.getElementById('siteLogo');
+const body = document.body;
 
-    themeToggle.addEventListener('click', () => {
-        const isDark = body.getAttribute('data-theme') === 'dark';
-        
-        if (isDark) {
-            body.setAttribute('data-theme', 'light');
-            themeToggle.textContent = '🌙'; 
-            siteLogo.src = '../FILES/IMG/logos/black.png';
-        } else {
-            body.setAttribute('data-theme', 'dark');
-            themeToggle.textContent = '☀️';
-            siteLogo.src = '../FILES/IMG/logos/white.png';
+// Funksiya: İkonu və loqonu yeniləyir
+function updateUI(theme) {
+    const isDark = theme === 'dark';
+    
+    // İkonu dəyişdir
+    themeToggle.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+    
+    // Loqo yolunu təyin et
+    const logoColor = isDark ? 'white' : 'black';
+    siteLogo.src = `../FILES/IMG/logos/${logoColor}.png`;
+
+    // Əgər loqo tapılmazsa (məsələn, Ana səhifədədirsə), yolu düzəlt
+    siteLogo.onerror = function() {
+        this.src = `FILES/IMG/logos/${logoColor}.png`;
+        this.onerror = null; // Sonsuz döngənin qarşısını al
+    };
+}
+
+themeToggle.addEventListener('click', () => {
+    const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('flix-theme', newTheme); // Yaddaşa yaz
+    updateUI(newTheme);
+});
+
+// Səhifə yüklənəndə yaddaşdakı temanı bərpa et
+document.addEventListener("DOMContentLoaded", () => {
+    const savedTheme = localStorage.getItem('flix-theme') || 'dark';
+    body.setAttribute('data-theme', savedTheme);
+    updateUI(savedTheme);
+    
+    // Menyu aktivlik kodu (sənin mövcud kodun)
+    const currentPath = window.location.pathname.split("/").pop();
+    const menuLinks = document.querySelectorAll(".menu li a");
+    menuLinks.forEach(link => {
+        if(link.getAttribute("href") === currentPath) {
+            document.querySelectorAll(".menu li").forEach(li => li.classList.remove("active"));
+            link.parentElement.classList.add("active");
         }
     });
+});
 
     document.addEventListener("DOMContentLoaded", () => {
         const currentPath = window.location.pathname.split("/").pop();
