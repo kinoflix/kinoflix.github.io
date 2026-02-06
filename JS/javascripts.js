@@ -1805,3 +1805,30 @@ function sharePlayer(){
     window.open(whatsappUrl, '_blank');
   }
 }
+/* ==========================================
+   TEMA YAMAĞI - QƏTİ HƏLL (OVERRIDE METHOD)
+   ========================================== */
+if (typeof applyTheme === 'function') {
+    // Köhnə funksiyanı yadda saxlayırıq
+    const originalApplyTheme = applyTheme;
+
+    // Funksiyanı yenidən təyin edirik
+    applyTheme = function(t) {
+        // Əvvəl sənin köhnə kodun işləyir (Loqo dəyişir, localStorage yazılır)
+        originalApplyTheme(t);
+
+        // Sonra biz dərhal ikonları Font Awesome ilə əvəzləyirik
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            if (t === 'dark') {
+                themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            } else {
+                themeToggle.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            }
+        }
+    };
+
+    // Səhifə yüklənəndə mövcud temanı yoxla və ikonu bərpa et
+    const currentTheme = localStorage.getItem('flix-theme') || 'dark';
+    applyTheme(currentTheme);
+}
