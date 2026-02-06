@@ -536,50 +536,54 @@ header{
   max-height: calc(100vh - 80px); /* safe default: viewport minus header+margins */
   object-fit: contain;
 }
-/* --- TEMA DÜYMƏSİ: KƏSİN VƏ SON HƏLL --- */
+/* --- TEMA DÜYMƏSİ ÜÇÜN QƏTİ HƏLL (Zirehli Kod) --- */
 
-/* 1. Həm Desktop, həm Mobil üçün ana forma */
-#themeToggle.icon-btn {
+/* 1. Düymənin forması (Həm Mobil, Həm Desktop) */
+html body #themeToggle.icon-btn {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border-radius: 50% !important; /* Məcburi tam dairə */
-    background: var(--surface) !important;
+    border-radius: 50% !important; /* Qəti şəkildə dairəvi */
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    cursor: pointer !important;
-    z-index: 99 !important;
+    background-color: var(--surface) !important;
+    transition: transform 0.2s, background-color 0.2s !important;
+    /* Mobildə basanda mavi qutu çıxmasın deyə: */
+    -webkit-tap-highlight-color: transparent !important; 
 }
 
-/* 2. Desktop ölçüsü */
+/* 2. Desktop Ölçüsü */
 @media (min-width: 521px) {
-    #themeToggle.icon-btn {
+    html body #themeToggle.icon-btn {
         width: 44px !important;
         height: 44px !important;
     }
 }
 
-/* 3. Mobil ölçüsü və forması (Sənin köhnə kodunu əzir) */
+/* 3. Mobil Ölçüsü (Sənin kodundakı 40px qaydasını əzirik) */
 @media (max-width: 520px) {
-    header .header-right #themeToggle.icon-btn {
-        width: 42px !important;  /* Kvadrat olmaması üçün ölçünü sabitləyirik */
-        height: 42px !important;
-        min-width: 42px !important;
-        border-radius: 50% !important; /* Mobildə kvadratlaşmanı ləğv edirik */
+    html body #themeToggle.icon-btn {
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        border-radius: 50% !important; /* Dairəvi olması üçün təkrar sığorta */
     }
 }
 
-/* 4. YAŞIL-MAVİ EFEKT: Həm Desktop (hover), həm Mobil (active) üçün */
-#themeToggle.icon-btn:hover, 
-#themeToggle.icon-btn:active {
-    background: var(--accent) !important; /* Yaşıl/Mavi rəng */
-    color: white !important;
+/* 4. RƏNG EFFEKTİ (Ən vacib hissə) */
+/* Desktopda 'hover', Mobildə isə 'active' (toxunma) zamanı işləyəcək */
+html body #themeToggle.icon-btn:hover,
+html body #themeToggle.icon-btn:active,
+html body #themeToggle.icon-btn:focus {
+    background-color: var(--accent) !important; /* Yaşıl/Mavi rəng */
+    color: #ffffff !important;
+    border-color: transparent !important;
     transform: scale(1.1) !important;
     box-shadow: 0 0 15px var(--accent) !important;
-    border-color: transparent !important;
 }
 
-/* 5. Light Mode üçün kiçik tənzimləmə */
-[data-theme="light"] #themeToggle.icon-btn {
-    border-color: rgba(0, 0, 0, 0.1) !important;
+/* 5. İkonun rəngini qorumaq */
+html body #themeToggle.icon-btn i,
+html body #themeToggle.icon-btn svg {
+    pointer-events: none; /* Toxunanda ikon mane olmasın */
+    color: inherit !important;
 }
