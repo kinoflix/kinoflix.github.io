@@ -561,7 +561,7 @@ header{
 }
 
 /* Əgər loqo kölgəsi v*r yazıldığı üçün itibsə, bu onu bərpa edir */
-#logoImg {
+#logoImgSONDURULDU {
     box-shadow: 0 8px 28px rgba(2,6,23,0.6) !important;
 }
 
