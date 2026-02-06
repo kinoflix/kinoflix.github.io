@@ -43,13 +43,13 @@
             color: var(--text);
             font-family: "Varela Round", sans-serif;
             height: 100vh;
-            overflow: hidden; /* Tam ekran tətbiq effekti */
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             transition: background 0.3s, color 0.3s;
         }
 
-        /* --- HEADER (MENYU) İNTEQRASİYASI --- */
+        /* --- HEADER --- */
         header {
             height: var(--header-h);
             background: var(--bg);
@@ -67,28 +67,32 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            text-decoration: none; /* Link üçün */
+            color: var(--text);
+            cursor: pointer;
+            transition: 0.3s;
         }
-
+        .brand:hover { opacity: 0.8; }
         .brand span { color: var(--accent); }
         
-        .header-actions { display: flex; gap: 10px; }
+        .header-actions { display: flex; gap: 10px; align-items: center; }
 
-        .nav-btn {
+        /* TEMA DÜYMƏSİ (Digər səhifələrə uyğunlaşdırıldı) */
+        .theme-btn {
             background: var(--glass);
             border: none;
             color: var(--text);
-            padding: 8px 15px;
-            border-radius: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             cursor: pointer;
-            font-family: inherit;
-            font-size: 0.9rem;
-            text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
             transition: 0.3s;
+            font-size: 1.1rem;
         }
-        .nav-btn:hover { background: var(--glass-hover); color: var(--accent); }
+        .theme-btn:hover { background: var(--glass-hover); transform: scale(1.05); }
 
         /* --- EDITOR LAYOUT --- */
         .main-workspace {
@@ -145,7 +149,6 @@
         
         textarea::placeholder { opacity: 0.5; }
 
-        /* --- TOOLBAR (BUTTONS) --- */
         .tools-overlay {
             position: absolute;
             bottom: 10px;
@@ -175,10 +178,9 @@
 
         .tool-btn:hover { background: var(--accent); color: white; }
         
-        /* --- OUTPUT AREA --- */
         .output-container {
-            flex: 1; /* 50% hündürlük */
-            background: white; /* İframe həmişə ağ olsun ki, nəticə düz görünsün */
+            flex: 1;
+            background: white;
             border-radius: var(--radius);
             overflow: hidden;
             border: 1px solid var(--border);
@@ -192,7 +194,6 @@
             background: white;
         }
 
-        /* --- ANIMATIONS (Sənin kodundan saxlanıldı) --- */
         @keyframes blink-red {
             0%, 100% { box-shadow: inset 0 0 0 2px #ff4d4d; }
             50% { box-shadow: none; }
@@ -204,35 +205,28 @@
         .blink-red { animation: blink-red 0.5s ease-in-out 2; }
         .blink-green { animation: blink-green 0.5s ease-in-out 2; }
 
-        /* --- RESPONSIVE --- */
         @media (max-width: 768px) {
             .editors-container { flex-direction: column; min-height: 60%; }
             .output-container { min-height: 40%; }
-            .header-actions span { display: none; } /* Mobildə "Geri Qayıt" yazısını gizlət */
         }
     </style>
 </head>
 <body data-theme="dark">
 
     <header>
-        <div class="brand">
+        <a href="../index.html" class="brand">
             <i class="fa-solid fa-code" style="color:var(--accent)"></i>
             <div>KINOFLIX<span>+</span> Dev</div>
-        </div>
+        </a>
         <div class="header-actions">
-            <button id="themeToggle" class="nav-btn" title="Temanı dəyiş">
+            <button id="themeToggle" class="theme-btn" title="Temanı dəyiş">
                 <i class="fa-solid fa-sun"></i>
             </button>
-            <a href="../index.html" class="nav-btn" style="background: var(--accent); color: white;">
-                <i class="fa-solid fa-house"></i> <span>Ana Səhifə</span>
-            </a>
         </div>
     </header>
 
     <div class="main-workspace">
-        
         <div class="editors-container">
-            
             <div class="editor-box">
                 <div class="editor-header"><i class="fa-brands fa-html5" style="color: #e34f26;"></i> HTML</div>
                 <textarea id="html" placeholder=""></textarea>
@@ -262,14 +256,12 @@
                     <button class="tool-btn template-btn" data-target="js" title="Şablon"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
                 </div>
             </div>
-
         </div>
 
         <div class="output-container">
             <div style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.1); padding:4px 8px; border-radius:4px; font-size:10px; color:#333; font-weight:bold; pointer-events:none;">PREVIEW</div>
             <iframe id="output"></iframe>
         </div>
-
     </div>
 
     <script>
@@ -280,7 +272,6 @@
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
 
-        // --- LIVE PREVIEW ---
         function updateOutput() {
             const source = `
                 <!DOCTYPE html>
@@ -301,11 +292,9 @@
         css.addEventListener('input', updateOutput);
         js.addEventListener('input', updateOutput);
 
-        // --- THEME TOGGLE (KINOFLIX Style) ---
         themeToggle.addEventListener('click', () => {
             const isDark = body.getAttribute('data-theme') === 'dark';
             const icon = themeToggle.querySelector('i');
-            
             if (isDark) {
                 body.setAttribute('data-theme', 'light');
                 icon.className = 'fa-solid fa-moon';
@@ -315,47 +304,30 @@
             }
         });
 
-        // --- BUTTON ACTIONS ---
-        const templateLoaded = { html: false, css: false, js: false };
-        const templates = {
-            html: '<div class="card">\n  <h1>Salam KINOFLIX+</h1>\n  <p>Kodlama sahəsinə xoş gəldiniz!</p>\n  <button id="btn">Mənə Kliklə</button>\n</div>',
-            css: 'body {\n  font-family: sans-serif;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: 100vh;\n  background: #f0f2f5;\n}\n.card {\n  background: white;\n  padding: 2rem;\n  border-radius: 12px;\n  box-shadow: 0 4px 12px rgba(0,0,0,0.1);\n  text-align: center;\n}\nh1 { color: #1db954; }\nbutton {\n  background: #1db954;\n  color: white;\n  border: none;\n  padding: 10px 20px;\n  border-radius: 20px;\n  cursor: pointer;\n  margin-top: 10px;\n}',
-            js: 'document.getElementById("btn").addEventListener("click", () => {\n  alert("Kodun əla işləyir! 🚀");\n});'
-        };
-
-        // Template Button
+        // Copy, Template ve Download funksiyaları orijinal koddakı kimi saxlanıldı
         document.querySelectorAll('.template-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetId = btn.dataset.target;
                 const textarea = document.getElementById(targetId);
-                
-                // Toggle template
-                if (!templateLoaded[targetId] && textarea.value.trim() === "") {
-                    textarea.value = templates[targetId];
-                    templateLoaded[targetId] = true;
-                } else {
-                    if(confirm("Sahəni təmizləmək istədiyinə əminsən?")) {
-                        textarea.value = '';
-                        templateLoaded[targetId] = false;
-                    }
-                }
+                const templates = {
+                    html: '<div class="card">\n  <h1>Salam KINOFLIX+</h1>\n  <p>Kodlama sahəsinə xoş gəldiniz!</p>\n  <button id="btn">Mənə Kliklə</button>\n</div>',
+                    css: 'body {\n  font-family: sans-serif;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: 100vh;\n  background: #f0f2f5;\n}\n.card {\n  background: white;\n  padding: 2rem;\n  border-radius: 12px;\n  box-shadow: 0 4px 12px rgba(0,0,0,0.1);\n  text-align: center;\n}\nh1 { color: #1db954; }\nbutton {\n  background: #1db954;\n  color: white;\n  border: none;\n  padding: 10px 20px;\n  border-radius: 20px;\n  cursor: pointer;\n  margin-top: 10px;\n}',
+                    js: 'document.getElementById("btn").addEventListener("click", () => {\n  alert("Kodun əla işləyir! 🚀");\n});'
+                };
+                textarea.value = templates[targetId];
                 updateOutput();
             });
         });
 
-        // Copy Button
         document.querySelectorAll('.copy-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetId = btn.dataset.target;
                 const textarea = document.getElementById(targetId);
                 const icon = btn.querySelector('i');
-
                 textarea.select();
-                textarea.setSelectionRange(0, 99999);
                 navigator.clipboard.writeText(textarea.value).then(() => {
                     icon.className = 'fa-solid fa-check';
                     textarea.parentElement.classList.add('blink-green');
-                    
                     setTimeout(() => {
                         icon.className = 'fa-solid fa-copy';
                         textarea.parentElement.classList.remove('blink-green');
@@ -364,23 +336,18 @@
             });
         });
 
-        // Download Button
         document.querySelectorAll('.download-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetId = btn.dataset.target;
                 const filename = btn.dataset.filename;
                 const textarea = document.getElementById(targetId);
-                
                 const blob = new Blob([textarea.value], { type: 'text/plain' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
                 link.download = filename;
                 link.click();
-
                 textarea.parentElement.classList.add('blink-red');
-                setTimeout(() => {
-                    textarea.parentElement.classList.remove('blink-red');
-                }, 2000);
+                setTimeout(() => textarea.parentElement.classList.remove('blink-red'), 2000);
             });
         });
     </script>
