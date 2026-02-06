@@ -197,13 +197,46 @@ header{
   opacity: .9;
 }
 
-/* Buttons */
-.icon-btn{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--surface);border:1px solid rgba(255,255,255,0.03);cursor:pointer;color:var(--text)}
+/* --- BUTTONS (YENİLƏNDİ) --- */
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.3s ease; /* Keçidləri yumşaltdıq */
+}
 
-/* Qeyd: Maus Gecə/gündüz və copyright butonlarının üzərinə gəldikdə çöl kənar xəttləri görünsün deyə hover əlavə etdim */
+/* Ümumi düymələr üçün köhnə hover effekti qalsın */
 .icon-btn:hover {
   background: var(--surface);
-  outline: 2px solid var(--accent); /* Qeyd: Maus üzərinə gəldikdə çöl kənar xəttlər görünsün. */
+  outline: 2px solid var(--accent);
+}
+
+/* --- TEMA DÜYMƏSİ ÜÇÜN ÖZƏL (Sənin istədiyin KINOFLIX+ stili) --- */
+#themeToggle {
+  border-radius: 50% !important; /* Dairəvi forma */
+  background: var(--glass);
+  border: none;
+}
+
+#themeToggle:hover {
+  outline: none !important; /* Kvadrat xətti ləğv edirik */
+  background: var(--accent) !important; /* Yaşıl və ya Mavi fon */
+  color: #fff !important;
+  transform: scale(1.1) rotate(15deg); /* Dönmə effekti */
+}
+
+/* Mobildə toxunanda (active) eyni effekt olsun */
+@media (max-width: 768px) {
+  #themeToggle:active {
+    background: var(--accent) !important;
+    transform: scale(1.1) rotate(15deg);
+  }
 }
 
   /* === YENİ ===: Filter Select Dropdown */
@@ -535,55 +568,4 @@ header{
   height: 100%;
   max-height: calc(100vh - 80px); /* safe default: viewport minus header+margins */
   object-fit: contain;
-}
-/* --- TEMA DÜYMƏSİ ÜÇÜN QƏTİ HƏLL (Zirehli Kod) --- */
-
-/* 1. Düymənin forması (Həm Mobil, Həm Desktop) */
-html body #themeToggle.icon-btn {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border-radius: 50% !important; /* Qəti şəkildə dairəvi */
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    background-color: var(--surface) !important;
-    transition: transform 0.2s, background-color 0.2s !important;
-    /* Mobildə basanda mavi qutu çıxmasın deyə: */
-    -webkit-tap-highlight-color: transparent !important; 
-}
-
-/* 2. Desktop Ölçüsü */
-@media (min-width: 521px) {
-    html body #themeToggle.icon-btn {
-        width: 44px !important;
-        height: 44px !important;
-    }
-}
-
-/* 3. Mobil Ölçüsü (Sənin kodundakı 40px qaydasını əzirik) */
-@media (max-width: 520px) {
-    html body #themeToggle.icon-btn {
-        width: 40px !important;
-        height: 40px !important;
-        min-width: 40px !important;
-        border-radius: 50% !important; /* Dairəvi olması üçün təkrar sığorta */
-    }
-}
-
-/* 4. RƏNG EFFEKTİ (Ən vacib hissə) */
-/* Desktopda 'hover', Mobildə isə 'active' (toxunma) zamanı işləyəcək */
-html body #themeToggle.icon-btn:hover,
-html body #themeToggle.icon-btn:active,
-html body #themeToggle.icon-btn:focus {
-    background-color: var(--accent) !important; /* Yaşıl/Mavi rəng */
-    color: #ffffff !important;
-    border-color: transparent !important;
-    transform: scale(1.1) !important;
-    box-shadow: 0 0 15px var(--accent) !important;
-}
-
-/* 5. İkonun rəngini qorumaq */
-html body #themeToggle.icon-btn i,
-html body #themeToggle.icon-btn svg {
-    pointer-events: none; /* Toxunanda ikon mane olmasın */
-    color: inherit !important;
 }
