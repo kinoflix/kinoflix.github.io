@@ -217,6 +217,7 @@ themeToggle.addEventListener('click', () => {
 
 // Səhifə yüklənəndə tətbiq et
 applyTheme(theme);
+
 /* Toast helper */
 function showToast(msg, ms=2000){
   toast.textContent = msg; toast.classList.add('show'); toast.style.display='block';
