@@ -536,52 +536,45 @@ header{
   max-height: calc(100vh - 80px); /* safe default: viewport minus header+margins */
   object-fit: contain;
 }
-/* --- TEMA DÜYMƏSİ MOBİL VƏ DESKTOP QƏTİ HƏLL --- */
+/* --- TEMA DÜYMƏSİ: TAM VƏ QƏTİ HƏLL --- */
 
-/* 1. Ümumi forma və rəng tənzimləməsi */
-#themeToggle {
+/* Bu selektor zənciri bütün digər qaydaları ləğv edəcək */
+html body header .header-right button#themeToggle.icon-btn {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     width: 44px !important;
     height: 44px !important;
-    min-width: 44px !important; /* Mobildə sıxılmaması üçün */
+    min-width: 44px !important;
     border-radius: 50% !important; /* Məcburi dairəvi */
     background: var(--surface) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    cursor: pointer;
-    transition: all 0.3s ease !important;
     padding: 0 !important;
+    transition: all 0.3s ease !important;
+    overflow: hidden !important;
 }
 
-/* 2. Hover (Desktop) və Active (Mobil toxunma) vəziyyəti */
-#themeToggle:hover, 
-#themeToggle:active, 
-#themeToggle:focus {
-    background: var(--accent) !important; /* Yaşıl/Mavi rəng */
-    color: white !important;
-    transform: scale(1.1) !important;
-    box-shadow: 0 0 15px var(--accent) !important;
-    outline: none !important;
-}
-
-/* 3. Mobil ölçülər üçün spesifik düzəliş */
-@media (max-width: 520px) {
-    header .header-right #themeToggle {
+/* Mobildə rəng və forma bərpası */
+@media (max-width: 768px) {
+    html body header .header-right button#themeToggle.icon-btn {
         width: 40px !important;
         height: 40px !important;
         min-width: 40px !important;
-        border-radius: 50% !important; /* Mobildə kvadrat olmasının qarşısını alır */
+        border-radius: 50% !important; /* Mobildə kvadratlaşmanı ləğv edirik */
     }
 }
 
-/* 4. Light mode üçün sərhəd rəngi */
-[data-theme="light"] #themeToggle {
-    border-color: rgba(0, 0, 0, 0.1) !important;
+/* Hover və Toxunma (Touch) anında yaşıl-mavi rəng */
+html body header .header-right button#themeToggle.icon-btn:hover,
+html body header .header-right button#themeToggle.icon-btn:active {
+    background: var(--accent) !important; /* Sənin yaşıl/mavi rəngin */
+    color: white !important;
+    box-shadow: 0 0 15px var(--accent) !important;
+    transform: scale(1.1) !important;
 }
 
-/* 5. Loqo kölgəsi bərpası */
-#logoImg {
-    box-shadow: 0 8px 28px rgba(2,6,23,0.6) !important;
-    display: block !important;
+/* İkonun öz rəngini qoruyaq */
+#themeToggle i {
+    color: inherit !important;
+    font-size: 1.1rem !important;
 }
