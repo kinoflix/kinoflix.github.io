@@ -308,17 +308,40 @@
         css.addEventListener('input', updateOutput);
         js.addEventListener('input', updateOutput);
 
-        themeToggle.addEventListener('click', () => {
-            const isDark = body.getAttribute('data-theme') === 'dark';
-            const icon = themeToggle.querySelector('i');
-            if (isDark) {
-                body.setAttribute('data-theme', 'light');
-                icon.className = 'fa-solid fa-moon';
-            } else {
-                body.setAttribute('data-theme', 'dark');
-                icon.className = 'fa-solid fa-sun';
-            }
-        });
+        const themeToggle = document.getElementById('themeToggle');
+const siteLogo = document.getElementById('siteLogo');
+const body = document.body;
+
+// Funksiya: İkonu və loqonu yeniləyir
+function updateUI(theme) {
+    const isDark = theme === 'dark';
+    
+    // İkonu dəyişdir
+    themeToggle.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+    
+    // Loqo yolunu təyin et
+    const logoColor = isDark ? 'white' : 'black';
+    siteLogo.src = `../FILES/IMG/logos/${logoColor}.png`;
+
+    // Əgər loqo tapılmazsa (məsələn, Ana səhifədədirsə), yolu düzəlt
+    siteLogo.onerror = function() {
+        this.src = `FILES/IMG/logos/${logoColor}.png`;
+        this.onerror = null; // Sonsuz döngənin qarşısını al
+    };
+}
+
+themeToggle.addEventListener('click', () => {
+    const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('flix-theme', newTheme); // Yaddaşa yaz
+    updateUI(newTheme);
+});
+
+// Səhifə yüklənəndə yaddaşdakı temanı bərpa et
+document.addEventListener("DOMContentLoaded", () => {
+    const savedTheme = localStorage.getItem('flix-theme') || 'dark';
+    body.setAttribute('data-theme', savedTheme);
+    updateUI(savedTheme);
 
         // Copy, Template ve Download funksiyaları orijinal koddakı kimi saxlanıldı
         document.querySelectorAll('.template-btn').forEach(btn => {
@@ -366,40 +389,6 @@
                 setTimeout(() => textarea.parentElement.classList.remove('blink-red'), 2000);
             });
         });
-const themeToggle = document.getElementById('themeToggle');
-const siteLogo = document.getElementById('siteLogo');
-const body = document.body;
-
-// Funksiya: İkonu və loqonu yeniləyir
-function updateUI(theme) {
-    const isDark = theme === 'dark';
-    
-    // İkonu dəyişdir
-    themeToggle.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
-    
-    // Loqo yolunu təyin et
-    const logoColor = isDark ? 'white' : 'black';
-    siteLogo.src = `../FILES/IMG/logos/${logoColor}.png`;
-
-    // Əgər loqo tapılmazsa (məsələn, Ana səhifədədirsə), yolu düzəlt
-    siteLogo.onerror = function() {
-        this.src = `FILES/IMG/logos/${logoColor}.png`;
-        this.onerror = null; // Sonsuz döngənin qarşısını al
-    };
-}
-
-themeToggle.addEventListener('click', () => {
-    const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    body.setAttribute('data-theme', newTheme);
-    localStorage.setItem('flix-theme', newTheme); // Yaddaşa yaz
-    updateUI(newTheme);
-});
-
-// Səhifə yüklənəndə yaddaşdakı temanı bərpa et
-document.addEventListener("DOMContentLoaded", () => {
-    const savedTheme = localStorage.getItem('flix-theme') || 'dark';
-    body.setAttribute('data-theme', savedTheme);
-    updateUI(savedTheme);
     </script>
 </body>
 </html>
