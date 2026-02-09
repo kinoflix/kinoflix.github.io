@@ -28,7 +28,7 @@ const INPUT_RECORDER = true;
 const ROMS = true;
 
 // Owner info
-const HOMEPAGE = "https://aligoshgar.github.io/pages/profile.html";
+const HOMEPAGE = "https://kinoflix.github.io/aligoshgar";
 const ABOUT = (`
     The emulator was created by Aligoshgar Karimli using the NinjaPad open source project, with many additions and modifications. For more information, see the link below.<br/>
     <a href="${HOMEPAGE}" target="_blank">
