@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <title>KINOFLIX+ GAMES</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #08101a;
+      --surface: #0f1720;
+      --text: #e6eef6;
+      --muted: #94a3b8;
+      --accent: #1db954; /* Kinoflix Dark (Yaşıl) */
+      --glass: rgba(255, 255, 255, 0.03);
+      --card-sh: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --border: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-theme="light"] {
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --text: #071026;
+      --muted: #475569;
+      --accent: #0b74ff; /* Kinoflix Light (Mavi) */
+      --glass: rgba(0, 0, 0, 0.04);
+      --border: rgba(0, 0, 0, 0.1);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Varela Round', sans-serif;
+      transition: background 0.4s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 90px; /* Header hündürlüyü */
+      min-height: 100vh;
+    }
+
+    /* HEADER & LOGO */
+    header {
+      position: fixed; top: 0; width: 100%; height: 72px;
+      background: var(--bg); backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; z-index: 1000; border-bottom: 1px solid var(--glass);
+    }
+
+    .logo-container {
+      display: flex; align-items: center; gap: 10px; text-decoration: none;
+    }
+    .logo-icon {
+      font-size: 24px; color: var(--accent);
+      filter: drop-shadow(0 0 8px var(--accent)); transition: 0.3s;
+    }
+    .logo-text {
+      font-size: 1.2rem; font-weight: 700; color: var(--text);
+      letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .logo-text span { color: var(--accent); font-weight: 300; }
+    
+    .logo-container:hover .logo-icon { transform: rotate(-15deg) scale(1.1); }
+
+    /* TEMA BUTONU */
+    #themeToggle {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--glass); border: 1px solid var(--border);
+      color: var(--text); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    #themeToggle:hover {
+      background: var(--accent); color: white; border-color: transparent;
+      transform: scale(1.1) rotate(15deg);
+      box-shadow: 0 0 15px var(--accent);
+    }
+
+    /* OYUNLAR KONTEYNERİ (GRID) */
+    .games-container {
+      width: 90%; max-width: 1000px;
+      margin-bottom: 100px;
+    }
+
+    .section-title {
+      font-size: 1.5rem; margin-bottom: 20px;
+      border-left: 4px solid var(--accent); padding-left: 15px;
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Avtomatik ölçü */
+      gap: 20px;
+    }
+
+    /* OYUN KARTI */
+    .game-card {
+      background: var(--surface);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--card-sh);
+      border: 1px solid var(--glass);
+      transition: all 0.3s ease;
+      position: relative;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex; flex-direction: column;
+    }
+
+    .game-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    .game-thumb {
+      width: 100%; aspect-ratio: 1/1; /* Kvadrat */
+      background-size: cover; background-position: center;
+      position: relative;
+    }
+    
+    /* Kartın üzərindəki Play ikonu (Hover zamanı gəlir) */
+    .play-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: 0.3s;
+    }
+    .game-card:hover .play-overlay { opacity: 1; }
+    
+    .play-icon {
+      width: 45px; height: 45px; border-radius: 50%;
+      background: var(--accent); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; box-shadow: 0 0 15px var(--accent);
+      transform: scale(0.5); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .game-card:hover .play-icon { transform: scale(1); }
+
+    .game-info {
+      padding: 12px; text-align: center;
+    }
+    .game-title {
+      font-size: 0.95rem; font-weight: bold; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .game-category {
+      font-size: 0.75rem; color: var(--muted); margin-top: 4px;
+    }
+
+    /* NAVİQASİYA (HOME) BUTTON */
+    #home-button {
+      position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+      background: var(--surface); color: var(--text);
+      padding: 12px 30px; border-radius: 50px; border: 1px solid var(--accent);
+      font-weight: bold; cursor: pointer; backdrop-filter: blur(5px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.3s; z-index: 999;
+      display: flex; align-items: center; gap: 8px;
+    }
+    #home-button:hover {
+      background: var(--accent); color: white;
+      transform: translateX(-50%) translateY(-3px);
+      box-shadow: 0 0 20px var(--accent);
+    }
+
+    /* MOBİL ÜÇÜN */
+    @media (max-width: 500px) {
+      .game-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .game-info { padding: 8px; }
+      .play-icon { width: 35px; height: 35px; font-size: 1rem; }
+      /* Mobildə overlay həmişə görünsün, amma zəif */
+      .play-overlay { opacity: 1; background: transparent; align-items: flex-end; justify-content: flex-end; padding: 8px; }
+      .play-icon { transform: scale(0.8); box-shadow: 0 4px 8px rgba(0,0,0,0.5); }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <header>
+    <a href="../../index.html" class="logo-container">
+      <div class="logo-icon">
+        <i class="fa-solid fa-gamepad"></i>
+      </div>
+      <div class="logo-text">KINOFLIX<span>+ GAMES</span></div>
+    </a>
+    <button id="themeToggle" aria-label="Temanı dəyiş">
+      <i class="fa-solid fa-sun"></i>
+    </button>
+  </header>
+
+  <div class="games-container">
+    <h2 class="section-title">Populyar Oyunlar</h2>
+    <div class="game-grid" id="gameGrid">
+      </div>
+  </div>
+
+  <script>
+    // 1. OYUN DATA BAZASI (Buraya öz oyunlarını əlavə et)
+    const games = [
+      { 
+        title: "2048", 
+        category: "Məntiq", 
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/2048_logo.svg/1200px-2048_logo.svg.png", 
+        link: "games/2048/index.html" 
+      },
+      { 
+        title: "Dino Run", 
+        category: "Arcade", 
+        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRz-7rBq5uD3bCjK5y_Q3l8z9X_wE2gK5y_Q&s", // Nümunə şəkil
+        link: "games/dino/index.html" 
+      },
+      { 
+        title: "Tetris", 
+        category: "Klassik", 
+        image: "https://cdn-icons-png.flaticon.com/512/528/528164.png", // Nümunə ikon
+        link: "games/tetris/index.html" 
+      },
+      { 
+        title: "Pacman", 
+        category: "Arcade", 
+        image: "https://cdn-icons-png.flaticon.com/512/367/367332.png", 
+        link: "games/pacman/index.html" 
+      },
+      // Yeni oyun əlavə etmək üçün bu strukturu kopyala
+    ];
+
+    const gameGrid = document.getElementById('gameGrid');
+    const themeToggle = document.getElementById('themeToggle');
+
+    // 2. OYUNLARI YARATMAQ FUNKSİYASI
+    function renderGames() {
+      gameGrid.innerHTML = '';
+      games.forEach(game => {
+        const card = document.createElement('a');
+        card.href = game.link;
+        card.className = 'game-card';
+        // 'target="_blank"' əlavə edə bilərsən əgər yeni səhifədə açılmasını istəyirsənsə
+        
+        card.innerHTML = `
+          <div class="game-thumb" style="background-image: url('${game.image}');">
+            <div class="play-overlay">
+              <div class="play-icon"><i class="fa-solid fa-play"></i></div>
+            </div>
+          </div>
+          <div class="game-info">
+            <div class="game-title">${game.title}</div>
+            <div class="game-category">${game.category}</div>
+          </div>
+        `;
+        gameGrid.appendChild(card);
+      });
+    }
+
+    // 3. TEMA SİSTEMİ (Musiqi səhifəsi ilə eyni)
+    function applyTheme(theme) {
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('flix-theme', theme);
+      
+      if (theme === 'dark') {
+        themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
+      } else {
+        themeToggle.innerHTML = '<i class="fa-solid fa-moon"></i>';
+      }
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      applyTheme(newTheme);
+    });
+
+    // 4. BAŞLANĞICDA YÜKLƏMƏ
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('flix-theme') || 'dark';
+      applyTheme(savedTheme);
+      renderGames();
+    });
+  </script>
+</body>
+</html>
