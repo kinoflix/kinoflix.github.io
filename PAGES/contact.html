@@ -90,6 +90,23 @@
         .main-content a:hover { color: var(--hover-red); text-decoration: underline; }
         
         .info-card { background: var(--glass); padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
+
+        #themeToggle {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease !important;
+}
+
+#themeToggle:hover {
+    transform: scale(1.1) rotate(15deg);
+    background: var(--accent) !important;
+    color: #fff !important;
+}
+
+#themeToggle i {
+    pointer-events: none; /* Klik hadisəsinin düyməyə keçməsi üçün */
+}
     </style>
 </head>
 <body data-theme="dark">
