@@ -1,226 +1,219 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="az">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="icon" href="../logo/favicon.ico" type="image/x-icon" />
-  <title>Ebru Gündeş - Ahdım olsun</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+  <title>Kinoflix+ Music | Ebru Gündeş</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+  
   <style>
     :root {
-      --light-bg: #f4f4f4;
-      --light-text: #000000;
-      --light-track: #ddd;
-      --light-accent: #1db954;
-      --bg-color: #121212;
-      --text-color: #eee;
-      --track-bg: #222;
-      --track-text: #eee;
-      --button-bg: transparent;
-      --button-hover: #444;
-      --accent: #1db954;
+      --bg: #08101a;
+      --surface: #0f1720;
+      --text: #e6eef6;
+      --muted: #94a3b8;
+      --accent: #1db954; /* Kinoflix Yaşılı */
+      --glass: rgba(255, 255, 255, 0.03);
+      --card-sh: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
-    * {
-      box-sizing: border-box;
+
+    [data-theme="light"] {
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --text: #071026;
+      --muted: #475569;
+      --accent: #0b74ff; /* Kinoflix Mavisi */
+      --glass: rgba(0, 0, 0, 0.04);
     }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
     body {
       margin: 0;
-      background: var(--bg-color);
-      color: var(--text-color);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Varela Round', sans-serif;
+      transition: background 0.4s ease;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
       align-items: center;
-      justify-content: center;
+      padding-top: 80px;
     }
-    .light-mode {
-      --bg-color: var(--light-bg);
-      --text-color: var(--light-text);
-      --track-bg: var(--light-track);
-      --accent: var(--light-accent);
+
+    /* HEADER & LOGO */
+    header {
+      position: fixed; top: 0; width: 100%; height: 72px;
+      background: var(--bg); backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; z-index: 1000; border-bottom: 1px solid var(--glass);
     }
+
+    .logo-container { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .logo-img { height: 32px; width: auto; }
+    .logo-text { font-weight: bold; color: var(--text); font-size: 1.1rem; letter-spacing: 1px; }
+    .logo-text span { color: var(--accent); }
+
+    /* TEMA BUTONU (Kinoflix Stil) */
+    #themeToggle {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    #themeToggle:hover {
+      background: var(--accent); color: white;
+      transform: scale(1.1) rotate(15deg);
+      box-shadow: 0 0 15px var(--accent);
+    }
+
     .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      width: 100%;
-      max-width: 480px;
-      margin: 0 auto;
+      width: 90%; max-width: 500px;
+      display: flex; flex-direction: column; align-items: center;
     }
-    .top-bar {
-      background-color: var(--track-bg);
-      border-radius: 12px;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      margin-bottom: 50px;
-    }
-    .top-bar h1 {
-      margin: 0;
-      font-size: 1.3rem;
-    }
-    #toggle-theme {
-      background: none;
-      font-size: 24px;
-      color: var(--text-color);
-      cursor: pointer;
-      border: none;
+
+    /* ALBUM COVER */
+    .album-wrapper {
+      position: relative; margin-bottom: 30px;
     }
     .album-cover {
-      width: 240px;
-      height: 240px;
-      border-radius: 16px;
-      background-size: cover;
-      background-position: center;
-      box-shadow: 0 0 12px rgba(0,0,0,0.6);
-      margin-bottom: 50px;
+      width: 260px; height: 260px; border-radius: 20px;
+      background-size: cover; background-position: center;
+      box-shadow: var(--card-sh);
+      border: 4px solid var(--glass);
     }
+
+    /* PLAYER BAR */
     .player-bar {
-      width: 100%;
-      max-width: 100%;
-      background: var(--track-bg);
-      border-radius: 12px;
-      padding: 12px 20px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.7);
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 40px;
+      width: 100%; background: var(--surface);
+      padding: 20px; border-radius: 18px;
+      box-shadow: var(--card-sh);
+      display: flex; align-items: center; gap: 15px; margin-bottom: 30px;
     }
+
     .btn-play-pause {
-      font-size: 30px;
-      color: var(--accent);
-      cursor: pointer;
-      border: none;
-      background: none;
-      padding: 0;
+      width: 50px; height: 50px; border-radius: 50%;
+      background: var(--accent); color: white; border: none;
+      font-size: 1.5rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: 0.3s;
     }
+    .btn-play-pause:hover { transform: scale(1.05); filter: brightness(1.1); }
+
     .progress-container {
-      flex: 1;
-      height: 8px;
-      background: #555;
-      border-radius: 10px;
-      cursor: pointer;
-      position: relative;
+      flex: 1; height: 6px; background: var(--glass);
+      border-radius: 10px; cursor: pointer; position: relative;
     }
     .progress {
-      height: 100%;
-      background: var(--accent);
-      width: 0%;
-      border-radius: 10px;
+      height: 100%; background: var(--accent);
+      width: 0%; border-radius: 10px; transition: width 0.1s linear;
     }
-    .time {
-      width: 50px;
-      font-size: 14px;
-      text-align: center;
+    .time { font-size: 0.85rem; color: var(--muted); min-width: 40px; }
+
+    /* TRACK LIST */
+    ul#track-list { width: 100%; list-style: none; padding: 0; margin-bottom: 100px; }
+    
+    .track {
+      background: var(--surface); padding: 14px;
+      margin: 10px 0; border-radius: 12px;
+      display: flex; align-items: center; gap: 12px;
+      transition: all 0.3s ease; border: 1px solid transparent;
     }
-    ul#track-list {
-      list-style: none;
-      padding: 0;
-      margin: 0 auto 10px auto;
-      width: 100%;
+    .track:hover { border-color: var(--accent); }
+    
+    .track.inactive { opacity: 0.4; filter: grayscale(0.5); }
+    .track.active-playing { background: var(--glass); border-color: var(--accent); }
+
+    .play-btn-mini {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--glass); border: none; color: var(--accent);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
     }
-    ul#track-list li.track {
-      position: relative;
-      background: var(--track-bg);
-      padding: 16px 12px;
-      margin: 10px 0;
-      border-radius: 12px;
-      text-align: center;
-      font-weight: 500;
-      color: var(--text-color);
-      opacity: 1;
-      transition: opacity 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
+
+    .track-info { flex: 1; font-size: 0.95rem; font-weight: 500; }
+
+    .download-btn {
+      color: var(--muted); text-decoration: none; font-size: 1.1rem;
+      transition: 0.2s; padding: 5px;
     }
-    ul#track-list li.track.inactive {
-      opacity: 0.5;
-    }
-    ul#track-list li.track:hover {
-      background: var(--accent);
-      color: #000;
-    }
-    .play-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      border: none;
-      background: var(--track-bg);
-      color: var(--text-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
-      box-shadow: 0 0 6px rgba(0,0,0,0.4);
-    }
-    .download-icon {
-      background: var(--track-bg);
-      color: var(--text-color);
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      box-shadow: 0 0 6px rgba(0,0,0,0.4);
-      flex-shrink: 0;
-    }
-    #home-button {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 12px 24px;
-      font-size: 16px;
-      background-color: var(--track-bg);
-      color: var(--text-color);
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-    }
-    #home-button:hover {
-      background: var(--accent);
-      color: #000;
-    }
+    .download-btn:hover { color: var(--accent); }
+
+    /* FOOTER & BUTTON */
     .footer-note {
-      width: 100%;
-      max-width: 480px;
-      text-align: center;
-      font-size: 0.9rem;
-      color: var(--text-color);
-      margin-bottom: 85px;
+      text-align: center; color: var(--muted); font-size: 0.8rem;
+      margin-bottom: 100px; opacity: 0.7;
     }
+
+/* LOGO STİLİ - YENİLƏNMİŞ */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* İkon və yazı arasındakı məsafə */
+    text-decoration: none;
+}
+
+.logo-icon {
+    font-size: 24px; /* İkonun ölçüsü */
+    color: var(--accent); /* Yaşıl (tünd) və ya Mavi (açıq) rəng */
+    filter: drop-shadow(0 0 8px var(--accent)); /* İkonun parıldaması üçün */
+    transition: all 0.3s ease;
+}
+
+.logo-text {
+    font-size: 1.2rem;
+    font-weight: 700; /* Qalın yazı */
+    color: var(--text);
+    letter-spacing: 0.5px;
+    text-transform: uppercase; /* Hamısını böyük hərflə yazar */
+}
+
+.logo-text span {
+    color: var(--accent); /* "+ MUSIC" hissəsi də rəngli olsun */
+    font-weight: 300; /* Bir az nazik olsun ki, fərqlənsin */
+}
+
+/* Hover zamanı effekt */
+.logo-container:hover .logo-icon {
+    transform: rotate(15deg) scale(1.1);
+}
   </style>
 </head>
-<body>
-  <div class="container">
-    <div class="top-bar">
-      <h1>Ebru Gündeş - Ahdım olsun</h1>
-      <button id="toggle-theme">🌙</button>
+<body data-theme="dark">
+
+  <header>
+    <a href="../../index.html" class="logo-container">
+    <div class="logo-icon">
+        <i class="fa-solid fa-music"></i>
     </div>
-    <div class="album-cover" style="background-image:url('../../kinoflixplus/ahdimolsun/cover.jpg');"></div>
+    <div class="logo-text">KINOFLIX<span>+ MUSIC</span></div>
+</a>
+    <button id="themeToggle"><i class="fa-solid fa-sun"></i></button>
+  </header>
+
+  <div class="container">
+    <div class="album-wrapper">
+      <div class="album-cover" style="background-image:url('../../kinoflixplus/ahdimolsun/cover.jpg');"></div>
+    </div>
+
     <div class="player-bar">
       <button class="btn-play-pause" id="play-pause"><i class="fa-solid fa-play"></i></button>
       <div class="time" id="current-time">0:00</div>
-      <div class="progress-container" id="progress-container"><div class="progress" id="progress"></div></div>
+      <div class="progress-container" id="progress-container">
+        <div class="progress" id="progress"></div>
+      </div>
       <div class="time" id="duration">0:00</div>
     </div>
+
     <ul id="track-list"></ul>
-    <div class="footer-note">Bu albomun elektron variantı Əliqoşqar Kərimli tərəfindən KINOFLIX üçün kodlanaraq hazırlanmışdır.</div>
+
+    <div class="footer-note">
+      Bu platformun musiqi bölməsi Kinoflix+ üçün xüsusi olaraq dizayn edilmişdir.
+    </div>
   </div>
-  <button id="home-button" onclick="location.href='../../index.html'">Əsas səhifə</button>
+
   <script>
-    // 🔽 MAHNILAR 🔽
     const tracks = [
       { title: "Ahdım olsun", file: "../../kinoflixplus/ahdimolsun/ahdimolsun.mp3" },
       { title: "Sensizim", file: "../../kinoflixplus/ahdimolsun/sensizim.mp3" },
@@ -237,191 +230,135 @@
       { title: "Benim dünyam", file: "../../kinoflixplus/ahdimolsun/benimdunyam.mp3" },
       { title: "Bir inat uğruna", file: "../../kinoflixplus/ahdimolsun/birinatugruna.mp3" }
     ];
+
     const trackList = document.getElementById('track-list');
     const playPauseBtn = document.getElementById('play-pause');
     const progress = document.getElementById('progress');
     const progressContainer = document.getElementById('progress-container');
     const currentTimeEl = document.getElementById('current-time');
     const durationEl = document.getElementById('duration');
+    const themeToggle = document.getElementById('themeToggle');
+    const logoImg = document.getElementById('logoImg');
+
     let audio = new Audio();
     let currentTrackIndex = -1;
     let isPlaying = false;
 
+    // TEMA İŞLƏMLƏRİ (Kinoflix+ Dev Məntiqi)
+    function applyTheme(t) {
+      document.body.setAttribute('data-theme', t);
+      localStorage.setItem('flix-theme', t);
+      const isDark = t === 'dark';
+      
+      themeToggle.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+      
+      const logoColor = isDark ? 'white' : 'black';
+      logoImg.src = `../FILES/IMG/logos/${logoColor}.png`;
+      logoImg.onerror = () => logoImg.src = `../../FILES/IMG/logos/${logoColor}.png`;
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const newTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(newTheme);
+    });
+
+    // PLEYER FUNKSİYALARI
     function formatTime(seconds) {
-      const mins = Math.floor(seconds / 60) || 0;
-      const secs = Math.floor(seconds % 60) || 0;
+      if (!seconds) return "0:00";
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
       return `${mins}:${secs < 10 ? '0' + secs : secs}`;
     }
 
     function loadTrack(index) {
-      if(index < 0 || index >= tracks.length) return;
       if(currentTrackIndex === index) return;
       currentTrackIndex = index;
       audio.src = tracks[index].file;
       audio.load();
-      updateActiveTrack();
+      updateUI();
     }
 
-    function updateActiveTrack() {
+    function updateUI() {
       [...trackList.children].forEach((li, idx) => {
+        const miniIcon = li.querySelector('.play-btn-mini i');
         if(idx === currentTrackIndex) {
-          li.style.backgroundColor = "var(--accent)";
-          li.style.color = "#000";
+          li.classList.add('active-playing');
           li.classList.remove('inactive');
-          const playBtn = li.querySelector('.play-btn i');
-          if (playBtn) playBtn.className = "fa-solid fa-pause";
+          miniIcon.className = isPlaying ? "fa-solid fa-pause" : "fa-solid fa-play";
         } else {
-          li.style.backgroundColor = "var(--track-bg)";
-          li.style.color = "var(--text-color)";
-          li.classList.add('inactive');
-          const playBtn = li.querySelector('.play-btn i');
-          if (playBtn) playBtn.className = "fa-solid fa-play";
+          li.classList.remove('active-playing');
+          if (isPlaying) li.classList.add('inactive');
+          else li.classList.remove('inactive');
+          miniIcon.className = "fa-solid fa-play";
         }
       });
+      playPauseBtn.innerHTML = isPlaying ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
     }
 
-    function playAudio() {
-      if(currentTrackIndex === -1) return;
-      audio.play();
-      isPlaying = true;
-
-      // Digər mahnıları solğunlaşdır
-      [...trackList.children].forEach((li, idx) => {
-        if (idx !== currentTrackIndex) li.classList.add('inactive');
-      });
-
-      playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-      const activeLi = trackList.children[currentTrackIndex];
-      if (activeLi) {
-        const btn = activeLi.querySelector('.play-btn i');
-        if (btn) btn.className = "fa-solid fa-pause";
+    function togglePlay() {
+      if(currentTrackIndex === -1) loadTrack(0);
+      if(isPlaying) {
+        audio.pause();
+        isPlaying = false;
+      } else {
+        audio.play();
+        isPlaying = true;
       }
+      updateUI();
     }
 
-    function pauseAudio() {
-      audio.pause();
-      isPlaying = false;
-      playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-      if (currentTrackIndex !== -1) {
-        const activeLi = trackList.children[currentTrackIndex];
-        if (activeLi) {
-          const btn = activeLi.querySelector('.play-btn i');
-          if (btn) btn.className = "fa-solid fa-play";
-        }
-      }
-      // İnaktiv sətri:
-      [...trackList.children].forEach(li => li.classList.remove('inactive'));
-    }
-
-    playPauseBtn.addEventListener('click', () => {
-      if (currentTrackIndex === -1) {
-        loadTrack(0); // Boş olan Play butonuna ilk mahnı
-        playAudio();
-        return;
-      }
-
-      isPlaying ? pauseAudio() : playAudio();
-    });
-
-    audio.addEventListener('timeupdate', () => {
-      if(audio.duration) {
-        const progressPercent = (audio.currentTime / audio.duration) * 100;
-        progress.style.width = `${progressPercent}%`;
-        currentTimeEl.textContent = formatTime(audio.currentTime);
-        durationEl.textContent = formatTime(audio.duration);
-      }
-    });
-
-    progressContainer.addEventListener('click', e => {
-      const width = progressContainer.clientWidth;
-      const clickX = e.offsetX;
-      if(audio.duration) audio.currentTime = (clickX / width) * audio.duration;
-    });
-
-    // Mahnılara click etdikdə toggle play/pause
+    // LIST YARATMA
     tracks.forEach((track, index) => {
       const li = document.createElement('li');
       li.className = 'track';
+      li.innerHTML = `
+        <button class="play-btn-mini"><i class="fa-solid fa-play"></i></button>
+        <div class="track-info">${track.title}</div>
+        <a href="${track.file}" download class="download-btn"><i class="fa-solid fa-cloud-arrow-down"></i></a>
+      `;
 
-      const playBtn = document.createElement('button');
-      playBtn.className = 'play-btn';
-      playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-      playBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        // Eyni mahnıda toggle pause/play
-        if(currentTrackIndex === index) {
-          if(isPlaying) {
-            pauseAudio();
-          } else {
-            playAudio();
-          }
-        } else {
+      li.addEventListener('click', (e) => {
+        if(e.target.closest('.download-btn')) return;
+        if(currentTrackIndex === index) togglePlay();
+        else {
           loadTrack(index);
-          playAudio();
+          isPlaying = true;
+          audio.play();
+          updateUI();
         }
       });
-      li.appendChild(playBtn);
-
-      const span = document.createElement('span');
-      span.textContent = track.title;
-      span.style.flex = '1';
-      span.style.textAlign = 'center';
-      li.appendChild(span);
-
-      const dl = document.createElement('a');
-      dl.href = track.file;
-      dl.download = '';
-      dl.className = 'download-icon';
-      dl.innerHTML = '<i class="fa-solid fa-download"></i>';
-      li.appendChild(dl);
-
-      // Mahnıya click etdikdə eyni toggle işləsin
-      li.addEventListener('click', e => {
-        if(!e.target.closest('a.download-icon') && !e.target.closest('button.play-btn')) {
-          if(currentTrackIndex === index) {
-            if(isPlaying) {
-              pauseAudio();
-            } else {
-              playAudio();
-            }
-          } else {
-            loadTrack(index);
-            playAudio();
-          }
-        }
-      });
-
       trackList.appendChild(li);
     });
 
-    // Mahnı bitdikdə butonlar ve opasity sıfırlanacaq,
-    // amma bitən mahnı aktiv (yaşıl hover) qalacaq
-    audio.addEventListener('ended', () => {
-      isPlaying = false;
-      playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-      // Bitən mahnı üçün pause ikonu play olacaq, opacity normala dönəcək
-      [...trackList.children].forEach((li, idx) => {
-        li.style.backgroundColor = "var(--track-bg)";
-        li.style.color = "var(--text-color)";
-        li.classList.remove('inactive');
-        const playBtnIcon = li.querySelector('.play-btn i');
-        if(playBtnIcon) playBtnIcon.className = "fa-solid fa-play";
-      });
-      // Bitən mahnı üçün aktiv görünümü qoru
-      if(currentTrackIndex !== -1) {
-        const endedLi = trackList.children[currentTrackIndex];
-        endedLi.style.backgroundColor = "var(--accent)";
-        endedLi.style.color = "#000";
-        endedLi.classList.remove('inactive');
-      }
-      progress.style.width = '0%';
-      currentTimeEl.textContent = '0:00';
+    // EVENTS
+    playPauseBtn.addEventListener('click', togglePlay);
+
+    audio.addEventListener('timeupdate', () => {
+      const percent = (audio.currentTime / audio.duration) * 100;
+      progress.style.width = percent + '%';
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+      durationEl.textContent = formatTime(audio.duration);
     });
 
-    document.getElementById('toggle-theme').addEventListener('click', () => {
-      document.body.classList.toggle('light-mode');
-      const icon = document.getElementById('toggle-theme');
-      icon.textContent = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
+    progressContainer.addEventListener('click', (e) => {
+      const width = progressContainer.clientWidth;
+      const clickX = e.offsetX;
+      audio.currentTime = (clickX / width) * audio.duration;
+    });
+
+    audio.addEventListener('ended', () => {
+      isPlaying = false;
+      progress.style.width = '0%';
+      currentTimeEl.textContent = '0:00';
+      // Mahnı bitəndə solğunluğu yox et, amma bitən mahnını vurğula
+      [...trackList.children].forEach(li => li.classList.remove('inactive'));
+      updateUI();
+    });
+
+    // STARTUP
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('flix-theme') || 'dark';
+      applyTheme(savedTheme);
     });
   </script>
 </body>
