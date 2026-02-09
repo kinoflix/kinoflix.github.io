@@ -1,260 +1,262 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>KINOFLIX+ Nintendo | ROM Kolleksiyası</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
-    
-    <style>
-        :root {
-            --bg: #050a10;
-            --surface: #0f1720;
-            --text: #e6eef6;
-            --muted: #94a3b8;
-            --accent: #1db954; 
-            --accent-glow: rgba(29, 185, 84, 0.4);
-            --border: rgba(255, 255, 255, 0.08);
-            --glass: rgba(255, 255, 255, 0.03);
-            --nintendo-red: #e60012;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <link rel="icon" href="../../logo/favicon.ico" type="image/x-icon" />
+  <title>ROM Kolleksiyası</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        [data-theme="light"] {
-            --bg: #f6f8fb;
-            --surface: #ffffff;
-            --text: #0f172a;
-            --muted: #64748b;
-            --accent: #0b74ff; 
-            --accent-glow: rgba(11, 116, 255, 0.4);
-            --border: rgba(0, 0, 0, 0.1);
-        }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem 1rem 4rem;
+      transition: background-color 0.3s, color 0.3s;
+    }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+    .header-content {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 0.2rem;
+    }
 
-        body {
-            font-family: 'Varela Round', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding: 0 1rem 5rem;
-            transition: background 0.4s ease, color 0.4s ease;
-        }
+    .logo-img {
+      height: 42px;
+      width: auto;
+      object-fit: contain;
+      margin-left: 0.3rem;
+    }
 
-        /* --- HEADER (HUB STİLİ) --- */
-        .header-content {
-            max-width: 900px;
-            width: 100%;
-            height: 70px;
-            margin: 0 auto 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .theme-toggle {
+      cursor: pointer;
+      font-size: 1.6rem;
+      user-select: none;
+      transition: color 0.3s;
+      margin-right: 0.3rem;
+    }
 
-        .main-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: var(--text);
-            font-size: 1.3rem;
-            font-weight: 800;
-        }
+    .notice {
+      background-color: #1b4d1b;
+      border: 2.5px solid #4caf50;
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: #d4f8d4;
+      text-align: center;
+      box-shadow: 0 0 12px #4caf50aa;
+      user-select: none;
+      line-height: 1.4;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      transition: background-color 0.3s, color 0.3s;
+    }
 
-        /* --- LOGO İKONU VƏ HUB EFFEKTİ --- */
-        .main-logo i {
-            color: var(--accent); /* Hub-dakı tacın yerinə nintendo temalı ikon */
-            filter: drop-shadow(0 0 8px var(--accent-glow));
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            font-size: 1.5rem;
-        }
+    .emulator-btn {
+      display: block;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto 2rem;
+      background-color: #5c1b1b;
+      border: 2.5px solid #f44336;
+      color: #ffd5d5;
+      font-weight: 700;
+      font-size: 1.15rem;
+      padding: 0.8rem 0;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 14px #f44336aa;
+      user-select: none;
+      transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+      text-align: center;
+    }
 
-        .main-logo span { 
-            color: var(--accent);
-            text-shadow: 0 0 10px var(--accent-glow);
-            transition: 0.4s ease;
-        }
+    .emulator-btn:hover {
+      background-color: #f44336;
+      color: #121212;
+      box-shadow: 0 0 18px #f44336cc;
+    }
 
-        .main-logo:hover i {
-            transform: scale(1.1) rotate(10deg); /* Hub-dakı hərəkət */
-            filter: drop-shadow(0 0 15px var(--accent));
-        }
+    main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+    }
 
-        /* --- TEMA TOGGLE (HUB STİLİ) --- */
-        #themeToggle {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            color: var(--text);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+    .rom-card {
+      background: rgba(255 255 255 / 0.05);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 900px;
+      padding: 0.8rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 0 10px rgba(255 255 255 / 0.05);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
 
-        #themeToggle:hover {
-            background: var(--accent);
-            color: white;
-            border-color: transparent;
-            transform: scale(1.1) rotate(15deg);
-            box-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent-glow);
-        }
+    .rom-card:hover {
+      background: rgba(255 255 255 / 0.12);
+      box-shadow: 0 0 20px rgba(255 255 255 / 0.2);
+    }
 
-        /* --- NOTICE VƏ DÜYMƏ --- */
-        .notice {
-            background-color: var(--surface);
-            border: 1px solid var(--accent);
-            border-radius: 12px;
-            padding: 1.2rem;
-            margin: 0 auto 1.5rem;
-            text-align: center;
-            box-shadow: 0 0 15px var(--accent-glow);
-            max-width: 900px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
+    .rom-poster {
+      flex-shrink: 0;
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      object-fit: cover;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.7);
+    }
 
-        .emulator-btn {
-            display: block;
-            max-width: 900px;
-            width: 100%;
-            margin: 0 auto 2.5rem;
-            background-color: var(--nintendo-red);
-            border: none;
-            color: white;
-            font-weight: 700;
-            font-size: 1.1rem;
-            padding: 0.9rem 0;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(230, 0, 18, 0.3);
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-transform: uppercase;
-        }
+    .rom-info {
+      flex-grow: 1;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: #ddd;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-        .emulator-btn:hover {
-            transform: scale(1.02);
-            filter: brightness(1.1);
-            box-shadow: 0 8px 25px rgba(230, 0, 18, 0.4);
-        }
+    .rom-download {
+      font-size: 1.4rem;
+      color: #4caf50;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: color 0.3s;
+    }
 
-        /* --- ROM CARDS --- */
-        main {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-            align-items: center;
-        }
+    .rom-download:hover {
+      color: #81c784;
+    }
 
-        .rom-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px; /* Daha yumşaq künclər */
-            width: 100%;
-            max-width: 900px;
-            padding: 1rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            transition: all 0.4s ease;
-        }
+    footer {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+    }
 
-        .rom-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1), 0 0 15px var(--accent-glow);
-        }
+    .home-button {
+      background-color: #4caf50;
+      color: #121212;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 0.6rem 2.2rem;
+      border-radius: 28px;
+      border: none;
+      box-shadow: 0 4px 8px rgba(76,175,80,0.5);
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
 
-        .rom-poster {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            object-fit: cover;
-            border: 1px solid var(--border);
-        }
+    .home-button:hover {
+      background-color: #66bb6a;
+      box-shadow: 0 6px 12px rgba(102,187,106,0.7);
+    }
 
-        .rom-info {
-            flex-grow: 1;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--text);
-        }
+    /* Light mode */
+    body.light {
+      background-color: #fefefe;
+      color: #222;
+    }
 
-        .rom-download {
-            font-size: 1.6rem;
-            color: var(--accent);
-            transition: 0.3s;
-        }
+    body.light .rom-card {
+      background: rgba(0 0 0 / 0.05);
+      box-shadow: 0 0 10px rgba(0 0 0 / 0.05);
+    }
 
-        .rom-download:hover {
-            transform: scale(1.2);
-            filter: drop-shadow(0 0 8px var(--accent));
-        }
+    body.light .rom-card:hover {
+      background: rgba(0 0 0 / 0.12);
+      box-shadow: 0 0 20px rgba(0 0 0 / 0.15);
+    }
 
-        /* --- FOOTER --- */
-        footer {
-            position: fixed;
-            bottom: 1.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-        }
+    body.light .rom-info {
+      color: #222;
+    }
 
-        .home-button {
-            background-color: var(--surface);
-            color: var(--text);
-            font-weight: 700;
-            padding: 0.7rem 2.5rem;
-            border-radius: 30px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: 0.3s;
-            text-decoration: none;
-        }
+    body.light .rom-download {
+      color: #388e3c;
+    }
 
-        .home-button:hover {
-            background: var(--text);
-            color: var(--bg);
-        }
-    </style>
+    body.light .rom-download:hover {
+      color: #66bb6a;
+    }
+
+    body.light .home-button {
+      background-color: #388e3c;
+      color: #fafafa;
+    }
+
+    body.light .home-button:hover {
+      background-color: #4caf50;
+    }
+
+    body.light .notice {
+      background-color: #d9f0d9;
+      border-color: #388e3c;
+      color: #2a4d2a;
+      box-shadow: 0 0 12px #388e3caa;
+    }
+
+    body.light .emulator-btn {
+      background-color: #f7d9d9;
+      border-color: #c62828;
+      color: #8c1c1c;
+      box-shadow: 0 0 14px #c62828aa;
+    }
+
+    body.light .emulator-btn:hover {
+      background-color: #c62828;
+      color: #fff;
+      box-shadow: 0 0 18px #c62828dd;
+    }
+  </style>
 </head>
-<body data-theme="dark">
+<body>
+  <header>
+    <div class="header-content">
+  <a href="../../">
+    <img src="../../logo/logo.png" alt="Logo" class="logo-img" id="logoImg" />
+  </a>
+  <div class="theme-toggle" id="themeToggle" title="Gündüz/Gecə Modu">
+    <i class="fa-solid fa-moon"></i>
+  </div>
+</div>
+  </header>
 
-    <header>
-        <div class="header-content">
-            <a href="../../" class="main-logo">
-                <i class="fa-solid fa-shuttle-space"></i> 
-                <div>KINOFLIX<span>+</span> Nintendo</div>
-            </a>
-            <button id="themeToggle">
-                <i class="fa-solid fa-sun"></i>
-            </button>
-        </div>
-    </header>
+  <section class="notice">
+    NES emulatoruna keçid etməzdən əvvəl aşağıda sizin üçün hazırladığımız NES oyun kolleksiyamızdan istədiyinizi seçib yükləyin. Həmin .nes faylını emulatorun "LOAD ROM" bölməsinə daxil edərək müvafiq oyunu istifadə edə bilərsiniz. Xoş oyunlar!
+  </section>
 
-    <section class="notice">
-        Oyun kolleksiyamızdan .nes faylını yükləyin və <b>"LOAD ROM"</b> bölməsindən istifadə edərək oyuna başlayın.
-    </section>
+  <button class="emulator-btn" onclick="location.href='../'">Emulatoru aç</button>
 
-    <button class="emulator-btn" onclick="location.href='../'">Emulatoru aç</button>
+  <main id="romList"></main>
 
-    <main id="romList"></main>
+  <footer>
+    <button class="home-button" onclick="location.href='../../'">Əsas səhifə</button>
+  </footer>
 
-    <footer>
-        <button class="home-button" onclick="location.href='../../'">Əsas səhifə</button>
-    </footer>
-
-    <script>
-        const roms = [
-            { name: "Super Mario Bros.", poster: "../poster/supermario.png", url: "supermario.nes" },
+  <script>
+    const roms = [
+      { name: "Super Mario Bros.", poster: "../poster/supermario.png", url: "supermario.nes" },
       { name: "Super Mario Bros.-Lost Levels", poster: "../poster/supermariolostlevels.png", url: "supermariolostlevels.nes" },
       { name: "Super Mario Bros.-2", poster: "../poster/supermario2.png", url: "supermario2.nes" },
       { name: "Super Mario Bros.-3", poster: "../poster/supermario3.png", url: "supermario3.nes" },
@@ -281,39 +283,46 @@
       { name: "Galaga", poster: "../poster/galaga.jpg", url: "galaga.nes" },
       { name: "Battle City", poster: "../poster/battlecity.webp", url: "battlecity.nes" },
       { name: "3 in 1", poster: "../poster/3in1.jpg", url: "3in1.nes" }
-        ];
+    ];
 
-        const romListElem = document.getElementById('romList');
-        roms.forEach(rom => {
-            const card = document.createElement('article');
-            card.className = 'rom-card';
-            card.innerHTML = `
-                <img class="rom-poster" src="${rom.poster}" onerror="this.src='https://via.placeholder.com/64?text=NES'" alt="poster">
-                <div class="rom-info">${rom.name}</div>
-                <a href="${rom.url}" download class="rom-download">
-                    <i class="fa-solid fa-circle-down"></i>
-                </a>`;
-            romListElem.appendChild(card);
-        });
+    const romListElem = document.getElementById('romList');
+    roms.forEach(rom => {
+      const card = document.createElement('article');
+      card.className = 'rom-card';
+      card.innerHTML = `
+        <img class="rom-poster" src="${rom.poster}" alt="${rom.name} poster">
+        <div class="rom-info">${rom.name}</div>
+        <a href="${rom.url}" download class="rom-download" title="Yüklə: ${rom.name}">
+          <i class="fa-solid fa-download"></i>
+        </a>`;
+      romListElem.appendChild(card);
+    });
 
-        const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    const logoImg = document.getElementById('logoImg');
 
-        function applyTheme(theme) {
-            body.setAttribute('data-theme', theme);
-            localStorage.setItem('hub-theme', theme);
-            const icon = themeToggle.querySelector('i');
-            icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-        }
+    function saveTheme(isLight) {
+      localStorage.setItem('themeLight', isLight ? 'true' : 'false');
+    }
 
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            applyTheme(newTheme);
-        });
+    function loadTheme() {
+      const saved = localStorage.getItem('themeLight');
+      const isLight = saved === 'true';
+      body.classList.toggle('light', isLight);
+      themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+      logoImg.src = isLight ? "../../logo/logoblack.png" : "../../logo/logo.png";
+    }
 
-        const savedTheme = localStorage.getItem('hub-theme') || 'dark';
-        applyTheme(savedTheme);
-    </script>
+    themeToggle.addEventListener('click', () => {
+      const isLight = !body.classList.contains('light');
+      body.classList.toggle('light', isLight);
+      themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+      logoImg.src = isLight ? "../../logo/logoblack.png" : "../../logo/logo.png";
+      saveTheme(isLight);
+    });
+
+    loadTheme();
+  </script>
 </body>
 </html>
