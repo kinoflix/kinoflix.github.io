@@ -1,207 +1,229 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="az">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>KINOFLIX+</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KINOFLIX+ | Premium Hub</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
     <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
     <style>
         :root {
-            --bg: #08101a; --surface: #0f1720; --muted: #94a3b8; --accent: #1db954; 
-            --text: #e6eef6; --glass: rgba(255,255,255,0.03); --radius: 12px; 
-            --card-sh: 0 8px 28px rgba(2,6,23,0.6); --header-bg: rgba(8, 16, 26, 0.8);
-            --hover-red: #d94f5c;
+            --bg: #050a10;
+            --surface: #0f1720;
+            --text: #e6eef6;
+            --muted: #94a3b8;
+            --accent: #1db954; 
+            --accent-glow: rgba(29, 185, 84, 0.4);
+            --border: rgba(255, 255, 255, 0.08);
+            --glass: rgba(255, 255, 255, 0.03);
+            --header-h: 70px;
         }
 
         [data-theme="light"] {
-            --bg: #f6f8fb; --surface: #ffffff; --muted: #475569; --accent: #0b74ff; 
-            --text: #071026; --glass: rgba(0,0,0,0.04); --header-bg: rgba(246, 248, 251, 0.8);
+            --bg: #f6f8fb;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --accent: #0b74ff; 
+            --accent-glow: rgba(11, 116, 255, 0.4);
+            --border: rgba(0, 0, 0, 0.1);
+            --glass: rgba(0, 0, 0, 0.04);
         }
 
-        * { box-sizing: border-box; padding: 0; margin: 0; }
-        body { background: var(--bg); color: var(--text); font-family: "Varela Round", sans-serif; transition: background 0.3s; line-height: 1.6; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* HEADER */
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Varela Round', sans-serif;
+            transition: background 0.4s ease, color 0.4s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HEADER --- */
         header {
-            position: fixed; top: 0; width: 100%; height: 72px; /* Ana səhifəyə uyğun */
-            background: var(--header-bg); backdrop-filter: blur(10px);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 18px; z-index: 1000; border-bottom: 1px solid var(--glass);
-        }
-        /* DÜZƏLİŞ: Loqo ölçüsü kiçildildi */
-        .logo img { height: 38px; width: auto; transition: 0.3s; }
-        
-        .icon-btn {
-            background: var(--glass); border: none; color: var(--text);
-            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+            height: var(--header-h);
+            padding: 0 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            /* Xətt ləğv edildi */
         }
 
-        /* MENYU (Desktop) */
-        .menu-container { margin-top: 100px; }
-        .menu { display: flex; justify-content: center; list-style: none; padding: 0; }
-        
-        .menu li {
-            width: 125px; /* DÜZƏLİŞ: Menyu eni ana səhifəyə uyğun (125px) */
-            height: 50px; text-align: center; position: relative;
-            background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEi%0D%0AIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhs%0D%0AaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0%0D%0AaD0iMzkwcHgiIGhlaWdodD0iNTBweCIgdmlld0JveD0iMCAwIDM5MCA1MCIgZW5hYmxlLWJhY2tn%0D%0Acm91bmQ9Im5ldyAwIDAgMzkwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHBhdGggZmlsbD0i%0D%0Abm9uZSIgc3Ryb2tlPSIjZDk0ZjVjIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGlt%0D%0AaXQ9IjEwIiBkPSJNMCw0Ny41ODVjMCwwLDk3LjUsMCwxMzAsMAoJYzEzLjc1LDAsMjguNzQtMzgu%0D%0ANzc4LDQ2LjE2OC0xOS40MTZDMTkyLjY2OSw0Ni41LDI0My42MDMsNDcuNTg1LDI2MCw0Ny41ODVj%0D%0AMzEuODIxLDAsMTMwLDAsMTMwLDAiLz4KPC9zdmc+Cg==");
-            background-repeat: no-repeat; background-size: 390px 50px;
-            background-position: -390px bottom; transition: background-position 0.6s ease-out;
-            overflow: hidden;
+        .main-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 1.3rem;
+            font-weight: 800;
         }
 
-        .menu li:not(:last-child) { margin-right: 20px; }
-
-        .menu li:hover, .menu li.active { background-position: 0 bottom; }
-
-        /* DÜZƏLİŞ: Menyu font ölçüsü ana səhifəyə uyğun (18px) */
-        .menu li a { text-decoration: none; color: var(--muted); display: flex; align-items: center; justify-content: center; height: 100%; transition: 0.3s; font-size: 18px; }
-        .menu li:hover a, .menu li.active a { color: var(--hover-red); }
-
-        /* MOBİL MENYU */
-        @media (max-width: 768px) {
-            .menu { flex-direction: column; align-items: center; gap: 0; }
-            .menu li { 
-                width: 100%; max-width: 300px; background-image: none !important; 
-                border-bottom: 1px solid var(--glass); overflow: visible;
-                margin-right: 0 !important;
-            }
-            .menu li::after {
-                content: ""; position: absolute; bottom: 0; left: 50%;
-                width: 0; height: 2px; background: var(--hover-red);
-                transition: 0.3s ease; transform: translateX(-50%);
-            }
-            .menu li:hover::after, .menu li.active::after { width: 80%; }
-            .menu li a { padding: 15px 0; }
+        .main-logo i {
+            color: gold;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* STANDART MƏZMUN SAHƏSİ */
-        .main-content {
-            max-width: 1000px; margin: 30px auto; padding: 40px;
-            background: var(--surface); border-radius: var(--radius);
-            box-shadow: var(--card-sh); min-height: 400px;
-        }
-        /* DÜZƏLİŞ: Başlıq xətti temaya uyğun mavi/yaşıl edildi */
-        .main-content h1 { color: var(--text); border-left: 5px solid var(--accent); padding-left: 15px; margin-bottom: 25px; transition: border-color 0.3s; }
-        .main-content p { color: var(--text); font-size: 1.1rem; margin-bottom: 15px; opacity: 0.9; }
-        .main-content a { color: var(--accent); text-decoration: none; font-weight: bold; transition: 0.2s; }
-        .main-content a:hover { color: var(--hover-red); text-decoration: underline; }
-        
-        .info-card { background: var(--glass); padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        
-    #themeToggle {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease !important;
+        .main-logo span { 
+    color: var(--accent); /* Tacın qızılı rəngindən ayrılıb, temaya uyğunlaşır */
+    text-shadow: 0 0 10px var(--accent-glow);
+    transition: color 0.4s ease, text-shadow 0.4s ease;
 }
 
-#themeToggle:hover {
-    transform: scale(1.1) rotate(15deg);
-    background: var(--accent) !important;
-    color: #fff !important;
-}
+        .main-logo:hover i {
+            transform: scale(1.1) rotate(10deg);
+            filter: drop-shadow(0 0 15px gold);
+        }
 
-#themeToggle i {
-    pointer-events: none; /* Klik hadisəsinin düyməyə keçməsi üçün */
-}
+        /* --- TEMA BUTONU --- */
+        #themeToggle {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #themeToggle:hover {
+            background: var(--accent);
+            color: white;
+            border-color: transparent;
+            transform: scale(1.1) rotate(15deg); /* Fırlanma azaldıldı */
+            box-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent-glow);
+        }
+
+        /* --- MƏZMUN --- */
+        .hero {
+            text-align: center;
+            padding: 80px 20px 40px;
+        }
+
+        .hero h1 { font-size: 2.2rem; margin-bottom: 12px; }
+        .hero p { color: var(--muted); font-size: 1rem; max-width: 500px; margin: 0 auto; }
+
+        .hub-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 40px 8%;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hub-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 45px 30px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.4s ease;
+        }
+
+        .hub-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 0 20px var(--accent-glow);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 25px;
+            color: var(--accent);
+            transition: 0.4s;
+            filter: drop-shadow(0 0 8px var(--accent-glow));
+        }
+
+        .hub-card:hover .card-icon {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 15px var(--accent));
+        }
+
+        .card-title { font-size: 1.3rem; font-weight: bold; margin-bottom: 12px; }
+        .card-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+
+        @media (max-width: 600px) {
+            header { padding: 0 5%; }
+            .hub-grid { grid-template-columns: 1fr; padding: 20px 5%; }
+        }
     </style>
 </head>
 <body data-theme="dark">
 
-<header>
-    <a href="../index.html" class="logo">
-        <img id="siteLogo" src="../FILES/IMG/logos/white.png" alt="KINOFLIX">
-    </a>
-    <button id="themeToggle" class="icon-btn">☀️</button>
-</header>
+    <header>
+        <a href="#" class="main-logo">
+            <i class="fa-solid fa-crown"></i>
+            <div>KINOFLIX<span>+</span></div>
+        </a>
+        <button id="themeToggle">
+            <i class="fa-solid fa-sun"></i>
+        </button>
+    </header>
 
-<div class="menu-container">
-    <ul class="menu" id="mainMenu">
-        <li><a href="../index.html">ƏSAS SƏHİFƏ</a></li>
-        <li class="active"><a href="kinoflixplus">KINOFLIX+</a></li>
-        <li><a href="../PAGES/messages.html">YENİLİKLƏR</a></li>
-        <li><a href="../PAGES/about.html">HAQQIMIZDA</a></li>
-        <li><a href="../PAGES/contact.html">ƏLAQƏ</a></li>
-    </ul>
-</div>
+    <main>
+        <section class="hero">
+            <h1>Premium Ekosistem</h1>
+            <p>KINOFLIX+ dünyasının bütün xidmətləri bir mərkəzdə.</p>
+        </section>
 
-<main class="main-content">
-    <h1>KINOFLIX+</h1>
-    <p>KINOFLIX+ ilə bir çox premium xidmət sizin üçün əlçatandır!</p>
-    
-    <div class="info-card">
-        <p><strong>Developer editoru</strong> ilə HTML, CSS və JS kodunuzu yazın, önizləməsini görün və test edin.</p>
-        <a href="editor.html">Developer editoru</a>
-    </div>
-    <div class="info-card">
-        <p><strong>Ebru Gündeş - Ahdım olsun</strong> albomu ilə 2000-ci illərə qayıdın.</p>
-        <a href="ahdimolsun">Ebru Gündeş - Ahdım olsun</a>
-    </div>
-</main>
+        <div class="hub-grid">
+            <a href="dev" class="hub-card">
+                <div class="card-icon"><i class="fa-solid fa-code"></i></div>
+                <div class="card-title">KINOFLIX+ Dev</div>
+                <div class="card-desc">Gələcəyi kodlayın. Peşəkar developer alətləri və test mühiti.</div>
+            </a>
 
-<script>
-    const themeToggle = document.getElementById('themeToggle');
-const siteLogo = document.getElementById('siteLogo');
-const body = document.body;
+            <a href="music" class="hub-card">
+                <div class="card-icon"><i class="fa-solid fa-music"></i></div>
+                <div class="card-title">KINOFLIX+ MUSIC</div>
+                <div class="card-desc">Limitsiz musiqi. Ən son hitlər və yüksək keyfiyyətli səs.</div>
+            </a>
 
-// Funksiya: İkonu və loqonu yeniləyir
-function updateUI(theme) {
-    const isDark = theme === 'dark';
-    
-    // İkonu dəyişdir
-    themeToggle.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
-    
-    // Loqo yolunu təyin et
-    const logoColor = isDark ? 'white' : 'black';
-    siteLogo.src = `../FILES/IMG/logos/${logoColor}.png`;
+            <a href="games" class="hub-card">
+                <div class="card-icon"><i class="fa-solid fa-gamepad"></i></div>
+                <div class="card-title">KINOFLIX+ GAMES</div>
+                <div class="card-desc">Əyləncənin zirvəsi. Sevdiyiniz oyunlar burada.</div>
+            </a>
+        </div>
+    </main>
 
-    // Əgər loqo tapılmazsa (məsələn, Ana səhifədədirsə), yolu düzəlt
-    siteLogo.onerror = function() {
-        this.src = `FILES/IMG/logos/${logoColor}.png`;
-        this.onerror = null; // Sonsuz döngənin qarşısını al
-    };
-}
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
 
-themeToggle.addEventListener('click', () => {
-    const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    body.setAttribute('data-theme', newTheme);
-    localStorage.setItem('flix-theme', newTheme); // Yaddaşa yaz
-    updateUI(newTheme);
-});
+        const savedTheme = localStorage.getItem('hub-theme') || 'dark';
+        applyTheme(savedTheme);
 
-// Səhifə yüklənəndə yaddaşdakı temanı bərpa et
-document.addEventListener("DOMContentLoaded", () => {
-    const savedTheme = localStorage.getItem('flix-theme') || 'dark';
-    body.setAttribute('data-theme', savedTheme);
-    updateUI(savedTheme);
-    
-    // Menyu aktivlik kodu (sənin mövcud kodun)
-    const currentPath = window.location.pathname.split("/").pop();
-    const menuLinks = document.querySelectorAll(".menu li a");
-    menuLinks.forEach(link => {
-        if(link.getAttribute("href") === currentPath) {
-            document.querySelectorAll(".menu li").forEach(li => li.classList.remove("active"));
-            link.parentElement.classList.add("active");
+        function applyTheme(theme) {
+            body.setAttribute('data-theme', theme);
+            localStorage.setItem('hub-theme', theme);
+            const icon = themeToggle.querySelector('i');
+            icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         }
-    });
-});
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const currentPath = window.location.pathname.split("/").pop();
-        const menuLinks = document.querySelectorAll(".menu li a");
-        
-        menuLinks.forEach(link => {
-            if(link.getAttribute("href") === currentPath) {
-                document.querySelectorAll(".menu li").forEach(li => li.classList.remove("active"));
-                link.parentElement.classList.add("active");
-            }
+        themeToggle.addEventListener('click', () => {
+            const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
         });
-    });
-</script>
-
+    </script>
 </body>
 </html>
