@@ -97,21 +97,43 @@
         .menu li:hover a, .menu li.active a { color: var(--hover-red); }
 
         /* MOBİL MENYU */
-        @media (max-width: 768px) {
-            .menu { flex-direction: column; align-items: center; gap: 0; }
-            .menu li { 
-                width: 100%; max-width: 300px; background-image: none !important; 
-                border-bottom: 1px solid var(--glass); overflow: visible;
-                margin-right: 0 !important;
-            }
-            .menu li::after {
-                content: ""; position: absolute; bottom: 0; left: 50%;
-                width: 0; height: 2px; background: var(--hover-red);
-                transition: 0.3s ease; transform: translateX(-50%);
-            }
-            .menu li:hover::after, .menu li.active::after { width: 80%; }
-            .menu li a { padding: 15px 0; }
-        }
+@media (max-width: 768px) {
+    .menu { 
+        flex-direction: column; 
+        align-items: center; 
+        gap: 0; 
+    }
+    .menu li { 
+        width: 100%; 
+        max-width: 200px; /* Xəttin maksimum nə qədər uzanacağını bura təyin edir */
+        background-image: none !important; 
+        border-bottom: 1px solid var(--glass); 
+        overflow: visible;
+        margin-right: 0 !important; 
+        height: auto;
+        position: relative;
+    }
+    .menu li::after {
+        content: ""; 
+        position: absolute; 
+        bottom: 0; 
+        left: 0; /* Sol küncdən başlayır */
+        width: 0; /* Başlanğıcda sıfır */
+        height: 2px; 
+        background: var(--hover-red);
+        transition: 0.3s ease; 
+        box-shadow: 0 0 8px var(--hover-red);
+    }
+    /* Hover edəndə xətt elementin TAM eni qədər (100%) açılır */
+    .menu li:hover::after, .menu li.active::after { 
+        width: 100%; 
+    }
+    .menu li a { 
+        padding: 15px 0; 
+        font-size: 17px; 
+        width: 100%;
+    }
+}
 
         /* --- TEMA TOGGLE --- */
         #themeToggle {
