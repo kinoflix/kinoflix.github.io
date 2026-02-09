@@ -233,6 +233,30 @@ body[data-theme="light"] #themeToggle:hover {
 #themeToggle i {
     pointer-events: none;
 }
+        /* Loqo İkonu üçün Neon və Animasiya */
+.brand i {
+    color: var(--accent);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: drop-shadow(0 0 5px var(--accent)); /* Daimi neon */
+}
+
+.brand:hover i {
+    transform: rotate(-20deg) scale(1.2); /* JS yerinə CSS ilə daha hamar hərəkət */
+    filter: drop-shadow(0 0 15px var(--accent)); /* Güclü neon */
+}
+
+/* Tema Butonu üçün Neon Effekti */
+.theme-btn {
+    transition: all 0.4s ease;
+}
+
+.theme-btn:hover {
+    background: var(--accent) !important;
+    color: #fff !important;
+    transform: scale(1.1) rotate(180deg);
+    box-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent); /* Neon parıltı */
+    border-color: transparent;
+}
     </style>
 </head>
 <body data-theme="dark">
