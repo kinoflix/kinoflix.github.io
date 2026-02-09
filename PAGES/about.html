@@ -6,6 +6,7 @@
     <title>KINOFLIX+</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
     <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
@@ -182,7 +183,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedTheme = localStorage.getItem('flix-theme') || 'dark';
     body.setAttribute('data-theme', savedTheme);
     updateUI(savedTheme);
-
+    
+    // Menyu aktivlik kodu (sənin mövcud kodun)
+    const currentPath = window.location.pathname.split("/").pop();
+    const menuLinks = document.querySelectorAll(".menu li a");
+    menuLinks.forEach(link => {
+        if(link.getAttribute("href") === currentPath) {
+            document.querySelectorAll(".menu li").forEach(li => li.classList.remove("active"));
+            link.parentElement.classList.add("active");
+        }
+    });
+});
     document.addEventListener("DOMContentLoaded", () => {
         const currentPath = window.location.pathname.split("/").pop();
         const menuLinks = document.querySelectorAll(".menu li a");
