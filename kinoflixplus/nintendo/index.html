@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>KINOFLIX+ Nintendo | ROM Kolleksiyası</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #050a10;
+            --surface: #0f1720;
+            --text: #e6eef6;
+            --muted: #94a3b8;
+            --accent: #1db954; 
+            --accent-glow: rgba(29, 185, 84, 0.4);
+            --border: rgba(255, 255, 255, 0.08);
+            --glass: rgba(255, 255, 255, 0.03);
+            --nintendo-red: #e60012;
+        }
+
+        [data-theme="light"] {
+            --bg: #f6f8fb;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --accent: #0b74ff; 
+            --accent-glow: rgba(11, 116, 255, 0.4);
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Varela Round', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 0 1rem 5rem;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        /* --- HEADER (HUB STİLİ) --- */
+        .header-content {
+            max-width: 900px;
+            width: 100%;
+            height: 70px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        /* --- LOGO İKONU VƏ HUB EFFEKTİ --- */
+        .main-logo i {
+            color: var(--accent); /* Hub-dakı tacın yerinə nintendo temalı ikon */
+            filter: drop-shadow(0 0 8px var(--accent-glow));
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 1.5rem;
+        }
+
+        .main-logo span { 
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent-glow);
+            transition: 0.4s ease;
+        }
+
+        .main-logo:hover i {
+            transform: scale(1.1) rotate(10deg); /* Hub-dakı hərəkət */
+            filter: drop-shadow(0 0 15px var(--accent));
+        }
+
+        /* --- TEMA TOGGLE (HUB STİLİ) --- */
+        #themeToggle {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #themeToggle:hover {
+            background: var(--accent);
+            color: white;
+            border-color: transparent;
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent-glow);
+        }
+
+        /* --- NOTICE VƏ DÜYMƏ --- */
+        .notice {
+            background-color: var(--surface);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin: 0 auto 1.5rem;
+            text-align: center;
+            box-shadow: 0 0 15px var(--accent-glow);
+            max-width: 900px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .emulator-btn {
+            display: block;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto 2.5rem;
+            background-color: var(--nintendo-red);
+            border: none;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 0.9rem 0;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(230, 0, 18, 0.3);
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+        }
+
+        .emulator-btn:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+            box-shadow: 0 8px 25px rgba(230, 0, 18, 0.4);
+        }
+
+        /* --- ROM CARDS --- */
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            align-items: center;
+        }
+
+        .rom-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px; /* Daha yumşaq künclər */
+            width: 100%;
+            max-width: 900px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.4s ease;
+        }
+
+        .rom-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1), 0 0 15px var(--accent-glow);
+        }
+
+        .rom-poster {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+        }
+
+        .rom-info {
+            flex-grow: 1;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+
+        .rom-download {
+            font-size: 1.6rem;
+            color: var(--accent);
+            transition: 0.3s;
+        }
+
+        .rom-download:hover {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 8px var(--accent));
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+
+        .home-button {
+            background-color: var(--surface);
+            color: var(--text);
+            font-weight: 700;
+            padding: 0.7rem 2.5rem;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .home-button:hover {
+            background: var(--text);
+            color: var(--bg);
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <header>
+        <div class="header-content">
+            <a href="../../" class="main-logo">
+                <i class="fa-solid fa-shuttle-space"></i> 
+                <div>KINOFLIX<span>+</span> Nintendo</div>
+            </a>
+            <button id="themeToggle">
+                <i class="fa-solid fa-sun"></i>
+            </button>
+        </div>
+    </header>
+
+    <section class="notice">
+        Oyun kolleksiyamızdan .nes faylını yükləyin və <b>"LOAD ROM"</b> bölməsindən istifadə edərək oyuna başlayın.
+    </section>
+
+    <button class="emulator-btn" onclick="location.href='../'">Emulatoru aç</button>
+
+    <main id="romList"></main>
+
+    <footer>
+        <button class="home-button" onclick="location.href='../../'">Əsas səhifə</button>
+    </footer>
+
+    <script>
+        const roms = [
+            { name: "Super Mario Bros.", poster: "../poster/supermario.png", url: "supermario.nes" },
+            { name: "Battle City", poster: "../poster/battlecity.webp", url: "battlecity.nes" },
+            { name: "Contra", poster: "../poster/contra.jpg", url: "contra.nes" },
+            { name: "Bomberman", poster: "../poster/bomberman.jpg", url: "bomberman.nes" },
+            { name: "Donkey Kong", poster: "../poster/donkeykong.jpg", url: "donkeykong.nes" },
+            { name: "Pac-Man", poster: "../poster/pacman.png", url: "pacman.nes" }
+        ];
+
+        const romListElem = document.getElementById('romList');
+        roms.forEach(rom => {
+            const card = document.createElement('article');
+            card.className = 'rom-card';
+            card.innerHTML = `
+                <img class="rom-poster" src="${rom.poster}" onerror="this.src='https://via.placeholder.com/64?text=NES'" alt="poster">
+                <div class="rom-info">${rom.name}</div>
+                <a href="${rom.url}" download class="rom-download">
+                    <i class="fa-solid fa-circle-down"></i>
+                </a>`;
+            romListElem.appendChild(card);
+        });
+
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        function applyTheme(theme) {
+            body.setAttribute('data-theme', theme);
+            localStorage.setItem('hub-theme', theme);
+            const icon = themeToggle.querySelector('i');
+            icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+        });
+
+        const savedTheme = localStorage.getItem('hub-theme') || 'dark';
+        applyTheme(savedTheme);
+    </script>
+</body>
+</html>
