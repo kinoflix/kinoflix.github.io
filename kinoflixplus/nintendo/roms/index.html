@@ -45,16 +45,25 @@
         }
 
         /* --- HEADER (HUB STİLİ) --- */
-        .header-content {
-            max-width: 900px;
-            width: 100%;
-            height: 70px;
-            margin: 0 auto 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        header {
+    position: sticky; /* Və ya fixed */
+    top: 0;
+    width: 100%;
+    height: 72px; /* Digər səhifələrlə eyni hündürlük */
+    background: var(--bg);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px; /* Əsas sirr buradadır: tam kənara çəkir */
+    z-index: 1000;
+    border-bottom: 1px solid var(--border);
+}
 
+/* .header-content içindəki bu sətirləri sil, çünki artıq header-in özü bunu edir */
+.header-content {
+    display: contents; /* Bu blokun daxili elementlərini birbaşa header-ə bağlayır */
+}
         .main-logo {
             display: flex;
             align-items: center;
@@ -109,17 +118,21 @@
 
         /* --- NOTICE VƏ DÜYMƏ --- */
         .notice {
-            background-color: var(--surface);
-            border: 1px solid var(--accent);
-            border-radius: 12px;
-            padding: 1.2rem;
-            margin: 0 auto 1.5rem;
-            text-align: center;
-            box-shadow: 0 0 15px var(--accent-glow);
-            max-width: 900px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
+    background-color: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.2rem;
+    
+    /* Üstdən 2rem (təxminən 32px) boşluq qoyuruq */
+    margin: 2rem auto 1.5rem; 
+    
+    text-align: center;
+    box-shadow: 0 0 15px var(--accent-glow);
+    max-width: 900px;
+    width: calc(100% - 36px); /* Kənarlardan header padding-i ilə eyni (18px * 2) */
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
 
         .emulator-btn {
             display: block;
