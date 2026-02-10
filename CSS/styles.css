@@ -229,6 +229,11 @@ header{
   background: var(--accent) !important; /* Yaşıl və ya Mavi fon */
   color: #fff !important;
   transform: scale(1.1) rotate(15deg); /* Dönmə effekti */
+  /* Neon effekti əlavə olundu */
+  box-shadow: 
+    0 0 10px var(--accent),
+    0 0 20px var(--accent),
+    0 0 35px color-mix(in srgb, var(--accent) 70%, transparent);
 }
 
 /* Mobildə toxunanda (active) eyni effekt olsun */
