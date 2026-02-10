@@ -49,7 +49,7 @@
     position: fixed; 
     top: 0; 
     width: 100%; 
-    height: 75px;
+    height: 72px;
     background: var(--header-bg); 
     backdrop-filter: blur(12px);
     display: flex; 
@@ -57,7 +57,7 @@
     justify-content: space-between;
     
     /* ƏSAS DƏYİŞİKLİK BURADADIR: */
-    padding: 0 20px; /* 8% yerinə sabit piksel (ikinci səhifə ilə eyni) */
+    padding: 0 18px; /* 8% yerinə sabit piksel (ikinci səhifə ilə eyni) */
     
     z-index: 1000; 
     border-bottom: 1px solid var(--border);
@@ -88,7 +88,13 @@
 
         /* --- MENYU (Haqqımızda stili + Neon) --- */
         .menu-container { margin-top: 100px; }
-        .menu { display: flex; justify-content: center; list-style: none; padding: 0; }
+        .menu { 
+    display: flex; 
+    justify-content: center; /* DƏYİŞİLDİ: Menyu təbii şəkildə mərkəzdə və ikinci səhifə ilə eyni yerdə duracaq */
+    list-style: none; 
+    padding: 0; 
+    margin-left: 0; /* Əgər mənfi margin varsa, ləğv edilir */
+}
         
         .menu li {
             width: 125px; /* DÜZƏLİŞ: Menyu eni ana səhifəyə uyğun (125px) */
