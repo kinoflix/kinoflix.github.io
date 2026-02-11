@@ -1835,3 +1835,89 @@ function sharePlayer(){
     window.open(whatsappUrl, '_blank');
   }
 }
+
+/* ===========================
+   Vidmody Handler
+   =========================== */
+(function() {
+    let vidmodyElement = null;
+
+    // Modalı bir dəfə yaradırıq
+    function initVidmodyModal() {
+        if (vidmodyElement) return vidmodyElement;
+
+        vidmodyElement = document.createElement('div');
+        vidmodyElement.className = 'vm-overlay';
+        vidmodyElement.innerHTML = `
+            <div class="vm-sheet">
+                <div class="vm-header">
+                    <button class="vm-close-btn" id="vmClose">✕</button>
+                    <div class="vm-title-group">
+                        <div class="vm-title" id="vmTitle">Vidmody Player</div>
+                        <div id="vmSub" style="font-size:12px; color:var(--muted); margin-top:2px;"></div>
+                    </div>
+                    <div class="vm-share-box" style="width:40px; text-align:right;">
+                        <button onclick="sharePlayer()" style="background:none; border:none; color:var(--text); cursor:pointer;">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="vm-body">
+                    <iframe class="vm-iframe" id="vmIframe" allowfullscreen allow="autoplay; fullscreen"></iframe>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(vidmodyElement);
+
+        // Bağlama hadisələri
+        vidmodyElement.querySelector('#vmClose').onclick = closeVidmody;
+        vidmodyElement.onclick = (e) => { if (e.target === vidmodyElement) closeVidmody(); };
+
+        return vidmodyElement;
+    }
+
+    function openVidmody(movie, src) {
+        const modal = initVidmodyModal();
+        const iframe = modal.querySelector('#vmIframe');
+        const title = modal.querySelector('#vmTitle');
+        const sub = modal.querySelector('#vmSub');
+
+        title.textContent = movie.title || "Video";
+        sub.textContent = (movie.year || movie.genre) ? `${movie.year || ''} ${movie.genre ? '· ' + movie.genre : ''}` : "";
+        iframe.src = src;
+
+        modal.style.display = 'flex';
+        if (typeof lockBodyScroll === 'function') lockBodyScroll();
+    }
+
+    function closeVidmody() {
+        if (!vidmodyElement) return;
+        vidmodyElement.style.display = 'none';
+        vidmodyElement.querySelector('#vmIframe').src = '';
+        if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+        window.history.pushState({ movieId: null }, document.title, window.location.pathname);
+    }
+
+    // openPlayer funksiyasını Vidmody üçün filtr edirik
+    const hookPlayer = setInterval(() => {
+        if (typeof window.openPlayer === 'function') {
+            const originalOpen = window.openPlayer;
+            window.openPlayer = function(movie) {
+                const url = (movie && (movie.src || movie.url)) ? (movie.src || movie.url) : String(movie || '');
+                
+                if (url.includes('vidmody.com')) {
+                    openVidmody(movie, url);
+                    return; // Vidmody-dirsə burada dayandır
+                }
+                
+                // Vidmody deyilsə original funksiyanı (ok.ru və s.) çağır
+                return originalOpen(movie);
+            };
+            clearInterval(hookPlayer);
+        }
+    }, 100);
+})();
