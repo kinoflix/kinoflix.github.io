@@ -574,3 +574,175 @@ header{
   max-height: calc(100vh - 80px); /* safe default: viewport minus header+margins */
   object-fit: contain;
 }
+
+  /* =========================================
+   VİDMODY PLAYER - DESIGN
+   ========================================= */
+
+/* Overlay - Arxa fon qaraltması */
+.vm-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(2,6,23,0.85), rgba(2,6,23,0.98));
+    z-index: 99999;
+    backdrop-filter: blur(8px);
+}
+
+/* Modal Paneli */
+.vm-sheet {
+    width: 52%;
+    max-width: 1100px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--surface) !important;
+    box-shadow: var(--card-sh);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Header - Başlıq hissəsi */
+.vm-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    gap: 12px;
+}
+
+/* Başlıq və İl mərkəzləşdirmə */
+.vm-title-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+.vm-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#vmSub {
+    font-size: 13px !important;
+    color: var(--muted) !important;
+    margin-top: 4px !important;
+    font-weight: 400;
+}
+
+/* --- X (BAĞLA) BUTONU: Tamamilə sadə (Xəttsiz) --- */
+.vm-close-btn {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    color: var(--text) !important;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    transition: opacity 0.1s;
+    flex-shrink: 0;
+}
+
+.vm-close-btn:hover {
+    opacity: 0.6;
+}
+
+/* --- SHARE BUTONU: Dərhal yanan yaşıl/mavi kənar xətt --- */
+.vm-share-box {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+}
+
+.vm-share-box button {
+    display: inline-grid !important;
+    place-items: center;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+    background: var(--surface) !important;
+    border: 1px solid rgba(255, 255, 255, 0.03) !important;
+    cursor: pointer !important;
+    color: var(--text) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transition: none !important; /* Anında reaksiya üçün */
+    box-sizing: border-box !important;
+    outline: none !important;
+}
+
+.vm-share-box button:hover {
+    background: var(--surface) !important;
+    /* Sıxılma problemini həll edən hamar kənar xətt */
+    box-shadow: 0 0 0 2px var(--accent) !important;
+    border-color: transparent !important;
+}
+
+.vm-share-box button svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Video Sahəsi (Aspect Ratio 16:9) */
+.vm-body {
+    width: 100%;
+    position: relative;
+    background: #000;
+    padding-bottom: 56.25%;
+    height: 0;
+}
+
+.vm-iframe {
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    border: none;
+}
+
+/* --- Responsiv Tənzimləmələr --- */
+@media (max-width: 768px) {
+    .vm-sheet { 
+        width: 100%; 
+        border-radius: 0; 
+        max-height: 100vh;
+    }
+    .vm-overlay { padding: 0; }
+    .vm-header { padding: 8px 12px; }
+    .vm-title { font-size: 14px; }
+    #vmSub { font-size: 12px !important; }
+    
+    .vm-share-box button, 
+    .vm-close-btn { 
+        width: 40px !important; 
+        height: 40px !important; 
+    }
+}
+
+/* Masaüstü üçün mərkəzləmə korreksiyası */
+@media (min-width: 769px) {
+    .vm-overlay { transform: translateX(-6px); }
+}
