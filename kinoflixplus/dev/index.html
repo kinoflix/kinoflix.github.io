@@ -595,166 +595,127 @@ body[data-theme="light"] #themeToggle:hover {
     </div>
 
     <script>
+    // 1. Dəyişənlərin Təyini
+    const html = document.getElementById('html');
+    const css = document.getElementById('css');
+    const js = document.getElementById('js');
+    const output = document.getElementById('output');
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
 
-        const html = document.getElementById('html');
+    // --- TEMA SİSTEMİ (FLIX-THEME) ---
 
-        const css = document.getElementById('css');
-
-        const js = document.getElementById('js');
-
-        const output = document.getElementById('output');
-
-        const themeToggle = document.getElementById('themeToggle');
-
-        const body = document.body;
-
-        function updateOutput() {
-
-            const source = `
-
-                <!DOCTYPE html>
-
-                <html>
-
-                <head>
-
-                    <style>${css.value}</style>
-
-                </head>
-
-                <body>
-
-                    ${html.value}
-
-                    <script>${js.value}<\/script>
-
-                </body>
-
-                </html>
-
-            `;
-
-            output.srcdoc = source;
-
+    // 2. Temanı tətbiq edən əsas funksiya
+    function applyTheme(theme) {
+        // Body atributunu dəyiş
+        body.setAttribute('data-theme', theme);
+        
+        // Yaddaşa 'flix-theme' adı ilə yaz (Bütün sayt üçün ortaq)
+        localStorage.setItem('flix-theme', theme);
+        
+        // İkonu dəyiş
+        const icon = themeToggle.querySelector('i');
+        if (icon) {
+            icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         }
+    }
 
-        html.addEventListener('input', updateOutput);
+    // 3. Səhifə açılanda yaddaşdakı temanı oxu
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedTheme = localStorage.getItem('flix-theme') || 'dark';
+        applyTheme(savedTheme);
+        // İlk açılışda önizləməni (preview) işə sal
+        updateOutput();
+    });
 
-        css.addEventListener('input', updateOutput);
+    // 4. Düyməyə basanda temanı dəyiş
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+    });
 
-        js.addEventListener('input', updateOutput);
+    // --- EDİTOR FUNKSİONALLIĞI ---
 
-        themeToggle.addEventListener('click', () => {
+    // 5. Kodu İframe-də göstərən funksiya
+    function updateOutput() {
+        const source = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>${css.value}</style>
+            </head>
+            <body>
+                ${html.value}
+                <script>${js.value}<\/script>
+            </body>
+            </html>
+        `;
+        output.srcdoc = source;
+    }
 
-            const isDark = body.getAttribute('data-theme') === 'dark';
+    // 6. Hər hərf yazılanda yenilə
+    html.addEventListener('input', updateOutput);
+    css.addEventListener('input', updateOutput);
+    js.addEventListener('input', updateOutput);
 
-            const icon = themeToggle.querySelector('i');
+    // --- KÖMƏKÇİ DÜYMƏLƏR (ŞABLON, KOPYALA, YÜKLƏ) ---
 
-            if (isDark) {
+    // Şablon (Template) düymələri
+    document.querySelectorAll('.template-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.dataset.target;
+            const textarea = document.getElementById(targetId);
+            
+            const templates = {
+                html: '<div class="card">\n  <h1>Salam KINOFLIX+</h1>\n  <p>Kodlama sahəsinə xoş gəldiniz!</p>\n  <button id="btn">Mənə Kliklə</button>\n</div>',
+                css: 'body {\n  font-family: sans-serif;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: 100vh;\n  background: #f0f2f5;\n}\n.card {\n  background: white;\n  padding: 2rem;\n  border-radius: 12px;\n  box-shadow: 0 4px 12px rgba(0,0,0,0.1);\n  text-align: center;\n}\nh1 { color: #1db954; }\nbutton {\n  background: #1db954;\n  color: white;\n  border: none;\n  padding: 10px 20px;\n  border-radius: 20px;\n  cursor: pointer;\n  margin-top: 10px;\n}',
+                js: 'document.getElementById("btn").addEventListener("click", () => {\n  alert("Kodun əla işləyir! 🚀");\n});'
+            };
 
-                body.setAttribute('data-theme', 'light');
-
-                icon.className = 'fa-solid fa-moon';
-
-            } else {
-
-                body.setAttribute('data-theme', 'dark');
-
-                icon.className = 'fa-solid fa-sun';
-
-            }
-
+            textarea.value = templates[targetId];
+            updateOutput();
         });
+    });
 
-        // Copy, Template ve Download funksiyaları orijinal koddakı kimi saxlanıldı
+    // Kopyalama (Copy) düymələri
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.dataset.target;
+            const textarea = document.getElementById(targetId);
+            const icon = btn.querySelector('i');
 
-        document.querySelectorAll('.template-btn').forEach(btn => {
-
-            btn.addEventListener('click', () => {
-
-                const targetId = btn.dataset.target;
-
-                const textarea = document.getElementById(targetId);
-
-                const templates = {
-
-                    html: '<div class="card">\n  <h1>Salam KINOFLIX+</h1>\n  <p>Kodlama sahəsinə xoş gəldiniz!</p>\n  <button id="btn">Mənə Kliklə</button>\n</div>',
-
-                    css: 'body {\n  font-family: sans-serif;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: 100vh;\n  background: #f0f2f5;\n}\n.card {\n  background: white;\n  padding: 2rem;\n  border-radius: 12px;\n  box-shadow: 0 4px 12px rgba(0,0,0,0.1);\n  text-align: center;\n}\nh1 { color: #1db954; }\nbutton {\n  background: #1db954;\n  color: white;\n  border: none;\n  padding: 10px 20px;\n  border-radius: 20px;\n  cursor: pointer;\n  margin-top: 10px;\n}',
-
-                    js: 'document.getElementById("btn").addEventListener("click", () => {\n  alert("Kodun əla işləyir! 🚀");\n});'
-
-                };
-
-                textarea.value = templates[targetId];
-
-                updateOutput();
-
+            textarea.select();
+            navigator.clipboard.writeText(textarea.value).then(() => {
+                icon.className = 'fa-solid fa-check';
+                textarea.parentElement.classList.add('blink-green');
+                
+                setTimeout(() => {
+                    icon.className = 'fa-solid fa-copy';
+                    textarea.parentElement.classList.remove('blink-green');
+                }, 2000);
             });
-
         });
+    });
 
-        document.querySelectorAll('.copy-btn').forEach(btn => {
+    // Yükləmə (Download) düymələri
+    document.querySelectorAll('.download-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.dataset.target;
+            const filename = btn.dataset.filename;
+            const textarea = document.getElementById(targetId);
 
-            btn.addEventListener('click', () => {
+            const blob = new Blob([textarea.value], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
 
-                const targetId = btn.dataset.target;
-
-                const textarea = document.getElementById(targetId);
-
-                const icon = btn.querySelector('i');
-
-                textarea.select();
-
-                navigator.clipboard.writeText(textarea.value).then(() => {
-
-                    icon.className = 'fa-solid fa-check';
-
-                    textarea.parentElement.classList.add('blink-green');
-
-                    setTimeout(() => {
-
-                        icon.className = 'fa-solid fa-copy';
-
-                        textarea.parentElement.classList.remove('blink-green');
-
-                    }, 2000);
-
-                });
-
-            });
-
+            textarea.parentElement.classList.add('blink-red');
+            setTimeout(() => textarea.parentElement.classList.remove('blink-red'), 2000);
         });
-
-        document.querySelectorAll('.download-btn').forEach(btn => {
-
-            btn.addEventListener('click', () => {
-
-                const targetId = btn.dataset.target;
-
-                const filename = btn.dataset.filename;
-
-                const textarea = document.getElementById(targetId);
-
-                const blob = new Blob([textarea.value], { type: 'text/plain' });
-
-                const link = document.createElement('a');
-
-                link.href = URL.createObjectURL(blob);
-
-                link.download = filename;
-
-                link.click();
-
-                textarea.parentElement.classList.add('blink-red');
-
-                setTimeout(() => textarea.parentElement.classList.remove('blink-red'), 2000);
-
-            });
-
-        });
-
-    </script>
+    });
+</script>
 
 </body>
 
