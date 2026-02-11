@@ -313,7 +313,7 @@
 
         function applyTheme(theme) {
             body.setAttribute('data-theme', theme);
-            localStorage.setItem('hub-theme', theme);
+            localStorage.setItem('flix-theme', theme);
             const icon = themeToggle.querySelector('i');
             icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         }
@@ -324,7 +324,7 @@
             applyTheme(newTheme);
         });
 
-        const savedTheme = localStorage.getItem('hub-theme') || 'dark';
+        const savedTheme = localStorage.getItem('flix-theme') || 'dark';
         applyTheme(savedTheme);
     </script>
 </body>
