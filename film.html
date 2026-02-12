@@ -2475,111 +2475,65 @@ function sharePlayer(){
   }
 }
 
-  (function() {
-    let vmOverlay = null;
+  /* ============================================================
+   VİDMODY HANDLER - INJECTION METHOD (NO MODAL, NO BLOCK)
+   ============================================================ */
+(function() {
+    // 1. Videonun açılacağı konteynerin ID-si
+    const TARGET_ID = '#player_holder'; 
 
-    function createVidmodyModal() {
-        if (vmOverlay) return vmOverlay;
+    function openVidmodyNative(movie, url) {
+        const container = document.querySelector(TARGET_ID);
+        
+        if (!container) {
+            console.error("Hədəf konteyner (#player_holder) tapılmadı!");
+            return false; 
+        }
 
-        vmOverlay = document.createElement('div');
-        vmOverlay.className = 'vm-overlay';
-        vmOverlay.innerHTML = `
-            <div class="vm-sheet">
-                <div class="vm-header">
-                    <button class="vm-btn" id="vmClose" aria-label="Bağla">✕</button>
-                    <div class="vm-title-group">
-                        <div class="vm-title" id="vmTitle">Video</div>
-                    </div>
-                    <button class="vm-btn" id="vmShare" aria-label="Paylaş">
-                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-                    </button>
-                </div>
-                <div class="vm-body">
-                    <iframe class="vm-iframe" id="vmIframe" allowfullscreen allow="autoplay; fullscreen"></iframe>
-                </div>
+        // Linki embed formatına çeviririk (Mobildə daha sürətli və bloksuz açılır)
+        // Məsələn: /vs/tt123 -> /embed/tt123
+        let embedUrl = url.replace('/vs/', '/embed/');
+
+        // Konteyneri təmizləyirik və iframe-i yerləşdiririk
+        container.innerHTML = `
+            <div style="position:relative; width:100%; padding-bottom:56.25%; background:#000; border-radius:12px; overflow:hidden;">
+                <iframe 
+                    src="${embedUrl}" 
+                    style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" 
+                    allowfullscreen="true" 
+                    allow="autoplay; fullscreen; encrypted-media"
+                    id="vidmodyIframe">
+                </iframe>
             </div>
         `;
+
+        // Mobildə istifadəçini videonun olduğu yerə aparırıq
+        container.scrollIntoView({ behavior: 'smooth', block: 'center' });
         
-        // Body-nin ən sonuna əlavə edirik
-        document.body.appendChild(vmOverlay);
-
-        // Event Listeners - Touch dəstəyi ilə
-        const closeBtn = vmOverlay.querySelector('#vmClose');
-        const shareBtn = vmOverlay.querySelector('#vmShare');
-
-        const closeAction = (e) => {
-            e.preventDefault(); 
-            e.stopPropagation();
-            closeVidmody();
-        };
-
-        const shareAction = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if(window.sharePlayer) window.sharePlayer();
-        };
-
-        // Click və Touchstart ikisi də olsun
-        closeBtn.addEventListener('click', closeAction);
-        closeBtn.addEventListener('touchstart', closeAction, {passive: false});
-
-        shareBtn.addEventListener('click', shareAction);
-        shareBtn.addEventListener('touchstart', shareAction, {passive: false});
-
-        vmOverlay.addEventListener('click', (e) => {
-            if (e.target === vmOverlay) closeVidmody();
-        });
-
-        return vmOverlay;
+        // Əgər saytında pleyer açılarkən başqa modallar (ok.ru modalı) avtomatik açılırsa, onları bağlamalıyıq
+        if (typeof window.closePlayer === 'function') {
+            window.closePlayer(); 
+        }
+        
+        return true;
     }
 
-    function openVidmody(movie, src) {
-        const modal = createVidmodyModal();
-        const iframe = modal.querySelector('#vmIframe');
-        
-        // Başlığı yaz
-        modal.querySelector('#vmTitle').textContent = movie.title || "Video";
-
-        // 1. Öncə modalı göstər (Render başlasın)
-        modal.style.display = 'flex';
-        
-        // 2. Kiçik gecikmə ilə iframe-i yüklə (Mobil brauzer render etsin deyə)
-        setTimeout(() => {
-            iframe.src = src;
-        }, 50);
-
-        if (typeof lockBodyScroll === 'function') lockBodyScroll();
-    }
-
-    function closeVidmody() {
-        if (!vmOverlay) return;
-        
-        // Öncə iframe-i öldür (Səsi kəs)
-        const iframe = vmOverlay.querySelector('#vmIframe');
-        iframe.src = 'about:blank';
-        iframe.removeAttribute('src'); // Tam təmizlə
-        
-        // Sonra gizlət
-        vmOverlay.style.display = 'none';
-
-        if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
-        try { window.history.pushState({ movieId: null }, document.title, window.location.pathname); } catch(e){}
-    }
-
-    // Handler Hook
-    const checker = setInterval(() => {
+    // openPlayer funksiyasını ələ keçiririk
+    const hook = setInterval(() => {
         if (typeof window.openPlayer === 'function') {
             const originalOpen = window.openPlayer;
+            
             window.openPlayer = function(movie) {
                 const url = (movie && (movie.src || movie.url)) ? (movie.src || movie.url) : String(movie || '');
                 
                 if (url.includes('vidmody.com')) {
-                    openVidmody(movie, url);
-                    return;
+                    return openVidmodyNative(movie, url);
                 }
+                
+                // Vidmody deyilsə, saytın öz orijinal pleyer sistemini (ok.ru və s.) işlət
                 return originalOpen(movie);
             };
-            clearInterval(checker);
+            clearInterval(hook);
         }
     }, 100);
 })();
