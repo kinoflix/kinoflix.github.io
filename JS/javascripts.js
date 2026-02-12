@@ -1836,88 +1836,170 @@ function sharePlayer(){
   }
 }
 
-/* ===========================
-   Vidmody Handler
-   =========================== */
+  /* ============================================================
+   VİDMODY SMART HANDLER (Hybrid Method)
+   Desktop: Modal (Səliqəli)
+   Mobile:  Direct Native Player (100% İşlək)
+   ============================================================ */
+
 (function() {
-    let vidmodyElement = null;
+    // 1. CSS İLƏ DİZAYN (Eyni stil saxlanılır)
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .vm-overlay {
+            position: fixed !important; inset: 0 !important; display: none;
+            align-items: center; justify-content: center;
+            background: linear-gradient(180deg, rgba(2,6,23,0.85), rgba(2,6,23,0.98)) !important;
+            z-index: 9999999 !important; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        }
+        .vm-sheet {
+            width: 52%; max-width: 1100px; border-radius: 12px; overflow: hidden;
+            background: #0f172a !important; display: flex; flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .vm-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 16px; background: #0f172a; border-bottom: 1px solid rgba(255, 255, 255, 0.03); gap: 12px;
+        }
+        .vm-title-group {
+            flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; overflow: hidden;
+        }
+        .vm-title { font-weight: 700; font-size: 16px; color: #fff; margin: 0; white-space: nowrap; text-overflow: ellipsis; }
+        #vmSub { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+        
+        .vm-close-btn {
+            background: transparent; border: none; color: #fff; font-size: 24px;
+            cursor: pointer; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    // Modalı bir dəfə yaradırıq
-    function initVidmodyModal() {
-        if (vidmodyElement) return vidmodyElement;
+        .vm-share-box button {
+            width: 44px !important; height: 44px !important; border-radius: 12px !important;
+            background: transparent !important; border: 1px solid transparent !important;
+            color: #fff !important; cursor: pointer !important;
+            display: flex !important; align-items: center; justify-content: center;
+            transition: all 0.2s ease; outline: none !important;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .vm-share-box button:hover, .vm-share-box button:active {
+            border-color: var(--accent, #3b82f6) !important;
+            box-shadow: 0 0 0 1px var(--accent, #3b82f6) !important;
+            background: rgba(255, 255, 255, 0.03) !important;
+        }
+        
+        .vm-body { width: 100%; position: relative; background: #000; padding-bottom: 56.25%; height: 0; }
+        .vm-iframe, .vm-video-native { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
+        @media (max-width: 768px) {
+            .vm-sheet { width: 100% !important; height: 100% !important; border-radius: 0; justify-content: center; }
+            .vm-body { padding-bottom: 75%; }
+        }
+    `;
+    document.head.appendChild(style);
 
-        vidmodyElement = document.createElement('div');
-        vidmodyElement.className = 'vm-overlay';
-        vidmodyElement.innerHTML = `
-            <div class="vm-sheet">
-                <div class="vm-header">
-                    <button class="vm-close-btn" id="vmClose">✕</button>
-                    <div class="vm-title-group">
-                        <div class="vm-title" id="vmTitle">Vidmody Player</div>
-                        <div id="vmSub" style="font-size:12px; color:var(--muted); margin-top:2px;"></div>
-                    </div>
-                    <div class="vm-share-box" style="width:40px; text-align:right;">
-                        <button onclick="sharePlayer()" style="background:none; border:none; color:var(--text); cursor:pointer;">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle>
-                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                            </svg>
-                        </button>
-                    </div>
+    // 2. MODAL ELEMENTLƏRİ (Native Video Dəstəyi ilə)
+    const modal = document.createElement('div');
+    modal.className = 'vm-overlay';
+    modal.innerHTML = `
+        <div class="vm-sheet">
+            <div class="vm-header">
+                <button class="vm-close-btn" id="vmClose">✕</button>
+                <div class="vm-title-group">
+                    <div class="vm-title" id="vmTitle">Video</div>
+                    <div id="vmSub"></div>
                 </div>
-                <div class="vm-body">
-                    <iframe class="vm-iframe" id="vmIframe" allowfullscreen allow="autoplay; fullscreen"></iframe>
-                </div>
+                <div class="vm-share-box"><button id="vmShare">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                </button></div>
             </div>
-        `;
+            <div class="vm-body" id="vmPlayerContainer">
+                </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
 
-        document.body.appendChild(vidmodyElement);
-
-        // Bağlama hadisələri
-        vidmodyElement.querySelector('#vmClose').onclick = closeVidmody;
-        vidmodyElement.onclick = (e) => { if (e.target === vidmodyElement) closeVidmody(); };
-
-        return vidmodyElement;
-    }
-
-    function openVidmody(movie, src) {
-        const modal = initVidmodyModal();
-        const iframe = modal.querySelector('#vmIframe');
-        const title = modal.querySelector('#vmTitle');
-        const sub = modal.querySelector('#vmSub');
-
-        title.textContent = movie.title || "Video";
-        sub.textContent = (movie.year || movie.genre) ? `${movie.year || ''} ${movie.genre ? '· ' + movie.genre : ''}` : "";
-        iframe.src = src;
-
-        modal.style.display = 'flex';
-        if (typeof lockBodyScroll === 'function') lockBodyScroll();
-    }
-
-    function closeVidmody() {
-        if (!vidmodyElement) return;
-        vidmodyElement.style.display = 'none';
-        vidmodyElement.querySelector('#vmIframe').src = '';
+    const closeVid = () => {
+        modal.style.display = 'none';
+        document.getElementById('vmPlayerContainer').innerHTML = '';
         if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
-        window.history.pushState({ movieId: null }, document.title, window.location.pathname);
-    }
+    };
 
-    // openPlayer funksiyasını Vidmody üçün filtr edirik
-    const hookPlayer = setInterval(() => {
+    modal.querySelector('#vmClose').onclick = closeVid;
+    modal.onclick = (e) => { if(e.target === modal) closeVid(); };
+    modal.querySelector('#vmShare').onclick = (e) => { 
+        e.stopPropagation();
+        if(window.sharePlayer) window.sharePlayer(); 
+    };
+
+    // 3. ƏSAS AÇMA FUNKSİYASI
+    window.openUnifiedPlayer = function(movie, src) {
+        const container = document.getElementById('vmPlayerContainer');
+        modal.querySelector('#vmTitle').textContent = movie.title || "Video";
+        modal.querySelector('#vmSub').textContent = movie.year || "";
+        modal.style.display = 'flex';
+        container.innerHTML = ''; // Təmizlə
+
+        if (src.includes('.m3u8')) {
+            // Twitter və digər M3U8 linkləri üçün Native Video Player
+            const video = document.createElement('video');
+            video.className = 'vm-video-native';
+            video.controls = true;
+            video.autoplay = true;
+            video.setAttribute('playsinline', 'true');
+            container.appendChild(video);
+
+            // Brauzer m3u8-i birbaşa tanıyırsa (Safari)
+            if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = src;
+            } 
+            // Brauzer tanımırsa (Chrome/Android) HLS.js istifadə edirik
+            else if (typeof Hls !== 'undefined') {
+                const hls = new Hls();
+                hls.loadSource(src);
+                hls.attachMedia(video);
+            } else {
+                // HLS.js kitabxanası yoxdursa, dinamik yüklə
+                const script = document.createElement('script');
+                script.src = "https://cdn.jsdelivr.net/npm/hls.js@latest";
+                script.onload = () => {
+                    const hls = new Hls();
+                    hls.loadSource(src);
+                    hls.attachMedia(video);
+                };
+                document.head.appendChild(script);
+            }
+        } else {
+            // Vidmody və digər iframe linkləri üçün
+            const iframe = document.createElement('iframe');
+            iframe.className = 'vm-iframe';
+            iframe.allow = "autoplay; fullscreen";
+            iframe.allowFullscreen = true;
+            container.appendChild(iframe);
+            setTimeout(() => { iframe.src = src; }, 150);
+        }
+
+        if (typeof lockBodyScroll === 'function') lockBodyScroll();
+    };
+
+    // 4. PLAYER HOOK (Twimg və Vidmody bir yerdə)
+    const hook = setInterval(() => {
         if (typeof window.openPlayer === 'function') {
-            const originalOpen = window.openPlayer;
+            const original = window.openPlayer;
             window.openPlayer = function(movie) {
                 const url = (movie && (movie.src || movie.url)) ? (movie.src || movie.url) : String(movie || '');
                 
-                if (url.includes('vidmody.com')) {
-                    openVidmody(movie, url);
-                    return; // Vidmody-dirsə burada dayandır
+                // Həm Vidmody, həm də Twimg m3u8 linklərini eyni pəncərədə açırıq
+                if (url.includes('vidmody.com') || url.includes('twimg.com') || url.includes('.m3u8')) {
+                    window.openUnifiedPlayer(movie, url);
+                    return;
                 }
-                
-                // Vidmody deyilsə original funksiyanı (ok.ru və s.) çağır
-                return originalOpen(movie);
+                return original(movie);
             };
-            clearInterval(hookPlayer);
+            clearInterval(hook);
         }
     }, 100);
 })();
