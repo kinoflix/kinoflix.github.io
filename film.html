@@ -2476,61 +2476,89 @@ function sharePlayer(){
 }
 
   /* ============================================================
-   VİDMODY HANDLER - INJECTION METHOD (NO MODAL, NO BLOCK)
+   VİDMODY SMART HANDLER (Hybrid Method)
+   Desktop: Modal (Səliqəli)
+   Mobile:  Direct Native Player (100% İşlək)
    ============================================================ */
+
 (function() {
-    // 1. Videonun açılacağı konteynerin ID-si
-    const TARGET_ID = '#player_holder'; 
-
-    function openVidmodyNative(movie, url) {
-        const container = document.querySelector(TARGET_ID);
-        
-        if (!container) {
-            console.error("Hədəf konteyner (#player_holder) tapılmadı!");
-            return false; 
-        }
-
-        // Linki embed formatına çeviririk (Mobildə daha sürətli və bloksuz açılır)
-        // Məsələn: /vs/tt123 -> /embed/tt123
-        let embedUrl = url.replace('/vs/', '/embed/');
-
-        // Konteyneri təmizləyirik və iframe-i yerləşdiririk
-        container.innerHTML = `
-            <div style="position:relative; width:100%; padding-bottom:56.25%; background:#000; border-radius:12px; overflow:hidden;">
-                <iframe 
-                    src="${embedUrl}" 
-                    style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" 
-                    allowfullscreen="true" 
-                    allow="autoplay; fullscreen; encrypted-media"
-                    id="vidmodyIframe">
-                </iframe>
-            </div>
-        `;
-
-        // Mobildə istifadəçini videonun olduğu yerə aparırıq
-        container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // Əgər saytında pleyer açılarkən başqa modallar (ok.ru modalı) avtomatik açılırsa, onları bağlamalıyıq
-        if (typeof window.closePlayer === 'function') {
-            window.closePlayer(); 
-        }
-        
-        return true;
+    // 1. Cihazın mobil olub-olmadığını yoxlayırıq
+    function isMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
     }
 
-    // openPlayer funksiyasını ələ keçiririk
+    // 2. Desktop üçün Modal Yaradan Funksiya
+    let desktopModal = null;
+    function openDesktopModal(movie, url) {
+        if (!desktopModal) {
+            desktopModal = document.createElement('div');
+            // Iframe bloklanmaması üçün 'referrerpolicy' və 'sandbox' əlavə edirik
+            desktopModal.innerHTML = `
+                <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:999999; display:flex; align-items:center; justify-content:center;">
+                    <div style="width:80%; max-width:1000px; background:#000; position:relative; box-shadow:0 0 50px rgba(0,0,0,0.8); border-radius:8px; overflow:hidden;">
+                        <div style="padding:10px; background:#111; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="color:#fff; font-weight:bold; font-size:16px;">${movie.title || 'Video'}</span>
+                            <button id="dmClose" style="background:none; border:none; color:#fff; font-size:24px; cursor:pointer;">✕</button>
+                        </div>
+                        <div style="position:relative; padding-bottom:56.25%; height:0;">
+                            <iframe id="dmIframe" 
+                                style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" 
+                                allowfullscreen 
+                                referrerpolicy="no-referrer"
+                                allow="autoplay; encrypted-media; picture-in-picture">
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(desktopModal);
+            
+            // Bağlamaq üçün
+            const closeBtn = desktopModal.querySelector('#dmClose');
+            const closeAction = () => {
+                desktopModal.style.display = 'none';
+                desktopModal.querySelector('#dmIframe').src = '';
+            };
+            closeBtn.onclick = closeAction;
+            desktopModal.onclick = (e) => { if(e.target === desktopModal) closeAction(); };
+        }
+
+        const iframe = desktopModal.querySelector('#dmIframe');
+        // Vidmody linkini 'embed' formatına salırıq (daha sürətli açılır)
+        let embedUrl = url.replace('/vs/', '/embed/'); 
+        
+        iframe.src = embedUrl;
+        desktopModal.style.display = 'flex';
+    }
+
+    // 3. Əsas İdarəetmə Funksiyası
     const hook = setInterval(() => {
         if (typeof window.openPlayer === 'function') {
             const originalOpen = window.openPlayer;
             
             window.openPlayer = function(movie) {
                 const url = (movie && (movie.src || movie.url)) ? (movie.src || movie.url) : String(movie || '');
-                
-                if (url.includes('vidmody.com')) {
-                    return openVidmodyNative(movie, url);
+
+                // Yalnız Vidmody və ya m3u8 linkləri üçün
+                if (url.includes('vidmody.com') || url.includes('.m3u8')) {
+                    
+                    if (isMobile()) {
+                        /* --- MOBİL ÜÇÜN HƏLL: YENİ TAB --- */
+                        // Mobildə heç bir iframe istifadə etmirik.
+                        // Birbaşa pleyeri yeni təmiz səhifədə açırıq.
+                        // Bu, iOS və Android-də ən stabil yoldur.
+                        
+                        let mobileUrl = url.replace('/vs/', '/embed/'); // Embed formatı daha təmizdir
+                        window.open(mobileUrl, '_blank');
+                        return; // Funksiyanı burada dayandırırıq
+                    } else {
+                        /* --- DESKTOP ÜÇÜN HƏLL: MODAL --- */
+                        openDesktopModal(movie, url);
+                        return;
+                    }
                 }
-                
-                // Vidmody deyilsə, saytın öz orijinal pleyer sistemini (ok.ru və s.) işlət
+
+                // Digər saytlar (ok.ru və s.) köhnə qaydada işləsin
                 return originalOpen(movie);
             };
             clearInterval(hook);
