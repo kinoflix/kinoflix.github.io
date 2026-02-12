@@ -1843,9 +1843,12 @@ function sharePlayer(){
    ============================================================ */
 
 (function() {
-    // 1. CSS İLƏ DİZAYN (Eyni stil saxlanılır)
+    // 1. CSS-İ BİRBAŞA SAYTA ƏLAVƏ EDİRİK (Sənin dizaynın + Mobil Fix)
     const style = document.createElement('style');
+    // ... (kodun əvvəli eyni qalır)
+
     style.innerHTML = `
+        /* Digər stillər eyni qalır... */
         .vm-overlay {
             position: fixed !important; inset: 0 !important; display: none;
             align-items: center; justify-content: center;
@@ -1866,39 +1869,38 @@ function sharePlayer(){
         }
         .vm-title { font-weight: 700; font-size: 16px; color: #fff; margin: 0; white-space: nowrap; text-overflow: ellipsis; }
         #vmSub { font-size: 12px; color: #94a3b8; margin-top: 4px; }
-        
         .vm-close-btn {
             background: transparent; border: none; color: #fff; font-size: 24px;
             cursor: pointer; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
-            -webkit-tap-highlight-color: transparent;
         }
 
+        /* SHARE BUTONU YENİLƏNMİŞ HİSSƏ */
         .vm-share-box button {
-            width: 44px !important; height: 44px !important; border-radius: 12px !important;
-            background: transparent !important; border: 1px solid transparent !important;
-            color: #fff !important; cursor: pointer !important;
-            display: flex !important; align-items: center; justify-content: center;
-            transition: all 0.2s ease; outline: none !important;
-            -webkit-tap-highlight-color: transparent;
+            width: 44px; height: 44px; border-radius: 12px; 
+            background: transparent !important; /* Arxa fon şəffaf */
+            border: 1px solid transparent !important; /* Xətt normalda yoxdur */
+            color: #fff; cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center;
         }
-        
-        .vm-share-box button:hover, .vm-share-box button:active {
-            border-color: var(--accent, #3b82f6) !important;
-            box-shadow: 0 0 0 1px var(--accent, #3b82f6) !important;
-            background: rgba(255, 255, 255, 0.03) !important;
+        .vm-share-box button:hover {
+            border-color: var(--accent, #3b82f6) !important; /* Hover-də görünən rəng (mavi/yaşıl) */
+            box-shadow: 0 0 0 1px var(--accent, #3b82f6); /* Daha kəskin görünməsi üçün */
         }
         
         .vm-body { width: 100%; position: relative; background: #000; padding-bottom: 56.25%; height: 0; }
-        .vm-iframe, .vm-video-native { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .vm-iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         
         @media (max-width: 768px) {
             .vm-sheet { width: 100% !important; height: 100% !important; border-radius: 0; justify-content: center; }
             .vm-body { padding-bottom: 75%; }
         }
     `;
+
+// ... (Stil kodlarının sonu)
     document.head.appendChild(style);
 
-    // 2. MODAL ELEMENTLƏRİ (Native Video Dəstəyi ilə)
+    // 2. MODAL ELEMENTİNİ YARADIRIQ
     const modal = document.createElement('div');
     modal.className = 'vm-overlay';
     modal.innerHTML = `
@@ -1906,7 +1908,7 @@ function sharePlayer(){
             <div class="vm-header">
                 <button class="vm-close-btn" id="vmClose">✕</button>
                 <div class="vm-title-group">
-                    <div class="vm-title" id="vmTitle">Video</div>
+                    <div class="vm-title" id="vmTitle">Yüklənir...</div>
                     <div id="vmSub"></div>
                 </div>
                 <div class="vm-share-box"><button id="vmShare">
@@ -1916,85 +1918,40 @@ function sharePlayer(){
                     </svg>
                 </button></div>
             </div>
-            <div class="vm-body" id="vmPlayerContainer">
-                </div>
+            <div class="vm-body"><iframe class="vm-iframe" id="vmIframe" allowfullscreen allow="autoplay; fullscreen"></iframe></div>
         </div>
     `;
     document.body.appendChild(modal);
 
+    // 3. FUNKSİYALAR
     const closeVid = () => {
         modal.style.display = 'none';
-        document.getElementById('vmPlayerContainer').innerHTML = '';
-        if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+        modal.querySelector('#vmIframe').src = '';
     };
 
     modal.querySelector('#vmClose').onclick = closeVid;
     modal.onclick = (e) => { if(e.target === modal) closeVid(); };
-    modal.querySelector('#vmShare').onclick = (e) => { 
-        e.stopPropagation();
-        if(window.sharePlayer) window.sharePlayer(); 
-    };
+    modal.querySelector('#vmShare').onclick = () => { if(window.sharePlayer) window.sharePlayer(); };
 
-    // 3. ƏSAS AÇMA FUNKSİYASI
-    window.openUnifiedPlayer = function(movie, src) {
-        const container = document.getElementById('vmPlayerContainer');
+    window.openVidmody = function(movie, src) {
         modal.querySelector('#vmTitle').textContent = movie.title || "Video";
         modal.querySelector('#vmSub').textContent = movie.year || "";
+        
         modal.style.display = 'flex';
-        container.innerHTML = ''; // Təmizlə
-
-        if (src.includes('.m3u8')) {
-            // Twitter və digər M3U8 linkləri üçün Native Video Player
-            const video = document.createElement('video');
-            video.className = 'vm-video-native';
-            video.controls = true;
-            video.autoplay = true;
-            video.setAttribute('playsinline', 'true');
-            container.appendChild(video);
-
-            // Brauzer m3u8-i birbaşa tanıyırsa (Safari)
-            if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = src;
-            } 
-            // Brauzer tanımırsa (Chrome/Android) HLS.js istifadə edirik
-            else if (typeof Hls !== 'undefined') {
-                const hls = new Hls();
-                hls.loadSource(src);
-                hls.attachMedia(video);
-            } else {
-                // HLS.js kitabxanası yoxdursa, dinamik yüklə
-                const script = document.createElement('script');
-                script.src = "https://cdn.jsdelivr.net/npm/hls.js@latest";
-                script.onload = () => {
-                    const hls = new Hls();
-                    hls.loadSource(src);
-                    hls.attachMedia(video);
-                };
-                document.head.appendChild(script);
-            }
-        } else {
-            // Vidmody və digər iframe linkləri üçün
-            const iframe = document.createElement('iframe');
-            iframe.className = 'vm-iframe';
-            iframe.allow = "autoplay; fullscreen";
-            iframe.allowFullscreen = true;
-            container.appendChild(iframe);
-            setTimeout(() => { iframe.src = src; }, 150);
-        }
-
-        if (typeof lockBodyScroll === 'function') lockBodyScroll();
+        // Mobildə səs-görüntü sinxronu üçün kiçik gecikmə
+        setTimeout(() => {
+            modal.querySelector('#vmIframe').src = src;
+        }, 100);
     };
 
-    // 4. PLAYER HOOK (Twimg və Vidmody bir yerdə)
+    // 4. OPENPLAYER-İ TUTMAQ
     const hook = setInterval(() => {
         if (typeof window.openPlayer === 'function') {
             const original = window.openPlayer;
             window.openPlayer = function(movie) {
                 const url = (movie && (movie.src || movie.url)) ? (movie.src || movie.url) : String(movie || '');
-                
-                // Həm Vidmody, həm də Twimg m3u8 linklərini eyni pəncərədə açırıq
-                if (url.includes('vidmody.com') || url.includes('twimg.com') || url.includes('.m3u8')) {
-                    window.openUnifiedPlayer(movie, url);
+                if (url.includes('vidmody.com')) {
+                    window.openVidmody(movie, url);
                     return;
                 }
                 return original(movie);
