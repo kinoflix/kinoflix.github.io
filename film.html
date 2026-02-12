@@ -2482,17 +2482,16 @@ function sharePlayer(){
    ============================================================ */
 
 (function() {
-    // 1. Cihazın mobil olub-olmadığını yoxlayırıq
+    // 1. Mobil cihazı təyin edirik
     function isMobile() {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
     }
 
-    // 2. Desktop üçün Modal Yaradan Funksiya
+    // 2. Desktop üçün Modal (Kompüterdə səliqəli görünməsi üçün)
     let desktopModal = null;
     function openDesktopModal(movie, url) {
         if (!desktopModal) {
             desktopModal = document.createElement('div');
-            // Iframe bloklanmaması üçün 'referrerpolicy' və 'sandbox' əlavə edirik
             desktopModal.innerHTML = `
                 <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:999999; display:flex; align-items:center; justify-content:center;">
                     <div style="width:80%; max-width:1000px; background:#000; position:relative; box-shadow:0 0 50px rgba(0,0,0,0.8); border-radius:8px; overflow:hidden;">
@@ -2504,7 +2503,6 @@ function sharePlayer(){
                             <iframe id="dmIframe" 
                                 style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" 
                                 allowfullscreen 
-                                referrerpolicy="no-referrer"
                                 allow="autoplay; encrypted-media; picture-in-picture">
                             </iframe>
                         </div>
@@ -2513,7 +2511,6 @@ function sharePlayer(){
             `;
             document.body.appendChild(desktopModal);
             
-            // Bağlamaq üçün
             const closeBtn = desktopModal.querySelector('#dmClose');
             const closeAction = () => {
                 desktopModal.style.display = 'none';
@@ -2524,41 +2521,36 @@ function sharePlayer(){
         }
 
         const iframe = desktopModal.querySelector('#dmIframe');
-        // Vidmody linkini 'embed' formatına salırıq (daha sürətli açılır)
-        let embedUrl = url.replace('/vs/', '/embed/'); 
-        
-        iframe.src = embedUrl;
+        // BURADA HEÇ BİR DƏYİŞİKLİK ETMİRİK - LİNK EYNİ QALIR
+        iframe.src = url; 
         desktopModal.style.display = 'flex';
     }
 
-    // 3. Əsas İdarəetmə Funksiyası
+    // 3. Əsas Funksiya
     const hook = setInterval(() => {
         if (typeof window.openPlayer === 'function') {
             const originalOpen = window.openPlayer;
             
             window.openPlayer = function(movie) {
+                // Linki alırıq
                 const url = (movie && (movie.src || movie.url)) ? (movie.src || movie.url) : String(movie || '');
 
-                // Yalnız Vidmody və ya m3u8 linkləri üçün
-                if (url.includes('vidmody.com') || url.includes('.m3u8')) {
+                // Vidmody linkidirsə
+                if (url.includes('vidmody.com')) {
                     
                     if (isMobile()) {
-                        /* --- MOBİL ÜÇÜN HƏLL: YENİ TAB --- */
-                        // Mobildə heç bir iframe istifadə etmirik.
-                        // Birbaşa pleyeri yeni təmiz səhifədə açırıq.
-                        // Bu, iOS və Android-də ən stabil yoldur.
-                        
-                        let mobileUrl = url.replace('/vs/', '/embed/'); // Embed formatı daha təmizdir
-                        window.open(mobileUrl, '_blank');
-                        return; // Funksiyanı burada dayandırırıq
+                        /* --- MOBİL ÜÇÜN --- */
+                        // Iframe yox, Overlay yox viaqranı birbaşa açırıq.
+                        // Link /vs/tt1375666 olaraq qalır. Dəyişdirilmir.
+                        window.open(url, '_blank');
+                        return;
                     } else {
-                        /* --- DESKTOP ÜÇÜN HƏLL: MODAL --- */
+                        /* --- DESKTOP ÜÇÜN --- */
                         openDesktopModal(movie, url);
                         return;
                     }
                 }
 
-                // Digər saytlar (ok.ru və s.) köhnə qaydada işləsin
                 return originalOpen(movie);
             };
             clearInterval(hook);
