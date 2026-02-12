@@ -2357,6 +2357,7 @@ function sharePlayer(){
     // 1. CSS-İ BİRBAŞA SAYTA ƏLAVƏ EDİRİK (Sənin dizaynın + Mobil Fix)
     const style = document.createElement('style');
     style.innerHTML = `
+        /* Digər stillər eyni qalır... */
         .vm-overlay {
             position: fixed !important; inset: 0 !important; display: none;
             align-items: center; justify-content: center;
@@ -2381,16 +2382,27 @@ function sharePlayer(){
             background: transparent; border: none; color: #fff; font-size: 24px;
             cursor: pointer; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
         }
+
+        /* SHARE BUTONU YENİLƏNMİŞ HİSSƏ */
         .vm-share-box button {
-            width: 44px; height: 44px; border-radius: 12px; background: #0f172a;
-            border: 1px solid rgba(255, 255, 255, 0.05); color: #fff; cursor: pointer;
+            width: 44px; height: 44px; border-radius: 12px; 
+            background: transparent !important; /* Arxa fon şəffaf */
+            border: 1px solid transparent !important; /* Xətt normalda yoxdur */
+            color: #fff; cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center;
         }
+        .vm-share-box button:hover {
+            border-color: var(--accent, #3b82f6) !important; /* Hover-də görünən rəng (mavi/yaşıl) */
+            box-shadow: 0 0 0 1px var(--accent, #3b82f6); /* Daha kəskin görünməsi üçün */
+        }
+        
         .vm-body { width: 100%; position: relative; background: #000; padding-bottom: 56.25%; height: 0; }
         .vm-iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         
         @media (max-width: 768px) {
             .vm-sheet { width: 100% !important; height: 100% !important; border-radius: 0; justify-content: center; }
-            .vm-body { padding-bottom: 75%; } /* Mobildə videonu bir az böyüdürük */
+            .vm-body { padding-bottom: 75%; }
         }
     `;
     document.head.appendChild(style);
