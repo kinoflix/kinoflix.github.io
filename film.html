@@ -2482,88 +2482,98 @@ function sharePlayer(){
    ============================================================ */
 
 (function() {
-    let vmOverlay = null;
+    let vidmodyElement = null;
 
-    function createModal() {
-        if (vmOverlay) return vmOverlay;
+    function initVidmodyModal() {
+        if (vidmodyElement) return vidmodyElement;
 
-        vmOverlay = document.createElement('div');
-        vmOverlay.className = 'vm-overlay';
-        // CSS-i birbaşa JS daxilində yazıram ki, tam izolyasiya olsun
-        vmOverlay.style.cssText = `
-            position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
-            background: #000; z-index: 9999999; flex-direction: column;
-        `;
-
-        vmOverlay.innerHTML = `
-            <div style="width:100%; height:50px; background:#111; display:flex; align-items:center; justify-content:space-between; padding:0 15px; box-sizing:border-box;">
-                <button id="vmClose" style="background:none; border:none; color:#fff; font-size:24px; cursor:pointer; width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:50%;">✕</button>
-                <div style="color:#fff; font-weight:bold; font-size:14px;" id="vmTitle">Pleyer</div>
-                <button id="vmShare" style="background:none; border:none; color:#fff; width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:50%; cursor:pointer;">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-                </button>
-            </div>
-            <div style="flex:1; width:100%; position:relative; background:#000;">
-                <iframe id="vmIframe" style="width:100%; height:100%; border:none; position:absolute; top:0; left:0;" 
-                    allowfullscreen allow="autoplay; fullscreen"></iframe>
-            </div>
-        `;
-
-        document.body.appendChild(vmOverlay);
-
-        // Düymə Hover Effektləri
-        const btns = vmOverlay.querySelectorAll('button');
-        btns.forEach(b => {
-            b.onmouseenter = () => b.style.background = 'rgba(255,255,255,0.1)';
-            b.onmouseleave = () => b.style.background = 'none';
-        });
-
-        vmOverlay.querySelector('#vmClose').onclick = closePlayer;
-        vmOverlay.querySelector('#vmShare').onclick = () => { if(window.sharePlayer) window.sharePlayer(); };
-
-        return vmOverlay;
-    }
-
-    function openPlayer(movie, url) {
-        const modal = createModal();
-        const iframe = modal.querySelector('#vmIframe');
-        modal.querySelector('#vmTitle').textContent = movie.title || "Video";
-
-        modal.style.display = 'flex';
+        vidmodyElement = document.createElement('div');
+        vidmodyElement.className = 'vm-overlay';
         
-        // Mobildə görüntü gəlməsi üçün təmizləmə
-        iframe.src = 'about:blank';
+        // Sənin HTML strukturun
+        vidmodyElement.innerHTML = `
+            <div class="vm-sheet">
+                <div class="vm-header">
+                    <button class="vm-close-btn" id="vmClose">✕</button>
+                    <div class="vm-title-group">
+                        <div class="vm-title" id="vmTitle">Yüklənir...</div>
+                        <div id="vmSub"></div>
+                    </div>
+                    <div class="vm-share-box">
+                        <button id="vmShare">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="vm-body">
+                    <iframe class="vm-iframe" id="vmIframe" allowfullscreen allow="autoplay; fullscreen"></iframe>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(vidmodyElement);
+
+        // Düymə hadisələri
+        vidmodyElement.querySelector('#vmClose').onclick = closeVidmody;
+        vidmodyElement.querySelector('#vmShare').onclick = (e) => {
+            e.stopPropagation();
+            if(window.sharePlayer) window.sharePlayer();
+        };
+
+        // Overlay-a klikləyəndə bağlamaq
+        vidmodyElement.onclick = (e) => {
+            if (e.target === vidmodyElement) closeVidmody();
+        };
+
+        return vidmodyElement;
+    }
+
+    function openVidmody(movie, src) {
+        const modal = initVidmodyModal();
+        const iframe = modal.querySelector('#vmIframe');
+        const title = modal.querySelector('#vmTitle');
+        const sub = modal.querySelector('#vmSub');
+
+        // Məlumatları doldur
+        title.textContent = movie.title || "Video";
+        sub.textContent = (movie.year || movie.genre) ? `${movie.year || ''} ${movie.genre ? '· ' + movie.genre : ''}` : "";
+
+        // Öncə modalı göstər, sonra iframe yüklə (Mobildə görüntü xətası olmasın deyə)
+        modal.style.display = 'flex';
+        iframe.src = 'about:blank'; 
+        
         setTimeout(() => {
-            iframe.src = url;
-            
-            // MOBİL ÜÇÜN HİYLƏ: Iframe-i tam ekrana məcbur etmək
-            if (iframe.requestFullscreen) {
-                // Bəzi brauzerlər buna icazə verir
-            }
-        }, 100);
+            iframe.src = src;
+        }, 50);
 
-        document.body.style.overflow = 'hidden';
+        if (typeof lockBodyScroll === 'function') lockBodyScroll();
     }
 
-    function closePlayer() {
-        if (!vmOverlay) return;
-        vmOverlay.style.display = 'none';
-        vmOverlay.querySelector('#vmIframe').src = '';
-        document.body.style.overflow = '';
+    function closeVidmody() {
+        if (!vidmodyElement) return;
+        vidmodyElement.style.display = 'none';
+        vidmodyElement.querySelector('#vmIframe').src = '';
+        if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
+        try { window.history.pushState({ movieId: null }, document.title, window.location.pathname); } catch(e){}
     }
 
-    const hook = setInterval(() => {
+    // openPlayer-i tutmaq
+    const hookPlayer = setInterval(() => {
         if (typeof window.openPlayer === 'function') {
-            const original = window.openPlayer;
+            const originalOpen = window.openPlayer;
             window.openPlayer = function(movie) {
                 const url = (movie && (movie.src || movie.url)) ? (movie.src || movie.url) : String(movie || '');
+                
                 if (url.includes('vidmody.com')) {
-                    openPlayer(movie, url);
+                    openVidmody(movie, url);
                     return;
                 }
-                return original(movie);
+                return originalOpen(movie);
             };
-            clearInterval(hook);
+            clearInterval(hookPlayer);
         }
     }, 100);
 })();
