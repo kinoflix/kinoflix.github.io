@@ -442,134 +442,6 @@ header{
   max-height: calc(100vh - 80px); /* safe default: viewport minus header+margins */
   object-fit: contain;
 }
-
-/* =========================================
-   VİDMODY PLAYER - MOBILE FIX (FINAL)
-   ========================================= */
-
-/* Overlay - Ən sadə və zəmanətli üsul */
-.vm-overlay {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none; /* JS ilə idarə olunacaq */
-    align-items: center;
-    justify-content: center;
-    /* Blur effektini sildim - Mobil problem yaratmasın deyə */
-    background: rgba(0, 0, 0, 0.95) !important; 
-    z-index: 2147483647 !important; /* Maksimum Z-Index */
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-}
-
-/* Modal Paneli */
-.vm-sheet {
-    width: 52%;
-    max-width: 1100px;
-    background: #0f172a; /* Dəqiq rəng */
-    border-radius: 12px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    box-shadow: 0 0 20px rgba(0,0,0,0.8);
-    /* Mobildə görünməsi üçün vacib */
-    transform: translateZ(0); 
-}
-
-/* Header */
-.vm-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 15px;
-    background: #1e293b; /* Header rəngi */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 10;
-    position: relative;
-    min-height: 50px;
-}
-
-/* Title Area */
-.vm-title-group {
-    flex: 1;
-    text-align: center;
-    padding: 0 10px;
-}
-
-.vm-title {
-    color: #fff;
-    font-size: 15px;
-    font-weight: bold;
-    margin: 0;
-    line-height: 1.2;
-}
-
-/* Düymələr - Geniş toxunma sahəsi ilə */
-.vm-btn {
-    background: transparent;
-    border: none;
-    color: #fff;
-    width: 44px; /* Mobil standart */
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border-radius: 50%;
-    /* Mobil klik sürəti üçün */
-    touch-action: manipulation; 
-}
-
-.vm-btn:active {
-    background: rgba(255,255,255,0.2);
-}
-
-.vm-btn svg {
-    width: 22px;
-    height: 22px;
-    pointer-events: none; /* Klik SVG-yə yox, button-a düşsün */
-}
-
-/* Video Body */
-.vm-body {
-    width: 100%;
-    position: relative;
-    background: #000;
-    padding-bottom: 56.25%; /* 16:9 */
-    height: 0;
-}
-
-.vm-iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-    background: #000;
-}
-
-/* --- MOBİL ÜÇÜN XÜSUSİ TƏNZİMLƏMƏ --- */
-@media (max-width: 768px) {
-    .vm-sheet {
-        width: 100% !important;
-        border-radius: 0 !important;
-        /* Ekranın ortasında yox, bir az yuxarıda və ya tam ekran */
-        position: relative; 
-    }
-    
-    .vm-overlay {
-        padding: 0 !important;
-        background: #000 !important; /* Mobildə tam qara */
-    }
-
-    .vm-header {
-        padding: 8px 10px;
-    }
-}
 </style>
 </head>
 <body>
@@ -2482,98 +2354,104 @@ function sharePlayer(){
    ============================================================ */
 
 (function() {
-    let vidmodyElement = null;
-
-    function initVidmodyModal() {
-        if (vidmodyElement) return vidmodyElement;
-
-        vidmodyElement = document.createElement('div');
-        vidmodyElement.className = 'vm-overlay';
+    // 1. CSS-İ BİRBAŞA SAYTA ƏLAVƏ EDİRİK (Sənin dizaynın + Mobil Fix)
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .vm-overlay {
+            position: fixed !important; inset: 0 !important; display: none;
+            align-items: center; justify-content: center;
+            background: linear-gradient(180deg, rgba(2,6,23,0.85), rgba(2,6,23,0.98)) !important;
+            z-index: 9999999 !important; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        }
+        .vm-sheet {
+            width: 52%; max-width: 1100px; border-radius: 12px; overflow: hidden;
+            background: #0f172a !important; display: flex; flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .vm-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 16px; background: #0f172a; border-bottom: 1px solid rgba(255, 255, 255, 0.03); gap: 12px;
+        }
+        .vm-title-group {
+            flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; overflow: hidden;
+        }
+        .vm-title { font-weight: 700; font-size: 16px; color: #fff; margin: 0; white-space: nowrap; text-overflow: ellipsis; }
+        #vmSub { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+        .vm-close-btn {
+            background: transparent; border: none; color: #fff; font-size: 24px;
+            cursor: pointer; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+        }
+        .vm-share-box button {
+            width: 44px; height: 44px; border-radius: 12px; background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.05); color: #fff; cursor: pointer;
+        }
+        .vm-body { width: 100%; position: relative; background: #000; padding-bottom: 56.25%; height: 0; }
+        .vm-iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         
-        // Sənin HTML strukturun
-        vidmodyElement.innerHTML = `
-            <div class="vm-sheet">
-                <div class="vm-header">
-                    <button class="vm-close-btn" id="vmClose">✕</button>
-                    <div class="vm-title-group">
-                        <div class="vm-title" id="vmTitle">Yüklənir...</div>
-                        <div id="vmSub"></div>
-                    </div>
-                    <div class="vm-share-box">
-                        <button id="vmShare">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle>
-                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                            </svg>
-                        </button>
-                    </div>
+        @media (max-width: 768px) {
+            .vm-sheet { width: 100% !important; height: 100% !important; border-radius: 0; justify-content: center; }
+            .vm-body { padding-bottom: 75%; } /* Mobildə videonu bir az böyüdürük */
+        }
+    `;
+    document.head.appendChild(style);
+
+    // 2. MODAL ELEMENTİNİ YARADIRIQ
+    const modal = document.createElement('div');
+    modal.className = 'vm-overlay';
+    modal.innerHTML = `
+        <div class="vm-sheet">
+            <div class="vm-header">
+                <button class="vm-close-btn" id="vmClose">✕</button>
+                <div class="vm-title-group">
+                    <div class="vm-title" id="vmTitle">Yüklənir...</div>
+                    <div id="vmSub"></div>
                 </div>
-                <div class="vm-body">
-                    <iframe class="vm-iframe" id="vmIframe" allowfullscreen allow="autoplay; fullscreen"></iframe>
-                </div>
+                <div class="vm-share-box"><button id="vmShare">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                </button></div>
             </div>
-        `;
+            <div class="vm-body"><iframe class="vm-iframe" id="vmIframe" allowfullscreen allow="autoplay; fullscreen"></iframe></div>
+        </div>
+    `;
+    document.body.appendChild(modal);
 
-        document.body.appendChild(vidmodyElement);
+    // 3. FUNKSİYALAR
+    const closeVid = () => {
+        modal.style.display = 'none';
+        modal.querySelector('#vmIframe').src = '';
+    };
 
-        // Düymə hadisələri
-        vidmodyElement.querySelector('#vmClose').onclick = closeVidmody;
-        vidmodyElement.querySelector('#vmShare').onclick = (e) => {
-            e.stopPropagation();
-            if(window.sharePlayer) window.sharePlayer();
-        };
+    modal.querySelector('#vmClose').onclick = closeVid;
+    modal.onclick = (e) => { if(e.target === modal) closeVid(); };
+    modal.querySelector('#vmShare').onclick = () => { if(window.sharePlayer) window.sharePlayer(); };
 
-        // Overlay-a klikləyəndə bağlamaq
-        vidmodyElement.onclick = (e) => {
-            if (e.target === vidmodyElement) closeVidmody();
-        };
-
-        return vidmodyElement;
-    }
-
-    function openVidmody(movie, src) {
-        const modal = initVidmodyModal();
-        const iframe = modal.querySelector('#vmIframe');
-        const title = modal.querySelector('#vmTitle');
-        const sub = modal.querySelector('#vmSub');
-
-        // Məlumatları doldur
-        title.textContent = movie.title || "Video";
-        sub.textContent = (movie.year || movie.genre) ? `${movie.year || ''} ${movie.genre ? '· ' + movie.genre : ''}` : "";
-
-        // Öncə modalı göstər, sonra iframe yüklə (Mobildə görüntü xətası olmasın deyə)
-        modal.style.display = 'flex';
-        iframe.src = 'about:blank'; 
+    window.openVidmody = function(movie, src) {
+        modal.querySelector('#vmTitle').textContent = movie.title || "Video";
+        modal.querySelector('#vmSub').textContent = movie.year || "";
         
+        modal.style.display = 'flex';
+        // Mobildə səs-görüntü sinxronu üçün kiçik gecikmə
         setTimeout(() => {
-            iframe.src = src;
-        }, 50);
+            modal.querySelector('#vmIframe').src = src;
+        }, 100);
+    };
 
-        if (typeof lockBodyScroll === 'function') lockBodyScroll();
-    }
-
-    function closeVidmody() {
-        if (!vidmodyElement) return;
-        vidmodyElement.style.display = 'none';
-        vidmodyElement.querySelector('#vmIframe').src = '';
-        if (typeof unlockBodyScroll === 'function') unlockBodyScroll();
-        try { window.history.pushState({ movieId: null }, document.title, window.location.pathname); } catch(e){}
-    }
-
-    // openPlayer-i tutmaq
-    const hookPlayer = setInterval(() => {
+    // 4. OPENPLAYER-İ TUTMAQ
+    const hook = setInterval(() => {
         if (typeof window.openPlayer === 'function') {
-            const originalOpen = window.openPlayer;
+            const original = window.openPlayer;
             window.openPlayer = function(movie) {
                 const url = (movie && (movie.src || movie.url)) ? (movie.src || movie.url) : String(movie || '');
-                
                 if (url.includes('vidmody.com')) {
-                    openVidmody(movie, url);
+                    window.openVidmody(movie, url);
                     return;
                 }
-                return originalOpen(movie);
+                return original(movie);
             };
-            clearInterval(hookPlayer);
+            clearInterval(hook);
         }
     }, 100);
 })();
