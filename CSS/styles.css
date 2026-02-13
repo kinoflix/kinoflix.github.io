@@ -130,7 +130,7 @@ header{
   backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.02);
 }
 .header-left{display:flex;align-items:center;gap:12px}
-#logoImg{width:66px;height:46px;border-radius:8px;object-fit:contain;cursor:pointer;box-shadow:v*r(--card-sh);background:transparent;padding:6px}
+#logoImg{width:120px;height:46px;border-radius:8px;object-fit:contain;cursor:pointer;box-shadow:v*r(--card-sh);background:transparent;padding:6px}
 .header-center{flex:1}
 .header-right{display:flex;align-items:center;gap:10px}
 
