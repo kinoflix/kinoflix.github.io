@@ -524,7 +524,7 @@ header{
   .modal-inner {
     padding: 12px;    /* overlay və video arasında boşluq */
   }
-  .search-input.open{width:160px}
+  .search-input.open{width:150px}
   .search-btn, .icon-btn{width:40px;height:40px}
   header{height:64px;padding:8px 12px}
   body{padding-top:64px}
