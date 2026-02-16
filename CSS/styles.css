@@ -577,51 +577,59 @@ header{
 
   /* --- APK BUTONU STİL KODLARI --- */
 
-/* 1. Yerləşmə və Ölçü: Sənin ".icon-btn" sinfi ilə eyni məntiqdədir, sola qaçmaz */
-.apk-theme-btn {
-    display: inline-grid;
-    place-items: center;
-    width: 44px;  /* Sənin digər düymələrinin ölçüsü */
+/* Düymənin özü - .header-right daxilində tam gücləndirilmiş */
+.header-right .apk-theme-btn {
+    display: inline-grid !important;
+    place-items: center !important;
+    width: 44px;
     height: 44px;
-    background: transparent;
-    text-decoration: none;
+    background: transparent !important;
+    text-decoration: none !important;
     cursor: pointer;
-    border: none;
-    outline: none;
+    border: none !important;
+    outline: none !important;
+    /* Mobildə toxunanda arxada yaranan eybəcər göy fonu ləğv edir */
+    -webkit-tap-highlight-color: transparent !important; 
 }
 
-/* 2. İkon və Keçid Effekti */
-.apk-theme-btn i {
-    font-size: 20px;
-    /* Dəqiq 0.6 saniyəlik işıq keçidi */
-    transition: color 0.6s ease-in-out;
+/* İkonun özü və 0.6s keçid */
+.header-right .apk-theme-btn i {
+    font-size: 20px !important;
+    transition: color 0.6s ease-in-out !important;
 }
 
-/* --- GECƏ MODU --- */
-/* Sənin saytında :root (standart) gecə rejimidir */
-/* İlkin: Ağ | Hover: Yaşıl */
-.apk-theme-btn i {
-    color: #ffffff;
-}
-.apk-theme-btn:hover i {
-    color: #1db954;
+/* --- GECƏ MODU (Sənin saytında standart vəziyyət) --- */
+/* İlkin: Ağ */
+.header-right .apk-theme-btn i {
+    color: #ffffff !important;
 }
 
-/* --- GÜNDÜZ MODU --- */
-/* Sənin saytında gündüz rejimi [data-theme="light"] ilə işləyir */
-/* İlkin: Qara | Hover: Mavi */
-[data-theme="light"] .apk-theme-btn i {
-    color: #000000;
-}
-[data-theme="light"] .apk-theme-btn:hover i {
-    color: #0b74ff;
+/* Desktopda hover, Mobildə barmaqla toxunanda (active): YAŞIL */
+.header-right .apk-theme-btn:hover i,
+.header-right .apk-theme-btn:active i {
+    color: #1db954 !important;
 }
 
-/* --- MOBİL UYĞUNLUQ --- */
-/* Sənin @media (max-width:520px) qaydalarına uyğunlaşdırıldı */
+/* --- GÜNDÜZ MODU ([data-theme="light"]) --- */
+/* İlkin: Qara */
+[data-theme="light"] .header-right .apk-theme-btn i {
+    color: #000000 !important;
+}
+
+/* Desktopda hover, Mobildə barmaqla toxunanda (active): MAVİ */
+[data-theme="light"] .header-right .apk-theme-btn:hover i,
+[data-theme="light"] .header-right .apk-theme-btn:active i {
+    color: #0b74ff !important;
+}
+
+/* --- MOBİL ÜÇÜN XÜSUSİ ÖLÇÜLƏR --- */
+/* Sənin @media (max-width:520px) qaydalarına tam uyğunlaşdırıldı */
 @media (max-width: 520px) {
-    .apk-theme-btn {
-        width: 40px;
-        height: 40px;
+    .header-right .apk-theme-btn {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    .header-right .apk-theme-btn i {
+        font-size: 18px !important;
     }
 }
