@@ -244,20 +244,39 @@ function renderChunk(){
     const chunk = state.filtered.slice(start, start + state.perPage);
     chunk.forEach(m=>{
       const el = document.createElement('article');
-      
-      // Trend və Special yoxlaması
-      const isTrend = m.trend === "yes" ? '<div class="fire-icon"><i class="fa-solid fa-fire"></i></div>' : '';
-      const isGold = m.special === "yes" ? ' gold-card' : '';
-
-      el.className = 'card' + isGold;
+      el.className = 'card';
       el.tabIndex = 0;
+
+      // --- DINAMIK STILLƏR (MOBİL ÜÇÜN ZƏMANƏTLİ) ---
+      const isGold = m.special === "yes";
+      const isTrend = m.trend === "yes";
+
+      // Qızılı kart üçün birbaşa elementə stil veririk
+      if(isGold) {
+          el.style.border = "2px solid #FFD700";
+          el.style.position = "relative";
+      }
+
+      // Alov ikonu HTML-i
+      const fireHtml = isTrend ? `
+        <div style="position:absolute; top:8px; right:8px; background:linear-gradient(45deg,#ff4500,#ff8c00); 
+                    width:28px; height:28px; border-radius:50%; display:flex; align-items:center; 
+                    justify-content:center; z-index:100; box-shadow:0 0 10px rgba(255,69,0,0.5); color:#fff; font-size:14px;">
+            <i class="fa-solid fa-fire"></i>
+        </div>` : '';
+
+      // Meta sahəsi üçün qızılı fon stili
+      const metaStyle = isGold ? `style="background:linear-gradient(135deg,#FFD700,#FDB931) !important; color:#000 !important;"` : '';
+      const textStyle = isGold ? `style="color:#000 !important; font-weight:800 !important;"` : '';
+
       el.innerHTML = `
-                      ${isTrend}
-                      <div class="poster" style="background-image:url('${esc(m.cover)}')"></div>
-                      <div class="meta">
-                        <h3 class="title">${esc(m.title)}</h3>
-                        <p class="sub">${m.year} · ${esc(m.genre)}</p>
-                      </div>`;
+        ${fireHtml}
+        <div class="poster" style="background-image:url('${esc(m.cover)}')"></div>
+        <div class="meta" ${metaStyle}>
+          <h3 class="title" ${textStyle}>${esc(m.title)}</h3>
+          <p class="sub" ${textStyle}>${m.year} · ${esc(m.genre)}</p>
+        </div>`;
+      // ----------------------------------------------
 
       el.addEventListener('click', ()=>openPlayer(m));
       el.addEventListener('keydown', e=>{ if(e.key === 'Enter' || e.key === ' ') openPlayer(m); });
