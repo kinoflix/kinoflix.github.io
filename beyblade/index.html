@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <link rel="icon" href="../logo/favicon.ico" type="image/x-icon" />
+  <title>Beyblade: Bakuten Shoot - Əliqoşqar Kərimli</title>
+  
+  <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    /* --- KINOFLIX+ DİZAYN SİSTEMİ --- */
+    :root {
+      --bg: #08101a; 
+      --surface: #0f1720; 
+      --muted: #94a3b8; 
+      --accent: #1db954; 
+      --text: #e6eef6; 
+      --glass: rgba(255,255,255,0.05); 
+      --glass-hover: rgba(255,255,255,0.1);
+      --border: rgba(255,255,255,0.08);
+      --radius: 12px; 
+      --header-h: 70px;
+    }
+
+    [data-theme="light"] {
+      --bg: #f0f2f5; 
+      --surface: #ffffff; 
+      --muted: #64748b; 
+      --accent: #0b74ff; 
+      --text: #1e293b; 
+      --glass: rgba(0,0,0,0.05); 
+      --glass-hover: rgba(0,0,0,0.08);
+      --border: rgba(0,0,0,0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+
+    body {
+      font-family: "Varela Round", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* --- HEADER --- */
+    header {
+      height: var(--header-h);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 25px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header img {
+      width: 150px;
+      height: auto;
+      display: block;
+      transition: transform 0.3s;
+    }
+    
+    header img:hover {
+      transform: scale(1.05);
+    }
+
+    /* --- TEMA DÜYMƏSİ (KINOFLIX+ STANDARTI) --- */
+    .theme-btn {
+      background: var(--glass);
+      border: none;
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.4s ease;
+      font-size: 1.1rem;
+    }
+
+    /* GECƏ REJİMİ – MAVİ NEON */
+    body[data-theme="dark"] .theme-btn:hover {
+      background: #0b74ff !important;
+      color: #fff !important;
+      transform: scale(1.1) rotate(-20deg);
+      box-shadow: 0 0 10px #0b74ff, 0 0 25px #0b74ff, 0 0 45px rgba(11, 116, 255, 0.8);
+    }
+
+    /* GÜNDÜZ REJİMİ – YAŞIL NEON */
+    body[data-theme="light"] .theme-btn:hover {
+      background: #1db954 !important;
+      color: #fff !important;
+      transform: scale(1.1) rotate(-20deg);
+      box-shadow: 0 0 10px #1db954, 0 0 25px #1db954, 0 0 45px rgba(29, 185, 84, 0.8);
+    }
+
+    .theme-btn i {
+      pointer-events: none;
+    }
+
+    /* --- MƏZMUN SƏHİFƏSİ --- */
+    .cover {
+      width: 100%;
+      height: 250px;
+      background: center center / cover no-repeat;
+      border-bottom: 2px solid var(--accent);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .container {
+      padding: 30px 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .intro-text {
+      margin-bottom: 25px;
+      font-size: 16px;
+      line-height: 1.6;
+      background-color: var(--surface);
+      padding: 20px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      text-align: justify;
+    }
+
+    iframe {
+      width: 100%;
+      height: 500px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      background: var(--surface);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    /* --- KONTROLLAR VƏ SEÇİMLƏR --- */
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .controls button {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      font-family: inherit;
+      font-weight: bold;
+      border: none;
+      border-radius: var(--radius);
+      background-color: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .controls button:hover {
+      background-color: var(--accent);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      border-color: transparent;
+    }
+
+    select {
+      width: 100%;
+      padding: 14px 40px 14px 15px;
+      font-size: 16px;
+      font-family: inherit;
+      margin-bottom: 15px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background-color: var(--surface);
+      color: var(--text);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg fill='%23ffffff' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 15px center;
+      background-size: 16px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.2);
+      background-image: url("data:image/svg+xml,%3Csvg fill='%23ffffff' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 14l5-5 5 5z'/%3E%3C/svg%3E");
+    }
+
+    [data-theme="light"] select {
+      background-image: url("data:image/svg+xml,%3Csvg fill='%23121212' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    }
+
+    [data-theme="light"] select:focus {
+      box-shadow: 0 0 0 3px rgba(11, 116, 255, 0.2);
+      background-image: url("data:image/svg+xml,%3Csvg fill='%23121212' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 14l5-5 5 5z'/%3E%3C/svg%3E");
+    }
+
+    #episodeSelect {
+      margin-bottom: 100px;
+    }
+
+    /* --- ÜZƏN ƏSAS SƏHİFƏ DÜYMƏSİ --- */
+    .home-button {
+      position: fixed;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--accent);
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      font-family: inherit;
+      font-weight: bold;
+      z-index: 999;
+      cursor: pointer;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    .home-button:hover {
+      transform: translateX(-50%) scale(1.05) translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    }
+
+    @media (max-width: 600px) {
+      iframe { height: 250px; }
+      .cover { height: 180px; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <header>
+    <a href="../index.html">
+      <img id="siteLogo" src="../logo/logo.png" alt="KINOFLIX+">
+    </a>
+    <button class="theme-toggle theme-btn" id="themeToggle" title="Temanı dəyiş">
+      <i class="fa-solid fa-sun"></i>
+    </button>
+  </header>
+
+  <div class="cover"></div>
+
+  <div class="container">
+    <div class="intro-text">
+      Uşaqlığımızın ən önəmli parçalarından olan Beyblade yenidən sizinlə! Beyblade cizgi serialının Klassik hissəsini təşkil edən Bakuten Shoot seriyasının hər üç sezonunu və eləcə də sinema filmini sizə təqdim edirik! Saytımızın bu səhifəsinə özəl olaraq əlavə etdiyimiz "Deep linking" dəstəyi vasitəsilə adres çubuğunda olan linkin sonuna sezona və bölümə uyğun şəkildə "?sezon=1&bolum=1" əlavə etməklə birbaşa yazdığınız həmin sezonun bölümünə keçid edə və ya onu paylaşa bilərsiniz! Xoş izləmələr!
+    </div>
+    
+    <iframe id="videoPlayer" src="https://drive.google.com/file/d/1eB9etitONXwzG4o3MLrRZ-JNNfXV7d0H/preview" allow="autoplay; fullscreen" allowfullscreen></iframe>
+
+    <div class="controls">
+      <button onclick="changeToPrevious()"><i class="fas fa-chevron-left"></i> Öncəki</button>
+      <button onclick="changeToNext()">Sonrakı <i class="fas fa-chevron-right"></i></button>
+    </div>
+
+    <select id="seasonSelect" onchange="updateEpisodes()">
+      <option value="1">Sezon 1 - Bakuten Shoot: 2000</option>
+      <option value="2">Sezon 2 - Bakuten Shoot: 2002 (V-Force)</option>
+      <option value="3">Sezon 3 - Bakuten Shoot: G-Revolution</option>
+      <option value="4">Bakuten Shoot: Sinema filmi</option>
+    </select>
+
+    <select id="episodeSelect" onchange="loadSelectedEpisode()">
+      </select>
+  </div>
+
+  <button class="home-button" onclick="window.location.href='../index.html'">
+    <i class="fas fa-home"></i> Əsas səhifə
+  </button>
+
+  <script>
+    // --- KINOFLIX+ TEMA SİSTEMİ (FLIX-THEME) ---
+    const themeToggle = document.getElementById('themeToggle');
+    const siteLogo = document.getElementById('siteLogo');
+    const body = document.body;
+
+    function applyTheme(theme) {
+      body.setAttribute('data-theme', theme);
+      localStorage.setItem('flix-theme', theme);
+      
+      const icon = themeToggle.querySelector('i');
+      if (icon) {
+          icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      }
+      
+      // Loqonu temaya görə tənzimlə (Qara/Ağ)
+      siteLogo.src = theme === 'dark' ? '../logo/logo.png' : '../logo/logoblack.png';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      applyTheme(newTheme);
+    });
+
+    // --- BEYBLADE VİDEO BAZASI VƏ MƏNTİQİ ---
+    const seasonCovers = {
+      1: 'beyblade1.jpg',
+      2: 'beyblade2.jpg',
+      3: 'beyblade3.jpg',
+      4: 'beyblade4.jpg'
+    };
+
+    const videoIds = {
+      1: [
+        '1eB9etitONXwzG4o3MLrRZ-JNNfXV7d0H', '1GcSjRNG1hAOet0at2r7yOfRqQMik8fRf', '1Ap6DSlzgssC09ldt_g2ch81ezHJS20BD', '1HF0ef9vdVLHDVXodb2-rkUpd0JaU9MqB', '1TGrEHGTspyyBfXabnvYQQriRiHGE5hWV', '18r7PfrbNZcjOOc5atkbPr4uK-MGj5IHF', '1Ev78eiHyG9NRU6zJPPu_etaOXQTVEQpD', '1X2mYA7R0CufM4_9EGDjrgc4KSty1NGRt', '171WC3ESVztTFwqJZ096Sz1C9Vh8DHS4t', '1I4n7qJhw1hkk0nsxBYQ_WDvg12Zq1goz', '1b0jEi1tNUU26m-yjoZMEYrB0T00lxRlC', '17OAEdZq2pcx-BbfUpZZhZrTAAPYs9ied', '1g7_jDkSogdLAwKYIVb3EcBOF3RzSnBdb', '1K6hY3IoH2VTcR4-SdN_bNdb-xLtNFo2G', '1AYvkXBVvJgVQGLrlzq2ryg-1kL861jSf', '1k55tA7_kAxvff_wipnraIBVzccqMwwEu', '1DzuCaDkCzBveRl_E2XqYA1p9RRn2EEJN', '1_npsHHT6rx5o_glDhr2CBQttu2QM4JsD', '136Racu_9dX5FbCyqS_6_dtVDzOhxXLif', '1EYmuK7gsPsjSbsKofc4PjUCkU8PcSIK3', '1JHyTCwhu8dr5_MppaAOfhiMhxxt9QsMf', '19VA5fyeaeaw_UIF0j_DmmQCCntzSYUBW', '1_ILju_Fb1E8cpdSI_k0QsxwgFUk1h1mL', '1qUd_tq7JqVKdwTS1HMzN0LBa7hL9fTNh', '16NFjNtZ_so3kRN-X4ygXPwZnTOIT3kZg', '1aI9tR0KvYr8-oksDS-KO0mmU9MQTDPPE', '1Mg_R4OhLZ1eUKhemYQDal2idu4426k5K', '1WXsSyfz1FFrPBGRx7q7cSb-pOXOSwh_c', '1TQI7eTIw5blp2SANoSVp-zve6ZyGeNti', '16IgPbJXURusePAJBZ4dPNDlu3jFPF289', '1JlyI2xKb9WQ3tc2TifJlC86hjtMSNDU6', '1dEYhtjkhE5t6s2drXyR61kgcl7DNUwV3', '1gp64NVrNqbrdFrtfqsoix501uqkYQYMI', '1zFI3FvZAWrz8jTRQIIN6uoZIqRF9-yjZ', '1zGoge4Yc0QOPYOK2B2lO7VTjV465QlHP', '1BJ7ZCWF7E2kMnLAkApuWVRK2Fdo-j7aT', '19Ar9udq1lUEG09KtfC-Fu3PEUQjqY7ou', '1PavG8Kf5ykysX1NkkEvE6jL5H69U406F', '1BWKiVjZDuFkHhWEcSdxrt2dBr2Jl0wSS', '1GZlezuyQoqPjt9pIj-ua2Q7v5MElQWG5', '16YLUhISg00_tkvKO3J14-cRCoGNoJdpa', '1Zq0XS2ZMH2YvIo0KqqoiHvEKrxS16lC2', '10M58-drZW_etaMOLzLlgsoMIRKHy2_ja', '1WamwrrSdp8dQshWIXZdtrVKYhprsuq0G', '1QFt_lhSEikeE-vFJM7r0nm6BcOyJnQV8', '1enHhhoBWw233CscdpUJQ21P2PIFplGEr', '1bSVt15uVpPnIrIOJC7eAVxusX2_P4voo', '1QQL3N2lXNUs_-XuISUqth2GAtpHHSm_5', '1cAyPRZAE_X_NGW9yEMm5JxHZdrNCFiMH', '1hLkXuMN34n9NDH3aYKyWJpntu0bIWOra', '1sstVeWFBhWJhNjjgeRz7TySPa9a-jOeR'
+      ],
+      2: [
+        '1sYgB1GDyrEe-xHJ7ZwAyA9plYc_DZwcn', '17L-yeu7M7uezxXh-uYj2fndslGuTvuAN', '107nGonUZ0CAC5QSlQmjezLXt0ksmDmlU', '1JDdo4QzcqPp_GE_72RMO1b0O1ULCB4DS', '1Lyv8FhYcwfuVaAOssReKRmIXNqGNncOA', '1ix1bOsCVv22PZ53s1cVfWz63wjjMkBQk', '11-MhywN17alibQ7tRyrO2tDk617loAph', '12jUGpmKCf0KuaswImGKjiLWi1IjO8k_i', '1WggNzS_XUdZUV29u713mTmZbXu2mdhxd', '18FPtb-nOIPRPa2FZonTJEhUcV5iMOZn2', '1UMqMQoCuVDVxgpOvYvaQNE0gJ9BBEWOz', '1-w2PMx4wM3Xsoyc-NJksiyYkxXPc2Jag', '1aIOG1Rkg1paZnqWfEoEODAwyMG7ERMf4', '1N68mE96RkqegnGHD58WOSnwgEHseG9ZW', '1GvmFN5IChgFOj4H2phiRd2qgFeeR-kjW', '1ILNhmZ8pw9ZButG0LWyabAswXtpOdB3n', '1xHQ56Mhm6hV7cmV1qlX6h3vgP6HswvWl', '1L5Bx7lYX5AdGEKWCENN6-_hMqJXFKiR1', '1OVV7ESj9RAwUIifkASLjzJlXqzpkyYfR', '18zhGmB-Rly29I3x6o_qQL_ZyqSW7pmrR', '1cGVtN_nskwB-ILg8o4OMzbUlJlrjSPq6', '1Ycgsr_DmYkE_gM9MDIQ-PvoxVN4Ty184', '1G4Gh1ARc6mj0duyfPrM2eboj026d6-Vp', '1a1PlF3FCOBFifWMdWg9cyUElUYxAZomN', '1fy0tKrTS_9SdbtldAStnMVhz92opRW7H', '1dZZ6ZDvde4ecJkzVcXYdttdjKzrbsAyj', '1NXXA-mLVEoiWiekcHPrKXC8tRwNMJrU-', '1vFfzVydHNoaPi5_RSuqZxY4GIyiUdBBm', '1SBKGfJkX752WYxHPHBk5ZEOtjRdDesea', '1unL-GSG03hZ15nTnCBq8rgLTlfZSkvQL', '1Qb8lPlD2ZrqRLXmPMpgpCvibwo2Jtq8s', '1vnZT3HW6dDdEC4eDkruP0-9yVcjki5xU', '19cKFE2jKeJN9su4DRVh6vIiVDI4FVH90', '1qVWUPNMSt-ZgTpJ-K7nGV4qsUxIuJ__z', '18LnUCS7Z0jfQTVMcK_5HOs2eskJVXdFe', '1AIHySapGIjkbPbVdBsjJDsVKrVWFzC3E', '14CUXJnZFm76ulq9bXpOEJAoAyOEXjGVm', '1jTJ1B1_1mkC-dCyjeNMYfPF23RNQnqT9', '1V23l14UBtFb0do-n4J8TvzYlYo0Ladpn', '1ZrxrOhCheSpkJp20pFk86y1Kz399DDT7', '1Kj4hB-7fAkd-8DsBMF3yqwe6iCu8djxi', '1JOu9uHAkBbLa0h6hbKuoi4UhbSUtWTC-', '1WTr0dxciQyFppErnTzkhga-UgfXFyi3v', '1pFYGQUSwjlvbQnwcvNSgSV9SHY4yZmdw', '1YmtiYpzKKhd6qXJDLTxYSob_9qZxBPP5', '1fopb1a0W5oFNmwOovs8WuY36flHqBhKj', '1pX9CM2FZ1Di1EK0qiZN1B05p7rW8MGk0', '1ZedZ_2EVf9Uug3BT65SqKo0fkr7ytT2p', '1bUNsRnHHWyPB7HNP3vQ-n7O-uVZcKQbj', '1rZF3K-nyVf64Whldho3b2WChKIXIO8y6', '1gMV__rzHxzzSwgQrGIfyDtsFPn-smOF2'
+      ],
+      3: [
+        '1zQ4F3o1c38W5zW5TzxKfCVIZdwdb1h6e', '1WlTS3lTHhFYBeH-4CFb2_sTDHloYTDaZ', '1oXHN-kccR9o5HZgxANXIeCee8RIVTZ04', '13PcnZV93ZVIjG5GDWwq4tpTbnMBobW8x', '1TwsHjxdoUdnaDiTxhnBeJ1wUG24BhHUy', '1hnQwK4wOqsHweGQj1MFSA8YDdHZNUhiE', '1hhCMwunYSvFxmKp3_PGjV7Pmmza2iYe1', '1TKFuHnjODk9lBc1XXmqhBGcWjxtHWStV', '1_RVwY047KeCx_1THGA6r20A7WbNoZol8', '1lwe5QWvhEJoBcZZw820-dSrSSVdi-tLY', '1Woi-ZgpJkP2pQ309JzIwEVQWZR8nxVrY', '1h63ya6-F0z5KhzAWDVlckVdwv-6PIUVb', '1WJHWfwzsWCFE7u2IteCIA6AtDHrEnd3r', '1AYOfNMxeFgCMhUdh7MqeYvQ1ISggzdw0', '19XvF5ZqK1HPiiNda7lwbWYnpFNcvNJSH', '1dFTnMPyTtDwve6IRepbKMK25Lr2U5J2-', '1TBOp9VlKefobztu7Q3ik14ubI7g_Md61', '1mfSm3zNFTZ05uCX2fWd2isdjviGT9lSa', '1peXTpqOhQl3DVinZpimvw_mEmJ-RwfAF', '1YxsRZBvQJEoARfA_EOnCnueu0xV1iQdb', '1auG_p1ELyJUTcex4hU_fUBVfYCBpcfsC', '1gYJpCHRqXyA0wM6bRnf67kqfyJve68T9', '13gGtWXlektMAJgf95w62F3b2wvhMVQhl', '13P8H33Pxz7PyD9AvfiMPpxADYo3dg5Km', '1yUhx-d1Z2kFC6Plh8mmWKeeUjjZouTTS', '1rN5KU0JVTkF5Cnhk4NUE-YmpmvKJmSgC', '1GbgX9ntM5pSRJqjGCyVHzLR9yXMxv4as', '1RYGVWWH8esKAgOXI2LEyEzj0I8VvY7WE', '1NF_I0MfA4hGCJXfDF_Wx58Eh0owPxhfR', '1AvP1nYhJAO85gqaE7zvcd22dc831LEjr', '1S3BtcbMG8RADQoW9d_i507_u9Vqks3n2', '1PHYgl3WZ67FhcBh-M0p8SAUqP6xoV1CW', '1HtyYpBHE16TdonLJc_7nnsB2PlaSh4RN', '1A1s2OGPfe4SVYtimtk5xZtsEuQ7CURUG', '1MiRSkNyyosdfLAeOEO6ecWU9XRH5UOSt', '1--IIclP1pkzGcbW9E26wesS6kZeal_o3', '1MwmPyCzpTIeMwEmEsquDJ6wPv6oAwjrM', '1L8fDDgeaFl5bgjFx56jjo6jqxsvQ_l25', '1oVEv_ivseSULeZI689L3I-pCWVVS8n4S', '10z8sUJyT9MOjWgGN47CpKNjpw1eFnYfP', '1SzbbsIRk-OzWK4HbYJGpwqImvnkjgyiG', '1cDqFxes7w6YRsMC6CA0vdH86MYPCK0es', '1XO5mqBVk-N_hWRTZ8-_mk0DPg1QYlia_', '1aSHDtYvwKh3yEKaAki7Yk2EmkLMOs9r3', '1Zayl97Ut1eMO-mKPogHWgvkedHgevC7V', '1vCOKXY2mXpTRy6nMFLEk13OJYO2QoO7y', '1r6QCeVS7lSurmxlE8qzgwaU8TGCemKfB', '16HhccKJdmw6QVlQvUagffRK1R6_DXw0u', '1VcvNTt3YBaaAxH0VBXPC87BxIJtl6Oxh', '1grR6WNlQfc71aF3Wu21cGTD6LFX4XmAN', '18FC_JYg2Im9bgq8gAnt0H3P-1AUBahMg', '1U0kadsDMmjbiopYIsVr4pgmDoMbVbmJA'
+      ],
+      4: [{ id: '1ckgMnttY5232ze6fEpXOZL7M5qEYsj5a', title: 'Fierce Battle - Şiddetli Savaş (2004)' }]
+    };
+
+    let currentSeason = 1;
+    let currentEpisode = 0;
+
+    const seasonSelect = document.getElementById('seasonSelect');
+    const episodeSelect = document.getElementById('episodeSelect');
+    const videoPlayer = document.getElementById('videoPlayer');
+
+    function updateEpisodes(selectedEpisodeIndex = 0) {
+      currentSeason = parseInt(seasonSelect.value);
+
+      document.querySelector('.cover').style.backgroundImage = `url('${seasonCovers[currentSeason]}')`;
+
+      const episodes = videoIds[currentSeason];
+      episodeSelect.innerHTML = '';
+
+      episodes.forEach((episode, i) => {
+        const option = document.createElement('option');
+        option.value = i;
+        option.text = typeof episode === 'object' ? episode.title || `Bölüm ${i + 1}` : `Bölüm ${i + 1}`;
+        episodeSelect.appendChild(option);
+      });
+
+      currentEpisode = selectedEpisodeIndex;
+      episodeSelect.value = selectedEpisodeIndex;
+      loadSelectedEpisode();
+    }
+
+    function loadSelectedEpisode() {
+      currentEpisode = parseInt(episodeSelect.value);
+      const episode = videoIds[currentSeason][currentEpisode];
+      const videoId = typeof episode === 'object' ? episode.id : episode;
+      videoPlayer.src = `https://drive.google.com/file/d/${videoId}/preview`;
+    }
+
+    function changeToPrevious() {
+      if (currentEpisode > 0) {
+        currentEpisode--;
+        episodeSelect.value = currentEpisode;
+        loadSelectedEpisode();
+      }
+    }
+
+    function changeToNext() {
+      if (currentEpisode < videoIds[currentSeason].length - 1) {
+        currentEpisode++;
+        episodeSelect.value = currentEpisode;
+        loadSelectedEpisode();
+      }
+    }
+
+    // Səhifə yüklənəndə (Yaddaşı oxu və videoları qur)
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. Temanı tətbiq et
+      const savedTheme = localStorage.getItem('flix-theme') || 'dark';
+      applyTheme(savedTheme);
+
+      // 2. Deep linking və videoları yüklə
+      const params = new URLSearchParams(window.location.search);
+      const sezon = parseInt(params.get('sezon'));
+      const bolum = parseInt(params.get('bolum'));
+
+      if (!isNaN(sezon)) {
+        seasonSelect.value = sezon;
+        currentSeason = sezon;
+        updateEpisodes(!isNaN(bolum) ? bolum - 1 : 0);
+      } else {
+        updateEpisodes();
+      }
+    });
+  </script>
+
+</body>
+</html>
