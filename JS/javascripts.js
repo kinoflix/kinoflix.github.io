@@ -246,37 +246,38 @@ function renderChunk(){
       const el = document.createElement('article');
       el.className = 'card';
       el.tabIndex = 0;
-
-      // --- DINAMIK STILLƏR (MOBİL ÜÇÜN ZƏMANƏTLİ) ---
+      
+      // --- MƏCBURİ STİLLƏR (JS daxilində) ---
       const isGold = m.special === "yes";
       const isTrend = m.trend === "yes";
 
-      // Qızılı kart üçün birbaşa elementə stil veririk
-      if(isGold) {
-          el.style.border = "2px solid #FFD700";
-          el.style.position = "relative";
-      }
-
-      // Alov ikonu HTML-i
+      // 1. Alov ikonu (Bütün stillər daxilindədir)
       const fireHtml = isTrend ? `
-        <div style="position:absolute; top:8px; right:8px; background:linear-gradient(45deg,#ff4500,#ff8c00); 
-                    width:28px; height:28px; border-radius:50%; display:flex; align-items:center; 
-                    justify-content:center; z-index:100; box-shadow:0 0 10px rgba(255,69,0,0.5); color:#fff; font-size:14px;">
+        <div style="position:absolute !important; top:8px !important; right:8px !important; 
+                    background:orange !important; background:linear-gradient(45deg, #ff4500, #ff8c00) !important; 
+                    color:white !important; width:28px !important; height:28px !important; 
+                    border-radius:50% !important; display:flex !important; align-items:center !important; 
+                    justify-content:center !important; z-index:999 !important; font-size:14px !important;
+                    box-shadow: 0 0 8px rgba(0,0,0,0.3) !important;">
             <i class="fa-solid fa-fire"></i>
         </div>` : '';
 
-      // Meta sahəsi üçün qızılı fon stili
-      const metaStyle = isGold ? `style="background:linear-gradient(135deg,#FFD700,#FDB931) !important; color:#000 !important;"` : '';
-      const textStyle = isGold ? `style="color:#000 !important; font-weight:800 !important;"` : '';
+      // 2. Qızılı Fon və Yazı Rəngləri
+      // Əgər special "yes" deyilsə, boş qalacaqlar
+      const goldBg = isGold ? `style="background:linear-gradient(135deg, #FFD700, #FDB931) !important;"` : '';
+      const goldText = isGold ? `style="color:#000000 !important; font-weight:800 !important;"` : '';
+      
+      // Kartın özünə kənar xətt (border) verək
+      if(isGold) el.style.border = "1px solid #FFD700";
+      el.style.position = "relative";
 
       el.innerHTML = `
         ${fireHtml}
-        <div class="poster" style="background-image:url('${esc(m.cover)}')"></div>
-        <div class="meta" ${metaStyle}>
-          <h3 class="title" ${textStyle}>${esc(m.title)}</h3>
-          <p class="sub" ${textStyle}>${m.year} · ${esc(m.genre)}</p>
+        <div class="poster" style="background-image:url('${esc(m.cover)}');"></div>
+        <div class="meta" ${goldBg}>
+          <h3 class="title" ${goldText}>${esc(m.title)}</h3>
+          <p class="sub" ${goldText}>${m.year} · ${esc(m.genre)}</p>
         </div>`;
-      // ----------------------------------------------
 
       el.addEventListener('click', ()=>openPlayer(m));
       el.addEventListener('keydown', e=>{ if(e.key === 'Enter' || e.key === ' ') openPlayer(m); });
