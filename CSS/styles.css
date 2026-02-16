@@ -574,3 +574,35 @@ header{
   max-height: calc(100vh - 80px); /* safe default: viewport minus header+margins */
   object-fit: contain;
 }
+
+  /* XÜSUSİ VƏ TREND KART STİLLƏRİ */
+.card { position: relative; overflow: hidden; }
+
+/* Alov İkonu Stili */
+.fire-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: linear-gradient(45deg, #ff4500, #ff8c00);
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
+    font-size: 14px;
+}
+
+/* Qızılı Fon Stili (special: "yes" olanlar üçün) */
+.gold-card .meta {
+    background: linear-gradient(135deg, #FFD700 0%, #FDB931 100%) !important;
+}
+
+.gold-card .meta .title, 
+.gold-card .meta .sub {
+    color: #000 !important; /* Qızılı fonda yazıların oxunması üçün tünd rəng */
+    font-weight: 700 !important;
+}
