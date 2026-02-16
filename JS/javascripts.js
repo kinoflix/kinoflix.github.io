@@ -1961,26 +1961,3 @@ function sharePlayer(){
         }
     }, 100);
 })();
-
-
-// APK bildiriş JS-ləri
-document.addEventListener("DOMContentLoaded", function() {
-    const notifBox = document.getElementById('apk-notification-box');
-    const closeBtn = document.getElementById('close-apk-btn');
-
-    // Əgər istifadəçi artıq bağlayıbsa, bir daha göstərmə
-    if (localStorage.getItem('apk_notif_hidden') === 'false') {
-        notifBox.style.display = 'none';
-    }
-
-    // X düyməsinə kliklədikdə
-    closeBtn.onclick = function(e) {
-        e.preventDefault(); // Hər hansı digər hadisəni dayandır
-        notifBox.classList.add('apk-notif-fade-out'); // Animasiya ilə yox et
-        
-        setTimeout(() => {
-            notifBox.style.display = 'none';
-            localStorage.setItem('apk_notif_hidden', 'true'); // Seçimi yadda saxla
-        }, 400); // 400ms animasiyanın bitməsini gözləyir
-    };
-});
