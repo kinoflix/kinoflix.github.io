@@ -263,12 +263,10 @@ function renderChunk(){
         </div>` : '';
 
       // 2. Qızılı Fon və Yazı Rəngləri
-      // Əgər special "yes" deyilsə, boş qalacaqlar
       const goldBg = isGold ? `style="background:linear-gradient(135deg, #FFD700, #FDB931) !important;"` : '';
       const goldText = isGold ? `style="color:#000000 !important; font-weight:800 !important;"` : '';
       
-      // Kartın özünə kənar xətt (border) verək
-      if(isGold) el.style.border = "1px solid #FFD700";
+      // Kənar xətt silindi, sadəcə mövqe təyin edilir
       el.style.position = "relative";
 
       el.innerHTML = `
