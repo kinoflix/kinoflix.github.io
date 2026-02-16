@@ -244,10 +244,21 @@ function renderChunk(){
     const chunk = state.filtered.slice(start, start + state.perPage);
     chunk.forEach(m=>{
       const el = document.createElement('article');
-      el.className = 'card';
+      
+      // Trend və Special yoxlaması
+      const isTrend = m.trend === "yes" ? '<div class="fire-icon"><i class="fa-solid fa-fire"></i></div>' : '';
+      const isGold = m.special === "yes" ? ' gold-card' : '';
+
+      el.className = 'card' + isGold;
       el.tabIndex = 0;
-      el.innerHTML = `<div class="poster" style="background-image:url('${esc(m.cover)}')"></div>
-                      <div class="meta"><h3 class="title">${esc(m.title)}</h3><p class="sub">${m.year} · ${esc(m.genre)}</p></div>`;
+      el.innerHTML = `
+                      ${isTrend}
+                      <div class="poster" style="background-image:url('${esc(m.cover)}')"></div>
+                      <div class="meta">
+                        <h3 class="title">${esc(m.title)}</h3>
+                        <p class="sub">${m.year} · ${esc(m.genre)}</p>
+                      </div>`;
+
       el.addEventListener('click', ()=>openPlayer(m));
       el.addEventListener('keydown', e=>{ if(e.key === 'Enter' || e.key === ' ') openPlayer(m); });
       grid.appendChild(el);
