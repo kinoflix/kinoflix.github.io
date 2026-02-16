@@ -574,3 +574,54 @@ header{
   max-height: calc(100vh - 80px); /* safe default: viewport minus header+margins */
   object-fit: contain;
 }
+
+  /* --- APK BUTONU STİL KODLARI --- */
+
+/* 1. Yerləşmə və Ölçü: Sənin ".icon-btn" sinfi ilə eyni məntiqdədir, sola qaçmaz */
+.apk-theme-btn {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;  /* Sənin digər düymələrinin ölçüsü */
+    height: 44px;
+    background: transparent;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+
+/* 2. İkon və Keçid Effekti */
+.apk-theme-btn i {
+    font-size: 20px;
+    /* Dəqiq 0.6 saniyəlik işıq keçidi */
+    transition: color 0.6s ease-in-out;
+}
+
+/* --- GECƏ MODU --- */
+/* Sənin saytında :root (standart) gecə rejimidir */
+/* İlkin: Ağ | Hover: Yaşıl */
+.apk-theme-btn i {
+    color: #ffffff;
+}
+.apk-theme-btn:hover i {
+    color: #1db954;
+}
+
+/* --- GÜNDÜZ MODU --- */
+/* Sənin saytında gündüz rejimi [data-theme="light"] ilə işləyir */
+/* İlkin: Qara | Hover: Mavi */
+[data-theme="light"] .apk-theme-btn i {
+    color: #000000;
+}
+[data-theme="light"] .apk-theme-btn:hover i {
+    color: #0b74ff;
+}
+
+/* --- MOBİL UYĞUNLUQ --- */
+/* Sənin @media (max-width:520px) qaydalarına uyğunlaşdırıldı */
+@media (max-width: 520px) {
+    .apk-theme-btn {
+        width: 40px;
+        height: 40px;
+    }
+}
