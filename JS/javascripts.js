@@ -1994,3 +1994,36 @@ function sharePlayer(){
         }
     }, 100);
 })();
+
+/* =========================================================
+   BEYBLADE KARTI ÜÇÜN XÜSUSİ YÖNLƏNDİRMƏ (MODAL LƏĞVİ)
+   ========================================================= */
+
+// Siçanla klikləmə üçün
+document.addEventListener('click', function(e) {
+    let card = e.target.closest('.card');
+    if (card) {
+        let title = card.querySelector('.title');
+        // Əgər kartın başlığı Beyblade-dirsə
+        if (title && title.textContent.includes('Beyblade: Bakuten Shoot')) {
+            e.stopImmediatePropagation(); // openPlayer funksiyasının işləməsini dayandırır
+            e.preventDefault();           // Standart hərəkətləri ləğv edir
+            window.location.href = '../beyblade'; // Səhifəyə keçid edir
+        }
+    }
+}, true); // "true" məcburidir: kliki kartdan əvvəl tutmasını təmin edir
+
+// Klaviatura (Enter və ya Boşluq) ilə seçmək üçün
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+        let card = e.target.closest('.card');
+        if (card && document.activeElement === card) {
+            let title = card.querySelector('.title');
+            if (title && title.textContent.includes('Beyblade: Bakuten Shoot')) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                window.location.href = '../beyblade';
+            }
+        }
+    }
+}, true);
