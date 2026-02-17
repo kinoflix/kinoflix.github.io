@@ -87,18 +87,18 @@
 
     /* GECƏ REJİMİ – MAVİ NEON */
     body[data-theme="dark"] .theme-btn:hover {
-      background: #0b74ff !important;
-      color: #fff !important;
-      transform: scale(1.1) rotate(-20deg);
-      box-shadow: 0 0 10px #0b74ff, 0 0 25px #0b74ff, 0 0 45px rgba(11, 116, 255, 0.8);
-    }
-
-    /* GÜNDÜZ REJİMİ – YAŞIL NEON */
-    body[data-theme="light"] .theme-btn:hover {
       background: #1db954 !important;
       color: #fff !important;
       transform: scale(1.1) rotate(-20deg);
       box-shadow: 0 0 10px #1db954, 0 0 25px #1db954, 0 0 45px rgba(29, 185, 84, 0.8);
+    }
+
+    /* GÜNDÜZ REJİMİ – YAŞIL NEON */
+    body[data-theme="light"] .theme-btn:hover {
+      background: #0b74ff !important;
+      color: #fff !important;
+      transform: scale(1.1) rotate(-20deg);
+      box-shadow: 0 0 10px #0b74ff, 0 0 25px #0b74ff, 0 0 45px rgba(11, 116, 255, 0.8);
     }
 
     .theme-btn i {
@@ -284,10 +284,6 @@
     <select id="episodeSelect" onchange="loadSelectedEpisode()">
       </select>
   </div>
-
-  <button class="home-button" onclick="window.location.href='../index.html'">
-    <i class="fas fa-home"></i> Əsas səhifə
-  </button>
 
   <script>
     // --- KINOFLIX+ TEMA SİSTEMİ (FLIX-THEME) ---
