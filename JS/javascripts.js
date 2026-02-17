@@ -259,7 +259,7 @@ function renderChunk(){
                     background:orange !important; background:linear-gradient(45deg, #ff4500, #ff8c00) !important; 
                     color:white !important; width:28px !important; height:28px !important; 
                     border-radius:50% !important; display:flex !important; align-items:center !important; 
-                    justify-content:center !important; z-index:999 !important; font-size:14px !important;
+                    justify-content:center !important; z-index:1 !important; font-size:14px !important;
                     box-shadow: 0 0 8px rgba(0,0,0,0.3) !important;">
             <i class="fa-solid fa-fire"></i>
         </div>` : '';
