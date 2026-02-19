@@ -2,7 +2,7 @@
    MOVIES data
    =========================== */
 const MOVIES = [
-  {title:"Eşref Rüya - 33. Bölüm", cover:"https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://www.dailymotion.com/video/xa0c1t0", year:2025, genre:"Dram", id: "esrefruya", trend: "yes", special: "yes"},
+  {title:"Eşref Rüya - 33. Bölüm", cover:"https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://www.dailymotion.com/video/xa0c4zm", year:2025, genre:"Dram", id: "esrefruya", trend: "yes", special: "yes"},
   {title:"Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id: "beyblade", trend: "yes", special: "yes"},
   {title:"Merhamet / Mercy", cover:"https://m.media-amazon.com/images/M/MV5BMWJmYjcwMTMtMDU1ZC00ZGI5LTlmZDAtODI3NDA2ZTE5ZGVlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/11581091416681", year:2026, genre:"Elmi fantastik", id: "mercy"},
   {title:"Masal", cover:"https://cekicmagazin.com/wp-content/uploads/2025/01/1-20250127.jpg", src:"https://vk.com/video359563763_456241117", year:2026, genre:"Dram", id: "masal"},
