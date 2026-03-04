@@ -1711,7 +1711,7 @@ searchInput.setAttribute('aria-label','Film axtar');
     iframe.setAttribute('webkitallowfullscreen','true');
     iframe.setAttribute('mozallowfullscreen','true');
     iframe.setAttribute('allow','fullscreen; autoplay; encrypted-media; picture-in-picture');
-    iframe.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-popups allow-modals');
+    //iframe.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-popups allow-modals');
 
     iframe.src = 'about:blank';
     wrap.appendChild(iframe);
