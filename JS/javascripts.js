@@ -132,7 +132,7 @@ const MOVIES = [
   {title:"Evdə tək 2 (Azərbaycan dilində-1) / Home Alone 2: Lost in New York", cover:"https://m.media-amazon.com/images/I/91tXzecvy-L._AC_UF1000,1000_QL80_.jpg", src:"https://drive.google.com/file/d/1sKrdkMrSmMMKojtNcMt7JqF14DibGlKm/view?usp=drive_link", year:1992, genre:"Komediya", id: "homealone2az"},
   {title:"Evdə tək 2 (Azərbaycan dilində-2) / Home Alone 2: Lost in New York", cover:"https://m.media-amazon.com/images/I/91tXzecvy-L._AC_UF1000,1000_QL80_.jpg", src:"https://drive.google.com/file/d/19zNpaPuAVeUEqfSAHgOzvRB1XbADxXQH/view?usp=drive_link", year:1992, genre:"Komediya", id: "homealone2az2"},
   {title:"Aslan Kral / The Lion King", cover:"https://m.media-amazon.com/images/M/MV5BMjIwMjE1Nzc4NV5BMl5BanBnXkFtZTgwNDg4OTA1NzM@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/vBjSgKwDTcQw?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2019, genre:"Animasiya", id: "thelionking"},
-  {title:"Mufasa: Aslan Kral / Mufasa: The Lion King", cover:"https://m.media-amazon.com/images/M/MV5BNjg1YzI5ZmQtZjZkOC00ZDMzLWI4YjYtMmY5MzZjYWE3YzhjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vidmody.com/vs/tt13186482", year:2024, genre:"Animasiya", id: "mufasa"},
+  {title:"Mufasa: Aslan Kral / Mufasa: The Lion King", cover:"https://m.media-amazon.com/images/M/MV5BNjg1YzI5ZmQtZjZkOC00ZDMzLWI4YjYtMmY5MzZjYWE3YzhjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vidmoly.me/w/rh5vqdd6dzai", year:2024, genre:"Animasiya", id: "mufasa"},
   {title:"Rio", cover:"https://m.media-amazon.com/images/M/MV5BMTU2MDY3MzAzMl5BMl5BanBnXkFtZTcwMTg0NjM5NA@@._V1_FMjpg_UX1000_.jpg", src:"https://vkvideo.ru/video784107073_456239647", year:2011, genre:"Animasiya", id: "rio"},
   {title:"Rio 2", cover:"https://m.media-amazon.com/images/M/MV5BMTgzMDczMDYzNl5BMl5BanBnXkFtZTgwMzk2MDIwMTE@._V1_.jpg", src:"https://vkvideo.ru/video784107073_456239646?ref_domain=d2rs.com", year:2014, genre:"Animasiya", id: "rio2"},
   {title:"Malefiz / Malefisent", cover:"https://m.media-amazon.com/images/M/MV5BMjAwMzAzMzExOF5BMl5BanBnXkFtZTgwOTcwMDA5MTE@._V1_.jpg", src:"https://dzen.ru/embed/vtRZcBxJSrGA?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2014, genre:"Fantastik", id: "malefisent"},
@@ -1600,6 +1600,226 @@ searchInput.setAttribute('aria-label','Film axtar');
   });
 
 })();
+
+/* VidMoly video handler */
+(function(){
+  // Orijinal openPlayer-in yüklənməsini gözləyirik
+  function whenOpenPlayerReady(cb){
+    if(typeof window.openPlayer === 'function'){ cb(); return; }
+    let tries=0;
+    const id = setInterval(()=>{
+      if(typeof window.openPlayer === 'function' || ++tries > 40){ clearInterval(id); cb(); }
+    }, 100);
+  }
+
+  // VidMoly URL-dən video ID-ni çıxarırıq (məs: rh5vqdd6dzai)
+  // Dəstəklənən formatlar: vidmoly.me/d/ID, vidmoly.me/w/ID, vidmoly.net/embed-ID.html və s.
+  function extractVidmolyToken(url){
+    try{
+      const u = String(url || '');
+      if(!/vidmoly\./i.test(u)) return null;
+      
+      // /embed-ID.html, /d/ID, /w/ID və ya birbaşa /ID kimi hallar üçün Regex
+      let m = u.match(/vidmoly\.[a-z]+.*?(?:\/embed-|\/d\/|\/w\/|\/)([a-zA-Z0-9]{10,20})/i);
+      if(m && m[1]) return m[1];
+      
+      return null;
+    }catch(e){ return null; }
+  }
+
+  // VidMoly Modalını yalnız bir dəfə yaradırıq
+  let vidmolyModal = null;
+  const showHeaderFSForVidmoly = false; 
+
+  function createVidmolyModal(){
+    if(vidmolyModal) return vidmolyModal;
+
+    const css = `
+      .vidmolymodal-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(2,6,23,0.8), rgba(2,6,23,0.95));z-index:9999;padding:20px}
+      .vidmolymodal-sheet{width:52%;max-width:1100px;border-radius:12px;overflow:hidden;background:var(--surface,#0f1720);box-shadow:0 20px 60px rgba(2,6,23,0.7);display:flex;flex-direction:column}
+      .vidmolymodal-top{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.03)}
+      .vidmolymodal-left{display:flex;align-items:center;gap:8px}
+      .vidmolymodal-title{font-weight:700;color:var(--text,#e6eef6);flex:1;text-align:center;line-height:1.05}
+      .vidmolymodal-sub{font-size:13px;color:var(--muted,#94a3b8);text-align:center;margin-top:4px}
+      .vidmolymodal-close,.vidmolymodal-fs{background:transparent;border:0;color:var(--text,#e6eef6);font-size:18px;cursor:pointer;padding:6px 10px;border-radius:8px}
+      .vidmolymodal-close:hover,.vidmolymodal-fs:hover{background:rgba(255,255,255,0.02)}
+      .vidmolymodal-iframe-wrap{width:100%;height:60vh;min-height:320px;background:#000}
+      .vidmolymodal-iframe{width:100%;height:100%;border:0}
+      @media (max-width:520px){ .vidmolymodal-iframe-wrap{height:48vh} .vidmolymodal-title{text-align:center;font-size:14px} .vidmolymodal-sub{font-size:12px} .vidmolymodal-sheet{width:100%}
+      }
+      @media (min-width:768px){ .vidmolymodal-overlay {transform: translateX(-6px);}
+      }
+    `;
+    const st = document.createElement('style'); st.appendChild(document.createTextNode(css)); document.head.appendChild(st);
+
+    vidmolyModal = document.createElement('div');
+    vidmolyModal.className = 'vidmolymodal-overlay';
+    vidmolyModal.style.display = 'none';
+
+    const sheet = document.createElement('div'); sheet.className = 'vidmolymodal-sheet'; sheet.setAttribute('role','dialog'); sheet.setAttribute('aria-modal','true');
+
+    const top = document.createElement('div'); top.className = 'vidmolymodal-top';
+    const left = document.createElement('div'); left.className = 'vidmolymodal-left';
+    const closeBtn = document.createElement('button'); closeBtn.className = 'vidmolymodal-close'; closeBtn.setAttribute('aria-label','Bağla'); closeBtn.innerHTML = '✕';
+    left.appendChild(closeBtn);
+
+    let fsBtn = null;
+    if(showHeaderFSForVidmoly){
+      fsBtn = document.createElement('button'); fsBtn.className = 'vidmolymodal-fs'; fsBtn.setAttribute('aria-label','Tam ekran'); fsBtn.title='Tam ekran';
+      fsBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><path d="M7 14H5v4h4v-2H7v-2zM17 10h2V6h-4v2h2v2zM7 6h4V4H5v4h2V6zM17 18v-4h2v4h-4v-2h2v-2z" fill="currentColor"/></svg>';
+      left.appendChild(fsBtn);
+    }
+
+    const center = document.createElement('div'); center.style.flex = '1'; center.style.display = 'flex'; center.style.flexDirection = 'column'; center.style.alignItems = 'center'; center.style.justifyContent = 'center';
+    const title = document.createElement('div'); title.className = 'vidmolymodal-title'; title.textContent = 'VidMoly video';
+    const sub = document.createElement('div'); sub.className = 'vidmolymodal-sub'; sub.textContent = '';
+    center.appendChild(title); center.appendChild(sub);
+
+    top.appendChild(left);
+    top.appendChild(center);
+    
+    // Paylaşma düyməsi
+    const rightControls = document.createElement('div');
+    rightControls.className = 'player-right-controls';
+    rightControls.innerHTML = `
+      <button class="share-btn" title="Paylaş" aria-label="Paylaş" onclick="sharePlayer()">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true" focusable="false" role="img">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+      </button>
+    `;
+    top.appendChild(rightControls);
+
+    const wrap = document.createElement('div'); wrap.className = 'vidmolymodal-iframe-wrap';
+    const iframe = document.createElement('iframe'); iframe.className = 'vidmolymodal-iframe';
+
+    // Rəsmi VidMoly iframe atributları və sandbox
+    iframe.setAttribute('scrolling', 'no');
+    iframe.setAttribute('frameborder', '0');
+    iframe.setAttribute('allowfullscreen','true');
+    iframe.setAttribute('webkitallowfullscreen','true');
+    iframe.setAttribute('mozallowfullscreen','true');
+    iframe.setAttribute('allow','fullscreen; autoplay; encrypted-media; picture-in-picture');
+    iframe.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-popups allow-modals');
+
+    iframe.src = 'about:blank';
+    wrap.appendChild(iframe);
+
+    sheet.appendChild(top);
+    sheet.appendChild(wrap);
+    vidmolyModal.appendChild(sheet);
+    document.body.appendChild(vidmolyModal);
+
+    // Hadisələr (Bağlama, kənara klikləmə, Escape düyməsi)
+    closeBtn.addEventListener('click', ()=>{ hideVidmolyModal(); try{ if(typeof showToast==='function') showToast('Film dayandırıldı!',900); }catch(e){} });
+    vidmolyModal.addEventListener('click', (e)=>{ if(e.target === vidmolyModal){ hideVidmolyModal(); try{ if(typeof showToast==='function') showToast('Film dayandırıldı!',900); }catch(e){} } });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && vidmolyModal.style.display==='flex'){ hideVidmolyModal(); try{ if(typeof showToast==='function') showToast('Film dayandırıldı!',900); }catch(e){} } });
+
+    if(fsBtn){
+      fsBtn.addEventListener('click', async (ev)=>{
+        ev.preventDefault();
+        try{
+          if(iframe.requestFullscreen) await iframe.requestFullscreen();
+          else if(iframe.webkitRequestFullscreen) await iframe.webkitRequestFullscreen();
+          else if(iframe.mozRequestFullScreen) await iframe.mozRequestFullScreen();
+          else if(wrap.requestFullscreen) await wrap.requestFullscreen();
+        }catch(err){
+          const src = iframe.src || '';
+          if(src && src !== 'about:blank') window.open(src, '_blank', 'noopener');
+        }
+      });
+    }
+
+    return vidmolyModal;
+  }
+
+  function showVidmolyModal(embedUrl, originalUrl, titleText, subtitleText){
+    const m = createVidmolyModal();
+    const iframe = m.querySelector('.vidmolymodal-iframe');
+    const titleEl = m.querySelector('.vidmolymodal-title');
+    const subEl = m.querySelector('.vidmolymodal-sub');
+
+    if(titleText && titleEl) titleEl.textContent = titleText;
+    if(subtitleText && subEl){ subEl.textContent = subtitleText; subEl.style.display = 'block'; }
+    else if(subEl){ subEl.textContent = ''; subEl.style.display = 'none'; }
+
+    try{
+      iframe.removeAttribute('srcdoc');
+      iframe.src = embedUrl;
+    }catch(e){
+      window.open(originalUrl, '_blank', 'noopener');
+      return;
+    }
+
+    try{ if(typeof lockBodyScroll === 'function') lockBodyScroll(); else { document.documentElement.style.overflow='hidden'; } }catch(e){}
+    m.style.display = 'flex';
+
+    try{ if(typeof showToast === 'function') showToast(`${titleText} başladılır!`, 1000); }catch(e){}
+  }
+
+  function hideVidmolyModal(){
+    // === URL TƏMİZLƏMƏ ===
+    window.history.pushState({ movieId: null }, document.title, window.location.pathname);
+    // === SON ===
+    const m = createVidmolyModal();
+    const iframe = m.querySelector('.vidmolymodal-iframe');
+    try{ iframe.src = 'about:blank'; }catch(e){}
+    m.style.display = 'none';
+    try{ if(typeof unlockBodyScroll === 'function') unlockBodyScroll(); else { document.documentElement.style.overflow=''; } }catch(e){}
+    try{
+      if(document.fullscreenElement){ if(document.exitFullscreen) document.exitFullscreen(); }
+      else if(document.webkitFullscreenElement){ if(document.webkitExitFullscreen) document.webkitExitFullscreen(); }
+    }catch(e){}
+  }
+
+  // openPlayer mövcud olduqda onu dəyişdiririk
+  whenOpenPlayerReady(function(){
+    const original = (typeof window.openPlayer === 'function') ? window.openPlayer.bind(window) : null;
+
+    window.openPlayer = function(movie){
+      try{
+        const src = (movie && (movie.src || movie.url)) ? (movie.src || movie.url) : String(movie||'');
+        // VidMoly hostunu aşkarlayırıq
+        const isVidmolyHost = /vidmoly\./i.test(src);
+
+        if(!isVidmolyHost){
+          if(original) return original(movie);
+          return;
+        }
+
+        // Token çıxarırıq (video ID-si)
+        const vid = extractVidmolyToken(src);
+        let subtitle = '';
+        if(movie && (movie.year || movie.genre)){
+          const parts = [];
+          if(movie.year) parts.push(String(movie.year));
+          if(movie.genre) parts.push(String(movie.genre));
+          if(parts.length) subtitle = parts.join(' · ');
+        }
+
+        if(vid){
+          // Təqdim etdiyiniz rəsmi iframe URL strukturuna uyğun formalaşdırırıq:
+          const embedUrl = `//vidmoly.net/embed-${vid}.html`;
+          
+          showVidmolyModal(embedUrl, src, movie && movie.title ? movie.title : 'VidMoly video', subtitle);
+          return;
+        } else {
+          // Fallback
+          showVidmolyModal(src, src, movie && movie.title ? movie.title : 'VidMoly video', subtitle);
+          return;
+        }
+      }catch(err){
+        if(original) return original(movie);
+        try{ window.open((movie && movie.src) || movie || '', '_blank'); }catch(e){}
+      }
+    };
+  });
+
+})();
   /* ===========================
    Google Drive video handler
    =========================== */
@@ -1822,7 +2042,8 @@ function getActivePlayerTitle() {
     '.mailmodal-title',   // 4. Mail.ru pəncərəsi
     '.dzenmodal-title',   // 5. Dzen pəncərəsi
     '.drivemodal-title',  // 6. Google Drive pəncərəsi
-    '.dmmodal-title'      // 7. DM pəncərəsi
+    '.vidmolyModal-title',  // 7. Vidmoly pəncərəsi
+    '.dmmodal-title'      // 8. DM pəncərəsi
     // Gələcəkdə yeni pəncərə əlavə etsəniz, onun başlıq class-ını bura əlavə edin
   ];
 
