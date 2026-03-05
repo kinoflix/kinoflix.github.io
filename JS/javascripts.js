@@ -1609,7 +1609,7 @@ searchInput.setAttribute('aria-label','Film axtar');
 })();
 
 /* ===========================
-   VidMoly video handler
+   VidMoly video handler (Final Fix)
    =========================== */
 (function(){
   function whenOpenPlayerReady(cb){
@@ -1632,14 +1632,11 @@ searchInput.setAttribute('aria-label','Film axtar');
   function createVidmolyModal(){
     if(vidmolyModal) return vidmolyModal;
     const css=`
-      .vidmolymodal-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(2,6,23,0.8),rgba(2,6,23,0.95));z-index:9999;padding:20px}
-      .vidmolymodal-sheet{width:52%;max-width:1100px;border-radius:12px;overflow:hidden;background:var(--surface,#0f1720);box-shadow:0 20px 60px rgba(2,6,23,0.7);display:flex;flex-direction:column}
+      .vidmolymodal-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(2,6,23,0.8),rgba(2,6,23,0.95));z-index:9999;padding:20px;cursor:pointer}
+      .vidmolymodal-sheet{width:52%;max-width:1100px;border-radius:12px;overflow:hidden;background:var(--surface,#0f1720);box-shadow:0 20px 60px rgba(2,6,23,0.7);display:flex;flex-direction:column;cursor:default}
       .vidmolymodal-top{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.03)}
       .vidmolymodal-left{display:flex;align-items:center;gap:8px}
-      
-      /* Universal share üçün kritik class */
       .vidmolyModal-title{font-weight:700;color:var(--text,#e6eef6);flex:1;text-align:center;line-height:1.05}
-      
       .vidmolymodal-sub{font-size:13px;color:var(--muted,#94a3b8);text-align:center;margin-top:4px}
       .vidmolymodal-close, .vidmolymodal-fs{background:transparent;border:0;color:var(--text,#e6eef6);font-size:18px;cursor:pointer;padding:6px 10px;border-radius:8px}
       .vidmolymodal-close:hover, .vidmolymodal-fs:hover{background:rgba(255,255,255,0.05)}
@@ -1687,10 +1684,24 @@ searchInput.setAttribute('aria-label','Film axtar');
 
     document.body.appendChild(vidmolyModal);
 
+    // --- BAĞLANMA HADİSƏLƏRİ ---
+    
+    // 1. Kənara klikləyəndə bağlanma (ƏSAS DÜZƏLİŞ)
+    vidmolyModal.addEventListener('click', (e) => {
+      if (e.target === vidmolyModal) hideVidmolyModal();
+    });
+
+    // 2. X düyməsi
+    vidmolyModal.querySelector('.vidmolymodal-close').onclick = hideVidmolyModal;
+
+    // 3. Escape düyməsi
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && vidmolyModal.style.display === 'flex') hideVidmolyModal();
+    });
+
+    // --- FULLSCREEN MƏNTİQİ ---
     const fsBtn = vidmolyModal.querySelector('.vidmolymodal-fs');
     const wrap = vidmolyModal.querySelector('.vidmolymodal-iframe-wrap');
-
-    // Fullscreen Məntiqi
     fsBtn.addEventListener('click', async () => {
       try {
         if (!document.fullscreenElement && !document.webkitFullscreenElement) {
@@ -1698,19 +1709,10 @@ searchInput.setAttribute('aria-label','Film axtar');
           else if (wrap.webkitRequestFullscreen) await wrap.webkitRequestFullscreen();
         } else {
           if (document.exitFullscreen) await document.exitFullscreen();
-          else if (document.webkitExitFullscreen) await document.webkitExitFullscreen();
         }
       } catch (err) { console.error(err); }
     });
 
-    const updateFsIcon = () => {
-      const isFS = document.fullscreenElement || document.webkitFullscreenElement;
-      fsBtn.innerHTML = isFS ? '<i class="fas fa-compress"></i>' : '<i class="fas fa-expand"></i>';
-    };
-    document.addEventListener('fullscreenchange', updateFsIcon);
-    document.addEventListener('webkitfullscreenchange', updateFsIcon);
-
-    vidmolyModal.querySelector('.vidmolymodal-close').onclick = hideVidmolyModal;
     return vidmolyModal;
   }
 
@@ -1732,13 +1734,15 @@ searchInput.setAttribute('aria-label','Film axtar');
 
   function hideVidmolyModal(){
     window.history.pushState({ movieId: null }, document.title, window.location.pathname);
-    vidmolyModal.querySelector('.vidmolymodal-iframe').src = 'about:blank';
-    vidmolyModal.style.display = 'none';
-    document.documentElement.style.overflow = '';
-    // Fullscreendədirsə çıxış et
-    if (document.fullscreenElement || document.webkitFullscreenElement) {
-      if (document.exitFullscreen) document.exitFullscreen();
+    if(vidmolyModal){
+      vidmolyModal.querySelector('.vidmolymodal-iframe').src = 'about:blank';
+      vidmolyModal.style.display = 'none';
     }
+    document.documentElement.style.overflow = '';
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+       try { document.exitFullscreen(); } catch(e) {}
+    }
+    if(typeof showToast==='function') showToast('Film dayandırıldı!', 900);
   }
 
   whenOpenPlayerReady(function(){
