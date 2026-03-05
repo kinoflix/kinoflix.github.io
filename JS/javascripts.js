@@ -1608,203 +1608,151 @@ searchInput.setAttribute('aria-label','Film axtar');
 
 })();
 
-/* VidMoly video handler - Custom Share Message Fix */
+/* ===========================
+   VidMoly video handler
+   =========================== */
 (function(){
   function whenOpenPlayerReady(cb){
     if(typeof window.openPlayer === 'function'){ cb(); return; }
     let tries=0;
-    const id = setInterval(()=>{
-      if(typeof window.openPlayer === 'function' || ++tries > 40){ clearInterval(id); cb(); }
-    }, 100);
+    const id=setInterval(()=>{ if(typeof window.openPlayer==='function'||++tries>40){clearInterval(id);cb();}},100);
   }
 
   function extractVidmolyToken(url){
     try{
-      const u = String(url || '');
+      const u=String(url||'');
       if(!/vidmoly\./i.test(u)) return null;
-      let m = u.match(/vidmoly\.[a-z]+.*?(?:\/embed-|\/d\/|\/w\/|\/)([a-zA-Z0-9]{10,20})/i);
-      if(m && m[1]) return m[1];
-      return null;
+      let m=u.match(/vidmoly\.[a-z]+.*?(?:\/embed-|\/d\/|\/w\/|\/)([a-zA-Z0-9]{10,20})/i);
+      return m && m[1] ? m[1] : null;
     }catch(e){ return null; }
   }
 
-  let vidmolyModal = null;
-  const showHeaderFSForVidmoly = true; 
-
+  let vidmolyModal=null;
+  
   function createVidmolyModal(){
     if(vidmolyModal) return vidmolyModal;
-
-    const css = `
-      .vidmolymodal-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(2,6,23,0.8), rgba(2,6,23,0.95));z-index:9999;padding:20px}
+    const css=`
+      .vidmolymodal-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(2,6,23,0.8),rgba(2,6,23,0.95));z-index:9999;padding:20px}
       .vidmolymodal-sheet{width:52%;max-width:1100px;border-radius:12px;overflow:hidden;background:var(--surface,#0f1720);box-shadow:0 20px 60px rgba(2,6,23,0.7);display:flex;flex-direction:column}
       .vidmolymodal-top{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.03)}
       .vidmolymodal-left{display:flex;align-items:center;gap:8px}
-      .vidmolymodal-title{font-weight:700;color:var(--text,#e6eef6);flex:1;text-align:center;line-height:1.05}
+      
+      /* Universal share üçün kritik class */
+      .vidmolyModal-title{font-weight:700;color:var(--text,#e6eef6);flex:1;text-align:center;line-height:1.05}
+      
       .vidmolymodal-sub{font-size:13px;color:var(--muted,#94a3b8);text-align:center;margin-top:4px}
-      .vidmolymodal-close,.vidmolymodal-fs{background:transparent;border:0;color:var(--text,#e6eef6);font-size:16px;cursor:pointer;padding:6px 10px;border-radius:8px;transition: background 0.2s}
-      .vidmolymodal-close:hover,.vidmolymodal-fs:hover{background:rgba(255,255,255,0.1)}
+      .vidmolymodal-close, .vidmolymodal-fs{background:transparent;border:0;color:var(--text,#e6eef6);font-size:18px;cursor:pointer;padding:6px 10px;border-radius:8px}
+      .vidmolymodal-close:hover, .vidmolymodal-fs:hover{background:rgba(255,255,255,0.05)}
       .vidmolymodal-iframe-wrap{width:100%;height:60vh;min-height:320px;background:#000;position:relative}
       .vidmolymodal-iframe{width:100%;height:100%;border:0}
-      @media (max-width:520px){ .vidmolymodal-iframe-wrap{height:48vh} .vidmolymodal-title{text-align:center;font-size:14px} .vidmolymodal-sub{font-size:12px} .vidmolymodal-sheet{width:100%} }
+      @media (max-width:520px){ .vidmolymodal-iframe-wrap{height:48vh} .vidmolyModal-title{font-size:14px} .vidmolymodal-sheet{width:100%} }
       @media (min-width:768px){ .vidmolymodal-overlay {transform: translateX(-6px);} }
     `;
-    const st = document.createElement('style'); st.appendChild(document.createTextNode(css)); document.head.appendChild(st);
+    const st=document.createElement('style');
+    st.appendChild(document.createTextNode(css));
+    document.head.appendChild(st);
 
-    vidmolyModal = document.createElement('div');
-    vidmolyModal.className = 'vidmolymodal-overlay';
-    vidmolyModal.style.display = 'none';
+    vidmolyModal=document.createElement('div');
+    vidmolyModal.className='vidmolymodal-overlay';
+    vidmolyModal.style.display='none';
 
-    const sheet = document.createElement('div'); sheet.className = 'vidmolymodal-sheet'; 
-
-    const top = document.createElement('div'); top.className = 'vidmolymodal-top';
-    const left = document.createElement('div'); left.className = 'vidmolymodal-left';
-    
-    const closeBtn = document.createElement('button'); closeBtn.className = 'vidmolymodal-close'; closeBtn.innerHTML = '✕';
-    left.appendChild(closeBtn);
-
-    let fsBtn = null;
-    if(showHeaderFSForVidmoly){
-      fsBtn = document.createElement('button'); 
-      fsBtn.className = 'vidmolymodal-fs'; 
-      fsBtn.innerHTML = '<i class="fas fa-expand"></i>';
-      left.appendChild(fsBtn);
-    }
-
-    const center = document.createElement('div'); center.style.flex = '1'; center.style.display = 'flex'; center.style.flexDirection = 'column'; center.style.alignItems = 'center'; center.style.justifyContent = 'center';
-    const title = document.createElement('div'); title.className = 'vidmolymodal-title';
-    const sub = document.createElement('div'); sub.className = 'vidmolymodal-sub';
-    center.appendChild(title); center.appendChild(sub);
-
-    top.appendChild(left);
-    top.appendChild(center);
-    
-    const rightControls = document.createElement('div');
-    rightControls.className = 'player-right-controls';
-    
-    const shareBtn = document.createElement('button');
-    shareBtn.className = 'share-btn';
-    shareBtn.title = 'Paylaş';
-    shareBtn.innerHTML = `
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+    vidmolyModal.innerHTML = `
+      <div class="vidmolymodal-sheet" role="dialog" aria-modal="true">
+        <div class="vidmolymodal-top">
+          <div class="vidmolymodal-left">
+            <button class="vidmolymodal-close" aria-label="Bağla">✕</button>
+            <button class="vidmolymodal-fs" title="Tam Ekran"><i class="fas fa-expand"></i></button>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div class="vidmolyModal-title"></div>
+            <div class="vidmolymodal-sub"></div>
+          </div>
+          <div class="player-right-controls">
+            <button class="share-btn" title="Paylaş" aria-label="Paylaş" onclick="sharePlayer()">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+                <circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="2"></circle>
+                <circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="2"></circle>
+                <circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="2"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="vidmolymodal-iframe-wrap">
+          <iframe class="vidmolymodal-iframe" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>
+        </div>
+      </div>
     `;
-    
-    // PAYLAŞMA MESAJI FORMATI BURADA DÜZƏLDİLDİ
-    shareBtn.addEventListener('click', () => {
-       const movieTitle = title.textContent || "Film";
-       const movieUrl = window.location.href;
-       // Sənin istədiyin format:
-       const shareText = `Film vaxtıdır! 🍿 ${movieTitle}:`;
-       
-       if (navigator.share) {
-         navigator.share({ 
-           title: movieTitle, 
-           text: shareText, 
-           url: movieUrl 
-         }).catch(console.error);
-       } else {
-         // Brauzer navigator.share dəstəkləmirsə, linki kopyalaya bilərik
-         const copyText = `${shareText} ${movieUrl}`;
-         navigator.clipboard.writeText(copyText).then(() => {
-            if(typeof showToast === 'function') showToast('Paylaşım linki kopyalandı!', 1000);
-            else alert('Kopyalandı: ' + copyText);
-         });
-       }
-    });
 
-    rightControls.appendChild(shareBtn);
-    top.appendChild(rightControls);
-
-    const wrap = document.createElement('div'); wrap.className = 'vidmolymodal-iframe-wrap';
-    const iframe = document.createElement('iframe'); iframe.className = 'vidmolymodal-iframe';
-
-    iframe.setAttribute('scrolling', 'no');
-    iframe.setAttribute('frameborder', '0');
-    iframe.setAttribute('allowfullscreen','true');
-    iframe.setAttribute('allow','fullscreen; autoplay; encrypted-media; picture-in-picture');
-
-    wrap.appendChild(iframe);
-    sheet.appendChild(top);
-    sheet.appendChild(wrap);
-    vidmolyModal.appendChild(sheet);
     document.body.appendChild(vidmolyModal);
 
-    // Hadisələr
-    closeBtn.addEventListener('click', hideVidmolyModal);
-    vidmolyModal.addEventListener('click', (e)=>{ if(e.target === vidmolyModal) hideVidmolyModal(); });
-    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && vidmolyModal.style.display==='flex') hideVidmolyModal(); });
+    const fsBtn = vidmolyModal.querySelector('.vidmolymodal-fs');
+    const wrap = vidmolyModal.querySelector('.vidmolymodal-iframe-wrap');
 
-    if(fsBtn){
-      fsBtn.addEventListener('click', async (ev)=>{
-        ev.preventDefault();
-        try {
-          const target = wrap; 
-          if (document.fullscreenElement || document.webkitFullscreenElement) {
-             if(document.exitFullscreen) await document.exitFullscreen();
-             else if(document.webkitExitFullscreen) await document.webkitExitFullscreen();
-          } else {
-             if (target.requestFullscreen) await target.requestFullscreen();
-             else if (target.webkitRequestFullscreen) await target.webkitRequestFullscreen();
-             else if (target.mozRequestFullScreen) await target.mozRequestFullScreen();
-             else if (target.msRequestFullscreen) await target.msRequestFullscreen();
-          }
-        } catch(err) { console.warn(err); }
-      });
+    // Fullscreen Məntiqi
+    fsBtn.addEventListener('click', async () => {
+      try {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+          if (wrap.requestFullscreen) await wrap.requestFullscreen();
+          else if (wrap.webkitRequestFullscreen) await wrap.webkitRequestFullscreen();
+        } else {
+          if (document.exitFullscreen) await document.exitFullscreen();
+          else if (document.webkitExitFullscreen) await document.webkitExitFullscreen();
+        }
+      } catch (err) { console.error(err); }
+    });
 
-      const toggleFullscreenIcon = () => {
-        const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
-        fsBtn.innerHTML = isFullscreen ? '<i class="fas fa-compress"></i>' : '<i class="fas fa-expand"></i>';
-      };
-      document.addEventListener('fullscreenchange', toggleFullscreenIcon);
-      document.addEventListener('webkitfullscreenchange', toggleFullscreenIcon);
-    }
+    const updateFsIcon = () => {
+      const isFS = document.fullscreenElement || document.webkitFullscreenElement;
+      fsBtn.innerHTML = isFS ? '<i class="fas fa-compress"></i>' : '<i class="fas fa-expand"></i>';
+    };
+    document.addEventListener('fullscreenchange', updateFsIcon);
+    document.addEventListener('webkitfullscreenchange', updateFsIcon);
 
+    vidmolyModal.querySelector('.vidmolymodal-close').onclick = hideVidmolyModal;
     return vidmolyModal;
   }
 
-  function showVidmolyModal(embedUrl, originalUrl, titleText, subtitleText){
-    const m = createVidmolyModal();
-    const iframe = m.querySelector('.vidmolymodal-iframe');
-    const titleEl = m.querySelector('.vidmolymodal-title');
+  function showVidmolyModal(embedUrl, movie){
+    const m=createVidmolyModal();
+    const titleText = movie && movie.title ? movie.title : 'VidMoly Video';
+    const subtitleText = (movie.year || movie.genre) ? `${movie.year || ''} · ${movie.genre || ''}` : '';
+
+    m.querySelector('.vidmolyModal-title').textContent = titleText;
     const subEl = m.querySelector('.vidmolymodal-sub');
+    if(subtitleText) { subEl.textContent = subtitleText; subEl.style.display = 'block'; } 
+    else { subEl.style.display = 'none'; }
 
-    if(titleText && titleEl) titleEl.textContent = titleText;
-    if(subtitleText && subEl){ subEl.textContent = subtitleText; subEl.style.display = 'block'; }
-    else if(subEl){ subEl.textContent = ''; subEl.style.display = 'none'; }
-
-    iframe.src = embedUrl;
-    document.documentElement.style.overflow='hidden';
+    m.querySelector('.vidmolymodal-iframe').src = embedUrl;
+    document.documentElement.style.overflow = 'hidden';
     m.style.display = 'flex';
     if(typeof showToast === 'function') showToast(`${titleText} başladılır!`, 1000);
   }
 
   function hideVidmolyModal(){
     window.history.pushState({ movieId: null }, document.title, window.location.pathname);
-    const m = createVidmolyModal();
-    const iframe = m.querySelector('.vidmolymodal-iframe');
-    iframe.src = 'about:blank';
-    m.style.display = 'none';
-    document.documentElement.style.overflow='';
-    if(document.fullscreenElement || document.webkitFullscreenElement) {
-        if(document.exitFullscreen) document.exitFullscreen();
-        else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    vidmolyModal.querySelector('.vidmolymodal-iframe').src = 'about:blank';
+    vidmolyModal.style.display = 'none';
+    document.documentElement.style.overflow = '';
+    // Fullscreendədirsə çıxış et
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      if (document.exitFullscreen) document.exitFullscreen();
     }
   }
 
   whenOpenPlayerReady(function(){
-    const original = (typeof window.openPlayer === 'function') ? window.openPlayer.bind(window) : null;
+    const original = window.openPlayer.bind(window);
     window.openPlayer = function(movie){
       const src = (movie && (movie.src || movie.url)) ? (movie.src || movie.url) : String(movie||'');
-      const isVidmolyHost = /vidmoly\./i.test(src);
-      if(!isVidmolyHost){ if(original) return original(movie); return; }
-
-      const vid = extractVidmolyToken(src);
-      let subtitle = (movie && (movie.year || movie.genre)) ? [movie.year, movie.genre].filter(Boolean).join(' · ') : '';
-
-      if(vid){
-        showVidmolyModal(`https://vidmoly.net/embed-${vid}.html`, src, movie && movie.title ? movie.title : 'VidMoly video', subtitle);
-      } else {
-        showVidmolyModal(src, src, movie && movie.title ? movie.title : 'VidMoly video', subtitle);
+      if(/vidmoly\./i.test(src)){
+        const vid = extractVidmolyToken(src);
+        if(vid){
+          showVidmolyModal(`https://vidmoly.net/embed-${vid}.html`, movie);
+          return;
+        }
       }
+      if(original) return original(movie);
     };
   });
 })();
