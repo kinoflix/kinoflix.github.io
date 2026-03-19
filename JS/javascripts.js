@@ -2,7 +2,7 @@
    MOVIES data
    =========================== */
 const MOVIES = [
-  {title:"Eşref Rüya - 36. Bölüm", cover:"https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://www.dailymotion.com/video/xa1sjjk", year:2025, genre:"Dram", id: "esrefruya", trend: "yes", special: "yes"},
+  {title:"Eşref Rüya - 37. Bölüm", cover:"https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://video.twimg.com/amplify_video/2034404132086300672/pl/stiMK1sy87u10Ewg.m3u8?tag=21", year:2025, genre:"Dram", id: "esrefruya", trend: "yes", special: "yes"},
   {title:"Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id: "beyblade", trend: "yes", special: "yes"},
   {title:"Katil makine / War Machine", cover:"https://m.media-amazon.com/images/M/MV5BMmM1ZTc5ZTYtOTM2My00MjBmLWE5NzktYzkyYzdlYWE3ZDAzXkEyXkFqcGc@._V1_.jpg", src:"https://vkvideo.ru/video359563763_456241333", year:2026, genre:"Elmi fantastik", id: "warmachine"},
   {title:"Göz açıp kapayıncaya kadar / In the Blink of an Eye", cover:"https://m.media-amazon.com/images/M/MV5BYjNhNjQ2Y2ItMGM5ZC00OWE4LWEwZjItOWM5ZTdkYmYyZjE5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vk.com/video359563763_456241275", year:2026, genre:"Dram", id: "intheblinkofaneye"},
