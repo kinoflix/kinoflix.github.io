@@ -812,18 +812,26 @@ searchInput.setAttribute('aria-label','Film axtar');
     try{
       const u = String(url || '');
       if(!/vk\.com|vkvideo\.ru/i.test(u)) return null;
-      // find patterns video-<owner>_<id> or video<owner>_<id>
-      let m = u.match(/video-?(\d+)[_\/-](\d+)/i);
+
+      // DÜZƏLİŞ: (-?\d+) istifadə edərək mənfi işarəsini owner ID daxilinə alırıq
+      let m = u.match(/video(-?\d+)[_\/-](\d+)/i);
       if(m && m[1] && m[2]) return { owner: m[1], id: m[2], raw: `video${m[1]}_${m[2]}` };
-      // sometimes path like /video784107073_456240757
-      m = u.match(/video(\d+)_(\d+)/i);
+
+      // Alternativ format üçün eyni düzəliş
+      m = u.match(/video(-?\d+)_(\d+)/i);
       if(m && m[1] && m[2]) return { owner: m[1], id: m[2], raw: `video${m[1]}_${m[2]}` };
-      // query params fallback (oid & id)
+
       try{
         const parsed = new URL(u);
         const oid = parsed.searchParams.get('oid') || parsed.searchParams.get('owner_id') || parsed.searchParams.get('owner');
         const vid = parsed.searchParams.get('id') || parsed.searchParams.get('video_id') || parsed.searchParams.get('v');
-        if(oid && vid) return { owner: oid.replace(/\D/g,''), id: vid.replace(/\D/g,''), raw: `video${oid}_${vid}` };
+        
+        if(oid && vid) {
+          // DÜZƏLİŞ: replace(/\D/g,'') mənfini silirdi, [^-0-9] isə mənfi və rəqəmdən başqa hər şeyi silir
+          const cleanOid = oid.replace(/[^-0-9]/g, '');
+          const cleanVid = vid.replace(/\D/g, '');
+          return { owner: cleanOid, id: cleanVid, raw: `video${cleanOid}_${cleanVid}` };
+        }
       }catch(e){}
       return null;
     }catch(e){ return null; }
