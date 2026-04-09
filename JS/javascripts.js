@@ -2,7 +2,7 @@
    MOVIES data
    =========================== */
 const MOVIES = [
-  {title:"Eşref Rüya - 39. Bölüm", cover:"https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://m.vkvideo.ru/video-236141145_456239100", year:2025, genre:"Dram", id: "esrefruya", trend: "yes", special: "yes"},
+  {title:"Eşref Rüya - 40. Bölüm", cover:"https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://m.vkvideo.ru/video-236658385_456239061", year:2025, genre:"Dram", id: "esrefruya", trend: "yes", special: "yes"},
   {title:"Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id: "beyblade", trend: "yes", special: "yes"},
   {title:"Peaky Blinders: Ölümsüz adam / Peaky Blinders: The Immortal Man", cover:"https://m.media-amazon.com/images/M/MV5BNTdlNTNjNjctYTg2MC00NTFlLTliNTctODFiZjZmNWRkYTVlXkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/12445598354025", year:2026, genre:"Dram", id: "peakyblinders"},
   {title:"Zeta", cover:"https://m.media-amazon.com/images/M/MV5BZjg5OWI2MTgtZjcyMS00MTcwLTk2ZDQtZDcwMmI4NjI4MWVhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/12445624502889", year:2026, genre:"Triller", id: "zeta"},
