@@ -2,7 +2,7 @@
    MOVIES data
    =========================== */
 const MOVIES = [
-  {title:"Eşref Rüya - 42. Bölüm", cover:"https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://m.vkvideo.ru/video787385537_456283679", year:2025, genre:"Dram", id: "esrefruya", trend: "yes", special: "yes"},
+  {title:"Eşref Rüya - 43. Bölüm", cover:"https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://m.vkvideo.ru/video787385537_456283906", year:2025, genre:"Dram", id: "esrefruya", trend: "yes", special: "yes"},
   {title:"Avatar 3: Ateş ve kül / Avatar 3: Fire and Ash", cover:"https://m.media-amazon.com/images/M/MV5BZDYxY2I1OGMtN2Y4MS00ZmU1LTgyNDAtODA0MzAyYjI0N2Y2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vkvideo.ru/video359563763_456241595", year:2025, genre:"Fantastik", id: "avatar3", trend: "yes", special: "yes"},
   {title:"Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id: "beyblade", trend: "yes", special: "yes"},
   {title:"Uğultulu tepeler / Wuthering Heights", cover:"https://m.media-amazon.com/images/M/MV5BMGFlMTVkMDktZGMzMC00Yjk4LWFmNzEtNTFmMzM2YzM3MWFkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vidmoly.me/dl/jv2riuhgtgcv", year:2026, genre:"Romantik", id: "wutheringheights"},
