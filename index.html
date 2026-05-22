@@ -197,5 +197,110 @@ alt="Web Analytics"
 referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- End of Statcounter Code -->
 
+  <!-- Yuxarı Çıx Butonu -->
+<button id="scrollTopBtn">
+    <i class="fas fa-chevron-up"></i>
+</button>
+
+<style>
+#scrollTopBtn{
+    position: fixed;
+    right: 20px;
+    bottom: 80px;
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 9999;
+
+    font-size: 18px;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+
+    transition:
+        opacity .3s ease,
+        visibility .3s ease,
+        transform .3s ease,
+        background .3s ease,
+        color .3s ease,
+        box-shadow .3s ease;
+
+    /* Sənin tema sistemi */
+    background: var(--glass);
+    color: var(--text);
+
+    backdrop-filter: blur(10px);
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* Görünən vəziyyət */
+#scrollTopBtn.show{
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Hover */
+#scrollTopBtn:hover{
+    outline: none !important;
+
+    background: var(--accent) !important;
+    color: #fff !important;
+
+    transform: translateY(0) scale(1.1);
+
+    /* Sənin neon hover effekti */
+    box-shadow:
+        0 0 10px var(--accent),
+        0 0 20px var(--accent),
+        0 0 35px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+/* Mobil toxunuş effekti */
+@media (max-width: 768px){
+    #scrollTopBtn:active{
+        background: var(--accent) !important;
+        color: #fff !important;
+
+        transform: translateY(0) scale(1.1);
+
+        box-shadow:
+            0 0 10px var(--accent),
+            0 0 20px var(--accent),
+            0 0 35px color-mix(in srgb, var(--accent) 70%, transparent);
+    }
+}
+</style>
+
+<script>
+const scrollBtn = document.getElementById("scrollTopBtn");
+
+window.addEventListener("scroll", () => {
+    if(window.scrollY > 300){
+        scrollBtn.classList.add("show");
+    } else {
+        scrollBtn.classList.remove("show");
+    }
+});
+
+scrollBtn.addEventListener("click", () => {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+});
+</script>
+<!-- Yuxarı Çıx Butonunun sonu -->
+  
 </body>
 </html>
