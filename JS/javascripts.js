@@ -3,8 +3,9 @@
    =========================== */
 const MOVIES = [
   {title:"Eşref Rüya - 45. Bölüm", cover:"https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://www.dailymotion.com/video/xaamepg", year:2025, genre:"Dram", id: "esrefruya", trend: "yes", special: "yes"},
-  {title:"Avatar 3: Ateş ve kül / Avatar 3: Fire and Ash", cover:"https://m.media-amazon.com/images/M/MV5BZDYxY2I1OGMtN2Y4MS00ZmU1LTgyNDAtODA0MzAyYjI0N2Y2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vkvideo.ru/video359563763_456241595", year:2025, genre:"Fantastik", id: "avatar3", trend: "yes", special: "yes"},
+  {title:"Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id: "spidernoir", trend: "yes", special: "yes"},
   {title:"Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id: "beyblade", trend: "yes", special: "yes"},
+  {title:"Avatar 3: Ateş ve kül / Avatar 3: Fire and Ash", cover:"https://m.media-amazon.com/images/M/MV5BZDYxY2I1OGMtN2Y4MS00ZmU1LTgyNDAtODA0MzAyYjI0N2Y2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vkvideo.ru/video359563763_456241595", year:2025, genre:"Fantastik", id: "avatar3", trend: "yes", special: "yes"},
   {title:"Süper Mario galaksi filmi / The Super Mario Galaxy Movie", cover:"https://m.media-amazon.com/images/M/MV5BYWYxYWRkMTUtMGMwZC00MzYyLThlNjEtNDcwMDYyMTQ4ZjJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/14421963246185", year:2026, genre:"Animasiya", id: "supermario"},
   {title:"Biker", cover:"https://m.media-amazon.com/images/M/MV5BMDRjOGQ1MGQtZjAzNS00NzliLWIxZGUtY2U1ODgzYTQ3MmU0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vkvideo.ru/video359563763_456241985", year:2026, genre:"Dram", id: "biker"},
   {title:"Önce kadınlar / Ladies First", cover:"https://m.media-amazon.com/images/M/MV5BNjBhMjk2NmQtY2JhOC00OTIzLTkzZjItNjA2NWM3OTkzNzA5XkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/14357815495273", year:2026, genre:"Komediya", id: "ladiesfirst"},
