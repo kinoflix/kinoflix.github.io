@@ -285,7 +285,7 @@
       document.body.appendChild(t); setTimeout(() => t.remove(), duration);
     };
 
-    // --- TEMA MƏNTİQİ ---
+    // --- KINOFLIX+ TEMA SİSTEMİ ---
     const themeToggle = document.getElementById('themeToggle');
     const siteLogo = document.getElementById('siteLogo');
     const body = document.body;
@@ -295,12 +295,13 @@
       localStorage.setItem('flix-theme', theme);
       const icon = themeToggle.querySelector('i');
       if (icon) { icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; }
-      siteLogo.src = theme === 'dark' ? '../FILES/IMG/logos/WHITE.png' : '../FILES/IMG/logos/BLACK.png';
+      siteLogo.src = theme === 'dark' ? '../FILES/IMG/logos/white.png' : '../FILES/IMG/logos/black.png';
     }
 
     themeToggle.addEventListener('click', () => {
       const currentTheme = body.getAttribute('data-theme');
-      applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      applyTheme(newTheme);
     });
 
     // --- KINOFLIX VİDEO BAZASI ---
