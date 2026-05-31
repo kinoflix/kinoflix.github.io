@@ -260,7 +260,7 @@
         // G. OK.ru Keçidi
         else if (src.includes("ok.ru")) {
           const okId = src.split("/video/")[1] || src.split("videoembed/")[1];
-          if(okId) finalUrl = `https://ok.ru/videoembed/${okId.split(/[?#]/)[0]}?autoplay=1`;
+          if(okId) finalUrl = `https://ok.ru/videoembed/${okId.split(/[?#]/)[0]}`;
         } 
         // H. YouTube Keçidi
         else if (src.includes("youtube.com") || src.includes("youtu.be")) {
