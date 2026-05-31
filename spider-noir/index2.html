@@ -244,8 +244,14 @@
         let finalUrl = src;
 
         // A. VidMoly Keçidi
-        if (src.includes('vidmoly.com') || src.includes('vidmoly.net')) {
-          finalUrl = src;
+        if (/vidmoly\.(me|net|com)/i.test(src)) {
+  const idMatch = src.match(/\/(dl|w|d|v)\/([a-zA-Z0-9]+)/i);
+
+  if (idMatch && idMatch[2]) {
+    finalUrl = `https://vidmoly.net/embed-${idMatch[2]}.html`;
+  } else {
+    finalUrl = src;
+  }
         }
         // B. Google Drive Keçidi
         else if (/drive\.google\.com/i.test(src)) {
