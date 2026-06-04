@@ -95,7 +95,16 @@
       background: center center / cover no-repeat;
       border-bottom: 2px solid var(--accent);
       box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-    }
+   }
+
+@media (max-width: 768px) {
+    .cover {
+      height: 300px;
+      background-size: contain;
+      background-position: center center;
+      background-repeat: no-repeat;
+  }
+}
 
     .container { padding: 30px 20px; max-width: 900px; margin: auto; }
 
