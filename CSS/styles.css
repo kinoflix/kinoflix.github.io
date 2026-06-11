@@ -574,3 +574,101 @@ header{
   max-height: calc(100vh - 80px); /* safe default: viewport minus header+margins */
   object-fit: contain;
 }
+
+  /* =========================================================
+   SON ƏLAVƏ EDİLƏNLƏR CHECK BOX
+   ========================================================= */
+  
+    /* Ana Konteyner */
+.flix-switch-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  background: var(--glass);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* === YENİ: Yuxarıdan və aşağıdan yarım sm boşluq === */
+  margin-top: 0px;
+  margin-bottom: 18px;
+}
+
+/* Yüngül kənar kölgəsi və hover effekti */
+.flix-switch-container:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* İşarə mətni */
+.flix-switch-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color 0.3s ease;
+}
+
+/* Orijinal gizli checkbox */
+.flix-switch-container input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Keçid qutusunun (Açarın) gövdəsi */
+.flix-slider {
+  position: relative;
+  width: 38px;
+  height: 20px;
+  background-color: var(--muted);
+  opacity: 0.6;
+  border-radius: 100px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Daxildəki hərəkət edən dairəvi düymə */
+.flix-slider::before {
+  content: "";
+  position: absolute;
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--surface);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- AKTİV (CHECKED) VƏZİYYƏT --- */
+
+/* Checkbox işarələnəndə arxa fon vurğu rəngini alsın */
+.flix-switch-container input:checked ~ .flix-slider {
+  background-color: var(--accent);
+  opacity: 1;
+}
+
+/* İşarələnəndə dairə sağa doğru sürüşsün */
+.flix-switch-container input:checked ~ .flix-slider::before {
+  transform: translateX(18px);
+  background-color: #ffffff; /* Düymə təmiz ağ rəngdə parlasın */
+}
+
+/* İşarələnəndə mətnin rəngi əsas mətn rənginə keçsin */
+.flix-switch-container input:checked ~ .flix-switch-label {
+  color: var(--text);
+}
+
+/* --- LIGHT THEME XÜSUSİ DÜZƏLİŞ --- */
+/* İşıqlı rejimdə şüşə effrekti (glass) sərhədinin daha rahat görünməsi üçün */
+[data-theme="light"] .flix-switch-container {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+  /* =========================================================
+   SON ƏLAVƏ EDİLƏNLƏR CHECK BOX-SON
+   ========================================================= */
