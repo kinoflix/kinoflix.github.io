@@ -679,18 +679,19 @@ header{
 @media screen and (max-width: 768px) {
   
   /* Konteyneri mobildə daha rahat kliklənən və mərkəzlənmiş formaya salırıq */
-  .flix-switch-container {
-    display: flex !important; /* Blokların arasında tam flex olaraq bərqərar olsun */
-    align-items: center !important;
-    justify-content: flex-start;
-    width: max-content !important; /* Ekranda gərəksiz uzanmasın */
-    margin: 0.5cm 0 !important; /* Sənin istədiyin yarım sm boşluq mütləq tətbiq olunsun */
-    padding: 10px 14px !important; /* Mobildə toxunuş sahəsini genişləndiririk */
-    background: var(--glass) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: var(--radius) !important;
-    box-sizing: border-box !important;
-  }
+  .flix-switch-container input {
+  position: absolute !important;
+  opacity: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+}
 
   /* Mobil üçün yazı ölçüsü və nizamı */
   .flix-switch-label {
