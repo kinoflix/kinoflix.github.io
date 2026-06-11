@@ -2433,7 +2433,7 @@ document.addEventListener('DOMContentLoaded', () => {
    ========================================================= */
 
 /* =========================================================
-   KOLLEKSİYA PANELİ (YENİLƏNMİŞ - TAM FİLTR UYĞUNLUĞU)
+   KOLLEKSİYA PANELİ (YENİLƏNMİŞ - ARXİTEKTURA PROBLEMİ HƏLL OLUNDU)
    ========================================================= */
 
 // 1. KOLLEKSİYALARI BAZANIZA BAĞLAYIN
@@ -2508,67 +2508,52 @@ function initSpotlight() {
     }
 }
 
-// 4. MÜHÜM: KOLLEKSİYANI QLOBAL OLARAQ AKTİV EDƏN FUNKSİYA
+// 4. KOLLEKSİYANI QLOBAL OLARAQ AKTİV EDƏN FUNKSİYA
 function filterMoviesByCollection(collectionId, collectionTitle) {
     if (typeof state === "undefined") return;
 
-    // Aktiv kolleksiya ID-sini qlobal dövlətə (state) qeyd edirik
+    // Aktiv kolleksiya ID-sini qlobal dövlətə yazırıq
     state.activeCollectionId = collectionId;
 
-    // Kolleksiyaya kliklədikdə janr filtrini sıfırlayırıq ki, toqquşma olmasın
+    // Kolleksiyaya keçəndə janr filtrini sıfırlayırıq ki, ilkin olaraq təmiz siyahı gəlsin
     if (typeof genreFilter !== "undefined") {
         genreFilter.value = ""; 
     }
 
-    // Sizin əsas birləşmiş filtr funksiyanızı çağırırıq
+    // Əsas filtr funksiyasını çağırırıq
     if (typeof applyFilters === "function") {
         applyFilters();
     }
 }
 
-// Səhifə tam yüklənəndə sistemləri və "Ağıllı İnterseptor"u başladırıq
+// Səhifə tam yüklənəndə sistemi və mütləq qoruyucu qatı başladırıq
 document.addEventListener("DOMContentLoaded", () => {
     initSpotlight();
 
-    // 🔥 ƏN KRİTİK HİSSƏ: Sizin applyFilters funksiyanızı pərdə arxasında bura bağlayırıq
-    if (typeof applyFilters === "function") {
-        const originalApplyFilters = applyFilters; // Sizin orijinal filtr kodunuzu yaddaşda saxlayırıq
+    // 🔥 DƏYİŞDİRİLDİ: Brauzerin event listener yaddaşını aldatmaq üçün resetGrid funksiyasını ələ keçiririk
+    if (typeof resetGrid === "function") {
+        const originalResetGrid = resetGrid; // Orijinal grid yeniləmə funksiyasını yaddaşda saxla
         
-        // applyFilters funksiyasını daxildən genişləndiririk (Orijinal koda toxunmadan!)
-        applyFilters = function() {
-            // 1. Sizin orijinal axtarış və janr filtrləriniz normal qaydada işləyir
-            originalApplyFilters();
-            
-            // 2. Əgər istifadəçi hər hansı kolleksiyaya baxırsa, dərhal işə düşürük:
-            if (state && state.activeCollectionId) {
+        resetGrid = function() {
+            // Əgər istifadəçi hazırda hər hansı bir kolleksiyaya baxırsa:
+            if (state && state.activeCollectionId && Array.isArray(state.filtered)) {
                 const currentCollection = COLLECTIONS.find(c => c.id === state.activeCollectionId);
                 
                 if (currentCollection) {
-                    // Orijinal filtrin çıxardığı nəticələri sırf bu kolleksiyanın ID-lərinə görə süzürük
+                    // Janr və ya search hansı nəticəni çıxarırsa çıxarsın, dərhal onları bu kolleksiyaya görə süzürük
                     state.filtered = state.filtered.filter(movie => currentCollection.movies.includes(movie.id));
                     
-                    // Başlığı və film sayını kolleksiya daxilindəki dynamic nəticəyə görə yeniləyirik
+                    // Başlığı və tapılan dynamic sayı yeniləyirik (Əgər tapılmayıbsa 0 göstərəcək)
                     const gridTitle = document.getElementById('movieListTitle') || document.querySelector('.movies-section h2');
                     if (gridTitle) {
                         gridTitle.innerText = `${currentCollection.title} (${state.filtered.length})`;
                     }
-                    
-                    // Qalereyanı sırf kolleksiya daxilində tətbiq olunmuş filtrlərlə yenidən qururuq
-                    if (typeof resetGrid === "function") {
-                        resetGrid();
-                    }
                 }
             }
+            
+            // Son olaraq süzülmüş datanı ekrana basmaq üçün orijinal funksiyanı icra edirik
+            originalApplyFilters = originalResetGrid();
         };
-    }
-
-    // İstifadəçi kolleksiyadan çıxmaq istədikdə (Məsələn, əsas menyudan fərqli bir Janr seçəndə)
-    if (typeof genreFilter !== "undefined") {
-        genreFilter.addEventListener('change', () => {
-            if (state && genreFilter.value !== "") {
-                state.activeCollectionId = null; // Kolleksiya rejimindən çıxış veririk
-            }
-        });
     }
 });
 
