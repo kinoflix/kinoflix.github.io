@@ -2440,10 +2440,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // Sizin film ID-lərinizə əsasən qurulub:
 const COLLECTIONS = [
   {
-    id: "home-alone-series",
-    title: "Evdə Tək Silsiləsi",
-    cover: "https://m.media-amazon.com/images/S/pv-target-images/cc4ebc2e3deda16b41d4d09636efd60c9028577b18dd873f0ba31d4bb9e033db.jpg",
-    movies: ["homealone", "homealoneaz", "homealone2", "homealone3"]
+    id: "spider-man",
+    title: "Hörümçək adam / Spider-Man",
+    cover: "https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg",
+    movies: ["spiderman", "spiderman2", "spiderman3", "theamazingspiderman", "theamazingspiderman2", "spidermanhomecoming", "spidermanintothespiderverse", "spidermanfarfromhome", "spidermannowayhome", "spidermanacrossthespiderverse",  "spider-noir"]
   },
   {
     id: "marvel-universe",
