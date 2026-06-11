@@ -2433,17 +2433,16 @@ document.addEventListener('DOMContentLoaded', () => {
    ========================================================= */
 
 /* =========================================================
-   KOLLEKSİYA PANELİ
+   KOLLEKSİYA PANELİ (YENİLƏNMİŞ - TAM FİLTR UYĞUNLUĞU)
    ========================================================= */
 
 // 1. KOLLEKSİYALARI BAZANIZA BAĞLAYIN
-// Sizin film ID-lərinizə əsasən qurulub:
 const COLLECTIONS = [
   {
     id: "spider-man",
     title: "Hörümçək adam / Spider-Man",
     cover: "https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg",
-    movies: ["spiderman", "spiderman2", "spiderman3", "theamazingspiderman", "theamazingspiderman2", "spidermanhomecoming", "spidermanintothespiderverse", "spidermanfarfromhome", "spidermannowayhome", "spidermanacrossthespiderverse",  "spider-noir"]
+    movies: ["spiderman", "spiderman2", "spiderman3", "theamazingspiderman", "theamazingspiderman2", "spidermanhomecoming", "spidermanintothespiderverse", "spidermanfarfromhome", "spidermannowayhome", "spidermanacrossthespiderverse", "spider-noir"]
   },
   {
     id: "marvel-universe",
@@ -2456,48 +2455,6 @@ const COLLECTIONS = [
     title: "Gündəmdə Olanlar",
     cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
     movies: ["esrefruya", "spidernoir"]
-  },
-   {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-   {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-   {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-   {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-   {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-   {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-   {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
   }
 ];
 
@@ -2506,7 +2463,6 @@ function updateSpotlight(collection) {
     const bgImage = document.getElementById('spotlightBgImage');
     if (!bgImage) return;
     
-    // Keçid edərkən göz qırpması olmasın deyə animasiya
     bgImage.style.opacity = "0.1";
     bgImage.style.transform = "scale(1.03)";
     
@@ -2518,7 +2474,6 @@ function updateSpotlight(collection) {
         bgImage.style.transform = "scale(1)";
     }, 200);
 
-    // Düyməyə klik edəndə süzgəci işə salırıq
     document.getElementById('spotlightActionBtn').onclick = () => {
         filterMoviesByCollection(collection.id, collection.title);
     };
@@ -2527,7 +2482,7 @@ function updateSpotlight(collection) {
 // 3. Sağ tərəfdəki menyunu ekrana çıxaran funksiya
 function initSpotlight() {
     const tabsContainer = document.getElementById('spotlightTabsContainer');
-    if (!tabsContainer) return; // Səhifədə element yoxdursa dayandır
+    if (!tabsContainer) return;
     
     tabsContainer.innerHTML = "";
 
@@ -2536,7 +2491,6 @@ function initSpotlight() {
         li.className = `tab-item ${index === 0 ? 'active' : ''}`;
         li.innerText = col.title;
 
-        // Üstünə gələndə və ya toxunanda (Mobil) aktiv et
         const activate = () => {
             document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
             li.classList.add('active');
@@ -2549,41 +2503,73 @@ function initSpotlight() {
         tabsContainer.appendChild(li);
     });
 
-    // İlk açılışda siyahıdakı birinci kolleksiyanı aktiv göstər
     if(COLLECTIONS.length > 0) {
         updateSpotlight(COLLECTIONS[0]);
     }
 }
 
-// 4. MÜHÜM: SİZİN STATE STRUKTURUNUZA TAM UYĞUNLAŞDIRILMIŞ SÜZGƏC FUNKSİYASI
+// 4. MÜHÜM: KOLLEKSİYANI QLOBAL OLARAQ AKTİV EDƏN FUNKSİYA
 function filterMoviesByCollection(collectionId, collectionTitle) {
-    const currentCollection = COLLECTIONS.find(c => c.id === collectionId);
-    if (!currentCollection) return;
+    if (typeof state === "undefined") return;
 
-    // Sizin MOVIES massivinizdən (və ya saytın qlobal film massivindən) ID-ləri süzürük
-    // Əgər əsas massiviniz state daxilindədirsə (məsələn state.all), kodu ona uyğunlaşdırır
-    const sourceMassiv = (typeof MOVIES !== "undefined") ? MOVIES : (state.all || []);
-    const results = sourceMassiv.filter(movie => currentCollection.movies.includes(movie.id));
+    // Aktiv kolleksiya ID-sini qlobal dövlətə (state) qeyd edirik
+    state.activeCollectionId = collectionId;
 
-    // Sizin saytda başlıq elementi varsa (məsələn: "Bütün Filmlər") onu dəyişirik
-    const gridTitle = document.getElementById('movieListTitle') || document.querySelector('.movies-section h2');
-    if (gridTitle) {
-        gridTitle.innerText = `${collectionTitle} (${results.length})`;
+    // Kolleksiyaya kliklədikdə janr filtrini sıfırlayırıq ki, toqquşma olmasın
+    if (typeof genreFilter !== "undefined") {
+        genreFilter.value = ""; 
     }
 
-    // YAMAQ HİSSƏSİ: Köhnə displayMovies(filtered) silindi!
-    // Yekun nəticəni birbaşa sizin state-inizə yazır və qaleriyanı yeniləyir
-    if (typeof state !== "undefined" && typeof resetGrid === "function") {
-        state.filtered = results;
-        resetGrid();
-    } else {
-        console.error("Xəta: 'state' obyekti və ya 'resetGrid' funksiyası tapılmadı!");
+    // Sizin əsas birləşmiş filtr funksiyanızı çağırırıq
+    if (typeof applyFilters === "function") {
+        applyFilters();
     }
 }
 
-// Səhifə tam yüklənəndə sistemi işə salırıq
+// Səhifə tam yüklənəndə sistemləri və "Ağıllı İnterseptor"u başladırıq
 document.addEventListener("DOMContentLoaded", () => {
     initSpotlight();
+
+    // 🔥 ƏN KRİTİK HİSSƏ: Sizin applyFilters funksiyanızı pərdə arxasında bura bağlayırıq
+    if (typeof applyFilters === "function") {
+        const originalApplyFilters = applyFilters; // Sizin orijinal filtr kodunuzu yaddaşda saxlayırıq
+        
+        // applyFilters funksiyasını daxildən genişləndiririk (Orijinal koda toxunmadan!)
+        applyFilters = function() {
+            // 1. Sizin orijinal axtarış və janr filtrləriniz normal qaydada işləyir
+            originalApplyFilters();
+            
+            // 2. Əgər istifadəçi hər hansı kolleksiyaya baxırsa, dərhal işə düşürük:
+            if (state && state.activeCollectionId) {
+                const currentCollection = COLLECTIONS.find(c => c.id === state.activeCollectionId);
+                
+                if (currentCollection) {
+                    // Orijinal filtrin çıxardığı nəticələri sırf bu kolleksiyanın ID-lərinə görə süzürük
+                    state.filtered = state.filtered.filter(movie => currentCollection.movies.includes(movie.id));
+                    
+                    // Başlığı və film sayını kolleksiya daxilindəki dynamic nəticəyə görə yeniləyirik
+                    const gridTitle = document.getElementById('movieListTitle') || document.querySelector('.movies-section h2');
+                    if (gridTitle) {
+                        gridTitle.innerText = `${currentCollection.title} (${state.filtered.length})`;
+                    }
+                    
+                    // Qalereyanı sırf kolleksiya daxilində tətbiq olunmuş filtrlərlə yenidən qururuq
+                    if (typeof resetGrid === "function") {
+                        resetGrid();
+                    }
+                }
+            }
+        };
+    }
+
+    // İstifadəçi kolleksiyadan çıxmaq istədikdə (Məsələn, əsas menyudan fərqli bir Janr seçəndə)
+    if (typeof genreFilter !== "undefined") {
+        genreFilter.addEventListener('change', () => {
+            if (state && genreFilter.value !== "") {
+                state.activeCollectionId = null; // Kolleksiya rejimindən çıxış veririk
+            }
+        });
+    }
 });
 
 /* =========================================================
