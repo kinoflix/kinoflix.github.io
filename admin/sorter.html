@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <title>Film Massivi Sıralayıcı (Ardıcıl və Unikal Added)</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; background: #141414; color: white; text-align: center; }
+        .container { background: #222; padding: 30px; border-radius: 10px; max-width: 600px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        h2 { color: #E50914; margin-bottom: 10px; }
+        p { color: #aaa; font-size: 14px; line-height: 1.6; }
+        input[type="file"] { margin: 20px 0; padding: 10px; background: #333; border: 1px dashed #555; border-radius: 5px; color: white; cursor: pointer; width: 80%; }
+        button { background: #E50914; color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.2s; }
+        button:hover { background: #b80710; transform: scale(1.03); }
+        .footer { margin-top: 20px; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Film Massivi Sıralayıcı</h2>
+    <p>Bu alət <b>special: "yes"</b> olanları üstdə saxlayır, digərlərini <b>yeni ildən köhnəyə</b> sıralayır. 
+    <b>added</b> dəyərləri 1-dən film sayına qədər tam ardıcıl, təkrarolunmaz və random paylanır.</p>
+    
+    <input type="file" id="fileInput" accept=".txt"><br>
+    <button id="processBtn">Sırala və Yeni Faylı Yüklə</button>
+    <div class="footer">Datalarınız tamamilə lokal olaraq brauzerdə emal edilir.</div>
+</div>
+
+<script>
+document.getElementById('processBtn').addEventListener('click', () => {
+    const fileInput = document.getElementById('fileInput');
+    if (!fileInput.files[0]) {
+        alert('Zəhmət olmasa əvvəlcə massiv.txt faylını seçin!');
+        return;
+    }
+    
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        let text = e.target.result.trim();
+        
+        try {
+            let arrayString = text;
+            if (arrayString.startsWith('const MOVIES =')) {
+                arrayString = arrayString.replace('const MOVIES =', '');
+            }
+            if (arrayString.endsWith(';')) {
+                arrayString = arrayString.slice(0, -1);
+            }
+            
+            const movies = new Function(`return ${arrayString};`)();
+            
+            if (!Array.isArray(movies)) {
+                throw new Error("Fayl daxilində düzgün massiv strukturu tapılmadı.");
+            }
+            
+            // 1. SIRALAMA: special: "yes" olanlar üstə + yeni ildən köhnəyə doğru
+            movies.sort((a, b) => {
+                let specA = a.special === "yes" ? 1 : 0;
+                let specB = b.special === "yes" ? 1 : 0;
+                if (specA !== specB) {
+                    return specB - specA; 
+                }
+                let yearA = parseFloat(a.year) || 0;
+                let yearB = parseFloat(b.year) || 0;
+                return yearB - yearA;
+            });
+            
+            // 2. ARDICIL VƏ RANDOM ADDED POOL-UNUN YARADILMASI
+            const totalMovies = movies.length;
+            // 1-dən ümumi film sayına qədər ardıcıl rəqəmlərdən ibarət massiv yaradırıq [1, 2, 3, ... N]
+            let addedPool = Array.from({ length: totalMovies }, (_, i) => i + 1);
+            
+            // Fisher-Yates alqoritmi ilə bu rəqəmlər hovuzunu tamamilə qarışdırırıq
+            for (let i = addedPool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [addedPool[i], addedPool[j]] = [addedPool[j], addedPool[i]];
+            }
+            
+            // Qarışdırılmış unikal rəqəmləri filmlərə tək-tək paylayırıq
+            movies.forEach((movie, index) => {
+                movie.added = addedPool[index];
+            });
+            
+            // Ardıcıllıq tam qorunduğu üçün ən böyük rəqəm elə ümumi film sayıdır
+            let maxAdded = totalMovies; 
+            
+            // Obyekt strukturunun, dırnaqların və linklərin qorunaraq JS formatına salınması
+            let outputText = "const MOVIES = [\n";
+            movies.forEach((m, idx) => {
+                outputText += "  { ";
+                let keys = Object.keys(m);
+                let parts = keys.map(k => {
+                    let val = m[k];
+                    if (typeof val === 'string') {
+                        return `${k}:${JSON.stringify(val)}`;
+                    }
+                    return `${k}:${val}`;
+                });
+                outputText += parts.join(", ");
+                outputText += " }" + (idx < movies.length - 1 ? ",\n" : "\n");
+            });
+            outputText += "];";
+            
+            // Faylı yükləmə
+            const blob = new Blob([outputText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'siralanmis_massiv.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Məlumat bildirişi
+            alert('Uğurlu!\n\n' + 
+                  '• Ümumi film sayı: ' + totalMovies + '\n' +
+                  '• "special: yes" olanlar ən üstə yerləşdirildi.\n' +
+                  '• Siyahı yeni ildən köhnəyə sıralandı.\n' +
+                  '• added dəyərləri 1 ilə ' + totalMovies + ' arası ardıcıllıq pozulmadan random paylandı.\n\n' +
+                  '🔥 Sistemdəki ən böyük "added" dəyəri (Film sayı): ' + maxAdded);
+            
+        } catch(err) {
+            alert('Xəta baş verdi! Fayl strukturunu yoxlayın. Xəta: ' + err.message);
+        }
+    };
+    
+    reader.readAsText(file);
+});
+</script>
+</body>
+</html>
