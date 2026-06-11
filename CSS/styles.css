@@ -691,6 +691,12 @@ header{
     transform:translateX(18px) !important;
   }
 }
+  @media (max-width:768px){
+  .flix-switch-container{
+    background:red !important;
+    border:5px solid yellow !important;
+  }
+}
   /* =========================================================
    SON ƏLAVƏ EDİLƏNLƏR CHECK BOX-SON
    ========================================================= */
