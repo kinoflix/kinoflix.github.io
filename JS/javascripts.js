@@ -2431,3 +2431,119 @@ document.addEventListener('DOMContentLoaded', () => {
 /* =========================================================
    SON ƏLAVƏ EDİLƏNLƏR CHECK BOX-SON
    ========================================================= */
+
+/* =========================================================
+   KOLLEKSİYA PANELİ
+   ========================================================= */
+
+// 1. KOLLEKSİYALARI BAZANIZA BAĞLAYIN
+// Sizin film ID-lərinizə əsasən qurulub:
+const COLLECTIONS = [
+  {
+    id: "home-alone-series",
+    title: "Evdə Tək Silsiləsi",
+    cover: "https://m.media-amazon.com/images/S/pv-target-images/cc4ebc2e3deda16b41d4d09636efd60c9028577b18dd873f0ba31d4bb9e033db.jpg",
+    movies: ["homealone", "homealoneaz", "homealone2", "homealone3"]
+  },
+  {
+    id: "marvel-universe",
+    title: "Marvel Dünyası",
+    cover: "https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGc@._V1_.jpg",
+    movies: ["spidernoir"]
+  },
+  {
+    id: "trend-movies",
+    title: "Gündəmdə Olanlar",
+    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["esrefruya", "spidernoir"]
+  }
+];
+
+// 2. Spotlight vizual yeniləmə mexanizmi
+function updateSpotlight(collection) {
+    const bgImage = document.getElementById('spotlightBgImage');
+    if (!bgImage) return;
+    
+    // Keçid edərkən göz qırpması olmasın deyə animasiya
+    bgImage.style.opacity = "0.1";
+    bgImage.style.transform = "scale(1.03)";
+    
+    setTimeout(() => {
+        bgImage.src = collection.cover;
+        document.getElementById('spotlightTitle').innerText = collection.title;
+        document.getElementById('spotlightCount').innerText = `${collection.movies.length} Film / Video`;
+        bgImage.style.opacity = "0.35";
+        bgImage.style.transform = "scale(1)";
+    }, 200);
+
+    // Düyməyə klik edəndə süzgəci işə salırıq
+    document.getElementById('spotlightActionBtn').onclick = () => {
+        filterMoviesByCollection(collection.id, collection.title);
+    };
+}
+
+// 3. Sağ tərəfdəki menyunu ekrana çıxaran funksiya
+function initSpotlight() {
+    const tabsContainer = document.getElementById('spotlightTabsContainer');
+    if (!tabsContainer) return; // Səhifədə element yoxdursa dayandır
+    
+    tabsContainer.innerHTML = "";
+
+    COLLECTIONS.forEach((col, index) => {
+        const li = document.createElement('li');
+        li.className = `tab-item ${index === 0 ? 'active' : ''}`;
+        li.innerText = col.title;
+
+        // Üstünə gələndə və ya toxunanda (Mobil) aktiv et
+        const activate = () => {
+            document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
+            li.classList.add('active');
+            updateSpotlight(col);
+        };
+
+        li.onmouseenter = activate;
+        li.onclick = activate;
+
+        tabsContainer.appendChild(li);
+    });
+
+    // İlk açılışda siyahıdakı birinci kolleksiyanı aktiv göstər
+    if(COLLECTIONS.length > 0) {
+        updateSpotlight(COLLECTIONS[0]);
+    }
+}
+
+// 4. MÜHÜM: SİZİN STATE STRUKTURUNUZA TAM UYĞUNLAŞDIRILMIŞ SÜZGƏC FUNKSİYASI
+function filterMoviesByCollection(collectionId, collectionTitle) {
+    const currentCollection = COLLECTIONS.find(c => c.id === collectionId);
+    if (!currentCollection) return;
+
+    // Sizin MOVIES massivinizdən (və ya saytın qlobal film massivindən) ID-ləri süzürük
+    // Əgər əsas massiviniz state daxilindədirsə (məsələn state.all), kodu ona uyğunlaşdırır
+    const sourceMassiv = (typeof MOVIES !== "undefined") ? MOVIES : (state.all || []);
+    const results = sourceMassiv.filter(movie => currentCollection.movies.includes(movie.id));
+
+    // Sizin saytda başlıq elementi varsa (məsələn: "Bütün Filmlər") onu dəyişirik
+    const gridTitle = document.getElementById('movieListTitle') || document.querySelector('.movies-section h2');
+    if (gridTitle) {
+        gridTitle.innerText = `${collectionTitle} (${results.length})`;
+    }
+
+    // YAMAQ HİSSƏSİ: Köhnə displayMovies(filtered) silindi!
+    // Yekun nəticəni birbaşa sizin state-inizə yazır və qaleriyanı yeniləyir
+    if (typeof state !== "undefined" && typeof resetGrid === "function") {
+        state.filtered = results;
+        resetGrid();
+    } else {
+        console.error("Xəta: 'state' obyekti və ya 'resetGrid' funksiyası tapılmadı!");
+    }
+}
+
+// Səhifə tam yüklənəndə sistemi işə salırıq
+document.addEventListener("DOMContentLoaded", () => {
+    initSpotlight();
+});
+
+/* =========================================================
+   KOLLEKSİYA PANELİ-SON
+   ========================================================= */
