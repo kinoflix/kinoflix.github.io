@@ -832,6 +832,41 @@ header{
     padding-left: 22px;
 }
 
+
+/* Kolleksiya Siyahısına Şaquli Scroll Əlavəsi */
+.spotlight-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 320px;
+    border-left: 2px solid rgba(255,255,255,0.1);
+    padding-left: 25px;
+    
+    /* 7-dən çox kolleksiya olduqda işə düşən scroll mexanizmi */
+    max-height: 310px; /* Sabit hündürlük */
+    overflow-y: auto;  /* Şaquli sürüşdürmə */
+    padding-right: 5px;
+}
+
+/* Scrollbar-ı vizual olaraq modern və incə etmək üçün */
+.spotlight-tabs::-webkit-scrollbar {
+    width: 4px;
+}
+.spotlight-tabs::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+}
+.spotlight-tabs::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+.spotlight-tabs::-webkit-scrollbar-thumb:hover {
+    background: #e50914; /* Aktiv olanda Netflix qırmızısı */
+}
+
 /* Mobil cihazlar üçün tam uyğunlaşma (Responsive) */
 @media (max-width: 768px) {
     .spotlight-section { height: auto; margin: 10px; }
