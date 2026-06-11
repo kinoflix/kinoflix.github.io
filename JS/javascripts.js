@@ -2443,126 +2443,6 @@ const COLLECTIONS = [
     title: "Hörümçək adam / Spider-Man",
     cover: "https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg",
     movies: ["spiderman", "spiderman2", "spiderman3", "theamazingspiderman", "theamazingspiderman2", "spidermanhomecoming", "spidermanintothespiderverse", "spidermanfarfromhome", "spidermannowayhome", "spidermanacrossthespiderverse", "spider-noir"]
-  },
-  {
-    id: "marvel-universe",
-    title: "Marvel Dünyası",
-    cover: "https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGc@._V1_.jpg",
-    movies: ["spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
-  },
-  {
-    id: "trend-movies",
-    title: "Gündəmdə Olanlar",
-    cover: "https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["esrefruya", "spidernoir"]
   }
 ];
 
@@ -2577,7 +2457,7 @@ function updateSpotlight(collection) {
     setTimeout(() => {
         bgImage.src = collection.cover;
         document.getElementById('spotlightTitle').innerText = collection.title;
-        document.getElementById('spotlightCount').innerText = `${collection.movies.length} Film / Video`;
+        document.getElementById('spotlightCount').innerText = `${collection.movies.length} Film`;
         bgImage.style.opacity = "0.35";
         bgImage.style.transform = "scale(1)";
     }, 200);
