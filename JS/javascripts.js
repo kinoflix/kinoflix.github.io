@@ -2372,58 +2372,61 @@ document.addEventListener('keydown', function(e) {
    SON ƏLAVƏ EDİLƏNLƏR CHECK BOX
    ========================================================= */
 
-// 1. Köhnə (orijinal) funksiyanı başqa bir dəyişəndə saxlayırıq
-const originalApplyFilters = applyFilters;
+// 1. Köhnə (orijinal) resetGrid funksiyasını başqa bir dəyişəndə saxlayırıq
+const originalResetGrid = resetGrid;
 
-// 2. Eyni adda yeni yamaq funksiyası yaradırıq
-applyFilters = function() {
-  // Əvvəlcə sənin mövcud köhnə filtr kodların işləsin və state.filtered massivini doldursun
-  originalApplyFilters(); 
-
+// 2. resetGrid funksiyasına kənardan mükəmməl bir yamaq vururuq
+resetGrid = function() {
   const sortCheckbox = document.getElementById('sort-latest-trigger');
   const labelText = document.querySelector('.flix-switch-label');
   const isLatestChecked = sortCheckbox?.checked;
 
-  // --- Dinamik Mətn Dəyişdirilməsi ---
+  // --- 1. Mətnlərin sinxron dəyişdirilməsi ---
   if (labelText) {
     labelText.textContent = isLatestChecked ? "Son əlavə edilənlər" : "İllərə görə ardıcıllıq";
   }
 
-  if (state.filtered && state.filtered.length > 0) {
-    
-    // === ƏSAS DƏYİŞİKLİK BURADADIR ===
-    // Əgər checkbox AÇIQDIRSA, sıralama məntiqini tətbiq et
-    if (isLatestChecked) {
-      state.filtered.sort((a, b) => {
-        // Special statuslarını yoxlayırıq
-        const isSpecialA = a.special === "yes" ? 1 : 0;
-        const isSpecialB = b.special === "yes" ? 1 : 0;
+  // --- 2. Filmlər ekrana çıxmazdan dərhal əvvəl sıralama ---
+  if (isLatestChecked && state.filtered && state.filtered.length > 0) {
+    state.filtered.sort((a, b) => {
+      // Special statuslarını yoxlayırıq
+      const isSpecialA = a.special === "yes" ? 1 : 0;
+      const isSpecialB = b.special === "yes" ? 1 : 0;
 
-        // 1. Öncəliklə special="yes" olanlar hər zaman ən öndə qalsın
-        if (isSpecialA !== isSpecialB) {
-          return isSpecialB - isSpecialA; 
-        }
+      // Qızılı olanlar hər zaman ən öndə qalsın
+      if (isSpecialA !== isSpecialB) {
+        return isSpecialB - isSpecialA; 
+      }
 
-        // 2. Hər iki film eyni qrupdandırsa (ikisi də special və ya ikisi də adi):
-        // added dəyərinə görə (böyükdən kiçiyə) düzürük
-        const addedA = Number(a.added) || 0;
-        const addedB = Number(b.added) || 0;
-        return addedB - addedA;
-      });
-    } else {
-      // Əgər checkbox BAĞLIDIRSA: Heç bir sıralama (.sort) etmirik!
-      // Sənin axtarış və janr filtrindən qalan nəticə birbaşa sənin massivdəki orijinal sıranla gedir.
-      // special filmlərə "yes" yazdıqdan sonra belə onların sönülü halda ən başda gəlməsini istəyirsənsə,
-      // sadəcə onları massivin (array) daxilində ən başa köçürməyin kifayətdir.
-    }
-
-    // Qaleriyanı yenidən doldururuq
-    grid.innerHTML = ''; 
-    state.page = 0; 
-    allLoaded.style.display = 'none'; 
-    renderChunk();
+      // Hər iki film eyni qrupdandırsa, added-ə görə böyükdən kiçiyə düzülür
+      const addedA = Number(a.added) || 0;
+      const addedB = Number(b.added) || 0;
+      return addedB - addedA;
+    });
   }
+  // QEYD: Checkbox sönülüdürsə (else), .sort() etmirik, 
+  // applyFilters-dən gələn sənin orijinal massiv sıran olduğu kimi qorunur!
+
+  // 3. İndi isə orijinal resetGrid işini görsün (ekranı təmizləsin və renderChunk çağırsın)
+  originalResetGrid();
 };
+
+// === 3. Checkbox kliklənəndə mövcud filtri yenidən tetikləyirik ===
+document.getElementById('sort-latest-trigger').addEventListener('change', (e) => {
+  localStorage.setItem('flixlite_sort_latest', e.target.checked);
+  if (typeof applyFilters === 'function') applyFilters(); // Mövcud filtri yenidən çağırır
+});
+
+// === 4. Səhifə ilk açılanda LocalStorage-dan vəziyyəti bərpa etmək ===
+document.addEventListener('DOMContentLoaded', () => {
+  const sortCheckbox = document.getElementById('sort-latest-trigger');
+  if (sortCheckbox) {
+    const savedStatus = localStorage.getItem('flixlite_sort_latest') === 'true';
+    sortCheckbox.checked = savedStatus;
+    // İlkin vəziyyəti tətbiq etmək üçün filtri bir dəfə işə salırıq
+    if (typeof applyFilters === 'function') applyFilters();
+  }
+});
 
 /* =========================================================
    SON ƏLAVƏ EDİLƏNLƏR CHECK BOX-SON
