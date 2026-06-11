@@ -6,9 +6,9 @@
   --bg:#f6f8fb; --surface:#ffffff; --muted:#475569; --accent:#0b74ff; --text:#071026; --glass: rgba(0,0,0,0.04);
 }
 *{box-sizing:border-box}
-html,body{height:100%;overflow-y: auto;}
+html,body{height:100%,overflow-y: auto;}
 body{
-  margin:0;background:linear-gradient(180deg,var(--bg),color-mix(in srgb,var(--bg) 100%, #0000));
+  margin:0;background:linear-gradient(180deg,var(--bg),color-mix(in srgb,var(--bg) 100%, #0000));   /* Qeyd: Rəng parçalanmasını ləğv etmək üçün color-mix(in srgb,var(--bg) 85% göstəricisini 100% etdim. */
   color:var(--text);font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
   transition:background .22s,color .22s;
@@ -130,7 +130,7 @@ header{
   backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.02);
 }
 .header-left{display:flex;align-items:center;gap:12px}
-#logoImg{width:120px;height:46px;border-radius:8px;object-fit:contain;cursor:pointer;box-shadow:var(--card-sh);background:transparent;padding:6px}
+#logoImg{width:120px;height:46px;border-radius:8px;object-fit:contain;cursor:pointer;box-shadow:v*r(--card-sh);background:transparent;padding:6px}
 .header-center{flex:1}
 .header-right{display:flex;align-items:center;gap:10px}
 
@@ -152,7 +152,7 @@ header{
   background: var(--surface);
   border: 1px solid rgba(255, 255, 255, 0.03);
   cursor: pointer;
-  color: var(--text); 
+  color: var(--text); /* Tema dəyişəndə avtomatik rəng */
 }
 
 .search-btn svg {
@@ -161,17 +161,19 @@ header{
   opacity: .95;
 }
 
+/* İkonun rəngi currentColor (yəni var(--text)) ilə idarə olunur */
 .search-btn svg * {
   stroke: currentColor;
   fill: none;
 }
+/* Qeyd: Axtar butonunun üzərinə gəldikdə çöl kənar xəttləri görünsün deyə hover əlavə etdim */
 .search-btn:hover {
   background: var(--surface);
-  outline: 2px solid var(--accent); 
+  outline: 2px solid var(--accent); /* Qeyd: Maus üzərinə gəldikdə çöl kənar xəttlər görünsün. */
 }
   
 .search-input {
-  outline: 2px solid var(--accent); 
+  outline: 2px solid var(--accent); /* Qeyd: Axtarış sahəsi açıldıqda çöl kənar xəttləri yaşıl/mavi olsun deyə əlavə etdim */
   width: 0;
   max-width: 420px;
   padding: 10px 12px;
@@ -195,7 +197,7 @@ header{
   opacity: .9;
 }
 
-/* --- BUTTONS --- */
+/* --- BUTTONS (YENİLƏNDİ) --- */
 .icon-btn {
   display: inline-grid;
   place-items: center;
@@ -206,32 +208,35 @@ header{
   border: 1px solid rgba(255, 255, 255, 0.03);
   cursor: pointer;
   color: var(--text);
-  transition: all 0.3s ease; 
+  transition: all 0.3s ease; /* Keçidləri yumşaltdıq */
 }
 
+/* Ümumi düymələr üçün köhnə hover effekti qalsın */
 .icon-btn:hover {
   background: var(--surface);
   outline: 2px solid var(--accent);
 }
 
-/* --- TEMA DÜYMƏSİ ÜÇÜN ÖZƏL --- */
+/* --- TEMA DÜYMƏSİ ÜÇÜN ÖZƏL (Sənin istədiyin KINOFLIX+ stili) --- */
 #themeToggle {
-  border-radius: 50% !important; 
+  border-radius: 50% !important; /* Dairəvi forma */
   background: var(--glass);
   border: none;
 }
 
 #themeToggle:hover {
-  outline: none !important; 
-  background: var(--accent) !important; 
+  outline: none !important; /* Kvadrat xətti ləğv edirik */
+  background: var(--accent) !important; /* Yaşıl və ya Mavi fon */
   color: #fff !important;
-  transform: scale(1.1) rotate(15deg); 
+  transform: scale(1.1) rotate(15deg); /* Dönmə effekti */
+  /* Neon effekti əlavə olundu */
   box-shadow: 
     0 0 10px var(--accent),
     0 0 20px var(--accent),
     0 0 35px color-mix(in srgb, var(--accent) 70%, transparent);
 }
 
+/* Mobildə toxunanda (active) eyni effekt olsun */
 @media (max-width: 768px) {
   #themeToggle:active {
     background: var(--accent) !important;
@@ -239,39 +244,49 @@ header{
   }
 }
 
-  /* === Filter Select Dropdown === */
+  /* === YENİ ===: Filter Select Dropdown */
 .filter-select {
+  /* Əvvəlki stil dəyərləri */
   background-color: var(--surface);
   color: var(--text);
   border: 1px solid rgba(255, 255, 255, 0.04);
   border-radius: 12px;
-  padding: 12px 40px 12px 12px; 
+  padding: 12px 40px 12px 12px; /* Sağ tərəfdən ikon üçün boşluq qoyulur */
   font-size: 14px;
   cursor: pointer;
   min-width: 160px;
-  appearance: none; 
+  
+  /* Əsas custom görünüş */
+  appearance: none; /* Default brauzer ikonunu gizlədir */
   -webkit-appearance: none;
   -moz-appearance: none;
+
+  /* Aşağı baxan ox ikonu (Ağ rəng) */
   background-image: url("data:image/svg+xml,%3Csvg fill='%23e6eef6' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center; 
+  background-position: right 12px center; /* İkonun yerini tənzimləyir */
   background-size: 16px;
   transition: background-image 0.2s ease;
 }
 
+/* 1. Select açıldıqda/fokuslandıqda oxu yuxarıya çevir (Ağ rəng) */
 .filter-select:focus {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
   background-image: url("data:image/svg+xml,%3Csvg fill='%23e6eef6' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 14l5-5 5 5z'/%3E%3C/svg%3E");
 }
 
+/* 2. Gündüz rejimi (Light Mode) üçün ikon rəngi dəyiş (Qara/Tünd rəng) */
 [data-theme="light"] .filter-select {
+  /* Aşağı baxan ox ikonu (Tünd rəng) */
   background-image: url("data:image/svg+xml,%3Csvg fill='%23071026' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
 }
 
+/* 3. Gündüz rejimində Select açıldıqda/fokuslandıqda oxu yuxarıya çevir (Tünd rəng) */
 [data-theme="light"] .filter-select:focus {
   background-image: url("data:image/svg+xml,%3Csvg fill='%23071026' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 14l5-5 5 5z'/%3E%3C/svg%3E");
 }
+/* === SON === */
 
 /* Gallery */
 .container{max-width:1180px;margin:22px auto;padding:8px 18px}
@@ -289,18 +304,17 @@ header{
 @keyframes spin{to{transform:rotate(360deg)}}
 .all-loaded{display:none;padding:14px 12px;text-align:center;color:var(--muted)}
 
-/* Modal inner */
+  /* Modal içində video ilə overlay arası məsafə */
 .modal-inner {
-  padding: 20px; 
-  box-sizing: border-box; 
-  position: relative; 
-  z-index: 3;
+  padding: 20px; /* İstədiyin qədər məsafə ver */
+  box-sizing: border-box; /* padding-in layouta təsir etməsi üçün */
 }
 
 .video-container {
-  padding: 12px; 
+  padding: 12px; /* Video ilə modal içi kənar arasına əlavə boşluq */
 }
   
+
 /* Modal & player */
 .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(2,6,23,0.76), rgba(2,6,23,0.9));z-index:120;padding:18px}
 .modal.open{display:flex}
@@ -315,29 +329,50 @@ header{
 .video-container.responsive{position:relative;padding-top:56.25%}
 .video-container.responsive .video-js{position:absolute;top:0;left:0;width:100%;height:100%}
 
+/* modern - Qaçma probleminin həlli üçün: aspect-ratio çıxarıldı, video kəsilmir, vizual round üçün overlay əlavə olunur */
 .video-js{
+  /* aspect-ratio:16/9;  --> PROBLEM mənbəyi olduğu üçün çıxarıldı */
   width:100%;
   max-height:80vh;
   height:auto;
+  /* border-radius və overflow: hidden videonu kəsdiyindən silindi */
+  /* border-radius:12px; overflow:hidden; */
   aspect-ratio: unset;
 }
 
+/* video element (texnologiya) tam yerləşsin */
 .video-js .vjs-tech,
 .video-js .vjs-poster {
   width:100% !important;
   height:100% !important;
   object-fit: contain;
   display:block;
-  border-radius: 0; 
+  border-radius: 0; /* videonun özü kəsilməsin */
 }
 
+/* -- Minimal estetik: container üzərində overlay ilə "görünüşdə" rounded corners -- */
 .video-container.responsive {
-  border-radius: 12px;       
+  /* (sənin mövcud qaydanın içində olduğu üçün - yalnız əlavə edin) */
+  border-radius: 12px;       /* vizual künc radiusu */
+  /* QƏDƏR: əhəmiyyətli — overflow *olmayacaq* (videonu kəsməmək üçün) */
   overflow: visible;
   position: relative;
   padding-top: 54.55%;
 }
 
+/* overlay: video kəsilmədən görünüşdə yuvarlaq künc effekti verir */
+.video-container.responsive::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;    /* kontrollerə müdaxilə etmir */
+  border-radius: 12px;
+  /* aşağıdakı line səhifə fonuna uyğun olmalıdır; əgər səhifə fonun #08101a kimidirsə istifadə et */
+  box-shadow: 0 0 0 9999px var(--bg, #08101a);
+  mix-blend-mode: normal;
+  /* əgər fon fərqlidirsə, var(--bg) dəyişdir */
+}
+  /* BAŞLIQ, ALT BAŞLIQ VƏ X-I QORU: keep the overlay but put it behind controls */
 .video-container.responsive::after{
   content: "";
   position: absolute;
@@ -346,15 +381,22 @@ header{
   border-radius: 12px;
   box-shadow: 0 0 0 9999px var(--bg, #08101a);
   mix-blend-mode: normal;
-  z-index: 0; 
+  z-index: 0; /* <- ADDED: push overlay behind */
 }
 
+/* ensure player header / close button are above overlay */
 .player-top,
 .player-top * {
   position: relative;
-  z-index: 2; 
+  z-index: 2; /* <- ADDED: above overlay */
 }
 
+/* if needed, make modal-inner above overlay as well */
+.modal-inner { position: relative; z-index: 3; }
+
+
+
+/* Ensure the custom skip icons render exactly: force sizing/color via currentColor */
 .vjs-control.custom-skip,
 .video-js .vjs-control.custom-skip {
   display:inline-flex;align-items:center;justify-content:center;width:3em;height:3em;padding:0;margin:0 6px;background:transparent;border:0;color:var(--text);
@@ -367,7 +409,8 @@ header{
 .toast.show{display:block;animation:toastpop .22s ease}
 @keyframes toastpop{from{transform:translateX(-50%) translateY(10px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
 
-/* === SHARE BUTTON === */
+  /* === SHARE BUTTON: player-top içində sağ tərəf üçün === */
+/* (CSS DÜZƏLİŞİ: Bu blok @media xaricinə, qlobal sahəyə köçürüldü) */
 .player-top {
   display: flex;
   align-items: center;
@@ -377,6 +420,7 @@ header{
   box-sizing: border-box;
 }
 
+/* Right-side wrapper */
 .player-right-controls {
   display: flex;
   align-items: center;
@@ -385,6 +429,7 @@ header{
   margin-left: 8px;
 }
 
+/* Share button core */
 #mainShareBtn,
 .player-right-controls .share-btn {
   display: inline-grid;
@@ -392,22 +437,34 @@ header{
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: rgba(0, 0, 0, 0); 
-  border: 1px solid rgba(0, 0, 0, 0); 
+  background: rgba(0, 0, 0, 0); /* Qeyd: Əvvəlki göstərici var(--surface) xüsusi handlerlərə təsir etmədiyi üçün sabit rəng ilə dəyişdim və 0 edərək şəffaf etdim. */
+  border: 1px solid rgba(0, 0, 0, 0); /* Qeyd: İç kənar kənar xəttlər görünməsin deyə 0 edərək şəffaf etdim. */
   cursor: pointer;
-  color: var(--text);        
+  color: var(--text);        /* SVG stroke will use currentColor -> var(--text) */
   padding: 0;
   line-height: 0;
   box-sizing: border-box;
   transition: background .18s ease;
 }
 
+/* hover */
 #mainShareBtn:hover,
 .player-right-controls .share-btn:hover {
-  background: rgba(0, 0, 0, 0); 
-  outline: 2px solid var(--accent); 
+  background: rgba(0, 0, 0, 0); /* Qeyd: Maus üzərinə gəldikdə arxa plan rəng deyə deyə 0 edərək şəffaf etdim. Əvvəlki göstərici: rgba(255,255,255,0.02) */
+  outline: 2px solid var(--accent); /* Qeyd: Maus üzərinə gəldikdə çöl kənar xəttlər görünsün. */
 }
 
+  /*
+/ * focus for keyboard users * /
+#mainShareBtn:focus,
+.player-right-controls .share-btn:focus {
+  outline: 2px solid var(--accent); / * Qeyd: Əvvəlki göstərici rgba(11,119,255,0.14) idi * /
+  outline-offset: 2px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.25);
+}
+  */
+
+/* SVG size */
 #mainShareBtn svg,
 .player-right-controls .share-btn svg {
   width: 20px;
@@ -416,6 +473,7 @@ header{
   vertical-align: middle;
 }
 
+/* Use stroke=currentColor and no fill so icon is outline and follows theme */
 #mainShareBtn svg * ,
 .player-right-controls .share-btn svg * {
   fill: none !important;
@@ -423,9 +481,10 @@ header{
   stroke-width: 2 !important;
   stroke-linecap: round;
   stroke-linejoin: round;
-  transition: none !important; 
+  transition: none !important; /* immediate color change */
 }
 
+/* Slightly smaller on very small screens */
 @media (max-width: 420px) {
   #mainShareBtn,
   .player-right-controls .share-btn {
@@ -440,59 +499,83 @@ header{
   }
 }
 
-/* responsive mobile wrappers */
+/* Extra specificity fallback in case generic rules override */
+.modal-inner #mainShareBtn { }
+/* (SHARE BUTTON CSS SONU) */
+
+/* responsive */
 @media (max-width:520px){
   .overlay { width: 89%; }
-  .video-container { padding: 0 8px; }
-  .modal-inner { width: 100%; padding: 12px; }
-  .video-js { height: 236px; }
-  .video-container.responsive { padding-top: 56.25%; }
+  .video-container {
+    padding: 0 8px;  /* mövcud qayda */
+  }
+  .modal-inner {
+    width: 100%;
+  }
+
+  .video-js {
+    height: 236px;    /* mövcud qayda */
+  }
+  .video-container.responsive {
+    padding-top: 56.25%;
+  }
+
+  /* yeni əlavə qaydalar */
+  .modal-inner {
+    padding: 12px;    /* overlay və video arasında boşluq */
+  }
   .search-input.open{width:140px}
   .search-btn, .icon-btn{width:40px;height:40px}
   header{height:64px;padding:8px 12px}
   body{padding-top:64px}
 }
-
-/* === MASAUZTI (DESKTOP) ÜÇÜN XÜSUSİ REJİM === */
+    /* Video pəncərəsinin (arxa sahənin) masaüstü üçün hizalanmasını tənzimlə */
 @media (min-width: 768px){
-  .modal,
-  .modal-dialog,
-  .overlay {
-    transform: translateX(-6px) !important; 
-  }
-  .modal-inner {
-    display: flex;
-    flex-direction: column;
-    max-height: calc(100vh - 24px); 
-  }
-  .player-top {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 10px;        
-    flex: 0 0 auto;          
-  }
-  .player-title {
-    font-size: clamp(14px, 2.6vw, 16px);
-    line-height: 1.1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .video-container {
-    flex: 1 1 auto;
-    min-height: 0; 
-  }
-  .video-container .video-js {
-    width: 100%;
-    height: 100%;
-    max-height: calc(100vh - 80px); 
-    object-fit: contain;
-  }
-} /* <--- DÜZƏLİŞ: Köhnə kodda unudulan və hər şeyi korlayan bu bağlayıcı mötərizə bərpa olundu! */
+.modal,
+.modal-dialog,
+.overlay {
+  transform: translateX(-6px) !important; /* pəncərəni sola 0.2 sm çəkir */
+}
+  /* KİÇİK EKRANLAR ÜÇÜN: make modal layout flexible and limit total height */
+.modal-inner {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 24px); /* page top/bottom margin */
+}
 
+/* player header: allow it to shrink on small screens */
+.player-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;        /* daha kompakt padding */
+  flex: 0 0 auto;          /* don't stretch */
+}
 
-/* =========================================================
+/* title responsive size — shrinks on small screens */
+.player-title {
+  font-size: clamp(14px, 2.6vw, 16px);
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ensure video container uses remaining vertical space */
+.video-container {
+  flex: 1 1 auto;
+  min-height: 0; /* important for flex children to allow shrinking */
+}
+
+/* video uses available container height but not overflow modal */
+.video-container .video-js {
+  width: 100%;
+  height: 100%;
+  max-height: calc(100vh - 80px); /* safe default: viewport minus header+margins */
+  object-fit: contain;
+}
+
+  /* =========================================================
    SON ƏLAVƏ EDİLƏNLƏR CHECK BOX (QLOBAL VƏ RESPONSIVE)
    ========================================================= */
   
