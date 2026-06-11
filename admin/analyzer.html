@@ -2,7 +2,7 @@
 <html lang="az">
 <head>
     <meta charset="UTF-8">
-    <title>Canlı Film Massivi Analizatoru</title>
+    <title>Təkmilləşdirilmiş Film Massivi Analizatoru</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; background: #141414; color: white; text-align: center; }
         .container { background: #222; padding: 30px; border-radius: 10px; max-width: 650px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
@@ -24,11 +24,11 @@
 <body>
 
 <div class="container">
-    <h2>Canlı Film Analizatoru</h2>
-    <p>Saytınızdakı film datalarının linkini (məsələn: <code>massiv.txt</code> və ya JS faylının birbaşa URL-ni) bura daxil edin. Sistem canlı olaraq ümumi film sayını və ən yüksək <b>added</b> dəyərini hesablayacaq.</p>
+    <h2>Canlı Film Analizatoru (Ağıllı Parser)</h2>
+    <p>JS və ya TXT linkini daxil edin. Bu versiya kod daxilindəki dəyişənlərə baxmır, birbaşa massiv strukturunu detekt edir.</p>
     
     <div class="input-group">
-        <input type="url" id="urlInput" placeholder="https://kinoflix.github.io/massiv.txt" required>
+        <input type="url" id="urlInput" placeholder="Məsələn: https://saytadi.github.io/massiv.js" required>
         <br>
         <button id="analyzeBtn">İndi Analiz Et</button>
     </div>
@@ -53,41 +53,40 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
         return;
     }
 
-    // UI təmizlənməsi və yüklənmə animasiyası
     loader.style.display = 'block';
     resultBox.style.display = 'none';
 
     try {
-        // Canlı olaraq linkdəki mətni çəkirik
+        // Canlı datanı çəkirik
         const response = await fetch(urlInput);
         if (!response.ok) {
-            throw new Error(`Fayl tapılmadı və ya yüklənmədi (Status: ${response.status})`);
+            throw new Error(`Fayl tapılmadı. Keçid statusu: ${response.status}`);
         }
         
         let text = await response.text();
-        text = text.trim();
-
-        // JS massiv strukturunu təmizləyib oxunaqlı formata salırıq
-        let arrayString = text;
-        if (arrayString.startsWith('const MOVIES =')) {
-            arrayString = arrayString.replace('const MOVIES =', '');
+        
+        // 🚀 AĞILLI EXTRACTOR: İlk [ və son ] tapılır
+        const startIdx = text.indexOf('[');
+        const endIdx = text.lastIndexOf(']');
+        
+        if (startIdx === -1 || endIdx === -1) {
+            throw new Error("JS kodunun içində düzgün film massivi ([ ]) tapılmadı. Linkin doğruluğunu yoxlayın.");
         }
-        if (arrayString.endsWith(';')) {
-            arrayString = arrayString.slice(0, -1);
-        }
+        
+        // Sırf massiv olan hissəni qoparırıq
+        let arrayString = text.substring(startIdx, endIdx + 1);
 
-        // Mətni təhlükəsiz şəkildə JS obyektinə (massivə) çeviririk
+        // Massivi JS obyektinə çeviririk
         const movies = new Function(`return ${arrayString};`)();
 
         if (!Array.isArray(movies)) {
-            throw new Error("Daxil edilən linkdə düzgün film massivi strukturu tapılmadı.");
+            throw new Error("Məlumatlar massiv formatında deyil.");
         }
 
-        // 1. Ümumi film sayının tapılması
+        // Hesablamalar
         const totalCount = movies.length;
-
-        // 2. Ən böyük added dəyərinin tapılması
         let highestAdded = 0;
+        
         movies.forEach(movie => {
             let val = parseFloat(movie.added) || 0;
             if (val > highestAdded) {
@@ -95,22 +94,21 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
             }
         });
 
-        // Nəticələrin ekranda göstərilməsi
+        // Nəticəni ekrana yazdırırıq
         document.getElementById('statusText').innerText = "Uğurlu (Məlumatlar oxundu)";
-        document.getElementById('statusText').className = "";
+        document.getElementById('statusText').style.color = "#2ecc71";
         document.getElementById('totalMovies').innerText = totalCount + " ədəd film";
         document.getElementById('maxAdded').innerText = highestAdded;
         
         resultBox.style.display = 'block';
 
     } catch (err) {
-        // Xəta idarəetməsi (Məsələn CORS bloklanması və ya yanlış link daxil edildikdə)
         document.getElementById('statusText').innerText = "Xəta baş verdi!";
-        document.getElementById('statusText').className = "error";
-        document.getElementById('totalMovies').innerText = "Hesablanamadı";
-        document.getElementById('maxAdded').innerText = "Hesablanamadı";
+        document.getElementById('statusText').style.color = "#ff3333";
+        document.getElementById('totalMovies').innerText = "---";
+        document.getElementById('maxAdded').innerText = "---";
         
-        alert("Xəta təfərrüatı: " + err.message + "\n\nQeyd: Linkin birbaşa .txt və ya .js datasına yönəldiyindən əmin olun.");
+        alert("XƏTA DETALLARI:\n" + err.message + "\n\nTövsiyə: Əgər GitHub istifadə edirsinizsə, linkin 'raw.githubusercontent.com' ilə başladığından və ya canlı '.github.io' linki olduğundan əmin olun.");
         resultBox.style.display = 'block';
     } finally {
         loader.style.display = 'none';
