@@ -2367,3 +2367,93 @@ document.addEventListener('keydown', function(e) {
         }
     }
 }, true);
+
+/* =========================================================
+   SON ƏLAVƏ EDİLƏNLƏR CHECK BOX
+   ========================================================= */
+
+// 1. Köhnə (orijinal) funksiyanı başqa bir dəyişəndə saxlayırıq
+const originalApplyFilters = applyFilters;
+
+// 2. Eyni adda yeni yamaq funksiyası yaradırıq
+applyFilters = function() {
+  // Əvvəlcə sənin mövcud köhnə filtr kodların işləsin və state.filtered massivini doldursun
+  originalApplyFilters(); 
+
+  const sortCheckbox = document.getElementById('sort-latest-trigger');
+  const labelText = document.querySelector('.flix-switch-label');
+  const isLatestChecked = sortCheckbox?.checked;
+
+  // --- 1. ƏLAVƏ: Dinamik Mətn Dəyişdirilməsi ---
+  if (labelText) {
+    labelText.textContent = isLatestChecked ? "Son əlavə edilənlər" : "İllərə görə ardıcıllıq";
+  }
+
+  if (state.filtered && state.filtered.length > 0) {
+    
+    // --- 2. ƏLAVƏ: Special "yes" Qorunmaqla Sıralama Məntiqi ---
+    state.filtered.sort((a, b) => {
+      // Əgər bir film special="yes"-dirsə, hər zaman önə keçsin
+      const isSpecialA = a.special === "yes" ? 1 : 0;
+      const isSpecialB = b.special === "yes" ? 1 : 0;
+
+      if (isSpecialA !== isSpecialB) {
+        return isSpecialB - isSpecialA; // "yes" olanlar (1) olmayanlardan (0) qabağa düşür
+      }
+
+      // Əgər hər iki film eyni statusdadırsa (hər ikisi special və ya hər ikisi adi),
+      // o zaman checkbox-ın vəziyyətinə baxırıq:
+      if (isLatestChecked) {
+        // Açıqdırsa: added dəyərinə görə (böyükdən kiçiyə)
+        const addedA = Number(a.added) || 0;
+        const addedB = Number(b.added) || 0;
+        return addedB - addedA;
+      } else {
+        // Bağlıdırsa: Sənin massivdəki orijinal (illər üzrə) sıranı qorumaq üçün toxunmuruq
+        return 0; 
+      }
+    });
+
+    // Əgər istifadəçi checkbox-ı söndürübsə və massiv special-a görə qarışıbsa,
+    // orijinal struktura tam qayıtmaq üçün əlavə bir təhlükəsizlik addımı (İllərə görə yenidən yüngül sıralama):
+    if (!isLatestChecked) {
+      state.filtered.sort((a, b) => {
+        const isSpecialA = a.special === "yes" ? 1 : 0;
+        const isSpecialB = b.special === "yes" ? 1 : 0;
+        if (isSpecialA !== isSpecialB) return isSpecialB - isSpecialA;
+        
+        // Hər ikisi normal filmdirsə, sənin datadakı orijinal ili saxlayırıq (böyükdən kiçiyə il sırası)
+        return (Number(b.year) || 0) - (Number(a.year) || 0);
+      });
+    }
+
+    // Sıralanmış yeni massivlə qaleriyanı yenidən doldururuq
+    grid.innerHTML = ''; 
+    state.page = 0; 
+    allLoaded.style.display = 'none'; 
+    renderChunk();
+  }
+};
+
+// === LocalStorage məntiqi və İlkin Yüklənmə ===
+document.addEventListener('DOMContentLoaded', () => {
+  const sortCheckbox = document.getElementById('sort-latest-trigger');
+  
+  if (sortCheckbox) {
+    const savedStatus = localStorage.getItem('flixlite_sort_latest') === 'true';
+    sortCheckbox.checked = savedStatus;
+
+    // Səhifə ilk açılanda mətni düzgün təyin etmək üçün funksiyanı çağırırıq
+    applyFilters();
+  }
+});
+
+// Checkbox kliklənəndə həm vəziyyəti yaddaşa yazırıq, həm də filtri işə salırıq
+document.getElementById('sort-latest-trigger').addEventListener('change', (e) => {
+  localStorage.setItem('flixlite_sort_latest', e.target.checked);
+  applyFilters();
+});
+
+/* =========================================================
+   SON ƏLAVƏ EDİLƏNLƏR CHECK BOX-SON
+   ========================================================= */
