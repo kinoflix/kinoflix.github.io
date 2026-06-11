@@ -574,7 +574,7 @@ header{
   max-height: calc(100vh - 80px); /* safe default: viewport minus header+margins */
   object-fit: contain;
 }
-
+}
   /* =========================================================
    SON ƏLAVƏ EDİLƏNLƏR CHECK BOX (QLOBAL VƏ RESPONSIVE)
    ========================================================= */
