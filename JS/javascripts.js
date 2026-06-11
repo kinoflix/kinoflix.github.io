@@ -3,7 +3,7 @@
    =========================== */
 const MOVIES = [
   { title:"Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", trend:"yes", special:"yes", added:176 },
-  { title:"Eşref Rüya - 47. Bölüm (FİNAL)", cover:"https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://www.dailymotion.com/video/xaefcuq", year:2025, genre:"Dram", id:"esrefruya", trend:"yes", special:"yes", added:121 },
+  { title:"Eşref Rüya - 47. Bölüm (FİNAL)", cover:"https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://www.dailymotion.com/video/xaefify", year:2025, genre:"Dram", id:"esrefruya", trend:"yes", special:"yes", added:121 },
   { title:"Avatar 3: Ateş ve kül / Avatar 3: Fire and Ash", cover:"https://m.media-amazon.com/images/M/MV5BZDYxY2I1OGMtN2Y4MS00ZmU1LTgyNDAtODA0MzAyYjI0N2Y2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vkvideo.ru/video359563763_456241595", year:2025, genre:"Fantastik", id:"avatar3", trend:"yes", special:"yes", added:133 },
   { title:"Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", trend:"yes", special:"yes", added:11 },
   { title:"İsimsiz kadın / The Marked Woman", cover:"https://m.media-amazon.com/images/M/MV5BMmVkYmE0YTktNGQxZS00MjQ1LTgzZjUtNmQyNWU3ZDY1MmFlXkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/14614546483817", year:2026, genre:"Triller", id:"themarkedwoman", added:132 },
