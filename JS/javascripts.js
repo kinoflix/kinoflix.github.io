@@ -265,16 +265,16 @@ const MOVIES = [
   {title:"Savaşçı / Ong Bak", cover:"https://m.media-amazon.com/images/M/MV5BOTcwMTAzNDItODg2MC00MjE0LWEyNzYtYzZjNjZmNjdhODE2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vidmoly.me/dl/97jqak09ashr", year:2003, genre:"Aksiyon", id: "ongbak"},
   {title:"Savaşçı 2 / Ong Bak 2", cover:"https://m.media-amazon.com/images/M/MV5BODUzMjVkMDItNmQ3OS00ZjNlLWE1ZjMtNGI5YTY1NmI1M2MyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vidmoly.me/dl/4uqkinxe11iq", year:2008, genre:"Aksiyon", id: "ongbak2"},
   {title:"Savaşçı 3 / Ong Bak 3", cover:"https://m.media-amazon.com/images/M/MV5BMTc3MjkyMzk4N15BMl5BanBnXkFtZTcwODQxMDg5Mw@@._V1_FMjpg_UX1000_.jpg", src:"https://vidmoly.me/dl/tjvzyo1ok7n5", year:2010, genre:"Aksiyon", id: "ongbak3"},
-  {title:"Ip Man", cover:"https://m.media-amazon.com/images/M/MV5BMjE0NDUzMDcyOF5BMl5BanBnXkFtZTcwNzAxMTA2Mw@@._V1_.jpg", src:"https://my.mail.ru/video/embed/2812081686177647104", year:2008, genre:"Aksiyon", id: "ipman"},
-  {title:"Ip Man 2: Legend of the Grandmaster", cover:"https://m.media-amazon.com/images/M/MV5BYzEzYTBmYjgtNjQzMi00YmNiLTkyZGItOGFhMzEzOWY3MjI4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://m.vkvideo.ru/video359109645_456239197", year:2010, genre:"Aksiyon", id: "ipman2"},
-  {title:"Ip Man 3", cover:"https://m.media-amazon.com/images/M/MV5BMmZhOWNlMDEtN2M1OC00Yzk5LThhOTAtZDA5NTNjNjQyZDM0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/1501966895750", year:2015, genre:"Aksiyon", id: "ipman3"},
-  {title:"Master Z: Ip Man Legacy (Spin-off)", cover:"https://m.media-amazon.com/images/M/MV5BMTYxNzA0ODQyMF5BMl5BanBnXkFtZTgwNzUwNTg1NzM@._V1_.jpg", src:"https://ok.ru/video/1978023217798", year:2018, genre:"Aksiyon", id: "ipmanlegacy"},
-  {title:"Ip Man 4: The Final", cover:"https://m.media-amazon.com/images/M/MV5BOGVjMDEzNjMtMWJmMy00NDdjLWFkMzItOTBhZTE3OWU0YmM4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/1770461137542", year:2019, genre:"Aksiyon", id: "ipman4"},
-  {title:"Efsane doğuyor: Ip Man / The Legend is Born: Ip Man", cover:"https://m.media-amazon.com/images/M/MV5BMjA2ODgyMjE1MF5BMl5BanBnXkFtZTcwMzE3MDU3Ng@@._V1_.jpg", src:"https://ok.ru/video/1979158235782", year:2010, genre:"Aksiyon", id: "ipmanthelegendisborn"},
-  {title:"Ip Man: Son dövüş / Ip Man: The Final Fight", cover:"https://m.media-amazon.com/images/M/MV5BMTQwMTY0NDQxMV5BMl5BanBnXkFtZTgwMjEwMTEwMDE@._V1_.jpg", src:"https://ok.ru/video/1979158432390", year:2013, genre:"Aksiyon", id: "ipmanthefinalfight"},
-  {title:"Ip Man: Kung Fu ustası / Ip Man: Kung Fu Master", cover:"https://m.media-amazon.com/images/M/MV5BMmFkYjRhOGItNGNmYy00OTQyLThhYjctNWVkNmRhZTNiNDgzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/5419892083370", year:2019, genre:"Aksiyon", id: "ipmankungfumaster"},
-  {title:"Avatar", cover:"https://m.media-amazon.com/images/M/MV5BM2RiNGMzM2QtMzkyNi00OGYyLWE5MTctNDRkOTRkZmI5ZGJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/v_MR3qG1GUis?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2009, genre:"Fantastik", id: "avatar"},
-  {title:"Avatar: Suyun yolu / Avatar: The Deep Dive", cover:"https://m.media-amazon.com/images/M/MV5BY2ExYzkyNGUtODQwNS00MGZiLWE2NmItYTg3YjVjZGIxN2NhXkEyXkFqcGc@._V1_.jpg", src:"https://dzen.ru/embed/vG8OrNND6-3Y?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2022, genre:"Fantastik", id: "avatar2"},
+  {title:"Ip Man", cover:"https://m.media-amazon.com/images/M/MV5BMjE0NDUzMDcyOF5BMl5BanBnXkFtZTcwNzAxMTA2Mw@@._V1_.jpg", src:"https://my.mail.ru/video/embed/2812081686177647104", year:2008, genre:"Aksiyon", id: "ipman", added: 23},
+  {title:"Ip Man 2: Legend of the Grandmaster", cover:"https://m.media-amazon.com/images/M/MV5BYzEzYTBmYjgtNjQzMi00YmNiLTkyZGItOGFhMzEzOWY3MjI4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://m.vkvideo.ru/video359109645_456239197", year:2010, genre:"Aksiyon", id: "ipman2", added: 22},
+  {title:"Ip Man 3", cover:"https://m.media-amazon.com/images/M/MV5BMmZhOWNlMDEtN2M1OC00Yzk5LThhOTAtZDA5NTNjNjQyZDM0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/1501966895750", year:2015, genre:"Aksiyon", id: "ipman3", added: 21},
+  {title:"Master Z: Ip Man Legacy (Spin-off)", cover:"https://m.media-amazon.com/images/M/MV5BMTYxNzA0ODQyMF5BMl5BanBnXkFtZTgwNzUwNTg1NzM@._V1_.jpg", src:"https://ok.ru/video/1978023217798", year:2018, genre:"Aksiyon", id: "ipmanlegacy", added: 20},
+  {title:"Ip Man 4: The Final", cover:"https://m.media-amazon.com/images/M/MV5BOGVjMDEzNjMtMWJmMy00NDdjLWFkMzItOTBhZTE3OWU0YmM4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/1770461137542", year:2019, genre:"Aksiyon", id: "ipman4", added: 19},
+  {title:"Efsane doğuyor: Ip Man / The Legend is Born: Ip Man", cover:"https://m.media-amazon.com/images/M/MV5BMjA2ODgyMjE1MF5BMl5BanBnXkFtZTcwMzE3MDU3Ng@@._V1_.jpg", src:"https://ok.ru/video/1979158235782", year:2010, genre:"Aksiyon", id: "ipmanthelegendisborn", added: 18},
+  {title:"Ip Man: Son dövüş / Ip Man: The Final Fight", cover:"https://m.media-amazon.com/images/M/MV5BMTQwMTY0NDQxMV5BMl5BanBnXkFtZTgwMjEwMTEwMDE@._V1_.jpg", src:"https://ok.ru/video/1979158432390", year:2013, genre:"Aksiyon", id: "ipmanthefinalfight", added: 17},
+  {title:"Ip Man: Kung Fu ustası / Ip Man: Kung Fu Master", cover:"https://m.media-amazon.com/images/M/MV5BMmFkYjRhOGItNGNmYy00OTQyLThhYjctNWVkNmRhZTNiNDgzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/5419892083370", year:2019, genre:"Aksiyon", id: "ipmankungfumaster", added: 16},
+  {title:"Avatar", cover:"https://m.media-amazon.com/images/M/MV5BM2RiNGMzM2QtMzkyNi00OGYyLWE5MTctNDRkOTRkZmI5ZGJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/v_MR3qG1GUis?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2009, genre:"Fantastik", id: "avatar", added: 15},
+  {title:"Avatar: Suyun yolu / Avatar: The Deep Dive", cover:"https://m.media-amazon.com/images/M/MV5BY2ExYzkyNGUtODQwNS00MGZiLWE2NmItYTg3YjVjZGIxN2NhXkEyXkFqcGc@._V1_.jpg", src:"https://dzen.ru/embed/vG8OrNND6-3Y?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2022, genre:"Fantastik", id: "avatar2", added: 14},
   {title:"Yeşil dev / Hulk", cover:"https://m.media-amazon.com/images/M/MV5BODY3ZjQ1OWItMGI5NS00NzZjLTk3ODgtZDVjOTFiMjY3NjBlXkEyXkFqcGc@._V1_.jpg", src:"https://dzen.ru/embed/vGsuDOBwImgM?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2003, genre:"Fantastik", id: "hulk"},
   {title:"İnanılmaz yeşil dev / The Incredible Hulk", cover:"https://m.media-amazon.com/images/M/MV5BNzI4YjkyZTQtMjk1NS00MzhkLWEwYzgtZjZiODUyNWViNDdlXkEyXkFqcGc@._V1_.jpg", src:"https://dzen.ru/embed/vdv9TgfOtdBo?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2008, genre:"Fantastik", id: "theincrediblehulk"},
   {title:"Demir adam / Iron Man", cover:"https://m.media-amazon.com/images/M/MV5BMTczNTI2ODUwOF5BMl5BanBnXkFtZTcwMTU0NTIzMw@@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/vIGzkdQpfFF8?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2008, genre:"Fantastik", id: "ironman"},
@@ -284,19 +284,19 @@ const MOVIES = [
   {title:"Yenilmezler: Ultron çağı / The Avengers: Age of Ultron", cover:"https://m.media-amazon.com/images/M/MV5BY2I5M2M0ZDctMjEwYS00MmM3LTgzZTctOWFkZjY1Y2I5OTJlXkEyXkFqcGc@._V1_.jpg", src:"https://dzen.ru/embed/v764uOr-vdh8?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2015, genre:"Fantastik", id: "theavengers2"},
   {title:"Yenilmezler: Sonsuzluk savaşı / The Avengers: Infinity War", cover:"https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_.jpg", src:"https://dzen.ru/embed/v19pPfuEckQ8?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2018, genre:"Fantastik", id: "theavengers3"},
   {title:"Yenilmezler: Son oyun / The Avengers: Endgame", cover:"https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg", src:"https://dzen.ru/embed/vhmmqUk9tzzY?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2019, genre:"Fantastik", id: "theavengers4"},
-  {title:"Venom: Zehirli öfke 1", cover:"https://m.media-amazon.com/images/M/MV5BMTU3MTQyNjQwM15BMl5BanBnXkFtZTgwNDgxNDczNTM@._V1_.jpg", src:"https://ok.ru/video/2786564115078", year:2018, genre:"Fantastik", id: "venom"},
-  {title:"Venom: Zehirli öfke 2 / Venom: Let There Be Carnage", cover:"https://m.media-amazon.com/images/M/MV5BZTZkMGY0NTQtMzg2NC00YzdhLTg1NzYtZDMyNzZhNGU3ZGUwXkEyXkFqcGc@._V1_.jpg", src:"https://dzen.ru/embed/vUO66L0mC9GM?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2021, genre:"Fantastik", id: "venom2"},
-  {title:"Venom: Son dans / Venom: Last Dance", cover:"https://m.media-amazon.com/images/M/MV5BZDMyYWU4NzItZDY0MC00ODE2LTkyYTMtMzNkNDdmYmFhZDg0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vidmoly.me/dl/0wezyt1in3hk", year:2024, genre:"Fantastik", id: "venom3"},
-  {title:"Örümcek adam / Spider Man", cover:"https://m.media-amazon.com/images/M/MV5BZDEyN2NhMjgtMjdhNi00MmNlLWE5YTgtZGE4MzNjMTRlMGEwXkEyXkFqcGdeQXVyNDUyOTg3Njg@._V1_SY450_CR2", src:"https://ok.ru/video/33411041913", year:2002, genre:"Fantastik", id: "spiderman"},
-  {title:"Örümcek adam 2 / Spider-Man 2", cover:"https://m.media-amazon.com/images/M/MV5BNGQ0YTQyYTgtNWI2YS00NTE2LWJmNDItNTFlMTUwNmFlZTM0XkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/7152378841788", year:2004, genre:"Fantastik", id: "spiderman2"},
-  {title:"Örümcek Adam 3 / Spider Man 3", cover:"https://m.media-amazon.com/images/M/MV5BODE2NzNhMDctYjUzMC00Y2M5LWI2Y2EtODJkZTFjN2Y5ODlmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://m.ok.ru/video/7855932967612", year:2007, genre:"Fantastik", id: "spiderman3"},
-  {title:"İnanılmaz Örümcek Adam / The Amazing Spider Man", cover:"https://m.media-amazon.com/images/M/MV5BMjMyOTM4MDMxNV5BMl5BanBnXkFtZTcwNjIyNzExOA@@._V1_FMjpg_UX1000_.jpg", src:"https://m.ok.ru/video/7512581278396", year:2012, genre:"Fantastik", id: "theamazingspiderman"},
-  {title:"İnanılmaz Örümcek Adam 2 / The Amazing Spider Man 2", cover:"https://m.media-amazon.com/images/M/MV5BOTA5NDYxNTg0OV5BMl5BanBnXkFtZTgwODE5NzU1MTE@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/22823766703", year:2014, genre:"Fantastik", id: "theamazingspiderman2"},
-  {title:"Örümcek Adam: Eve dönüş / Spider Man: Homecoming", cover:"https://m.media-amazon.com/images/M/MV5BODY2MTAzOTQ4M15BMl5BanBnXkFtZTgwNzg5MTE0MjI@._V1_FMjpg_UX1000_.jpg", src:"https://m.ok.ru/video/7051922901692", year:2017, genre:"Fantastik", id: "spidermanhomecoming"},
-  {title:"Örümcek Adam: Evden uzakta / Spider Man: Far from Home", cover:"https://m.media-amazon.com/images/M/MV5BM2Y2YzE5MGEtMGZjYS00MGM5LTlmYzEtYTNmMGZjZDY4YTkzXkEyXkFqcGc@._V1_.jpg", src:"https://m.ok.ru/video/7270672108220", year:2019, genre:"Fantastik", id: "spidermanfarfromhome"},
-  {title:"Örümcek Adam: Eve dönüş yok / Spider Man: No Way Home", cover:"https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg", src:"https://m.ok.ru/video/7190992915132", year:2021, genre:"Fantastik", id: "spidermannowayhome"},
-  {title:"Örümcek Adam: Örümcek evreninde  / Spider Man: Into the Spider-Verse", cover:"https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNTkwNTQ3NjM@._V1_FMjpg_UX1000_.jpg", src:"https://m.ok.ru/video/7375842249404", year:2018, genre:"Fantastik", id: "spidermanintothespiderverse"},
-  {title:"Örümcek Adam: Örümcek evrenine geçiş  / Spider Man: Across the Spider-Verse", cover:"https://m.media-amazon.com/images/M/MV5BZjI5MjFiZmQtNGQ4Ni00OThjLWE3OTctOGI4NmZiNmZmZmNmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://m.ok.ru/video/7656487520893", year:2023, genre:"Fantastik", id: "spidermanacrossthespiderverse"}
+  {title:"Venom: Zehirli öfke 1", cover:"https://m.media-amazon.com/images/M/MV5BMTU3MTQyNjQwM15BMl5BanBnXkFtZTgwNDgxNDczNTM@._V1_.jpg", src:"https://ok.ru/video/2786564115078", year:2018, genre:"Fantastik", id: "venom", added: 13},
+  {title:"Venom: Zehirli öfke 2 / Venom: Let There Be Carnage", cover:"https://m.media-amazon.com/images/M/MV5BZTZkMGY0NTQtMzg2NC00YzdhLTg1NzYtZDMyNzZhNGU3ZGUwXkEyXkFqcGc@._V1_.jpg", src:"https://dzen.ru/embed/vUO66L0mC9GM?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2021, genre:"Fantastik", id: "venom2", added: 12},
+  {title:"Venom: Son dans / Venom: Last Dance", cover:"https://m.media-amazon.com/images/M/MV5BZDMyYWU4NzItZDY0MC00ODE2LTkyYTMtMzNkNDdmYmFhZDg0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vidmoly.me/dl/0wezyt1in3hk", year:2024, genre:"Fantastik", id: "venom3", added: 11},
+  {title:"Örümcek adam / Spider Man", cover:"https://m.media-amazon.com/images/M/MV5BZDEyN2NhMjgtMjdhNi00MmNlLWE5YTgtZGE4MzNjMTRlMGEwXkEyXkFqcGdeQXVyNDUyOTg3Njg@._V1_SY450_CR2", src:"https://ok.ru/video/33411041913", year:2002, genre:"Fantastik", id: "spiderman", added: 10},
+  {title:"Örümcek adam 2 / Spider-Man 2", cover:"https://m.media-amazon.com/images/M/MV5BNGQ0YTQyYTgtNWI2YS00NTE2LWJmNDItNTFlMTUwNmFlZTM0XkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/7152378841788", year:2004, genre:"Fantastik", id: "spiderman2", added: 9},
+  {title:"Örümcek Adam 3 / Spider Man 3", cover:"https://m.media-amazon.com/images/M/MV5BODE2NzNhMDctYjUzMC00Y2M5LWI2Y2EtODJkZTFjN2Y5ODlmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://m.ok.ru/video/7855932967612", year:2007, genre:"Fantastik", id: "spiderman3", added: 8},
+  {title:"İnanılmaz Örümcek Adam / The Amazing Spider Man", cover:"https://m.media-amazon.com/images/M/MV5BMjMyOTM4MDMxNV5BMl5BanBnXkFtZTcwNjIyNzExOA@@._V1_FMjpg_UX1000_.jpg", src:"https://m.ok.ru/video/7512581278396", year:2012, genre:"Fantastik", id: "theamazingspiderman", added: 7},
+  {title:"İnanılmaz Örümcek Adam 2 / The Amazing Spider Man 2", cover:"https://m.media-amazon.com/images/M/MV5BOTA5NDYxNTg0OV5BMl5BanBnXkFtZTgwODE5NzU1MTE@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/22823766703", year:2014, genre:"Fantastik", id: "theamazingspiderman2", added: 6},
+  {title:"Örümcek Adam: Eve dönüş / Spider Man: Homecoming", cover:"https://m.media-amazon.com/images/M/MV5BODY2MTAzOTQ4M15BMl5BanBnXkFtZTgwNzg5MTE0MjI@._V1_FMjpg_UX1000_.jpg", src:"https://m.ok.ru/video/7051922901692", year:2017, genre:"Fantastik", id: "spidermanhomecoming", added: 5},
+  {title:"Örümcek Adam: Evden uzakta / Spider Man: Far from Home", cover:"https://m.media-amazon.com/images/M/MV5BM2Y2YzE5MGEtMGZjYS00MGM5LTlmYzEtYTNmMGZjZDY4YTkzXkEyXkFqcGc@._V1_.jpg", src:"https://m.ok.ru/video/7270672108220", year:2019, genre:"Fantastik", id: "spidermanfarfromhome", added: 4},
+  {title:"Örümcek Adam: Eve dönüş yok / Spider Man: No Way Home", cover:"https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg", src:"https://m.ok.ru/video/7190992915132", year:2021, genre:"Fantastik", id: "spidermannowayhome", added: 3},
+  {title:"Örümcek Adam: Örümcek evreninde  / Spider Man: Into the Spider-Verse", cover:"https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNTkwNTQ3NjM@._V1_FMjpg_UX1000_.jpg", src:"https://m.ok.ru/video/7375842249404", year:2018, genre:"Fantastik", id: "spidermanintothespiderverse", added: 2},
+  {title:"Örümcek Adam: Örümcek evrenine geçiş  / Spider Man: Across the Spider-Verse", cover:"https://m.media-amazon.com/images/M/MV5BZjI5MjFiZmQtNGQ4Ni00OThjLWE3OTctOGI4NmZiNmZmZmNmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://m.ok.ru/video/7656487520893", year:2023, genre:"Fantastik", id: "spidermanacrossthespiderverse", added: 1}
 ];
 
 /* ===========================
@@ -2384,45 +2384,43 @@ applyFilters = function() {
   const labelText = document.querySelector('.flix-switch-label');
   const isLatestChecked = sortCheckbox?.checked;
 
-  // --- 1. ƏLAVƏ: Dinamik Mətn Dəyişdirilməsi ---
+  // --- Dinamik Mətn Dəyişdirilməsi ---
   if (labelText) {
     labelText.textContent = isLatestChecked ? "Son əlavə edilənlər" : "İllərə görə ardıcıllıq";
   }
 
   if (state.filtered && state.filtered.length > 0) {
     
-    // --- 2. ƏLAVƏ: Special "yes" Qorunmaqla Sıralama Məntiqi ---
+    // --- Special "yes" Qorunmaqla Sıralama Məntiqi ---
     state.filtered.sort((a, b) => {
-      // Əgər bir film special="yes"-dirsə, hər zaman önə keçsin
+      // Əgər bir film special="yes"-dirsə, hər zaman ən öndə qalsın
       const isSpecialA = a.special === "yes" ? 1 : 0;
       const isSpecialB = b.special === "yes" ? 1 : 0;
 
       if (isSpecialA !== isSpecialB) {
-        return isSpecialB - isSpecialA; // "yes" olanlar (1) olmayanlardan (0) qabağa düşür
+        return isSpecialB - isSpecialA; 
       }
 
-      // Əgər hər iki film eyni statusdadırsa (hər ikisi special və ya hər ikisi adi),
-      // o zaman checkbox-ın vəziyyətinə baxırıq:
+      // Hər iki film eyni qrupdandırsa (ikisi də special və ya ikisi də adi):
       if (isLatestChecked) {
-        // Açıqdırsa: added dəyərinə görə (böyükdən kiçiyə)
+        // Checkbox AÇIQDIRSA: added dəyərinə görə (böyükdən kiçiyə)
         const addedA = Number(a.added) || 0;
         const addedB = Number(b.added) || 0;
         return addedB - addedA;
       } else {
-        // Bağlıdırsa: Sənin massivdəki orijinal (illər üzrə) sıranı qorumaq üçün toxunmuruq
+        // Checkbox BAĞLIDIRSA: Sənin massivdəki orijinal (illər üzrə) sıranı qorumaq üçün toxunmuruq
         return 0; 
       }
     });
 
-    // Əgər istifadəçi checkbox-ı söndürübsə və massiv special-a görə qarışıbsa,
-    // orijinal struktura tam qayıtmaq üçün əlavə bir təhlükəsizlik addımı (İllərə görə yenidən yüngül sıralama):
+    // Checkbox bağlı olduqda massivin tam olaraq illərə görə sıralandığından əmin olmaq üçün:
     if (!isLatestChecked) {
       state.filtered.sort((a, b) => {
         const isSpecialA = a.special === "yes" ? 1 : 0;
         const isSpecialB = b.special === "yes" ? 1 : 0;
         if (isSpecialA !== isSpecialB) return isSpecialB - isSpecialA;
         
-        // Hər ikisi normal filmdirsə, sənin datadakı orijinal ili saxlayırıq (böyükdən kiçiyə il sırası)
+        // Hər ikisi normal filmdirsə, sənin datadakı böyükdən kiçiyə il sırasını saxlayırıq
         return (Number(b.year) || 0) - (Number(a.year) || 0);
       });
     }
@@ -2440,10 +2438,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const sortCheckbox = document.getElementById('sort-latest-trigger');
   
   if (sortCheckbox) {
+    // Yaddaşda heç nə yoxdursa standart olaraq 'false' (yəni sönülü) qəbul edirik
     const savedStatus = localStorage.getItem('flixlite_sort_latest') === 'true';
     sortCheckbox.checked = savedStatus;
 
-    // Səhifə ilk açılanda mətni düzgün təyin etmək üçün funksiyanı çağırırıq
+    // Səhifə ilk açılanda mətni və sıralamanı vəziyyətə uyğunlaşdırırıq
     applyFilters();
   }
 });
