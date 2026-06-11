@@ -697,3 +697,152 @@ header{
     transform: translateX(20px) !important; 
   }
 }
+
+/* =========================================================
+   SON ƏLAVƏ EDİLƏNLƏR CHECK BOX (QLOBAL VƏ RESPONSIVE)-SON
+   ========================================================= */
+
+/* =========================================================
+   KOLLEKSİYA PANELİ
+   ========================================================= */
+
+/* SPOTLIGHT BÖLMƏSİ */
+.spotlight-section {
+    position: relative;
+    max-width: 1200px; /* Saytınızın ümumi eninə uyğunlaşdıra bilərsiniz */
+    height: 380px;
+    margin: 20px auto;
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: #12131a;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.spotlight-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.35;
+    transition: opacity 0.4s ease, transform 0.6s ease;
+    z-index: 1;
+}
+
+.spotlight-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(15, 16, 22, 1) 35%, rgba(15, 16, 22, 0.7) 65%, rgba(15, 16, 22, 0.2) 100%);
+    z-index: 2;
+}
+
+.spotlight-content {
+    position: relative;
+    display: flex;
+    height: 100%;
+    z-index: 3;
+    padding: 40px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.spotlight-info {
+    flex: 1;
+    max-width: 50%;
+}
+
+.spotlight-badge {
+    background: #e50914; /* Netflix qırmızı tonu */
+    color: white;
+    padding: 6px 14px;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: bold;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.spotlight-title {
+    font-size: 32px;
+    margin: 0 0 10px 0;
+    font-weight: 700;
+    color: #ffffff;
+    font-family: sans-serif;
+}
+
+.spotlight-count {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 25px;
+    display: block;
+    font-family: sans-serif;
+}
+
+.spotlight-btn {
+    background: #ffffff;
+    color: #0f1016;
+    border: none;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s, color 0.2s;
+}
+
+.spotlight-btn:hover {
+    background: #e50914;
+    color: white;
+    transform: scale(1.03);
+}
+
+.spotlight-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 320px;
+    border-left: 2px solid rgba(255,255,255,0.1);
+    padding-left: 25px;
+}
+
+.tab-item {
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-family: sans-serif;
+}
+
+.tab-item.active, .tab-item:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+    padding-left: 22px;
+}
+
+/* Mobil cihazlar üçün tam uyğunlaşma (Responsive) */
+@media (max-width: 768px) {
+    .spotlight-section { height: auto; margin: 10px; }
+    .spotlight-content { flex-direction: column; padding: 20px; gap: 20px; }
+    .spotlight-info { max-width: 100%; text-align: center; }
+    .spotlight-overlay { background: linear-gradient(to top, rgba(15, 16, 22, 1) 50%, rgba(15, 16, 22, 0.4) 100%); }
+    .spotlight-tabs { width: 100%; border-left: none; border-top: 1px solid rgba(255,255,255,0.1); padding-left: 0; padding-top: 15px; flex-direction: row; overflow-x: auto; scrollbar-width: none; }
+    .tab-item { flex: 0 0 auto; padding: 8px 12px; }
+    .tab-item.active, .tab-item:hover { padding-left: 12px; }
+}
+
+  /* =========================================================
+   KOLLEKSİYA PANELİ-SON
+   ========================================================= */
