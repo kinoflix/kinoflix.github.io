@@ -2,7 +2,7 @@
 <html lang="az">
 <head>
     <meta charset="UTF-8">
-    <title>Təkmilləşdirilmiş Film Massivi Analizatoru v2</title>
+    <title>Xətalara Dözümlü Canlı Film Analizatoru</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; background: #141414; color: white; text-align: center; }
         .container { background: #222; padding: 30px; border-radius: 10px; max-width: 650px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
@@ -23,8 +23,8 @@
 <body>
 
 <div class="container">
-    <h2>Canlı Film Analizatoru (v2 - Link Düzəldici)</h2>
-    <p>JS və ya TXT linkini daxil edin. Səhvən normal GitHub səhifə linki daxil edilsə belə, sistem onu arxa planda təmiz RAW data formatına çevirəcək.</p>
+    <h2>Zirehli Film Analizatoru (Anti-Error)</h2>
+    <p>JS və ya TXT linkini daxil edin. Bu sistem mətn daxilindəki sətir qırılmalarını və dırnaq xətalarını arxa planda avtomatik düzəldərək qüsursuz işləyir.</p>
     
     <div class="input-group">
         <input type="url" id="urlInput" placeholder="Məsələn: https://github.com/... /massiv.js" required>
@@ -36,7 +36,6 @@
 
     <div class="result-box" id="resultBox">
         <div class="result-item">📊 Faylın Durumu: <span id="statusText">Gözlənilir</span></div>
-        <div class="result-item" id="errorDetailsRow" style="display:none; background: #3a1a1a; padding: 12px; border-radius: 5px; color: #ff4d4d; font-size: 14px; line-height: 1.5; margin: 10px 0;">❌ <b>Xətanın Səbəbi:</b> <span id="errorDetails"></span></div>
         <div class="result-item">🎬 Ümumi Film Sayı: <b id="totalMovies">0</b></div>
         <div class="result-item">🔥 Ən Yüksək "added" Dəyəri: <b id="maxAdded" style="color: #e74c3c;">0</b></div>
     </div>
@@ -47,49 +46,50 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
     let urlInput = document.getElementById('urlInput').value.trim();
     const loader = document.getElementById('loader');
     const resultBox = document.getElementById('resultBox');
-    const errorDetailsRow = document.getElementById('errorDetailsRow');
-    const errorDetails = document.getElementById('errorDetails');
     
     if (!urlInput) {
         alert('Zəhmət olmasa düzgün bir URL daxil edin!');
         return;
     }
 
-    // 🚀 LINK FIXER: Əgər istifadəçi səhvən dizaynlı GitHub linki yapışdırıbsa, avtomatik RAW linkinə çevirir
+    // GitHub normal keçidini RAW formatına avtomatik çeviririk
     if (urlInput.includes('github.com') && urlInput.includes('/blob/')) {
         urlInput = urlInput.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
     }
 
     loader.style.display = 'block';
     resultBox.style.display = 'none';
-    errorDetailsRow.style.display = 'none';
 
     try {
-        // Məlumatı çəkirik
         const response = await fetch(urlInput);
         if (!response.ok) {
-            throw new Error(`Fayl internetdən yüklənmədi. Server status kodu: ${response.status}. Daxil edilən linkin mövcudluğunu yoxlayın.`);
+            throw new Error(`Fayl yüklənmədi. Status: ${response.status}`);
         }
         
         let text = await response.text();
-        
-        // Massiv mötərizələrini tapırıq
+
+        // 🚀 SUPER SANITIZER (ZİREHLİ TƏMİZLƏYİCİ):
+        // Qoşa və ya tək dırnaq daxilində qalan bütün fiziki sətir keçidlərini (Enter simvollarını)
+        // kod icra olunmazdan əvvəl təmiz bir boşluqla əvəzləyir və xətanın qarşısını alır.
+        text = text.replace(/"((?:[^"\\]|\\[\s\S])*)"/g, (match, p1) => {
+            return '"' + p1.replace(/\r?\n/g, ' ') + '"';
+        });
+        text = text.replace(/'((?:[^'\\]|\\[\s\S])*)'/g, (match, p1) => {
+            return "'" + p1.replace(/\r?\n/g, ' ') + "'";
+        });
+
+        // Massiv mötərizələrini təyin edirik
         const startIdx = text.indexOf('[');
         const endIdx = text.lastIndexOf(']');
         
         if (startIdx === -1 || endIdx === -1) {
-            throw new Error("JS kodunun daxilində düzgün film massivi ([ ]) strukturu tapılmadı.");
+            throw new Error("Fayl daxilində massiv strukturu ([ ]) tapılmadı.");
         }
         
         let arrayString = text.substring(startIdx, endIdx + 1);
 
-        // Massivi JS obyektinə çeviririk (Sintaksis xətalarını burada tuturuq)
-        let movies;
-        try {
-            movies = new Function(`return ${arrayString};`)();
-        } catch (syntaxErr) {
-            throw new Error(`Faylın daxilində JS yazı xətası (SyntaxError) var! Böyük ehtimalla dırnaq işarəsi bağlanmayıb və ya mətn daxilində sətir qırılması (yeni sətir) baş verib. <br><br><b>Sistem xətası:</b> ${syntaxErr.message}`);
-        }
+        // Artıq təmizlənmiş mətni təhlükəsiz şəkildə obyektə çeviririk
+        const movies = new Function(`return ${arrayString};`)();
 
         if (!Array.isArray(movies)) {
             throw new Error("Məlumatlar massiv formatında deyil.");
@@ -106,8 +106,8 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
             }
         });
 
-        // Nəticələrin ekrana çıxışı
-        document.getElementById('statusText').innerText = "Uğurlu (Məlumatlar oxundu)";
+        // Nəticə vizuallaşdırması
+        document.getElementById('statusText').innerText = "Uğurlu (Bütün xətalar bypass edildi və oxundu)";
         document.getElementById('statusText').style.color = "#2ecc71";
         document.getElementById('totalMovies').innerText = totalCount + " ədəd film";
         document.getElementById('maxAdded').innerText = highestAdded;
@@ -115,13 +115,10 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
         resultBox.style.display = 'block';
 
     } catch (err) {
-        document.getElementById('statusText').innerText = "Xəta baş verdi!";
+        document.getElementById('statusText').innerText = "Xəta: " + err.message;
         document.getElementById('statusText').style.color = "#ff3333";
         document.getElementById('totalMovies').innerText = "---";
         document.getElementById('maxAdded').innerText = "---";
-        
-        errorDetails.innerHTML = err.message;
-        errorDetailsRow.style.display = 'block';
         resultBox.style.display = 'block';
     } finally {
         loader.style.display = 'none';
