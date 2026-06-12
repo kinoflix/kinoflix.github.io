@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlixLite Data Shuffler & Cleaner</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121214;
+            color: #e1e1e6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: #1a1a1e;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        h2 {
+            color: #ff9d00;
+            margin-top: 0;
+            border-bottom: 2px solid #29292e;
+            padding-bottom: 10px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 15px 0 5px;
+            color: #a6a6b2;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            background-color: #202024;
+            border: 1px solid #29292e;
+            border-radius: 6px;
+            color: #00ff66;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 10px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #ff9d00;
+        }
+        .btn-group {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            background-color: #ff9d00;
+            color: #121214;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        button:hover {
+            background-color: #e08a00;
+            transform: translateY(-1px);
+        }
+        .btn-copy {
+            background-color: #29292e;
+            color: #e1e1e6;
+            border: 1px solid #3e3e44;
+        }
+        .btn-copy:hover {
+            background-color: #3e3e44;
+        }
+        .status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #00ff66;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Massiv Təmizləyici və Xaotik Düzücü</h2>
+    <p style="font-size: 14px; color: #a6a6b2;">TXT faylındakı kodları bura yapışdırın. Sistem 'added' dəyərini siləcək və sıranı tamamilə qarışdıracaq.</p>
+
+    <label for="inputData">Giriş Kodları (Köhnə Massiv):</label>
+    <textarea id="inputData" placeholder='{ title:"TEST", cover:"...", src:"...", year:2022, genre:"Romantik", id:"officeromance", added:78 },'></textarea>
+
+    <div class="btn-group">
+        <button onclick="processData()">Təmizlə və Qarışdır 🎲</button>
+        <button class="btn-copy" onclick="copyToClipboard()">Nəticəni Kopyala 📋</button>
+    </div>
+
+    <label for="outputData">Çıxış Kodları (Yeni Xaotik Massiv):</label>
+    <textarea id="outputData" readonly placeholder="Təmizlənmiş və qarışdırılmış kodlar burada görünəcək..."></textarea>
+    <div id="statusMessage" class="status"></div>
+</div>
+
+<script>
+function processData() {
+    const inputRaw = document.getElementById('inputData').value.trim();
+    const status = document.getElementById('statusMessage');
+    
+    if (!inputRaw) {
+        alert("Zəhmət olmasa, giriş sahəsinə kod əlavə edin!");
+        return;
+    }
+
+    try {
+        // Javascript-in obyekt formatını təhlükəsiz oxumaq üçün dinamik massivə çeviririk
+        // Sonda vergül olsa belə modern JS bunu massiv kimi qəbul edir.
+        const parsedData = new Function(`return [${inputRaw}]`)();
+
+        if (!Array.isArray(parsedData)) {
+            throw new Error("Daxil edilən məlumat düzgün massiv formatında deyil.");
+        }
+
+        // 1. ADDED Parametrini tamamilə silirik
+        parsedData.forEach(item => {
+            if (item && item.hasOwnProperty('added')) {
+                delete item.added;
+            }
+        });
+
+        // 2. Fisher-Yates Shuffle Alqoritmi ilə Tam Xaotik Düzülüş
+        for (let i = parsedData.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [parsedData[i], parsedData[j]] = [parsedData[j], parsedData[i]];
+        }
+
+        // 3. Sənin Orijinal JS Formatına Geri Qaytarmaq (JSON dırnaqsız key-lər)
+        const formattedOutput = parsedData.map(obj => {
+            const parts = Object.entries(obj).map(([key, value]) => {
+                if (typeof value === 'string') {
+                    // Əgər string daxilində dırnaq işarəsi varsa qoruyuruq
+                    return `${key}: "${value.replace(/"/g, '\\"')}"`;
+                }
+                return `${key}: ${value}`;
+            });
+            return `  { ${parts.join(', ')} },`;
+        }).join('\n');
+
+        document.getElementById('outputData').value = formattedOutput;
+        status.innerText = `Uğurlu! ${parsedData.length} film emal edildi, 'added' silindi və sırası xaotik dəyişdirildi.`;
+
+    } catch (error) {
+        alert("Xəta baş verdi! Kodu düzgün kopyaladığınızdan əmin olun. \nDetallar: " + error.message);
+    }
+}
+
+function copyToClipboard() {
+    const outputText = document.getElementById('outputData');
+    if (!outputText.value) {
+        alert("Kopyalanacaq nəticə yoxdur!");
+        return;
+    }
+    outputText.select();
+    document.execCommand('copy');
+    
+    const status = document.getElementById('statusMessage');
+    status.innerText = "Kodlar buferə kopyalandı! Doğrudan MOVIES massivinin içinə yapışdıra bilərsən.";
+}
+</script>
+
+</body>
+</html>
