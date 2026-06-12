@@ -2508,7 +2508,7 @@ function updateSpotlight(collection) {
     };
 }
 
-// 🌟 MƏRKƏZİ AKTİVLƏŞDİRMƏ FUNKSİYASI (Həm klik, həm hover, həm də autoplay üçün)
+// 🌟 MƏRKƏZİ AKTİVLƏŞDİRMƏ FUNKSİYASI (Səhifə sıçraması problemi tamamilə həll olundu)
 function setActiveCollection(index) {
     if (COLLECTIONS.length === 0) return;
     
@@ -2517,11 +2517,34 @@ function setActiveCollection(index) {
     
     // Bütün tabların vizual aktivliyini tənzimləyirik
     const tabs = document.querySelectorAll('.spotlight-tabs .tab-item');
+    const tabsContainer = document.getElementById('spotlightTabsContainer');
+    
     tabs.forEach((tab, idx) => {
         if (idx === index) {
             tab.classList.add('active');
-            // Əgər scroll menyuda element gizli qalıbsa, onu smooth şəkildə görünən hissəyə gətirir
-            tab.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // 🔥 PROBLEMİN HƏLLİ: Səhifəni sıçradan scrollIntoView silindi!
+            // Əgər sağ menyu daxilində sürüşdürmə lazımdırsa, daxili scrollTop hesablama mexanizmi:
+            if (tabsContainer) {
+                // Elementin konteynerin yuxarısına nəzərən mövqeyi
+                const tabTop = tab.offsetTop;
+                const tabHeight = tab.offsetHeight;
+                const containerHeight = tabsContainer.clientHeight;
+                const containerScrollTop = tabsContainer.scrollTop;
+
+                // Əgər aktiv element görünən sahədən aşağıda və ya yuxarıdadırsa, daxili scroll-u tənzimləyirik
+                if (tabTop < containerScrollTop) {
+                    tabsContainer.scrollTo({
+                        top: tabTop,
+                        behavior: 'smooth'
+                    });
+                } else if (tabTop + tabHeight > containerScrollTop + containerHeight) {
+                    tabsContainer.scrollTo({
+                        top: tabTop - containerHeight + tabHeight,
+                        behavior: 'smooth'
+                    });
+                }
+            }
         } else {
             tab.classList.remove('active');
         }
