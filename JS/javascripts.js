@@ -2443,7 +2443,13 @@ const COLLECTIONS = [
     title: "Hörümçək adam / Spider-Man",
     cover: "https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg",
     movies: ["spiderman", "spiderman2", "spiderman3", "theamazingspiderman", "theamazingspiderman2", "spidermanhomecoming", "spidermanintothespiderverse", "spidermanfarfromhome", "spidermannowayhome", "spidermanacrossthespiderverse", "spider-noir"]
-  }
+  },
+  {
+    id: "avatar",
+    title: "Avatar",
+    cover: "https://m.media-amazon.com/images/M/MV5BZDYxY2I1OGMtN2Y4MS00ZmU1LTgyNDAtODA0MzAyYjI0N2Y2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["avatar", "avatar2", "avatar3"]
+  },
 ];
 
 // 2. Spotlight vizual yeniləmə mexanizmi
