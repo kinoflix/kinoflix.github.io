@@ -295,7 +295,7 @@ const MOVIES = [
   { title: "İnanılmaz Örümcek Adam 2 / The Amazing Spider Man 2", cover: "https://m.media-amazon.com/images/M/MV5BOTA5NDYxNTg0OV5BMl5BanBnXkFtZTgwODE5NzU1MTE@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/22823766703", year: 2014, genre: "Fantastik", id: "theamazingspiderman2" },
   { title: "İnanılmaz Örümcek Adam / The Amazing Spider Man", cover: "https://m.media-amazon.com/images/M/MV5BMjMyOTM4MDMxNV5BMl5BanBnXkFtZTcwNjIyNzExOA@@._V1_FMjpg_UX1000_.jpg", src: "https://m.ok.ru/video/7512581278396", year: 2012, genre: "Fantastik", id: "theamazingspiderman" },
   { title: "Örümcek Adam 3 / Spider Man 3", cover: "https://m.media-amazon.com/images/M/MV5BODE2NzNhMDctYjUzMC00Y2M5LWI2Y2EtODJkZTFjN2Y5ODlmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://m.ok.ru/video/7855932967612", year: 2007, genre: "Fantastik", id: "spiderman3" },
-  { title: "Örümcek adam 2 / Spider-Man 2", cover: "https://m.media-amazon.com/images/M/MV5BNGQ0YTQyYTgtNWI2YS00NTE2LWJmNDItNTFlMTUwNmFlZTM0XkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/7152378841788", year: 2004, genre: "Fantastik", id: "spiderman2" },
+  { title: "Örümcek adam 2 / Spider Man 2", cover: "https://m.media-amazon.com/images/M/MV5BNGQ0YTQyYTgtNWI2YS00NTE2LWJmNDItNTFlMTUwNmFlZTM0XkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/7152378841788", year: 2004, genre: "Fantastik", id: "spiderman2" },
   { title: "Örümcek adam / Spider Man", cover: "https://m.media-amazon.com/images/M/MV5BZDEyN2NhMjgtMjdhNi00MmNlLWE5YTgtZGE4MzNjMTRlMGEwXkEyXkFqcGdeQXVyNDUyOTg3Njg@._V1_SY450_CR2", src: "https://ok.ru/video/33411041913", year: 2002, genre: "Fantastik", id: "spiderman" }   
 ];
 
