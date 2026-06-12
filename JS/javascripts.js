@@ -2438,7 +2438,7 @@ document.addEventListener('DOMContentLoaded', () => {
    ========================================================= */
 
 /* =========================================================
-   KOLLEKSİYA PANELİ (YENİLƏNMİŞ - ARXİTEKTURA PROBLEMİ HƏLL OLUNDU)
+   KOLLEKSİYA PANELİ (AUTOPLAY & SMOOTH SLIDESHOW VERSİYASI)
    ========================================================= */
 
 // 1. KOLLEKSİYALARI BAZANIZA BAĞLAYIN
@@ -2481,6 +2481,12 @@ const COLLECTIONS = [
   }
 ];
 
+// --- 🌟 SLIDESHOW DEYİŞƏNLƏRİ ---
+let spotlightInterval = null;
+let currentCollectionIndex = 0;
+let isSpotlightHovered = false; // Siçanın panel üstündə olub-olmamasını izləyir
+const AUTOPLAY_DELAY = 5000;    // Keçid müddəti (5 saniyə)
+
 // 2. Spotlight vizual yeniləmə mexanizmi
 function updateSpotlight(collection) {
     const bgImage = document.getElementById('spotlightBgImage');
@@ -2502,6 +2508,46 @@ function updateSpotlight(collection) {
     };
 }
 
+// 🌟 MƏRKƏZİ AKTİVLƏŞDİRMƏ FUNKSİYASI (Həm klik, həm hover, həm də autoplay üçün)
+function setActiveCollection(index) {
+    if (COLLECTIONS.length === 0) return;
+    
+    currentCollectionIndex = index;
+    const currentCol = COLLECTIONS[index];
+    
+    // Bütün tabların vizual aktivliyini tənzimləyirik
+    const tabs = document.querySelectorAll('.spotlight-tabs .tab-item');
+    tabs.forEach((tab, idx) => {
+        if (idx === index) {
+            tab.classList.add('active');
+            // Əgər scroll menyuda element gizli qalıbsa, onu smooth şəkildə görünən hissəyə gətirir
+            tab.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            tab.classList.remove('active');
+        }
+    });
+
+    // Vitrini yeniləyirik
+    updateSpotlight(currentCol);
+}
+
+// 🌟 AUTOPLAY-İ BAŞLADAN FUNKSİYA
+function startSpotlightAutoplay() {
+    if (spotlightInterval) clearInterval(spotlightInterval);
+    
+    spotlightInterval = setInterval(() => {
+        // Əgər istifadəçi siçanı panelin hər hansı bir yerinə gətiribsə, slaydı dayandırırıq
+        if (isSpotlightHovered) return;
+        
+        if (COLLECTIONS.length <= 1) return;
+        
+        // Növbəti indeksə keçid (Sona çatanda 0-a qayıdır)
+        currentCollectionIndex = (currentCollectionIndex + 1) % COLLECTIONS.length;
+        setActiveCollection(currentCollectionIndex);
+        
+    }, AUTOPLAY_DELAY);
+}
+
 // 3. Sağ tərəfdəki menyunu ekrana çıxaran funksiya
 function initSpotlight() {
     const tabsContainer = document.getElementById('spotlightTabsContainer');
@@ -2514,20 +2560,30 @@ function initSpotlight() {
         li.className = `tab-item ${index === 0 ? 'active' : ''}`;
         li.innerText = col.title;
 
-        const activate = () => {
-            document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
-            li.classList.add('active');
-            updateSpotlight(col);
+        // İstifadəçi əl ilə müdaxilə etdikdə (Hover və ya Klik)
+        const handleManualSelect = () => {
+            setActiveCollection(index);
+            // Əl ilə seçildiyi üçün taymeri yenidən qururuq ki, dərhal növbəti slayda atlamasın
+            startSpotlightAutoplay();
         };
 
-        li.onmouseenter = activate;
-        li.onclick = activate;
+        li.onmouseenter = handleManualSelect;
+        li.onclick = handleManualSelect;
 
         tabsContainer.appendChild(li);
     });
 
+    // 🌟 AĞILLI DURDURMA: Siçan ümumi bölmənin üzərinə gələndə dayansın, çıxanda davam etsin
+    const spotlightSection = document.querySelector('.spotlight-section');
+    if (spotlightSection) {
+        spotlightSection.addEventListener('mouseenter', () => { isSpotlightHovered = true; });
+        spotlightSection.addEventListener('mouseleave', () => { isSpotlightHovered = false; });
+    }
+
+    // İlk elementi aktiv edirik və avtomatik keçidi başladırıq
     if(COLLECTIONS.length > 0) {
-        updateSpotlight(COLLECTIONS[0]);
+        setActiveCollection(0);
+        startSpotlightAutoplay();
     }
 }
 
@@ -2535,47 +2591,38 @@ function initSpotlight() {
 function filterMoviesByCollection(collectionId, collectionTitle) {
     if (typeof state === "undefined") return;
 
-    // Aktiv kolleksiya ID-sini qlobal dövlətə yazırıq
     state.activeCollectionId = collectionId;
 
-    // Kolleksiyaya keçəndə janr filtrini sıfırlayırıq ki, ilkin olaraq təmiz siyahı gəlsin
     if (typeof genreFilter !== "undefined") {
         genreFilter.value = ""; 
     }
 
-    // Əsas filtr funksiyasını çağırırıq
     if (typeof applyFilters === "function") {
         applyFilters();
     }
 }
 
-// Səhifə tam yüklənəndə sistemi və mütləq qoruyucu qatı başladırıq
+// Səhifə tam yüklənəndə sistemi başladırıq
 document.addEventListener("DOMContentLoaded", () => {
     initSpotlight();
 
-    // 🔥 DƏYİŞDİRİLDİ: Brauzerin event listener yaddaşını aldatmaq üçün resetGrid funksiyasını ələ keçiririk
     if (typeof resetGrid === "function") {
-        const originalResetGrid = resetGrid; // Orijinal grid yeniləmə funksiyasını yaddaşda saxla
+        const originalResetGrid = resetGrid; 
         
         resetGrid = function() {
-            // Əgər istifadəçi hazırda hər hansı bir kolleksiyaya baxırsa:
             if (state && state.activeCollectionId && Array.isArray(state.filtered)) {
                 const currentCollection = COLLECTIONS.find(c => c.id === state.activeCollectionId);
                 
                 if (currentCollection) {
-                    // Janr və ya search hansı nəticəni çıxarırsa çıxarsın, dərhal onları bu kolleksiyaya görə süzürük
                     state.filtered = state.filtered.filter(movie => currentCollection.movies.includes(movie.id));
                     
-                    // Başlığı və tapılan dynamic sayı yeniləyirik (Əgər tapılmayıbsa 0 göstərəcək)
                     const gridTitle = document.getElementById('movieListTitle') || document.querySelector('.movies-section h2');
                     if (gridTitle) {
                         gridTitle.innerText = `${currentCollection.title} (${state.filtered.length})`;
                     }
                 }
             }
-            
-            // Son olaraq süzülmüş datanı ekrana basmaq üçün orijinal funksiyanı icra edirik
-            originalApplyFilters = originalResetGrid();
+            originalResetGrid();
         };
     }
 });
