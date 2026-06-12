@@ -2,8 +2,8 @@
    MOVIES data
    =========================== */
 const MOVIES = [
+  { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Eşref Rüya - 47. Bölüm (FİNAL)", cover:"https://m.media-amazon.com/images/M/MV5BYzI5MjM5NDMtNTFjZC00ZTI0LWJjMWQtZjQyNzdiYWY2ZjUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://www.dailymotion.com/video/xaefi76", year:2025, genre:"Dram", id:"esrefruya", special:"yes" },
-  { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:1999, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
   { title: "Kağıttan hayatlar", cover: "https://m.media-amazon.com/images/M/MV5BZTQ4NjZmMzctZDUxZC00YzczLWJkYTItMDM4ZTM0OThmMjM1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/3121591618129", year: 2022, genre: "Dram", id: "kagittanhayatlar" },
   { title: "Kırmızı bülten / Red Notice", cover: "https://m.media-amazon.com/images/M/MV5BODllNDM2Y2ItYjc0Yi00MzZjLWFlYTYtYTFkYzUyMzk4MGYxXkEyXkFqcGc@._V1_.jpg", src: "https://vidmoly.me/dl/qba2vsbep6qd", year: 2021, genre: "Aksiyon", id: "rednotice" },
