@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlixLite Data Reverser</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121214;
+            color: #e1e1e6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: #1a1a1e;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        h2 {
+            color: #ff9d00;
+            margin-top: 0;
+            border-bottom: 2px solid #29292e;
+            padding-bottom: 10px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 15px 0 5px;
+            color: #a6a6b2;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            background-color: #202024;
+            border: 1px solid #29292e;
+            border-radius: 6px;
+            color: #00ffhex;
+            color: #33ff77;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 10px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #ff9d00;
+        }
+        .btn-group {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            background-color: #ff9d00;
+            color: #121214;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        button:hover {
+            background-color: #e08a00;
+            transform: translateY(-1px);
+        }
+        .btn-copy {
+            background-color: #29292e;
+            color: #e1e1e6;
+            border: 1px solid #3e3e44;
+        }
+        .btn-copy:hover {
+            background-color: #3e3e44;
+        }
+        .status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #33ff77;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Massiv Sıralamasını Tərsinə Çevirici</h2>
+    <p style="font-size: 14px; color: #a6a6b2;">Filmlərin siyahısını bura yapışdırın. Sistem massiv düzülüşünü tam tərsinə (aşağıdan yuxarıya) çevirəcək.</p>
+
+    <label for="inputData">Giriş Kodları (Orijinal Ardıcıllıq):</label>
+    <textarea id="inputData" placeholder='{title:"Spider Man 3", ...},&#10;{title:"The Amazing Spider Man", ...},'></textarea>
+
+    <div class="btn-group">
+        <button onclick="reverseData()">Tərsinə Düz 🔄</button>
+        <button class="btn-copy" onclick="copyToClipboard()">Nəticəni Kopyala 📋</button>
+    </div>
+
+    <label for="outputData">Çıxış Kodları (Tərs Ardıcıllıq):</label>
+    <textarea id="outputData" readonly placeholder="Tərs qrup formasına salınmış kodlar burada görünəcək..."></textarea>
+    <div id="statusMessage" class="status"></div>
+</div>
+
+<script>
+function reverseData() {
+    const inputRaw = document.getElementById('inputData').value.trim();
+    const status = document.getElementById('statusMessage');
+    
+    if (!inputRaw) {
+        alert("Zəhmət olmasa, giriş sahəsinə kod əlavə edin!");
+        return;
+    }
+
+    try {
+        // Obvjekt formatını təhlükəsiz oxumaq üçün dinamik icra funksiyası
+        const parsedData = new Function(`return [${inputRaw}]`)();
+
+        if (!Array.isArray(parsedData)) {
+            throw new Error("Daxil edilən məlumat düzgün massiv formatında deyil.");
+        }
+
+        // Massivi tam tərsinə çeviririk (Reverse alqoritmi)
+        parsedData.reverse();
+
+        // Yenidən sənin dırnaqsız (təmiz JS) obyekt formatına formatlayırıq
+        const formattedOutput = parsedData.map(obj => {
+            const parts = Object.entries(obj).map(([key, value]) => {
+                if (typeof value === 'string') {
+                    return `${key}: "${value.replace(/"/g, '\\"')}"`;
+                }
+                return `${key}: ${value}`;
+            });
+            return `  { ${parts.join(', ')} },`;
+        }).join('\n');
+
+        document.getElementById('outputData').value = formattedOutput;
+        status.innerText = `Uğurlu! Siyahıdakı ${parsedData.length} film tam tərsinə ardıcıllıqla düzüldü.`;
+
+    } catch (error) {
+        alert("Xəta baş verdi! Kodu düzgün kopyaladığınızdan əmin olun. \nDetallar: " + error.message);
+    }
+}
+
+function copyToClipboard() {
+    const outputText = document.getElementById('outputData');
+    if (!outputText.value) {
+        alert("Kopyalanacaq nəticə yoxdur!");
+        return;
+    }
+    outputText.select();
+    document.execCommand('copy');
+    
+    const status = document.getElementById('statusMessage');
+    status.innerText = "Tərs düzülmüş kodlar buferə kopyalandı! Birbaşa MOVIES massivinin içinə yerləşdirə bilərsən.";
+}
+</script>
+
+</body>
+</html>
