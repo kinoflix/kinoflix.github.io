@@ -2445,7 +2445,7 @@ document.addEventListener('DOMContentLoaded', () => {
 const COLLECTIONS = [
   {
     id: "spiderman",
-    title: "Hörümçək adam / Spider-Man",
+    title: "Örümcek adam / Spider Man",
     cover: "https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg",
     movies: ["spiderman", "spiderman2", "spiderman3", "theamazingspiderman", "theamazingspiderman2", "spidermanhomecoming", "spidermanintothespiderverse", "spidermanfarfromhome", "spidermannowayhome", "spidermanacrossthespiderverse", "spider-noir"]
   },
