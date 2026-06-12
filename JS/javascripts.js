@@ -2472,6 +2472,12 @@ const COLLECTIONS = [
     title: "Ip Man (Herman Yau)",
     cover: "https://m.media-amazon.com/images/M/MV5BMmFkYjRhOGItNGNmYy00OTQyLThhYjctNWVkNmRhZTNiNDgzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
     movies: ["ipmanthelegendisborn", "ipmanthefinalfight", "ipmankungfumaster"]
+  },
+   {
+    id: "avengers",
+    title: "Yenilmezler / The Avengers",
+    cover: "https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg",
+    movies: ["theavengers", "theavengers2", "theavengers3", "theavengers4"]
   }
 ];
 
