@@ -2508,14 +2508,13 @@ function updateSpotlight(collection) {
     };
 }
 
-// 🌟 MƏRKƏZİ AKTİVLƏŞDİRMƏ FUNKSİYASI (Səhifə sıçraması problemi tamamilə həll olundu)
+// 🌟 MƏRKƏZİ AKTİVLƏŞDİRMƏ FUNKSİYASI (Scroll Qüsursuzlaşdırıldı)
 function setActiveCollection(index) {
     if (COLLECTIONS.length === 0) return;
     
     currentCollectionIndex = index;
     const currentCol = COLLECTIONS[index];
     
-    // Bütün tabların vizual aktivliyini tənzimləyirik
     const tabs = document.querySelectorAll('.spotlight-tabs .tab-item');
     const tabsContainer = document.getElementById('spotlightTabsContainer');
     
@@ -2523,26 +2522,39 @@ function setActiveCollection(index) {
         if (idx === index) {
             tab.classList.add('active');
             
-            // 🔥 PROBLEMİN HƏLLİ: Səhifəni sıçradan scrollIntoView silindi!
-            // Əgər sağ menyu daxilində sürüşdürmə lazımdırsa, daxili scrollTop hesablama mexanizmi:
             if (tabsContainer) {
-                // Elementin konteynerin yuxarısına nəzərən mövqeyi
-                const tabTop = tab.offsetTop;
-                const tabHeight = tab.offsetHeight;
-                const containerHeight = tabsContainer.clientHeight;
-                const containerScrollTop = tabsContainer.scrollTop;
+                // 1. Əgər İLK elementə (0) qayıdıbsa - dərhal tam ən başa scroll et
+                if (index === 0) {
+                    tabsContainer.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                } 
+                // 2. Əgər EN SON elementi seçibsə - dərhal tam ən aşağıya scroll et
+                else if (index === COLLECTIONS.length - 1) {
+                    tabsContainer.scrollTo({
+                        top: tabsContainer.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                } 
+                // 3. Orta elementlərdədirsə - ağıllı koordinat hesablamasını işlət
+                else {
+                    const tabTop = tab.offsetTop;
+                    const tabHeight = tab.offsetHeight;
+                    const containerHeight = tabsContainer.clientHeight;
+                    const containerScrollTop = tabsContainer.scrollTop;
 
-                // Əgər aktiv element görünən sahədən aşağıda və ya yuxarıdadırsa, daxili scroll-u tənzimləyirik
-                if (tabTop < containerScrollTop) {
-                    tabsContainer.scrollTo({
-                        top: tabTop,
-                        behavior: 'smooth'
-                    });
-                } else if (tabTop + tabHeight > containerScrollTop + containerHeight) {
-                    tabsContainer.scrollTo({
-                        top: tabTop - containerHeight + tabHeight,
-                        behavior: 'smooth'
-                    });
+                    if (tabTop < containerScrollTop) {
+                        tabsContainer.scrollTo({
+                            top: tabTop,
+                            behavior: 'smooth'
+                        });
+                    } else if (tabTop + tabHeight > containerScrollTop + containerHeight) {
+                        tabsContainer.scrollTo({
+                            top: tabTop - containerHeight + tabHeight,
+                            behavior: 'smooth'
+                        });
+                    }
                 }
             }
         } else {
