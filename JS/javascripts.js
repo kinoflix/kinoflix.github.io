@@ -2439,10 +2439,16 @@ document.addEventListener('DOMContentLoaded', () => {
 // 1. KOLLEKSİYALARI BAZANIZA BAĞLAYIN
 const COLLECTIONS = [
   {
-    id: "spider-man",
+    id: "spiderman",
     title: "Hörümçək adam / Spider-Man",
     cover: "https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg",
     movies: ["spiderman", "spiderman2", "spiderman3", "theamazingspiderman", "theamazingspiderman2", "spidermanhomecoming", "spidermanintothespiderverse", "spidermanfarfromhome", "spidermannowayhome", "spidermanacrossthespiderverse", "spider-noir"]
+  },
+   {
+    id: "venom",
+    title: "Venom",
+    cover: "https://m.media-amazon.com/images/M/MV5BZDMyYWU4NzItZDY0MC00ODE2LTkyYTMtMzNkNDdmYmFhZDg0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["venom", "venom2", "venom3"]
   },
   {
     id: "avatar",
@@ -2450,6 +2456,18 @@ const COLLECTIONS = [
     cover: "https://m.media-amazon.com/images/M/MV5BZDYxY2I1OGMtN2Y4MS00ZmU1LTgyNDAtODA0MzAyYjI0N2Y2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
     movies: ["avatar", "avatar2", "avatar3"]
   },
+   {
+    id: "ipman1",
+    title: "Ip Man (Wilson Yip)",
+    cover: "https://m.media-amazon.com/images/M/MV5BOGVjMDEzNjMtMWJmMy00NDdjLWFkMzItOTBhZTE3OWU0YmM4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["ipman", "ipman2", "ipman3", "ipmanlegacy", "ipman4"]
+  },
+   {
+    id: "ipman2",
+    title: "Ip Man (Herman Yau)",
+    cover: "https://m.media-amazon.com/images/M/MV5BMmFkYjRhOGItNGNmYy00OTQyLThhYjctNWVkNmRhZTNiNDgzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["ipmanthelegendisborn", "ipmanthefinalfight", "ipmankungfumaster"]
+  }
 ];
 
 // 2. Spotlight vizual yeniləmə mexanizmi
