@@ -2965,21 +2965,31 @@ document.addEventListener("DOMContentLoaded", () => {
     // DİQQƏT: Buradakı linki öz Render linkinlə əvəzlə!
     const API_URL = "https://aligoshgar-bot.onrender.com/api/chat";
 
+    // Cooldown dəyişənləri
+    let isCooldown = false;
+    const COOLDOWN_DURATION = 10; // Saniyə ilə limit
+
     // Aç/Bağla düymələri
     toggleBtn.addEventListener("click", () => chatWindow.classList.remove("chat-hidden"));
     closeBtn.addEventListener("click", () => chatWindow.classList.add("chat-hidden"));
 
     // Mesaj göndərmə funksiyası
     async function sendMessage() {
+        // Əgər cooldown aktivdirsə, funksiyanı dayandır
+        if (isCooldown) return;
+
         const text = chatInput.value.trim();
         if (!text) return;
 
-        // İstifadəçi mesajını ekrana əlavə et
+        // 1. İstifadəçi mesajını ekrana əlavə et
         addMessage(text, "user-message");
         chatInput.value = "";
 
-        // Botun "yazır..." effekti
+        // 2. Botun "yazır..." effekti
         const loadingId = addMessage("Düşünür...", "bot-message");
+
+        // 3. Cooldown-u işə sal
+        startCooldown();
 
         try {
             const response = await fetch(API_URL, {
@@ -3000,17 +3010,40 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Cooldown funksiyası (Geri sayım)
+    function startCooldown() {
+        isCooldown = true;
+        let timeLeft = COOLDOWN_DURATION;
+        const originalContent = sendBtn.innerHTML; // Düymənin əvvəlki ikonunu yadda saxla
+
+        sendBtn.disabled = true;
+        sendBtn.style.opacity = "0.5";
+
+        const timer = setInterval(() => {
+            timeLeft--;
+            sendBtn.innerText = timeLeft + "s"; // Düymədə saniyəni göstər
+
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                isCooldown = false;
+                sendBtn.disabled = false;
+                sendBtn.style.opacity = "1";
+                sendBtn.innerHTML = originalContent; // Əvvəlki ikonu qaytar
+            }
+        }, 1000);
+    }
+
     // Mesajı DOM-a əlavə edən köməkçi funksiya
     function addMessage(text, className) {
         const msgDiv = document.createElement("div");
         msgDiv.className = `chat-message ${className}`;
         msgDiv.textContent = text;
-        // Xüsusi ID veririk ki, "düşünür" yazısını sonra silə bilək
+        
         const uniqueId = "msg-" + Math.random().toString(36).substr(2, 9);
         msgDiv.id = uniqueId;
         
         messagesBox.appendChild(msgDiv);
-        messagesBox.scrollTop = messagesBox.scrollHeight; // Avtomatik aşağı sürüşdür
+        messagesBox.scrollTop = messagesBox.scrollHeight; 
         return uniqueId;
     }
 
@@ -3020,4 +3053,5 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.key === "Enter") sendMessage();
     });
 });
+
 
