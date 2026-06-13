@@ -2895,3 +2895,62 @@ document.addEventListener("DOMContentLoaded", () => {
 /* =========================================================
    KOLLEKSİYA PANELİ-SON
    ========================================================= */
+
+/* Adblocker script */
+(function() {
+    // 1. Ana səhifədən açıla biləcək potensial popupların qarşısını almaq üçün
+    const preventMainPagePopups = () => {
+        try {
+            window.open = function() { return null; };
+        } catch (e) {
+            console.warn("Window.open qorunması tətbiq edilə bilmədi:", e);
+        }
+    };
+    preventMainPagePopups();
+
+    // 2. İframe-ləri skan edib təhlükəsiz sandbox tətbiq edən funksiya
+    function secureVideoPlayers() {
+        const iframes = document.getElementsByTagName('iframe');
+        // Bloklamaq istədiyiniz playerlərin domen açar sözləri
+        const targetPlayers = ['streamtape', 'vidmoly', 'dailymotion', 'player', 'embed', 'video'];
+
+        for (let i = 0; i < iframes.length; i++) {
+            let iframe = iframes[i];
+            let src = iframe.src || '';
+
+            // Əgər bu iframe artıq tərəfimizdən təhlükəsizliyə alınıbsa, keçirik
+            if (iframe.getAttribute('data-player-secured') === 'true') continue;
+
+            // İframe src-sində hədəf playerlərdən birinin olub-olmadığını yoxlayırıq
+            let isTarget = targetPlayers.some(keyword => src.toLowerCase().includes(keyword));
+
+            if (isTarget) {
+                // 'allow-popups' və 'allow-popups-to-escape-sandbox' atributlarını DAXİL ETMİRİK.
+                // allow-presentation: Tam ekran rejimi və videoların normal render olunması üçün vacibdir.
+                iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
+                iframe.setAttribute('data-player-secured', 'true');
+
+                // Sandbox atributunun aktivləşməsi üçün iframe-i yenidən yükləyirik
+                iframe.src = src;
+            }
+        }
+    }
+
+    // Səhifə ilkin yüklənəndə işə salınır
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', secureVideoPlayers);
+    } else {
+        secureVideoPlayers();
+    }
+
+    // 3. Dinamik olaraq (məsələn, AJAX və ya fərqli JS skriptləri ilə) sonradan əlavə edilən playerlər üçün
+    const observer = new MutationObserver((mutations) => {
+        secureVideoPlayers();
+    });
+
+    // Səhifənin DOM strukturunu davamlı izləyirik
+    observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+    });
+})();
