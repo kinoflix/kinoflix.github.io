@@ -2951,3 +2951,73 @@ document.addEventListener("DOMContentLoaded", () => {
     const observer = new MutationObserver(() => { patchStreamtape(); });
     observer.observe(document.documentElement, { childList: true, subtree: true });
 })();
+
+
+// CHATBOT
+document.addEventListener("DOMContentLoaded", () => {
+    const chatWindow = document.getElementById("chat-window");
+    const toggleBtn = document.getElementById("chat-toggle-btn");
+    const closeBtn = document.getElementById("chat-close-btn");
+    const sendBtn = document.getElementById("chat-send-btn");
+    const chatInput = document.getElementById("chat-input");
+    const messagesBox = document.getElementById("chat-messages");
+
+    // DİQQƏT: Buradakı linki öz Render linkinlə əvəzlə!
+    const API_URL = "https://SENIN-RENDER-LINKIN.onrender.com/api/chat";
+
+    // Aç/Bağla düymələri
+    toggleBtn.addEventListener("click", () => chatWindow.classList.remove("chat-hidden"));
+    closeBtn.addEventListener("click", () => chatWindow.classList.add("chat-hidden"));
+
+    // Mesaj göndərmə funksiyası
+    async function sendMessage() {
+        const text = chatInput.value.trim();
+        if (!text) return;
+
+        // İstifadəçi mesajını ekrana əlavə et
+        addMessage(text, "user-message");
+        chatInput.value = "";
+
+        // Botun "yazır..." effekti
+        const loadingId = addMessage("Düşünür...", "bot-message");
+
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: text })
+            });
+
+            const data = await response.json();
+            
+            // "Düşünür..." yazısını sil və əsl cavabı yaz
+            document.getElementById(loadingId).remove();
+            addMessage(data.reply, "bot-message");
+
+        } catch (error) {
+            document.getElementById(loadingId).remove();
+            addMessage("Xəta yarandı. Bağlantını yoxlayın.", "bot-message");
+        }
+    }
+
+    // Mesajı DOM-a əlavə edən köməkçi funksiya
+    function addMessage(text, className) {
+        const msgDiv = document.createElement("div");
+        msgDiv.className = `chat-message ${className}`;
+        msgDiv.textContent = text;
+        // Xüsusi ID veririk ki, "düşünür" yazısını sonra silə bilək
+        const uniqueId = "msg-" + Math.random().toString(36).substr(2, 9);
+        msgDiv.id = uniqueId;
+        
+        messagesBox.appendChild(msgDiv);
+        messagesBox.scrollTop = messagesBox.scrollHeight; // Avtomatik aşağı sürüşdür
+        return uniqueId;
+    }
+
+    // Düyməyə basanda və ya "Enter" vuranda göndər
+    sendBtn.addEventListener("click", sendMessage);
+    chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendMessage();
+    });
+});
+
