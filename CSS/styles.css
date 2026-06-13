@@ -1069,4 +1069,8 @@ header{
     background: #2563eb;
     transform: scale(1.05);
 }
+#chat-toggle-btn, #chat-window {
+    display: none !important;
+}
+
 
