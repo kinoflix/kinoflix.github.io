@@ -2899,52 +2899,55 @@ document.addEventListener("DOMContentLoaded", () => {
 /* Adblocker script */
 
 (function() {
-    const preventMainPagePopups = () => {
+    // Səhifə səviyyəsində window.open funksiyasını sığortalayırıq
+    const bypassWindowOpen = () => {
         try {
-            window.open = function() { return null; };
-        } catch (e) {
-            console.warn("Qorunma tətbiq edilə bilmədi:", e);
-        }
+            const originalOpen = window.open;
+            window.open = function(url, name, specs) {
+                // Əgər çağırış streamtape-dən gəlirsə, tamamilə rədd et
+                if (url && (url.includes('streamtape') || url.includes('ad') || url.includes('pop'))) {
+                    return null; 
+                }
+                return originalOpen.apply(this, arguments);
+            };
+        } catch (e) { }
     };
-    preventMainPagePopups();
+    bypassWindowOpen();
 
-    function secureVideoPlayers() {
+    function patchStreamtape() {
         const iframes = document.getElementsByTagName('iframe');
         
         for (let i = 0; i < iframes.length; i++) {
             let iframe = iframes[i];
             let src = iframe.src || '';
 
-            if (iframe.getAttribute('data-player-secured') === 'true') continue;
+            if (iframe.getAttribute('data-player-fixed') === 'true') continue;
 
-            // Streamtape üçün xüsusi aqressiv yoxlanış
             if (src.toLowerCase().includes('streamtape')) {
-                // Streamtape-in skriptlərini aldatmaq üçün daha geniş, lakin təhlükəsiz sandbox konfiqurasiyası
-                iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-top-navigation-by-user-activation allow-popups-to-escape-sandbox');
-                iframe.setAttribute('data-player-secured', 'true');
+                // FORUM TRICK: 'allow-popups' YOXDUR, amma 'allow-popups-to-escape-sandbox' var.
+                // Bu kombinasiya Streamtape-in anti-adblock skriptini tamamilə kor edir.
+                iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock allow-modals allow-popups-to-escape-sandbox');
+                iframe.setAttribute('data-player-fixed', 'true');
+                
+                // İframe-i yeni qaydalarla yenidən yükləyirik
                 iframe.src = src;
             } 
-            // Digər playerlər üçün (Vidmoly, Dailymotion və s.)
-            else if (['vidmoly', 'dailymotion', 'player', 'embed'].some(keyword => src.toLowerCase().includes(keyword))) {
+            // Digər standart playerlər üçün qorunma
+            else if (['vidmoly', 'dailymotion', 'player', 'embed'].some(k => src.toLowerCase().includes(k))) {
                 iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
-                iframe.setAttribute('data-player-secured', 'true');
+                iframe.setAttribute('data-player-fixed', 'true');
                 iframe.src = src;
             }
         }
     }
 
+    // DOM dəyişikliklərini izləmək və dinamik yüklənən playerləri yaxalamaq üçün
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', secureVideoPlayers);
+        document.addEventListener('DOMContentLoaded', patchStreamtape);
     } else {
-        secureVideoPlayers();
+        patchStreamtape();
     }
 
-    const observer = new MutationObserver((mutations) => {
-        secureVideoPlayers();
-    });
-
-    observer.observe(document.documentElement, {
-        childList: true,
-        subtree: true
-    });
+    const observer = new MutationObserver(() => { patchStreamtape(); });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
 })();
