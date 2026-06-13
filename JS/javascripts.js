@@ -1135,6 +1135,225 @@ searchInput.setAttribute('aria-label','Film axtar');
 
 })();
 
+/* Streamtape (streamtape.com / streamtape.net) video handler */
+(function(){
+  // Orijinal openPlayer funksiyasının yüklənməsini gözləyirik
+  function whenOpenPlayerReady(cb){
+    if(typeof window.openPlayer === 'function'){ cb(); return; }
+    let tries = 0;
+    const id = setInterval(()=>{
+      if(typeof window.openPlayer === 'function' || ++tries > 40){ clearInterval(id); cb(); }
+    }, 100);
+  }
+
+  // Streamtape linklərindən Video ID-ni çıxaran funksiya
+  // Dəstəklənən formatlar: streamtape.com/v/xxxxxx və ya streamtape.com/e/xxxxxx
+  function extractStreamtapeToken(url){
+    try {
+      const u = String(url || '');
+      if(!/streamtape|strtape/i.test(u)) return null;
+
+      // /v/ və ya /e/ hissəsindən sonrakı unikal ID-ni çəkirik
+      const m = u.match(/\/(?:v|e)\/([a-zA-Z0-9]+)/i);
+      if(m && m[1]) return { id: m[1], raw: m[1] };
+
+      return null;
+    } catch(e){ return null; }
+  }
+
+  // ID-yə əsasən rəsmi və stabil işləyən embed linkini qururuq
+  function buildStreamtapeEmbed(id){
+    return `https://streamtape.com/e/${encodeURIComponent(id)}`;
+  }
+
+  // Modal interfeysi (Yalnız bir dəfə yaradılır)
+  let stModal = null;
+  const showHeaderFSForSt = false; // Dublikat ikon olmaması üçün üst FS bağlı qalır
+
+  function createStreamtapeModal(){
+    if(stModal) return stModal;
+
+    const css = `
+      .stmodal-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(2,6,23,0.8), rgba(2,6,23,0.95));z-index:9999;padding:20px}
+      .stmodal-sheet{width:52%;max-width:1100px;border-radius:12px;overflow:hidden;background:var(--surface,#0f1720);box-shadow:0 20px 60px rgba(2,6,23,0.7);display:flex;flex-direction:column}
+      .stmodal-top{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.03)}
+      .stmodal-left{display:flex;align-items:center;gap:8px}
+      .stmodal-title{font-weight:700;color:var(--text,#e6eef6);flex:1;text-align:center;line-height:1.05}
+      .stmodal-sub{font-size:13px;color:var(--muted,#94a3b8);text-align:center;margin-top:4px}
+      .stmodal-close,.stmodal-fs{background:transparent;border:0;color:var(--text,#e6eef6);font-size:18px;cursor:pointer;padding:6px 10px;border-radius:8px}
+      .stmodal-close:hover,.stmodal-fs:hover{background:rgba(255,255,255,0.02)}
+      .stmodal-iframe-wrap{width:100%;height:60vh;min-height:320px;background:#000}
+      .stmodal-iframe{width:100%;height:100%;border:0}
+      @media (max-width:520px){ .stmodal-iframe-wrap{height:48vh} .stmodal-title{text-align:center;font-size:14px} .stmodal-sub{font-size:12px} .stmodal-sheet{width:100%} }
+      @media (min-width:768px){ .stmodal-overlay {transform: translateX(-6px);} }
+    `;
+    const st = document.createElement('style'); st.appendChild(document.createTextNode(css)); document.head.appendChild(st);
+
+    stModal = document.createElement('div');
+    stModal.className = 'stmodal-overlay';
+    stModal.style.display = 'none';
+
+    const sheet = document.createElement('div'); sheet.className = 'stmodal-sheet'; sheet.setAttribute('role','dialog'); sheet.setAttribute('aria-modal','true');
+
+    const top = document.createElement('div'); top.className = 'stmodal-top';
+    const left = document.createElement('div'); left.className = 'stmodal-left';
+    const closeBtn = document.createElement('button'); closeBtn.className = 'stmodal-close'; closeBtn.setAttribute('aria-label','Bağla'); closeBtn.innerHTML = '✕';
+    left.appendChild(closeBtn);
+
+    let fsBtn = null;
+    if(showHeaderFSForSt){
+      fsBtn = document.createElement('button'); fsBtn.className = 'stmodal-fs'; fsBtn.setAttribute('aria-label','Tam ekran'); fsBtn.title='Tam ekran';
+      fsBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><path d="M7 14H5v4h4v-2H7v-2zM17 10h2V6h-4v2h2v2zM7 6h4V4H5v4h2V6zM17 18v-4h2v4h-4v-2h2v-2z" fill="currentColor"/></svg>';
+      left.appendChild(fsBtn);
+    }
+
+    const center = document.createElement('div'); center.style.flex = '1'; center.style.display = 'flex'; center.style.flexDirection = 'column'; center.style.alignItems = 'center'; center.style.justifyContent = 'center';
+    const title = document.createElement('div'); title.className = 'stmodal-title'; title.textContent = 'Streamtape Video';
+    const sub = document.createElement('div'); sub.className = 'stmodal-sub'; sub.textContent = '';
+    center.appendChild(title); center.appendChild(sub);
+
+    top.appendChild(left);
+    top.appendChild(center);
+
+    // Paylaşma Düyməsi
+    const rightControls = document.createElement('div');
+    rightControls.className = 'player-right-controls';
+    rightControls.innerHTML = `
+      <button class="share-btn" title="Paylaş" aria-label="Paylaş" onclick="sharePlayer()">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true" focusable="false" role="img">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+      </button>
+    `;
+    top.appendChild(rightControls);
+
+    const wrap = document.createElement('div'); wrap.className = 'stmodal-iframe-wrap';
+    const iframe = document.createElement('iframe'); iframe.className = 'stmodal-iframe';
+
+    // Ekran icazələri və Pop-up Reklam bloklama qum qutusu (Sandbox)
+    iframe.setAttribute('allowfullscreen','');
+    iframe.setAttribute('webkitallowfullscreen','');
+    iframe.setAttribute('mozallowfullscreen','');
+    iframe.setAttribute('allow','fullscreen; autoplay; encrypted-media; picture-in-picture');
+    iframe.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-popups allow-modals');
+
+    iframe.src = 'about:blank';
+    wrap.appendChild(iframe);
+
+    sheet.appendChild(top);
+    sheet.appendChild(wrap);
+    stModal.appendChild(sheet);
+    document.body.appendChild(stModal);
+
+    // Hadisələr (Events): Bağlanma zamanı toast bildiriş
+    closeBtn.addEventListener('click', ()=>{ hideStreamtapeModal(); try{ if(typeof showToast==='function') showToast('Film dayandırıldı!',900); }catch(e){} });
+    stModal.addEventListener('click', (e)=>{ if(e.target === stModal){ hideStreamtapeModal(); try{ if(typeof showToast==='function') showToast('Film dayandırıldı!',900); }catch(e){} } });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && stModal.style.display==='flex'){ hideStreamtapeModal(); try{ if(typeof showToast==='function') showToast('Film dayandırıldı!',900); }catch(e){} } });
+
+    if(fsBtn){
+      fsBtn.addEventListener('click', async (ev)=>{
+        ev.preventDefault();
+        try{
+          if(iframe.requestFullscreen) await iframe.requestFullscreen();
+          else if(iframe.webkitRequestFullscreen) await iframe.webkitRequestFullscreen();
+          else if(wrap.requestFullscreen) await wrap.requestFullscreen();
+        }catch(err){
+          const src = iframe.src || '';
+          if(src && src !== 'about:blank') window.open(src, '_blank', 'noopener');
+        }
+      });
+    }
+
+    return stModal;
+  }
+
+  function showStreamtapeModal(embedUrl, originalUrl, titleText, subtitleText){
+    const m = createStreamtapeModal();
+    const iframe = m.querySelector('.stmodal-iframe');
+    const titleEl = m.querySelector('.stmodal-title');
+    const subEl = m.querySelector('.stmodal-sub');
+
+    if(titleText && titleEl) titleEl.textContent = titleText;
+    if(subtitleText && subEl){ subEl.textContent = subtitleText; subEl.style.display = 'block'; }
+    else if(subEl){ subEl.textContent = ''; subEl.style.display = 'none'; }
+
+    try{
+      iframe.removeAttribute('srcdoc');
+      iframe.src = embedUrl;
+    } catch(e){
+      window.open(originalUrl, '_blank', 'noopener');
+      return;
+    }
+
+    try{ if(typeof lockBodyScroll === 'function') lockBodyScroll(); else { document.documentElement.style.overflow='hidden'; } }catch(e){}
+    m.style.display = 'flex';
+
+    try{ if(typeof showToast === 'function') showToast(`${titleText} başladılır!`, 1000); }catch(e){}
+  }
+
+  function hideStreamtapeModal(){
+    // URL TƏMİZLƏMƏ
+    window.history.pushState({ movieId: null }, document.title, window.location.pathname);
+    
+    const m = createStreamtapeModal();
+    const iframe = m.querySelector('.stmodal-iframe');
+    try{ iframe.src = 'about:blank'; }catch(e){}
+    m.style.display = 'none';
+    
+    try{ if(typeof unlockBodyScroll === 'function') unlockBodyScroll(); else { document.documentElement.style.overflow=''; } }catch(e){}
+    try{
+      if(document.fullscreenElement){ if(document.exitFullscreen) document.exitFullscreen(); }
+      else if(document.webkitFullscreenElement){ if(document.webkitExitFullscreen) document.webkitExitFullscreen(); }
+    }catch(e){}
+  }
+
+  // openPlayer mövcud olduqda onu Streamtape ilə genişləndiririk
+  whenOpenPlayerReady(function(){
+    const original = (typeof window.openPlayer === 'function') ? window.openPlayer.bind(window) : null;
+
+    window.openPlayer = function(movie){
+      try{
+        const src = (movie && (movie.src || movie.url)) ? (movie.src || movie.url) : String(movie||'');
+        const isStHost = /streamtape|strtape/i.test(src);
+
+        // Əgər link Streamtape deyilsə, köhnə (orijinal) funksiyaya ötür
+        if(!isStHost){
+          if(original) return original(movie);
+          return;
+        }
+
+        const t = extractStreamtapeToken(src);
+        let subtitle = '';
+        if(movie && (movie.year || movie.genre)){
+          const parts = [];
+          if(movie.year) parts.push(String(movie.year));
+          if(movie.genre) parts.push(String(movie.genre));
+          if(parts.length) subtitle = parts.join(' · ');
+        }
+
+        if(t && t.id){
+          const embedUrl = buildStreamtapeEmbed(t.id);
+          showStreamtapeModal(embedUrl, src, movie && movie.title ? movie.title : 'Streamtape Video', subtitle);
+          return;
+        } else {
+          // Xəta olarsa birbaşa gələn linki embed etməyə çalış
+          showStreamtapeModal(src, src, movie && movie.title ? movie.title : 'Streamtape Video', subtitle);
+          return;
+        }
+      } catch(err){
+        if(original) return original(movie);
+        try{ window.open((movie && movie.src) || movie || '', '_blank'); }catch(e){}
+      }
+    };
+  });
+
+})();
+
+
   /* Mail.ru (my.mail.ru) video handler — wrapper for openPlayer
    Add this script to the end of your page WITHOUT editing existing code. */
 (function(){
@@ -2117,7 +2336,8 @@ function getActivePlayerTitle() {
     '.dzenmodal-title',   // 5. Dzen pəncərəsi
     '.drivemodal-title',  // 6. Google Drive pəncərəsi
     '.vidmolyModal-title',  // 7. Vidmoly pəncərəsi
-    '.dmmodal-title'      // 8. DM pəncərəsi
+    '.dmmodal-title',      // 8. DM pəncərəsi
+    '.stmodal-title'       // 9. ST pəncərəsi
     // Gələcəkdə yeni pəncərə əlavə etsəniz, onun başlıq class-ını bura əlavə edin
   ];
 
