@@ -2963,7 +2963,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const messagesBox = document.getElementById("chat-messages");
 
     // DİQQƏT: Buradakı linki öz Render linkinlə əvəzlə!
-    const API_URL = "https://SENIN-RENDER-LINKIN.onrender.com/api/chat";
+    const API_URL = "https://aligoshgar-bot.onrender.com/api/chat";
 
     // Aç/Bağla düymələri
     toggleBtn.addEventListener("click", () => chatWindow.classList.remove("chat-hidden"));
