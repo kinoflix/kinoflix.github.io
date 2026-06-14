@@ -2954,11 +2954,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // CHATBOT
-// --- KINOFLIX AI CHATBOT FUNCTIONALITY ---
+
 document.addEventListener("DOMContentLoaded", () => {
     const chatWindow = document.getElementById("chat-window");
     const toggleBtn = document.getElementById("chat-toggle-btn");
     const closeBtn = document.getElementById("chat-close-btn");
+    const clearBtn = document.getElementById("chat-clear-btn");
     const themeBtn = document.getElementById("chat-theme-btn");
     const themeIcon = document.getElementById("chat-theme-icon");
     const sendBtn = document.getElementById("chat-send-btn");
@@ -2967,31 +2968,41 @@ document.addEventListener("DOMContentLoaded", () => {
     const typingIndicator = document.getElementById("chat-typing-indicator");
     const chipBtns = document.querySelectorAll(".chip-btn");
 
-    // Sənin rəsmi Render linkin
     const API_URL = "https://kinoflixai.onrender.com/api/chat";
 
-    // Cooldown və Tema Ayarları
     let isCooldown = false;
     const COOLDOWN_DURATION = 10; 
     let isDarkMode = localStorage.getItem("kinoflix_chat_theme") === "dark";
 
-    // --- 1. TEMA IDARƏETMƏSİ (Light / Dark Mode Keçidi) ---
+    // --- 1. KEŞ YADDAŞINDAN MESAJLARI YÜKLƏMƏ ---
+    function loadChatHistory() {
+        messagesBox.innerHTML = "";
+        const history = JSON.parse(localStorage.getItem("kinoflix_chat_history")) || [];
+        
+        if (history.length === 0) {
+            // Əgər keş boşdursa, ilk default mesajı yaz
+            addMessage("Salam! Mən KINOFLIX AI assistentiyəm. Sizə hansı janrda film tapmaqda kömək edim? 🍿", "bot-message", false);
+        } else {
+            history.forEach(msg => {
+                addMessage(msg.text, msg.className, false); // false: təkrar keşe yazmasın
+            });
+        }
+    }
+
+    // --- 2. TEMA IDARƏETMƏSİ ---
     function applyTheme(dark) {
         if (dark) {
             chatWindow.classList.remove("light-mode");
             chatWindow.classList.add("dark-mode");
-            // Günəş ikonu
             themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.22" x2="5.64" y2="17.78"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
         } else {
             chatWindow.classList.remove("dark-mode");
             chatWindow.classList.add("light-mode");
-            // Ay ikonu
             themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
         }
         localStorage.setItem("kinoflix_chat_theme", dark ? "dark" : "light");
     }
     
-    // İlk açılışda yadda qalan temanı tətbiq et
     applyTheme(isDarkMode);
 
     themeBtn.addEventListener("click", () => {
@@ -2999,29 +3010,40 @@ document.addEventListener("DOMContentLoaded", () => {
         applyTheme(isDarkMode);
     });
 
-    // --- 2. PANEL AÇMA / BAĞLAMA ---
+    // --- 3. DÜYMƏYƏ STRATEJİ KEÇİD (Toggle & Close) ---
+    // Bir dəfə vuranda açılır, təkrar vuranda isə bağlanır
     toggleBtn.addEventListener("click", () => {
-        chatWindow.classList.remove("chat-hidden");
-        chatInput.focus();
+        if(chatWindow.classList.contains("chat-hidden")) {
+            chatWindow.classList.remove("chat-hidden");
+            chatInput.focus();
+        } else {
+            chatWindow.classList.add("chat-hidden");
+        }
     });
+    
     closeBtn.addEventListener("click", () => chatWindow.classList.add("chat-hidden"));
 
-    // --- 3. MESAJ GÖNDƏRMƏ FUNKSİYASI ---
+    // --- 4. ZİBİL QUTUSU (KEŞİ TƏMİZLƏMƏK) ---
+    clearBtn.addEventListener("click", () => {
+        if (confirm("Söhbət tarixçəsini təmizləmək istəyirsiniz?")) {
+            localStorage.removeItem("kinoflix_chat_history");
+            loadChatHistory();
+        }
+    });
+
+    // --- 5. MESAJ GÖNDƏRMƏ ---
     async function sendMessage() {
         if (isCooldown) return;
 
         const text = chatInput.value.trim();
         if (!text) return;
 
-        // İstifadəçi mesajını yaz və təmizlə
-        addMessage(text, "user-message");
+        addMessage(text, "user-message", true); // true: keşe yazsın
         chatInput.value = "";
 
-        // "Yazır..." İndikatorunu aktiv et və skrol et
         typingIndicator.classList.remove("indicator-hidden");
         messagesBox.scrollTop = messagesBox.scrollHeight;
 
-        // Cooldown-u başlat
         startCooldown();
 
         try {
@@ -3034,15 +3056,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
             
             typingIndicator.classList.add("indicator-hidden");
-            addMessage(data.reply, "bot-message");
+            addMessage(data.reply, "bot-message", true);
 
         } catch (error) {
             typingIndicator.classList.add("indicator-hidden");
-            addMessage("Xəta yarandı. Bağlantını yoxlayın. 😅", "bot-message");
+            addMessage("Xəta yarandı. Bağlantını yoxlayın. 😅", "bot-message", false);
         }
     }
 
-    // --- 4. COOLDOWN (Geri Sayım) ---
+    // --- 6. COOLDOWN (Geri Sayım) ---
     function startCooldown() {
         isCooldown = true;
         let timeLeft = COOLDOWN_DURATION;
@@ -3065,8 +3087,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 1000);
     }
 
-    // --- 5. DOM-A MESAJ ƏLAVƏ ETMƏ ---
-    function addMessage(text, className) {
+    // --- 7. DOM-A MESAJ ƏLAVƏ ETMƏ VƏ KEŞƏ YAZMA ---
+    function addMessage(text, className, saveToHistory = true) {
         const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const msgDiv = document.createElement("div");
         msgDiv.className = `chat-message ${className}`;
@@ -3078,9 +3100,16 @@ document.addEventListener("DOMContentLoaded", () => {
         
         messagesBox.appendChild(msgDiv);
         messagesBox.scrollTop = messagesBox.scrollHeight; 
+
+        // Keş yaddaşına əlavə etmək məntiqi
+        if (saveToHistory) {
+            const history = JSON.parse(localStorage.getItem("kinoflix_chat_history")) || [];
+            history.push({ text, className });
+            localStorage.setItem("kinoflix_chat_history", JSON.stringify(history));
+        }
     }
 
-    // --- 6. HAZIR CHIPS DÜYMƏLƏRİ ---
+    // Chips kliklənməsi
     chipBtns.forEach(btn => {
         btn.addEventListener("click", () => {
             chatInput.value = btn.getAttribute("data-text");
@@ -3088,16 +3117,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Dinləyicilər
     sendBtn.addEventListener("click", sendMessage);
     chatInput.addEventListener("keypress", (e) => {
         if (e.key === "Enter") sendMessage();
     });
 
-    // İlk default qarşılanma mesajı
-    if(messagesBox.children.length === 0) {
-        addMessage("Salam! Mən KINOFLIX AI assistentiyəm. Sizə hansı janrda film tapmaqda kömək edim? 🍿", "bot-message");
-    }
+    // İlk açılışda tarixi yüklə
+    loadChatHistory();
 });
-           
-
