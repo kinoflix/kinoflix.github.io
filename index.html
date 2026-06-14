@@ -333,32 +333,61 @@ scrollBtn.addEventListener("click", () => {
 <!-- Yuxarı Çıx Butonunun sonu -->
 
 <!-- AI ÇATBOT -->
-  <button id="chat-toggle-btn">
+
+<button id="chat-toggle-btn" title="KINOFLIX AI">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
 </button>
 
-<div id="chat-window" class="chat-hidden">
+<div id="chat-window" class="chat-hidden light-mode">
     <div id="chat-header">
         <div class="header-info">
             <div class="avatar">ƏK</div>
-            <span>KINOFLIX - AI Assistent</span>
+            <div>
+                <span class="bot-title">KINOFLIX AI</span>
+                <span id="bot-status">Online</span>
+            </div>
         </div>
-        <button id="chat-close-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
+        <div class="header-actions">
+            <button id="chat-theme-btn" title="Temanı Dəyiş">
+                <svg id="chat-theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+            <button id="chat-close-btn" title="Bağla">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
     </div>
+
     <div id="chat-messages">
-        <div class="chat-message bot-message">Salam! Sənə necə kömək edə bilərəm?</div>
+        </div>
+
+    <div id="chat-typing-indicator" class="indicator-hidden">
+        <div class="typing-dots">
+            <span class="typing-dot" style="animation-delay: 0s"></span>
+            <span class="typing-dot" style="animation-delay: 0.2s"></span>
+            <span class="typing-dot" style="animation-delay: 0.4s"></span>
+            <span class="indicator-text">KINOFLIX düşünür...</span>
+        </div>
     </div>
-    <div id="chat-input-area">
-        <input type="text" id="chat-input" placeholder="Mesaj yaz..." autocomplete="off">
-        <button id="chat-send-btn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-        </button>
+
+    <div id="chat-footer">
+        <div id="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Film və ya janr soruşun..." autocomplete="off">
+            <button id="chat-send-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </div>
+        <div class="quick-chips">
+            <button class="chip-btn" data-text="Hansı maraqlı fantastik filmlər var?">🚀 Fantastika</button>
+            <button class="chip-btn" data-text="Mənə gərgin bir detektiv film məsləhət gör">🔍 Detektiv</button>
+            <button class="chip-btn" data-text="Komediya janrında ən yaxşılar hansılardır?">😂 Komediya</button>
+        </div>
     </div>
 </div>
-
-  <!-- AI ÇATBOT-SONU -->
+  
+  
+<!-- AI ÇATBOT-SONU -->
   
 </body>
 </html>
