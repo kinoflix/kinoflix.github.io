@@ -882,7 +882,6 @@ header{
    KOLLEKSİYA PANELİ-SON
    ========================================================= */
 
-
 /* ÇATBOT STİLLƏRİ */
 /* --- KINOFLIX AI PREMIUM GLASSMORPHISM WIDGET STYLES --- */
 :root {
@@ -935,7 +934,12 @@ header{
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-    transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    
+    /* YENİLƏNDİ: Açılış animasiyası ilə yanaşı, gecə/gündüz rejim keçidləri də yumşaldıldı */
+    transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), 
+                transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+                background-color 0.5s ease,
+                border-color 0.5s ease;
 }
 
 .chat-hidden {
@@ -960,6 +964,8 @@ header{
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    /* YENİLƏNDİ: Gecə rejiminə keçəndə xəttin rəngi yumşaq dəyişsin */
+    transition: border-color 0.5s ease;
 }
 .dark-mode #chat-header { border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
 
@@ -986,7 +992,7 @@ header{
     color: white;
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 
-      /* İlkin vəziyyətdə əyri durur */
+    /* İlkin vəziyyətdə əyri durur */
     transform: rotate(3deg); 
     transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
     overflow: visible !important; 
@@ -1006,6 +1012,8 @@ header{
     background-color: #10b981;
     border: 2px solid rgba(255, 255, 255, 0.9);
     border-radius: 50%;
+    /* YENİLƏNDİ: Arxa fon borderi rejimlərə görə süzülərək dəyişsin */
+    transition: border-color 0.5s ease;
 }
 .dark-mode .online-dot {
     border-color: #27272a;
@@ -1025,6 +1033,8 @@ header{
     font-weight: 700;
     font-size: 15px;
     letter-spacing: -0.3px;
+    /* YENİLƏNDİ: Rejim dəyişəndə mətnin rəngi süzülsün */
+    transition: color 0.5s ease;
 }
 .light-mode .bot-title { color: #1f2937; }
 .dark-mode .bot-title { color: #f4f4f5; }
@@ -1054,7 +1064,8 @@ header{
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s;
+    /* YENİLƏNDİ: Düymə rəngləri və fonları animasiyalı keçsin */
+    transition: background-color 0.5s ease, color 0.5s ease, transform 0.2s ease;
 }
 
 .light-mode #chat-clear-btn, .light-mode #chat-theme-btn, .light-mode #chat-close-btn { color: #4b5563; }
@@ -1065,6 +1076,14 @@ header{
 
 .light-mode #chat-clear-btn:hover, .light-mode #chat-theme-btn:hover, .light-mode #chat-close-btn:hover { background: rgba(0,0,0,0.05); }
 .dark-mode #chat-clear-btn:hover, .dark-mode #chat-theme-btn:hover, .dark-mode #chat-close-btn:hover { background: rgba(255,255,255,0.05); }
+
+/* YENİLƏNDİ: Rejim dəyişərkən Mövzu İkonunun (gündüz/gecə) özünə də fırlanma effekti verildi */
+#chat-theme-btn svg {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#chat-theme-btn:active svg {
+    transform: rotate(180deg) scale(1.1);
+}
 
 #chat-messages {
     flex: 1;
@@ -1096,6 +1115,8 @@ header{
 .bot-message {
     align-self: flex-start;
     border-radius: 18px 18px 18px 4px;
+    /* YENİLƏNDİ: Köhnə bot mesajlarının fonu və mətni də keçid anında yumşaq süzülsün */
+    transition: background-color 0.5s ease, color 0.5s ease;
 }
 .light-mode .bot-message { background: rgba(0, 0, 0, 0.04); color: #1f2937; }
 .dark-mode .bot-message { background: rgba(255, 255, 255, 0.05); color: #e4e4e7; }
@@ -1123,7 +1144,13 @@ header{
     0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
     40% { transform: scale(1); opacity: 1; }
 }
-.indicator-text { font-size: 11px; margin-left: 6px; font-weight: 500; }
+.indicator-text { 
+    font-size: 11px; 
+    margin-left: 6px; 
+    font-weight: 500;
+    /* YENİLƏNDİ */
+    transition: color 0.5s ease;
+}
 .light-mode .indicator-text { color: #6b7280; }
 .dark-mode .indicator-text { color: #9ca3af; }
 
@@ -1133,11 +1160,22 @@ header{
     flex-direction: column;
     gap: 12px;
     border-top: 1px solid rgba(0, 0, 0, 0.04);
+    /* YENİLƏNDİ */
+    transition: border-color 0.5s ease;
 }
 .dark-mode #chat-footer { border-top: 1px solid rgba(255, 255, 255, 0.05); }
 
 #chat-input-area { display: flex; gap: 8px; position: relative; }
-#chat-input { flex: 1; padding: 12px 50px 12px 16px; border: 1px solid transparent; border-radius: 14px; outline: none; font-size: 14px; transition: all 0.3s; }
+#chat-input { 
+    flex: 1; 
+    padding: 12px 50px 12px 16px; 
+    border: 1px solid transparent; 
+    border-radius: 14px; 
+    outline: none; 
+    font-size: 14px; 
+    /* YENİLƏNDİ: Fokuslanma və Rejim dəyişikliyi tam olaraq 0.5s ərzində süzülür */
+    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.3s ease, box-shadow 0.3s ease; 
+}
 .light-mode #chat-input { background: rgba(0,0,0,0.04); color: #111827; }
 .dark-mode #chat-input { background: rgba(255,255,255,0.05); color: #f4f4f5; }
 .light-mode #chat-input:focus { border-color: var(--chat-primary); background: #fff; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
@@ -1151,8 +1189,17 @@ header{
 .quick-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
 .quick-chips::-webkit-scrollbar { height: 2px; }
 .quick-chips::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.2); }
-.chip-btn { white-space: nowrap; padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: 20px; cursor: pointer; transition: all 0.2s; }
+.chip-btn { 
+    white-space: nowrap; 
+    padding: 6px 12px; 
+    font-size: 11px; 
+    font-weight: 600; 
+    border-radius: 20px; 
+    cursor: pointer; 
+    /* YENİLƏNDİ: Çiplərin keçidləri yumşaldıldı */
+    transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease; 
+}
 .light-mode .chip-btn { background: #fff; border: 1px solid #e4e4e7; color: #4b5563; }
 .dark-mode .chip-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); color: #d4d4d8; }
-.light-mode .chip-btn:hover { background: #f4f4f5; border-color: var(--chat-primary); color: var(--chat-primary); }
-.dark-mode .chip-btn:hover { background: rgba(99,102,241,0.1); border-color: var(--chat-primary); color: #fff; }
+.light-mode .chip-btn:hover { background: #f4f4f5; border-color: var(--chat-primary); color: var(--chat-primary) !important; transition: all 0.2s ease; }
+.dark-mode .chip-btn:hover { background: rgba(99,102,241,0.1); border-color: var(--chat-primary); color: #fff !important; transition: all 0.2s ease; }
