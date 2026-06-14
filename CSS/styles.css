@@ -876,7 +876,7 @@ header{
     .spotlight-tabs { width: 100%; border-left: none; border-top: 1px solid rgba(255,255,255,0.1); padding-left: 0; padding-top: 15px; flex-direction: row; overflow-x: auto; scrollbar-width: none; }
     .tab-item { flex: 0 0 auto; padding: 8px 12px; }
     .tab-item.active, .tab-item:hover { padding-left: 12px; }
-    /* #spotlightTabsContainer { padding-bottom: 12px !important; } */
+    #spotlightTabsContainer { padding-bottom: 12px !important; }
   
 }
 
