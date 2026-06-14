@@ -2954,41 +2954,74 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // CHATBOT
+// --- KINOFLIX AI CHATBOT FUNCTIONALITY ---
 document.addEventListener("DOMContentLoaded", () => {
     const chatWindow = document.getElementById("chat-window");
     const toggleBtn = document.getElementById("chat-toggle-btn");
     const closeBtn = document.getElementById("chat-close-btn");
+    const themeBtn = document.getElementById("chat-theme-btn");
+    const themeIcon = document.getElementById("chat-theme-icon");
     const sendBtn = document.getElementById("chat-send-btn");
     const chatInput = document.getElementById("chat-input");
     const messagesBox = document.getElementById("chat-messages");
+    const typingIndicator = document.getElementById("chat-typing-indicator");
+    const chipBtns = document.querySelectorAll(".chip-btn");
 
-    // DİQQƏT: Buradakı linki öz Render linkinlə əvəzlə!
-    const API_URL = "https://aligoshgar-bot.onrender.com/api/chat";
+    // Sənin rəsmi Render linkin
+    const API_URL = "https://kinoflixai.onrender.com/api/chat";
 
-    // Cooldown dəyişənləri
+    // Cooldown və Tema Ayarları
     let isCooldown = false;
-    const COOLDOWN_DURATION = 10; // Saniyə ilə limit
+    const COOLDOWN_DURATION = 10; 
+    let isDarkMode = localStorage.getItem("kinoflix_chat_theme") === "dark";
 
-    // Aç/Bağla düymələri
-    toggleBtn.addEventListener("click", () => chatWindow.classList.remove("chat-hidden"));
+    // --- 1. TEMA IDARƏETMƏSİ (Light / Dark Mode Keçidi) ---
+    function applyTheme(dark) {
+        if (dark) {
+            chatWindow.classList.remove("light-mode");
+            chatWindow.classList.add("dark-mode");
+            // Günəş ikonu
+            themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.22" x2="5.64" y2="17.78"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+        } else {
+            chatWindow.classList.remove("dark-mode");
+            chatWindow.classList.add("light-mode");
+            // Ay ikonu
+            themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+        localStorage.setItem("kinoflix_chat_theme", dark ? "dark" : "light");
+    }
+    
+    // İlk açılışda yadda qalan temanı tətbiq et
+    applyTheme(isDarkMode);
+
+    themeBtn.addEventListener("click", () => {
+        isDarkMode = !isDarkMode;
+        applyTheme(isDarkMode);
+    });
+
+    // --- 2. PANEL AÇMA / BAĞLAMA ---
+    toggleBtn.addEventListener("click", () => {
+        chatWindow.classList.remove("chat-hidden");
+        chatInput.focus();
+    });
     closeBtn.addEventListener("click", () => chatWindow.classList.add("chat-hidden"));
 
-    // Mesaj göndərmə funksiyası
+    // --- 3. MESAJ GÖNDƏRMƏ FUNKSİYASI ---
     async function sendMessage() {
-        // Əgər cooldown aktivdirsə, funksiyanı dayandır
         if (isCooldown) return;
 
         const text = chatInput.value.trim();
         if (!text) return;
 
-        // 1. İstifadəçi mesajını ekrana əlavə et
+        // İstifadəçi mesajını yaz və təmizlə
         addMessage(text, "user-message");
         chatInput.value = "";
 
-        // 2. Botun "yazır..." effekti
-        const loadingId = addMessage("Düşünür...", "bot-message");
+        // "Yazır..." İndikatorunu aktiv et və skrol et
+        typingIndicator.classList.remove("indicator-hidden");
+        messagesBox.scrollTop = messagesBox.scrollHeight;
 
-        // 3. Cooldown-u işə sal
+        // Cooldown-u başlat
         startCooldown();
 
         try {
@@ -3000,58 +3033,71 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const data = await response.json();
             
-            // "Düşünür..." yazısını sil və əsl cavabı yaz
-            document.getElementById(loadingId).remove();
+            typingIndicator.classList.add("indicator-hidden");
             addMessage(data.reply, "bot-message");
 
         } catch (error) {
-            document.getElementById(loadingId).remove();
-            addMessage("Xəta yarandı. Bağlantını yoxlayın.", "bot-message");
+            typingIndicator.classList.add("indicator-hidden");
+            addMessage("Xəta yarandı. Bağlantını yoxlayın. 😅", "bot-message");
         }
     }
 
-    // Cooldown funksiyası (Geri sayım)
+    // --- 4. COOLDOWN (Geri Sayım) ---
     function startCooldown() {
         isCooldown = true;
         let timeLeft = COOLDOWN_DURATION;
-        const originalContent = sendBtn.innerHTML; // Düymənin əvvəlki ikonunu yadda saxla
+        const originalContent = sendBtn.innerHTML;
 
         sendBtn.disabled = true;
-        sendBtn.style.opacity = "0.5";
+        sendBtn.style.opacity = "0.6";
 
         const timer = setInterval(() => {
             timeLeft--;
-            sendBtn.innerText = timeLeft + "s"; // Düymədə saniyəni göstər
+            sendBtn.innerText = timeLeft + "s";
 
             if (timeLeft <= 0) {
                 clearInterval(timer);
                 isCooldown = false;
                 sendBtn.disabled = false;
                 sendBtn.style.opacity = "1";
-                sendBtn.innerHTML = originalContent; // Əvvəlki ikonu qaytar
+                sendBtn.innerHTML = originalContent;
             }
         }, 1000);
     }
 
-    // Mesajı DOM-a əlavə edən köməkçi funksiya
+    // --- 5. DOM-A MESAJ ƏLAVƏ ETMƏ ---
     function addMessage(text, className) {
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const msgDiv = document.createElement("div");
         msgDiv.className = `chat-message ${className}`;
-        msgDiv.textContent = text;
         
-        const uniqueId = "msg-" + Math.random().toString(36).substr(2, 9);
-        msgDiv.id = uniqueId;
+        msgDiv.innerHTML = `
+            <p style="margin:0; padding:0;">${text}</p>
+            <span style="display:block; font-size:8px; margin-top:4px; opacity:0.4; text-align:right;">${timeStr}</span>
+        `;
         
         messagesBox.appendChild(msgDiv);
         messagesBox.scrollTop = messagesBox.scrollHeight; 
-        return uniqueId;
     }
 
-    // Düyməyə basanda və ya "Enter" vuranda göndər
+    // --- 6. HAZIR CHIPS DÜYMƏLƏRİ ---
+    chipBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            chatInput.value = btn.getAttribute("data-text");
+            chatInput.focus();
+        });
+    });
+
+    // Dinləyicilər
     sendBtn.addEventListener("click", sendMessage);
     chatInput.addEventListener("keypress", (e) => {
         if (e.key === "Enter") sendMessage();
     });
-});
 
+    // İlk default qarşılanma mesajı
+    if(messagesBox.children.length === 0) {
+        addMessage("Salam! Mən KINOFLIX AI assistentiyəm. Sizə hansı janrda film tapmaqda kömək edim? 🍿", "bot-message");
+    }
+});
+           
 
