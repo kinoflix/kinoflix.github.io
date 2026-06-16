@@ -2672,7 +2672,7 @@ document.addEventListener('DOMContentLoaded', () => {
    KOLLEKSİYA PANELİ (AUTOPLAY & SMOOTH SLIDESHOW VERSİYASI)
    ========================================================= */
 
-// 1. KOLLEKSİYALARI BAZANIZA BAĞLAYIN
+// 1. KOLLEKSİYALAR MASSİVİ
 const COLLECTIONS = [
   {
     id: "spiderman",
@@ -2711,6 +2711,30 @@ const COLLECTIONS = [
     movies: ["ongbak", "ongbak2", "ongbak3"]
   },
    {
+    id: "karatekid",
+    title: "Karateci çocuk / Karate Kid",
+    cover: "https://m.media-amazon.com/images/M/MV5BM2MwYTlkY2MtNmUzNy00MTljLThjNDAtZGUzNzMxMzcxNzM5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["thekaratekid", "thekaratekid2"]
+  },
+   {
+    id: "malefisent",
+    title: "Malefiz / Malefisent",
+    cover: "https://m.media-amazon.com/images/M/MV5BNTY4YjYwYzMtYTg1NC00ZmJiLTk0OTYtMWMzM2Y4Yzc5MDc2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["malefisent", "malefisent2"]
+  },
+   {
+    id: "rio",
+    title: "Rio",
+    cover: "https://m.media-amazon.com/images/M/MV5BMTgzMDczMDYzNl5BMl5BanBnXkFtZTgwMzk2MDIwMTE@._V1_.jpg",
+    movies: ["rio", "rio2"]
+  },
+   {
+    id: "thelionking",
+    title: "Aslan kral / The Lion King",
+    cover: "https://m.media-amazon.com/images/M/MV5BNjg1YzI5ZmQtZjZkOC00ZDMzLWI4YjYtMmY5MzZjYWE3YzhjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["thelionking", "mufasa"]
+  },
+   {
     id: "taxi",
     title: "Taksi / Taxi",
     cover: "https://m.media-amazon.com/images/M/MV5BYmVmYzBiMWMtZWM1NC00NWI0LWEyNDQtOGQ0NmQxNDE1NGYzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
@@ -2723,10 +2747,22 @@ const COLLECTIONS = [
     movies: ["diehard", "diehard2", "diehard3", "diehard4", "diehard5"]
   },
    {
-    id: "escapeplan",
-    title: "Kaçış planı / Escape plan",
-    cover: "https://m.media-amazon.com/images/M/MV5BYTcyMmFmYzMtZmYwMi00ZGNhLTg1ZjctODNiNTAzOWY3NjBmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["escapeplan", "escapeplan2", "escapeplan3"]
+    id: "karatekid",
+    title: "Karateci çocuk / Karate Kid",
+    cover: "https://m.media-amazon.com/images/M/MV5BM2MwYTlkY2MtNmUzNy00MTljLThjNDAtZGUzNzMxMzcxNzM5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["thekaratekid", "thekaratekid2"]
+  },
+   {
+    id: "homealone",
+    title: "Evde tek başına / The Home Alone",
+    cover: "https://m.media-amazon.com/images/I/91tXzecvy-L._AC_UF1000,1000_QL80_.jpg",
+    movies: ["homealone", "homealoneaz", "homealoneaz2", "homealone2", "homealone2az", "homealone2az2"]
+  },
+   {
+    id: "themummy",
+    title: "Mumya / The Mummy",
+    cover: "https://m.media-amazon.com/images/M/MV5BMTU4NDIzMDY1OV5BMl5BanBnXkFtZTcwNjQxMzk3MQ@@._V1_FMjpg_UX1000_.jpg",
+    movies: ["themummy1", "themummy2", "themummy3"]
   },
    {
     id: "hulk",
