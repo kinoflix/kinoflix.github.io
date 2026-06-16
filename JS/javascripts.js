@@ -2705,6 +2705,42 @@ const COLLECTIONS = [
     movies: ["ipmanthelegendisborn", "ipmanthefinalfight", "ipmankungfumaster"]
   },
    {
+    id: "ongbak",
+    title: "Savaşçı / Ong Bak",
+    cover: "https://m.media-amazon.com/images/M/MV5BMTc3MjkyMzk4N15BMl5BanBnXkFtZTcwODQxMDg5Mw@@._V1_FMjpg_UX1000_.jpg",
+    movies: ["ongbak", "ongbak2", "ongbak3"]
+  },
+   {
+    id: "taxi",
+    title: "Taksi / Taxi",
+    cover: "https://m.media-amazon.com/images/M/MV5BYmVmYzBiMWMtZWM1NC00NWI0LWEyNDQtOGQ0NmQxNDE1NGYzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["taxi", "taxi2", "taxi3", "taxi4", "taxi5"]
+  },
+   {
+    id: "diehard",
+    title: "Zor ölüm / Die Hard",
+    cover: "https://m.media-amazon.com/images/M/MV5BMTcwNzgyNzUzOV5BMl5BanBnXkFtZTcwMzAwOTA5OA@@._V1_FMjpg_UX1000_.jpg",
+    movies: ["diehard", "diehard2", "diehard3", "diehard4", "diehard5"]
+  },
+   {
+    id: "escapeplan",
+    title: "Kaçış planı / Escape plan",
+    cover: "https://m.media-amazon.com/images/M/MV5BYTcyMmFmYzMtZmYwMi00ZGNhLTg1ZjctODNiNTAzOWY3NjBmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["escapeplan", "escapeplan2", "escapeplan3"]
+  },
+   {
+    id: "hulk",
+    title: "Yeşil dev / Hulk",
+    cover: "https://m.media-amazon.com/images/M/MV5BNzI4YjkyZTQtMjk1NS00MzhkLWEwYzgtZjZiODUyNWViNDdlXkEyXkFqcGc@._V1_.jpg",
+    movies: ["hulk", "theincrediblehulk"]
+  },
+   {
+    id: "ironman",
+    title: "Demir adam / Iron Man",
+    cover: "https://m.media-amazon.com/images/M/MV5BMjIzMzAzMjQyM15BMl5BanBnXkFtZTcwNzM2NjcyOQ@@._V1_.jpg",
+    movies: ["ironman", "ironman2", "ironman3"]
+  },
+   {
     id: "avengers",
     title: "Yenilmezler / The Avengers",
     cover: "https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg",
