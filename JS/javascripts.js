@@ -2729,6 +2729,12 @@ const COLLECTIONS = [
     movies: ["rio", "rio2"]
   },
    {
+    id: "moana",
+    title: "Moana",
+    cover: "https://m.media-amazon.com/images/M/MV5BZDUxNThhYTUtYjgxNy00MGQ4LTgzOTEtZjg1YTU5NTcwNThlXkEyXkFqcGc@._V1_.jpg",
+    movies: ["moana", "moana2"]
+  },
+   {
     id: "thelionking",
     title: "Aslan kral / The Lion King",
     cover: "https://m.media-amazon.com/images/M/MV5BNjg1YzI5ZmQtZjZkOC00ZDMzLWI4YjYtMmY5MzZjYWE3YzhjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
@@ -2747,10 +2753,22 @@ const COLLECTIONS = [
     movies: ["diehard", "diehard2", "diehard3", "diehard4", "diehard5"]
   },
    {
-    id: "karatekid",
-    title: "Karateci çocuk / Karate Kid",
-    cover: "https://m.media-amazon.com/images/M/MV5BM2MwYTlkY2MtNmUzNy00MTljLThjNDAtZGUzNzMxMzcxNzM5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["thekaratekid", "thekaratekid2"]
+    id: "theblackphone",
+    title: "Siyah telefon / The Black Phone",
+    cover: "https://m.media-amazon.com/images/M/MV5BMWIyYmM5OWYtZWE4Ni00YjYzLTkzMDItYzY2MGVkODk3ZjA2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["theblackphone", "theblackphone2"]
+  },
+   {
+    id: "dag",
+    title: "Dağ",
+    cover: "https://m.media-amazon.com/images/M/MV5BMWE3ODFkZjEtMGI3OS00MTdmLWE0YTAtNjIzMWJjZDc2MTRkXkEyXkFqcGc@._V1_.jpg",
+    movies: ["dag", "dag2"]
+  },
+   {
+    id: "recepivedik",
+    title: "Recep İvedik",
+    cover: "https://m.media-amazon.com/images/M/MV5BYjg2NzkyYjgtZWJjOS00NDdkLWE1NWQtMTY4ZDc3MTkxYWVhXkEyXkFqcGc@._V1_.jpg",
+    movies: ["recepivedik", "recepivedik2", "recepivedik3", "recepivedik4", "recepivedik5", "recepivedik6", "recepivedik7"]
   },
    {
     id: "homealone",
@@ -2763,6 +2781,12 @@ const COLLECTIONS = [
     title: "Mumya / The Mummy",
     cover: "https://m.media-amazon.com/images/M/MV5BMTU4NDIzMDY1OV5BMl5BanBnXkFtZTcwNjQxMzk3MQ@@._V1_FMjpg_UX1000_.jpg",
     movies: ["themummy1", "themummy2", "themummy3"]
+  },
+{
+    id: "megan",
+    title: "Megan / M3GAN",
+    cover: "https://montroseplayhouse.co.uk/wp-content/uploads/2025/07/lHChxm7sv3gWR2qz5PwjdxcXQf7-scaled.webp",
+    movies: ["megan", "megan2"]
   },
    {
     id: "hulk",
