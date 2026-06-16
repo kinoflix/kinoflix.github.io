@@ -3236,3 +3236,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // İlk açılışda tarixi yüklə
     loadChatHistory();
 });
+
+// CHATBOT-SON
+
+// AdSense
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1960236427084639"
+     crossorigin="anonymous"></script>
+// AdSense-SON
