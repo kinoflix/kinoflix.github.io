@@ -879,10 +879,9 @@ body {
 }
 
 /* ==========================================================================
-   MOBİL TELEFONLAR ÜÇÜN GÜCLÜ VƏ SƏSİZ RESPONSIVE SİSTEM (Fix)
+   KINOFLIX MOBİL ULTRA-RESPONSIVE SİSTEM (Overlay & Fixed Header)
    ========================================================================== */
 @media (max-width: 768px) {
-    /* 1. Ekranın ümumi hündürlüyünü mobil brauzer panellərinə görə (dvh ilə) kilidləyirik */
     body {
         height: 100dvh !important;
         overflow: hidden !important;
@@ -897,102 +896,143 @@ body {
     .chat-layout {
         height: 100% !important;
         width: 100% !important;
-        display: flex !important;
-        flex-direction: column !important; /* Elementləri üst-üstə yığır */
+        position: relative !important;
     }
 
-    /* 2. Siyahı panelini üst sətirə (Header kimi) çeviririk */
+    /* HTML strukturunu pozmadan uşaq elementləri sərbəst buraxırıq */
     .sidebar {
+        display: contents !important;
+    }
+
+    /* 1. ÜMUMİ ÇAT BAŞLIĞI - Mobildə hər zaman ən təpədə sabit qalır */
+    .sidebar-navigation {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
         width: 100% !important;
-        height: 70px !important; /* Sabit hündürlük */
-        flex-direction: row !important; /* Elementləri yan-yana düzür */
+        height: 55px !important;
+        background: var(--surface) !important;
+        border-bottom: 1px solid var(--glass-border) !important;
+        display: flex !important;
+        justify-content: space-between !important;
         align-items: center !important;
         padding: 0 16px !important;
-        border-right: none !important;
-        border-bottom: 1px solid var(--glass-border) !important;
-        background: var(--surface) !important;
-        flex-shrink: 0 !important; /* Sıxılmağa qoymur */
+        z-index: 900 !important;
     }
 
-    /* Mobildə çox yer tutan lazımsız hissələri gizlədirik */
-    .sidebar .current-user-card,
-    .sidebar-list-container h3 {
-        display: none !important;
+    #generalChatTab {
+        cursor: pointer;
+        font-weight: 600;
     }
 
-    /* 3. "Ümumi Çat" Naviqasiyasını sol tərəfdə sabit saxlayırıq (PROBLEM 1-İN HƏLLİ) */
-    .sidebar-navigation {
-        padding: 0 !important;
-        flex-shrink: 0 !important;
-    }
-
-    .nav-tab {
-        padding: 10px 14px !important;
-        font-size: 0.85rem !important;
-        white-space: nowrap !important;
-    }
-
-    /* 4. Aktiv istifadəçilərin siyahısını Ümumi Çatın yanından üfüqi (horizontal) sürüşən edirik */
-    .sidebar-list-container {
-        padding: 0 0 0 12px !important;
-        margin: 0 !important;
-        flex: 1 !important;
-        overflow-x: auto !important; /* Sağ-sola sürüşmə */
-        overflow-y: hidden !important;
+    /* Mobil Online Düyməsinin Dizaynı */
+    .mobile-online-btn {
         display: flex !important;
-        align-items: center !important;
+        align-items: center;
+        gap: 6px;
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        color: var(--text);
+        padding: 6px 12px;
+        border-radius: var(--radius-sm);
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .mobile-online-btn:active {
+        background: var(--surface-hover);
+    }
+    .online-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--accent);
+        border-radius: 50%;
+        display: inline-block;
+        box-shadow: 0 0 8px var(--accent);
+    }
+
+    /* 2. AKTİV İSTİFADƏÇİLƏR PANELİ - Desktop kimi soldan sürüşərək açılır */
+    .sidebar-list-container {
+        position: absolute !important;
+        top: 0 !important;
+        left: -100% !important; /* Gizli vəziyyətdə */
+        width: 280px !important;
+        height: 100% !important;
+        background: rgba(15, 23, 32, 0.98) !important;
+        backdrop-filter: blur(12px) !important;
+        border-right: 1px solid var(--glass-border) !important;
+        z-index: 1000 !important; /* Mesajların tam üstünə çıxır */
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        padding: 70px 16px 20px 16px !important; /* Üst naviqasiyanı örtməməsi üçün padding */
+    }
+
+    /* Panel açılanda işə düşəcək sinif */
+    .sidebar-list-container.mobile-open {
+        left: 0 !important;
+        box-shadow: 10px 0 40px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    .sidebar-list-container h3 {
+        font-size: 0.9rem;
+        margin-bottom: 12px;
+        color: var(--muted);
     }
 
     .users-list {
-        flex-direction: row !important;
+        flex-direction: column !important;
         gap: 8px !important;
-        width: max-content !important;
+        overflow-y: auto !important;
     }
 
-    .user-item {
-        padding: 6px 12px !important;
-        min-width: max-content !important;
-        background: var(--glass) !important;
-        border: 1px solid var(--glass-border) !important;
+    .sidebar .current-user-card {
+        display: none !important; /* Mobildə yer qənaəti */
     }
 
-    .user-item .username {
-        font-size: 0.8rem !important;
-        max-width: 80px !important;
-    }
-
-    /* 5. Çat Pəncərəsi və Mesaj Sahəsinin tənzimlənməsi (PROBLEM 2-NİN HƏLLİ) */
+    /* 3. MESAJ SAHƏSİ (Çat Pəncərəsi) */
     .chat-window {
-        flex: 1 !important;
-        height: calc(100% - 70px) !important; /* Üst siyahıdan qalan bütün sahə */
+        position: absolute !important;
+        top: 55px !important; /* Ümumi çat başlığının tam altından başlayır */
+        left: 0 !important;
+        width: 100% !important;
+        height: calc(100% - 55px) !important;
         display: flex !important;
         flex-direction: column !important;
-        background: var(--bg) !important;
+        z-index: 10 !important;
     }
 
-    /* Mesajların siyahısı qalan boşluğu doldurur və daxildə scroll olur */
+    /* 4. ŞƏXSİ MESAJ BAŞLIĞI - Ümumi Çatın altına bitişik açılır */
+    /* Əgər sisteminizdə şəxsi çata keçəndə görünən bir header divi (məs: .chat-header) varsa: */
+    .chat-header, .active-room-status {
+        background: var(--surface-hover) !important;
+        border-bottom: 1px solid var(--glass-border) !important;
+        padding: 10px 16px !important;
+        font-size: 0.9rem !important;
+        flex-shrink: 0 !important;
+    }
+
     .chat-messages-area {
         flex: 1 !important;
         overflow-y: auto !important;
         padding: 16px !important;
-        display: flex !important;
-        flex-direction: column !important;
     }
 
-    .message-wrapper {
-        max-width: 85% !important;
-    }
-
-    /* 6. Mesaj yazma paneli tam olaraq ekranın ən altına yapışır */
+    /* 5. MESAJ YAZMA SAHƏSİ - Ekranın ən altına sabit yapışır */
     .chat-input-bar {
         padding: 12px 16px !important;
         background: var(--surface) !important;
         border-top: 1px solid var(--glass-border) !important;
-        flex-shrink: 0 !important; /* Aşağı batmağı və ya əzilməyi əngəlləyir */
+        flex-shrink: 0 !important; /* Klaviaturadan aşağı batmağı əngəlləyir */
     }
 
     .chat-input-bar input {
         padding: 12px !important;
-        font-size: 0.9rem !important;
+        font-size: 0.95rem !important;
+    }
+}
+
+/* Masaüstü (Desktop) versiyada mobil düyməni gizlədirik */
+@media (min-width: 769px) {
+    .mobile-online-btn {
+        display: none !important;
     }
 }
