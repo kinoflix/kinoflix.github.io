@@ -937,9 +937,3 @@ function escapeHTML(str) {
     if (!str) return '';
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
-
-function formatDate(timestamp) {
-    if (!timestamp) return '...';
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return date.toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' });
-}
