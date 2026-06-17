@@ -71,6 +71,10 @@ const btnGlobalRoom = document.getElementById('btnGlobalRoom');
 const themeToggle = document.getElementById('themeToggle');
 const siteLogo = document.getElementById('siteLogo');
 
+// Başlıq Elementləri
+const activeRoomTitle = document.getElementById('activeRoomTitle');
+const activeRoomSub = document.getElementById('activeRoomSub');
+
 // Məqsədli Çat Sahələri DOM-ları
 const generalChatArea = document.getElementById('generalChatArea');
 const chatMessagesArea = document.getElementById('chatMessagesArea'); // Ümumi mesajlar
@@ -449,6 +453,10 @@ function closePrivateRoom() {
     activeRoomId = 'global_room';
     btnGlobalRoom.classList.add('active');
     
+    // Ümumi çat başlığını ilkin vəziyyətinə qaytarır
+    if (activeRoomTitle) activeRoomTitle.innerText = "Ümumi Çat";
+    if (activeRoomSub) activeRoomSub.innerText = "Son 50 mesaj göstərilir";
+    
     // Şəxsi otağı gizlədib ümumini açır
     privateChatArea.classList.remove('active');
     privateChatArea.classList.add('hidden');
@@ -465,6 +473,10 @@ function openPrivateRoom(targetUser) {
     activeRoomId = [currentUser.uid, targetUser.uid].sort().join('_');
     privateRoomTitle.innerText = targetUser.displayName;
     btnGlobalRoom.classList.remove('active');
+    
+    // Ümumi çat başlığını hədəf şəxsə görə yeniləyir
+    if (activeRoomTitle) activeRoomTitle.innerText = targetUser.displayName;
+    if (activeRoomSub) activeRoomSub.innerText = "Şəxsi Söhbət";
     
     // Ümumi otağı gizlədib şəxsi sahəni açır
     generalChatArea.classList.remove('active');
