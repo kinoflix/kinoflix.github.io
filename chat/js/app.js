@@ -959,44 +959,44 @@ function escapeHTML(str) {
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
     const mobileOnlineToggle = document.getElementById("mobileOnlineToggle");
-    const sidebarListContainer = document.getElementById("sidebarListContainer");
-    const btnGlobalRoom = document.getElementById("btnGlobalRoom");
+    const sidebarMenu = document.getElementById("sidebarMenu");
 
-    // 1. Online İkonuna basdıqda istifadəçi panelinin açılıb-bağlanması
-    if (mobileOnlineToggle && sidebarListContainer) {
+    // 1. Düyməyə basanda menyunu aç/bağla
+    if (mobileOnlineToggle && sidebarMenu) {
         mobileOnlineToggle.addEventListener("click", (e) => {
             e.stopPropagation();
-            sidebarListContainer.classList.toggle("mobile-open");
+            sidebarMenu.classList.toggle("mobile-open");
         });
     }
 
-    // 2. Şəxsi mesaj üçün istifadəçi adına vuranda paneli avtomatik bağla
+    // 2. Şəxsi çata keçmək üçün ada klikləyəndə menyunu avtomatik bağla
     document.addEventListener("click", (e) => {
         if (e.target.closest(".user-item") || e.target.closest("#usersList li")) {
-            if (sidebarListContainer) {
-                sidebarListContainer.classList.remove("mobile-open");
-            }
+            if (sidebarMenu) sidebarMenu.classList.remove("mobile-open");
         }
     });
 
-    // 3. Ekranda boş və ya kənar yerə vuranda istifadəçilər paneli qapansın
+    // 3. Ekranda boş yerə klikləyəndə menyu bağlansın
     document.addEventListener("click", (e) => {
-        if (sidebarListContainer && 
-            !sidebarListContainer.contains(e.target) && 
+        if (sidebarMenu && 
+            !sidebarMenu.contains(e.target) && 
             e.target !== mobileOnlineToggle && 
             !mobileOnlineToggle.contains(e.target)) {
-            sidebarListContainer.classList.remove("mobile-open");
+            sidebarMenu.classList.remove("mobile-open");
         }
     });
+});
 
-    // 4. Sabit "Ümumi Çat" başlığına təkrar kliklədikdə şəxsi çatı bağlamaq məntiqi
-    if (btnGlobalRoom) {
-        btnGlobalRoom.addEventListener("click", () => {
-            // Əgər app.js daxilində otaq dəyişmə funksiyanız (məsələn changeRoom və ya switchRoom) varsa,
-            // Ümumi Çat başlığına klik edildiyi an avtomatik olaraq Qlobal otağa keçid etsin:
-            if (typeof changeRoom === "function") {
-                changeRoom("global"); // və ya sizin sistemdəki qlobal otaq ID-si
-            }
-        });
+// 4. Düymənin Giriş/Çıxış statusuna görə gizlənib-görünməsi
+// Bunu app.js daxilindəki mövcud onAuthStateChanged blokunun daxilinə də yaza bilərsən, 
+// ya da elə burada müstəqil şəkildə qala bilər:
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+onAuthStateChanged(getAuth(), (user) => {
+    const mobToggle = document.getElementById("mobileOnlineToggle");
+    if (!mobToggle) return;
+    if (user) {
+        mobToggle.classList.remove("hidden");
+    } else {
+        mobToggle.classList.add("hidden");
     }
 });
