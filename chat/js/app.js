@@ -26,7 +26,7 @@ const rtdb = getDatabase(app);
 
 // IMGBB VƏ GLOBAL DEFAULT AVATAR KONFİQURASİYASI
 const IMGBB_API_KEY = "5437281cb3fb0c2e28ca265eefa6eaf7";
-const DEFAULT_AVATAR = "https://i.ibb.co/S7XzY8V/avatar.png"; // Birbaşa şəkil linkiniz (.png/.jpg)
+const DEFAULT_AVATAR = "https://kinoflix.github.io/chat/img/avatar.jpg"; // Birbaşa şəkil linkiniz (.png/.jpg)
 
 // ==========================================================================
 // 2. QLOBAL DƏYİŞƏNLƏR VƏ DOM ELEMENTLƏRİ
