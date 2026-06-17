@@ -877,3 +877,122 @@ body {
         padding: 12px 16px !important;
     }
 }
+
+/* ==========================================================================
+   MOBİL TELEFONLAR ÜÇÜN GÜCLÜ VƏ SƏSİZ RESPONSIVE SİSTEM (Fix)
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* 1. Ekranın ümumi hündürlüyünü mobil brauzer panellərinə görə (dvh ilə) kilidləyirik */
+    body {
+        height: 100dvh !important;
+        overflow: hidden !important;
+    }
+
+    .main-container {
+        height: calc(100dvh - 72px) !important;
+        overflow: hidden !important;
+    }
+
+    .chat-screen, 
+    .chat-layout {
+        height: 100% !important;
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important; /* Elementləri üst-üstə yığır */
+    }
+
+    /* 2. Siyahı panelini üst sətirə (Header kimi) çeviririk */
+    .sidebar {
+        width: 100% !important;
+        height: 70px !important; /* Sabit hündürlük */
+        flex-direction: row !important; /* Elementləri yan-yana düzür */
+        align-items: center !important;
+        padding: 0 16px !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--glass-border) !important;
+        background: var(--surface) !important;
+        flex-shrink: 0 !important; /* Sıxılmağa qoymur */
+    }
+
+    /* Mobildə çox yer tutan lazımsız hissələri gizlədirik */
+    .sidebar .current-user-card,
+    .sidebar-list-container h3 {
+        display: none !important;
+    }
+
+    /* 3. "Ümumi Çat" Naviqasiyasını sol tərəfdə sabit saxlayırıq (PROBLEM 1-İN HƏLLİ) */
+    .sidebar-navigation {
+        padding: 0 !important;
+        flex-shrink: 0 !important;
+    }
+
+    .nav-tab {
+        padding: 10px 14px !important;
+        font-size: 0.85rem !important;
+        white-space: nowrap !important;
+    }
+
+    /* 4. Aktiv istifadəçilərin siyahısını Ümumi Çatın yanından üfüqi (horizontal) sürüşən edirik */
+    .sidebar-list-container {
+        padding: 0 0 0 12px !important;
+        margin: 0 !important;
+        flex: 1 !important;
+        overflow-x: auto !important; /* Sağ-sola sürüşmə */
+        overflow-y: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    .users-list {
+        flex-direction: row !important;
+        gap: 8px !important;
+        width: max-content !important;
+    }
+
+    .user-item {
+        padding: 6px 12px !important;
+        min-width: max-content !important;
+        background: var(--glass) !important;
+        border: 1px solid var(--glass-border) !important;
+    }
+
+    .user-item .username {
+        font-size: 0.8rem !important;
+        max-width: 80px !important;
+    }
+
+    /* 5. Çat Pəncərəsi və Mesaj Sahəsinin tənzimlənməsi (PROBLEM 2-NİN HƏLLİ) */
+    .chat-window {
+        flex: 1 !important;
+        height: calc(100% - 70px) !important; /* Üst siyahıdan qalan bütün sahə */
+        display: flex !important;
+        flex-direction: column !important;
+        background: var(--bg) !important;
+    }
+
+    /* Mesajların siyahısı qalan boşluğu doldurur və daxildə scroll olur */
+    .chat-messages-area {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        padding: 16px !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .message-wrapper {
+        max-width: 85% !important;
+    }
+
+    /* 6. Mesaj yazma paneli tam olaraq ekranın ən altına yapışır */
+    .chat-input-bar {
+        padding: 12px 16px !important;
+        background: var(--surface) !important;
+        border-top: 1px solid var(--glass-border) !important;
+        flex-shrink: 0 !important; /* Aşağı batmağı və ya əzilməyi əngəlləyir */
+    }
+
+    .chat-input-bar input {
+        padding: 12px !important;
+        font-size: 0.9rem !important;
+    }
+}
