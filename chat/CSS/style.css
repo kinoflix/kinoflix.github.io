@@ -884,3 +884,20 @@ body {
 .flix-toast {
     pointer-events: auto !important;
 }
+
+/* Admin et ikonları */
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: auto; /* Düymələri sağa itələyir */
+}
+
+.role-toggle-btn {
+    background: none;
+    border: none;
+    color: #f1c40f; /* Qızılı rəng */
+    cursor: pointer;
+    padding: 5px;
+    font-size: 14px;
+}
