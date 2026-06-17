@@ -1,0 +1,952 @@
+/* ==========================================================================
+   1. DİZAYN TOKENLƏRİ VƏ DƏYİŞƏNLƏR (Theme Engine)
+   ========================================================================== */
+:root {
+    --bg: #08101a;
+    --surface: #0f1720;
+    --surface-hover: #172230;
+    --muted: #94a3b8;
+    --accent: #1db954; /* KINOFLIX Yaşılı */
+    --accent-hover: #1aa34a;
+    --text: #e6eef6;
+    --text-muted: #64748b;
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --radius: 16px;
+    --radius-sm: 8px;
+    --shadow: 0 12px 40px rgba(2, 6, 23, 0.7);
+    --header-bg: rgba(8, 16, 26, 0.85);
+    --danger: #d94f5c;
+    --success: #1db954;
+    --me-bubble: #1db954;
+    --other-bubble: #172230;
+}
+
+[data-theme="light"] {
+    --bg: #f4f6f9;
+    --surface: #ffffff;
+    --surface-hover: #f1f5f9;
+    --muted: #475569;
+    --accent: #0b74ff; /* İşıqlı rejim üçün təmiz mavi */
+    --accent-hover: #0062e3;
+    --text: #0f172a;
+    --text-muted: #94a3b8;
+    --glass: rgba(0, 0, 0, 0.02);
+    --glass-border: rgba(0, 0, 0, 0.08);
+    --shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+    --header-bg: rgba(244, 246, 249, 0.85);
+    --me-bubble: #0b74ff;
+    --other-bubble: #f1f5f9;
+}
+
+/* ==========================================================================
+   2. BAZA VƏ RESET AYARLARI
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    font-family: "Varela Round", sans-serif;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.3s, color 0.3s;
+    line-height: 1.5;
+    overflow: hidden; /* Brauzerin ana scroll-unu bağlayırıq, daxili scroll olacaq */
+    height: 100vh;
+}
+
+/* Scrollbar Stilizasiyası */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
+   3. APP HEADER
+   ========================================================================== */
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 72px;
+    background: var(--header-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 1000;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.logo img {
+    height: 32px;
+    width: auto;
+    display: block;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.icon-btn {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: scale(1.05);
+    border-color: var(--accent);
+}
+
+.logout-btn {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.2s;
+}
+
+.logout-btn:hover {
+    opacity: 0.9;
+}
+
+/* ==========================================================================
+   4. APPIN ƏSAS KONTEYNERİ (Main Layout)
+   ========================================================================== */
+.main-container {
+    margin-top: 72px;
+    height: calc(100vh - 72px);
+    position: relative;
+    width: 100%;
+}
+
+/* ==========================================================================
+   5. AUTENTIFIKASIYA EKRANI (Auth Card & Tabs)
+   ========================================================================== */
+.auth-screen {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 20px;
+}
+
+.auth-screen.active {
+    display: flex;
+}
+
+.auth-card {
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 420px;
+    padding: 32px;
+    box-shadow: var(--shadow);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.auth-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--glass-border);
+    margin-bottom: 24px;
+}
+
+.auth-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--muted);
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+    position: relative;
+}
+
+.auth-tab.active {
+    color: var(--accent);
+}
+
+.auth-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--accent);
+}
+
+.auth-form {
+    display: none;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.auth-form.active {
+    display: flex;
+}
+
+.auth-form h2 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.input-group {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 14px 14px 44px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--glass-border);
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+    border-color: var(--accent);
+}
+
+.submit-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.submit-btn:hover {
+    background: var(--accent-hover);
+}
+
+.auth-divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+}
+
+.auth-divider::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    background: var(--glass-border);
+    z-index: 1;
+}
+
+.auth-divider span {
+    background: var(--surface);
+    padding: 0 12px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    position: relative;
+    z-index: 2;
+}
+
+.google-btn {
+    width: 100%;
+    background: #fff;
+    color: #1f2937;
+    border: 1px solid #e5e7eb;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+}
+
+.google-btn:hover {
+    background: #f9fafb;
+}
+
+.google-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+/* ==========================================================================
+   6. ÇAT EKRANI (Sidebar + Chat Window)
+   ========================================================================== */
+.chat-screen {
+    display: none;
+    height: 100%;
+    width: 100%;
+}
+
+.chat-screen.active {
+    display: block;
+}
+
+.chat-layout {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+/* SOL PANEL: SIDEBAR */
+.sidebar {
+    width: 320px;
+    background: var(--surface);
+    border-right: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.current-user-card {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--glass-border);
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.user-info .name {
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+
+.role-badge {
+    font-size: 0.75rem;
+    background: var(--glass);
+    padding: 2px 8px;
+    border-radius: 20px;
+    color: var(--accent);
+    border: 1px solid var(--glass-border);
+    width: max-content;
+}
+
+.sidebar-navigation {
+    padding: 15px 20px;
+}
+
+.nav-tab {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    text-align: left;
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+
+.nav-tab.active, .nav-tab:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.sidebar-list-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 20px 20px 20px;
+}
+
+.sidebar-list-container h3 {
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.text-success { color: var(--success); font-size: 0.6rem; }
+
+.users-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.user-item:hover, .user-item.active {
+    background: var(--surface-hover);
+}
+
+.avatar-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.status-indicator {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--surface);
+}
+.status-indicator.online { background: var(--success); }
+.status-indicator.offline { background: var(--text-muted); }
+.status-indicator.away { background: #f59e0b; }
+
+.user-item .username {
+    font-size: 0.95rem;
+    font-weight: 500;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.typing-notify {
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-style: italic;
+    animation: pulse 1s infinite alternate;
+}
+
+/* SAĞ PANEL: ÇAT PƏNCƏRƏSİ */
+.chat-window {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.chat-window-header {
+    padding: 16px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.active-room-info h2 {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+.active-room-info p {
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+/* MESAJ SAHƏSİ VƏ BUBBLE-LAR */
+.chat-messages-area {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.message-wrapper {
+    display: flex;
+    gap: 12px;
+    max-width: 75%;
+    animation: slideUp 0.25s ease-out forwards;
+}
+
+.message-wrapper.me {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.message-wrapper.other {
+    align-self: flex-start;
+}
+
+.msg-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.message-bubble {
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    position: relative;
+    word-break: break-word;
+}
+
+.message-wrapper.me .message-bubble {
+    background: var(--me-bubble);
+    color: white;
+    border-top-right-radius: 0;
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.message-wrapper.other .message-bubble {
+    background: var(--other-bubble);
+    color: var(--text);
+    border-top-left-radius: 0;
+    border: 1px solid var(--glass-border);
+}
+
+.sender-name {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+    opacity: 0.7;
+}
+
+.message-bubble p {
+    margin-bottom: 4px;
+}
+
+.message-bubble img.chat-shared-image {
+    max-width: 100%;
+    max-height: 240px;
+    border-radius: var(--radius-sm);
+    margin-top: 5px;
+    display: block;
+    cursor: pointer;
+}
+
+.timestamp {
+    display: block;
+    font-size: 0.7rem;
+    text-align: right;
+    opacity: 0.6;
+}
+
+/* MODERASİYA: MESAJ SİLMƏ DÜYMƏSİ */
+.delete-msg-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    font-size: 0.75rem;
+    margin-left: 6px;
+    transition: color 0.2s;
+}
+.message-wrapper.other .delete-msg-btn { color: var(--text-muted); }
+.delete-msg-btn:hover { color: var(--danger) !important; }
+
+/* TYPING INDICATOR */
+.typing-indicator {
+    padding: 8px 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.typing-indicator .dots {
+    display: flex;
+    gap: 3px;
+}
+
+.typing-indicator .dots span {
+    width: 6px;
+    height: 6px;
+    background: var(--muted);
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+.typing-indicator .dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator .dots span:nth-child(2) { animation-delay: -0.16s; }
+
+/* INPUT BAR */
+.chat-input-bar {
+    padding: 16px 24px;
+    background: var(--surface);
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.attach-btn {
+    color: var(--muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.attach-btn:hover { color: var(--accent); }
+
+.chat-input-bar input {
+    flex: 1;
+    padding: 14px 18px;
+    background: var(--bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    outline: none;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+.chat-input-bar input:focus { border-color: var(--accent); }
+
+.send-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    width: 46px;
+    height: 46px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: background 0.2s;
+}
+.send-btn:hover { background: var(--accent-hover); }
+
+/* ==========================================================================
+   7. MODAL WINDOWS (Settings Overlay)
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(2, 6, 23, 0.6);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal-card {
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--shadow);
+    animation: scaleUp 0.2s ease-out;
+}
+
+.modal-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+#profileSettingsForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.avatar-upload-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.large-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+}
+
+.avatar-edit-label {
+    font-size: 0.85rem;
+    color: var(--accent);
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.save-settings-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   8. ANIMASIYALAR VƏ MEDIA QUERIES (Responsive Design)
+   ========================================================================== */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scaleUp { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { from { opacity: 0.6; } to { opacity: 1; } }
+@keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+
+/* RESPONSIVE DIZAYN (Mobil Telefonlar üçün) */
+@media (max-width: 768px) {
+    .sidebar {
+        position: absolute;
+        left: -100%;
+        top: 0;
+        height: 100%;
+        width: 280px;
+        z-index: 500;
+        transition: left 0.3s ease;
+    }
+    
+    /* Mobil üçün sidebar açıq olanda aktivləşəcək class (JS ilə idarə olunacaq) */
+    .sidebar.mobile-open {
+        left: 0;
+        box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+    }
+    
+    .chat-window {
+        width: 100%;
+    }
+    
+    .message-wrapper {
+        max-width: 85%;
+    }
+    
+    .chat-input-bar {
+        padding: 12px 16px;
+    }
+}
+/* ==========================================================================
+   HESABIN SİLİNMƏSİ (DANGER ZONE) ÜÇÜN CSS
+   ========================================================================== */
+
+.danger-zone {
+    margin-top: 30px;
+    padding: 20px;
+    border-top: 1px solid rgba(231, 76, 60, 0.2);
+    text-align: center;
+}
+
+.danger-zone h4 {
+    color: #e74c3c;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.danger-zone p {
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.delete-account-btn {
+    background: transparent;
+    border: 1px solid #e74c3c;
+    color: #e74c3c;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.delete-account-btn:hover {
+    background: #e74c3c;
+    color: #fff;
+}
+
+/* Admin tərəfindən istifadəçi silmə düyməsi üçün əlavə */
+.admin-user-delete-btn {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.admin-user-delete-btn:hover {
+    background: rgba(231, 76, 60, 0.1);
+}
+
+/* Toast bildirişləri üçün bəzi düzəlişlər */
+.flix-toast {
+    pointer-events: auto !important;
+}
+
+/* Admin et ikonları */
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: auto; /* Düymələri sağa itələyir */
+}
+
+.role-toggle-btn {
+    background: none;
+    border: none;
+    color: #f1c40f; /* Qızılı rəng */
+    cursor: pointer;
+    padding: 5px;
+    font-size: 14px;
+}
+
+/* ==========================================================================
+   MOBİL ÜÇÜN ALTERNATİV SİSTEM: GÜCLÜ FLEX-CONTAINER
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* 1. Ekranın özünü tam genişlikdə və hündürlükdə kilidləyirik */
+    #chatScreen {
+        position: absolute !important;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%; /* Brauzerin vizual sahəsini tam tutması üçün */
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    /* 2. Siyahı və mesaj sahəsini avtomatik tənzimləyirik */
+    /* Hər hansı bir parent div-in hündürlüyünü korlamamaq üçün 
+       birbaşa uşaq elementlərə fokuslanırıq */
+    #chatScreen > * {
+        flex-shrink: 0;
+    }
+
+    /* İstifadəçilər siyahısı */
+    #usersList {
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        width: 100% !important;
+        padding: 10px !important;
+        background: rgba(0,0,0,0.1); /* Görünməsi üçün yüngül fon */
+    }
+
+    /* Mesaj sahəsi - Bu hissə ekranın qalan hissəsini avtomatik dolduracaq */
+    #chatMessagesArea {
+        flex-grow: 1 !important;
+        overflow-y: auto !important;
+        display: block !important;
+    }
+
+    /* Mesaj yazma sahəsi */
+    .message-input-container, 
+    #messageInputField {
+        width: 100% !important;
+        height: 50px !important;
+        padding: 5px !important;
+        box-sizing: border-box !important;
+    }
+}
