@@ -901,3 +901,119 @@ body {
     padding: 5px;
     font-size: 14px;
 }
+
+/* ==========================================================================
+   MOBİL CİHAZLAR ÜÇÜN RESPONSİVLİK TƏNZİMLƏMƏLƏRİ (Maksimum 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+    
+    /* 1. Əsas Çat Ekranının Strukturu */
+    #chatScreen {
+        display: flex;
+        flex-direction: column; /* Desktopda yan-yana olan strukturu mobildə alt-üst edirik */
+        height: 100dvh !important; /* Dinamik hündürlük brauzer zolaqlarının altını kəsmir */
+        width: 100vw;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* 2. Aktiv İstifadəçilər Paneli (Sidebar)
+       Desktopda solda böyük görünən paneli mobildə yuxarı hissəyə, 
+       üfüqi (horizontal) sürüşən xətt halına salırıq */
+    /* Qeyd: Əgər istifadəçilər siyahısının ana konteyneri fərqli klasdırsa, bura həmin klası yazın */
+    .chat-sidebar, 
+    #chatScreen > div:first-child { 
+        width: 100% !important;
+        height: 75px !important; /* Sabit kiçik hündürlük */
+        min-height: 75px !important;
+        flex-direction: row !important;
+        overflow-x: auto !important; /* Üfüqi sürüşməni aktiv edir */
+        overflow-y: hidden !important;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 5px 10px !important;
+        display: flex;
+        align-items: center;
+    }
+
+    /* İstifadəçilərin UL daxilində yan-yana düzülməsi */
+    #usersList {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 15px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: max-content;
+    }
+
+    /* Hər bir istifadəçi kartı mobildə yığcam olur */
+    #usersList li.user-item {
+        flex-direction: column !important; /* Şəkil yuxarıda, ad aşağıda */
+        justify-content: center;
+        align-items: center;
+        padding: 4px 8px !important;
+        min-width: 65px !important;
+        background: none !important;
+    }
+
+    /* Mobildə yer darlığı olduğu üçün idarəetmə düymələrini gizlədirik 
+       və ya adları çox uzun etmirik */
+    #usersList li.user-item .username {
+        font-size: 11px !important;
+        max-width: 60px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-top: 3px;
+    }
+    
+    #usersList li.user-item .user-actions {
+        display: none !important; /* Ban, sil, rol düymələri mobildə siyahını korlamasın */
+    }
+
+    /* 3. Əsas Mesajlaşma Sahəsi Container-i */
+    /* Mesajların və aşağıdakı inputun daxil olduğu əsas blok */
+    .chat-main-area,
+    #chatScreen > div:last-child {
+        display: flex;
+        flex-direction: column;
+        flex: 1; /* İstifadəçilər panelindən qalan bütün ekranı doldurur */
+        height: calc(100dvh - 75px) !important;
+        overflow: hidden;
+    }
+
+    /* 4. Canlı Mesaj Axını Sahəsi (Pəncərəsi) */
+    #chatMessagesArea {
+        flex: 1 !important; /* Giriş hissəsini aşağı sıxaraq özü maksimum yeri tutur */
+        overflow-y: auto !important; /* Yalnız şaquli sürüşmə */
+        padding: 15px !important;
+        -webkit-overflow-scrolling: touch; /* iOS-da axıcı sürüşmə üçün */
+    }
+
+    /* 5. Mesaj Yazma Hissəsi (Saytın Ən Aşağısı) */
+    /* Bu bloka aid olan xarici div klasını və ya id-sini bura hədəfləyin */
+    .chat-input-area, 
+    #chatScreen .message-input-container,
+    #messageInputField {
+        /* Ekran klaviaturası açılanda sıxılıb yox olmaması üçün CRITICAL kod: */
+        flex-shrink: 0 !important; 
+        
+        position: sticky !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        padding: 10px 12px !important;
+        box-sizing: border-box;
+        z-index: 99;
+    }
+
+    /* Giriş input sahəsinin daxili elementləri */
+    .chat-input-wrapper {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    #messageInputField {
+        font-size: 16px !important; /* iOS brauzerlərində klikləyəndə ekranın avtomatik zoom olunmasının qarşısını alır */
+    }
+}
