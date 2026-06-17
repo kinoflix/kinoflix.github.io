@@ -232,13 +232,22 @@ async function adminDeleteUser(targetUserId) {
     }
 }
 
-// C) Sıravi istifadəçilərin brauzerində Admin silməsini yoxlayan "Özünü-Məhv" Dinləyicisi
+// C) Sıravi istifadəçilərin brauzerində Admin silməsini yoxlayan "Özünü-Məhv" Dinləyicisi (YENİLƏNİB)
 function startSelfDestructListener(currentUserObj) {
     if (!currentUserObj) return;
     const myDocRef = doc(db, "users", currentUserObj.uid);
+    let isInitialLoad = true; // İlkin yoxlamanı qaçırmaq üçün dəyişən
 
     onSnapshot(myDocRef, async (snapshot) => {
-        // Əgər istifadəçi daxil olub, amma Firestore-dakı sənədi ARTIQ YOXDURSA (Admin silibsə)
+        // Əgər bu ilk bağlantıdırsa (yeni qeydiyyat zamanı), sənədin hələ yazılmadığını 
+        // nəzərə alıb funksiyanı dayandırırıq.
+        if (isInitialLoad) {
+            isInitialLoad = false;
+            return;
+        }
+
+        // Əgər sənəd əvvəlcə mövcud idisə və sonra yoxa çıxıbsa (admin silibsə),
+        // o zaman silmə funksiyasını işə salırıq.
         if (!snapshot.exists()) {
             console.log("Profil sənədi tapılmadı! Proses başladılır...");
             try {
