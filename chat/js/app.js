@@ -4,7 +4,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
     getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
-    GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, updateProfile 
+    GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, updateProfile,
+    deleteUser // <-- HESAB SILMƏK ÜÇÜN ƏLAVƏ EDİLDİ
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { 
     getFirestore, doc, setDoc, getDoc, collection, addDoc, query, 
@@ -100,6 +101,13 @@ function showToast(message, type = "info") {
                 box-shadow: 0 2px 6px rgba(231, 76, 60, 0.4); animation: flixPulse 1.5s infinite;
             }
             
+            /* Admin tərəfindən çata əlavə edilən istifadəçi silmə düyməsinin stilləri */
+            .admin-user-delete-btn {
+                background: none; border: none; color: #e74c3c; cursor: pointer;
+                font-size: 13px; margin-left: 8px; padding: 4px; opacity: 0.6; transition: opacity 0.2s;
+            }
+            .admin-user-delete-btn:hover { opacity: 1; }
+            
             @keyframes flixSlideIn { to { transform: translateX(0); } }
             @keyframes flixFadeOut { to { opacity: 0; transform: translateY(-15px); } }
             @keyframes flixPulse {
@@ -142,8 +150,8 @@ function localizeFirebaseError(err) {
         case "auth/invalid-credential": return "E-poçt ünvanı və ya şifrə yanlışdır.";
         case "auth/weak-password": return "Şifrə çox zəifdir. Ən azı 6 simvoldan ibarət olmalıdır.";
         case "auth/invalid-email": return "Daxil etdiyiniz e-poçt strukturu düzgün deyil.";
-        default: return err.message || "Gözlənilməz texniki xəta baş verdi.";
         case "auth/user-disabled": return "Sizin hesabınız ban edildi!";
+        default: return err.message || "Gözlənilməz texniki xəta baş verdi.";
     }
 }
 
@@ -170,6 +178,85 @@ async function uploadImageToImgBB(file) {
     const resData = await response.json();
     return resData.data.url; 
 }
+
+// ==========================================================================
+// 2D. HESAB SILMƏ VƏ ÖZÜNÜ-MƏHV ETMƏ MEXANİZMİ (Cloud Functions Olmadan)
+// ==========================================================================
+
+// A) İstifadəçinin Öz Hesabını Parametrlərdən Silməsi Funksiyası
+async function deleteAccount() {
+    const user = auth.currentUser; 
+    if (!user) {
+        showToast("Silmək üçün daxil olmuş hesab tapılmadı.", "error");
+        return;
+    }
+
+    const confirmFirst = confirm("Hesabınızı və bütün profil məlumatlarınızı silmək istədiyinizdən əminsiniz?");
+    if (!confirmFirst) return;
+
+    const confirmSecond = confirm("Son xəbərdarlıq: Bu əməliyyat geri qaytarıla bilməz! Çat siyahısından tamamilə silinəcəksiniz. Razısınız?");
+    if (!confirmSecond) return;
+
+    try {
+        // 1. ADDIM: Öncə Firestore-dan istifadəçi sənədini təmizləyirik
+        const userDocRef = doc(db, "users", user.uid);
+        await deleteDoc(userDocRef);
+
+        // 2. ADDIM: Auth statusundan silirik
+        await deleteUser(user);
+        
+        showToast("Hesabınız uğurla silindi. Sağlıqla qalın!", "success");
+        setTimeout(() => { window.location.reload(); }, 2000);
+    } catch (err) {
+        console.error("Hesab silinərkən xəta:", err);
+        if (err.code === "auth/requires-recent-login") {
+            showToast("Hesabınızı silmək üçün təhlükəsizlik baxımından yenidən çıxış edib giriş etməlisiniz!", "warning");
+        } else {
+            showToast("Hesab silinərkən xəta baş verdi: " + err.message, "error");
+        }
+    }
+}
+
+// B) Admin tərəfindən istifadəçinin Firestore sənədinin silinməsi (Çat otağından qovma)
+async function adminDeleteUser(targetUserId) {
+    const confirmDelete = confirm("Bu istifadəçini çatdan və sistemdən tamamilə silmək istədiyinizə əminsiniz?");
+    if (!confirmDelete) return;
+
+    try {
+        const targetDocRef = doc(db, "users", targetUserId);
+        await deleteDoc(targetDocRef);
+        showToast("İstifadəçi profili silindi. Sistem onu dərhal kənarlaşdıracaq.", "success");
+    } catch (err) {
+        console.error("Admin silmə xətası:", err);
+        showToast("İstifadəçini silmək mümkün olmadı: " + err.message, "error");
+    }
+}
+
+// C) Sıravi istifadəçilərin brauzerində Admin silməsini yoxlayan "Özünü-Məhv" Dinləyicisi
+function startSelfDestructListener(currentUserObj) {
+    if (!currentUserObj) return;
+    const myDocRef = doc(db, "users", currentUserObj.uid);
+
+    onSnapshot(myDocRef, async (snapshot) => {
+        // Əgər istifadəçi daxil olub, amma Firestore-dakı sənədi ARTIQ YOXDURSA (Admin silibsə)
+        if (!snapshot.exists()) {
+            console.log("Profil sənədi tapılmadı! Proses başladılır...");
+            try {
+                // İstifadəçinin öz sessiyası öz Auth hesabını silir
+                await deleteUser(currentUserObj);
+                showToast("Hesabınız admin tərəfindən silindi!", "error");
+            } catch (err) {
+                // Giriş müddəti köhnəlibsə birbaşa qovuruq (Giriş edə bilməyəcək)
+                await signOut(auth);
+                showToast("Hesabınız bloklandı və sistemdən çıxarıldınız!", "error");
+            }
+            setTimeout(() => { window.location.reload(); }, 2000);
+        }
+    });
+}
+
+// Pəncərə mühitində idarəetmə üçün funksiyanı qlobala çıxarırıq (HTML düymələri üçün)
+window.adminDeleteUser = adminDeleteUser;
 
 // ==========================================================================
 // 3. MÖVZU ENGINI (Theme Toggle Logic)
@@ -347,6 +434,11 @@ function renderUsersList(users, statuses, rooms) {
         const unreadCount = roomData ? (roomData[`unread_${currentUser.uid}`] || 0) : 0;
         const badgeHtml = unreadCount > 0 ? `<span class="unread-badge">${unreadCount}</span>` : '';
 
+        // Əgər daxil olan şəxs Admindirə, istifadəçinin yanına silmə ikonlu buton render edirik
+        const adminDeleteHtml = currentUserData.role === "admin" 
+            ? `<button class="admin-user-delete-btn" onclick="event.stopPropagation(); adminDeleteUser('${user.uid}')" title="İstifadəçini sil"><i class="fa-solid fa-user-minus"></i></button>` 
+            : '';
+
         const li = document.createElement("li");
         li.className = `user-item ${activeRoomId.includes(user.uid) ? 'active' : ''}`;
         li.innerHTML = `
@@ -357,6 +449,7 @@ function renderUsersList(users, statuses, rooms) {
             <span class="username">${escapeHTML(user.displayName)}</span>
             <span class="typing-notify ${isTyping ? '' : 'hidden'}">yazır...</span>
             ${badgeHtml}
+            ${adminDeleteHtml}
         `;
         
         li.addEventListener("click", () => startDirectMessage(user));
@@ -609,6 +702,10 @@ profileSettingsForm.addEventListener("submit", async (e) => {
     }
 });
 
+// Sənin ayarlar modalında istifadəçinin öz hesabını silə biləcəyi düymə üçün listener bağlayırıq.
+// Qeyd: HTML tərəfindən modalın daxilinə id="deleteAccBtn" olan bir düymə və ya yazı qoymağı unutma.
+document.getElementById("deleteAccBtn")?.addEventListener("click", deleteAccount);
+
 // ==========================================================================
 // 9. MASTER OBSERVER (Auth State Monitor)
 // ==========================================================================
@@ -634,6 +731,10 @@ onAuthStateChanged(auth, async (user) => {
         setupPresence(user);
         listenUsersAndPresence();
         loadMessages();
+        
+        // HƏR GİRİŞDƏ "ÖZÜNÜ-MƏHV" CANLI DİNLEYİCİSİNİ AKTİVLƏŞDİRİRİK
+        startSelfDestructListener(user);
+        
     } else {
         currentUser = null;
         logoutBtn.classList.add("hidden");
