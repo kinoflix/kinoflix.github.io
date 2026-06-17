@@ -5,16 +5,17 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { 
     getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
     GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, updateProfile,
-    deleteUser // <-- HESAB SILMƏK ÜÇÜN ƏLAVƏ EDİLDİ
+    deleteUser 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { 
     getFirestore, doc, setDoc, getDoc, collection, addDoc, query, 
     orderBy, limit, onSnapshot, serverTimestamp, deleteDoc,
-    where, getDocs, increment, updateDoc // <-- ROL DƏYİŞMƏK ÜÇÜN updateDoc ƏLAVƏ EDİLDİ
+    where, getDocs, increment, updateDoc 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { 
     getDatabase, ref, set, onValue, onDisconnect, serverTimestamp as rtdbTimestamp 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
 // Müstəqil konfiqurasiya faylının importu (Firebase Storage silindi)
 import { firebaseConfig } from "./config.js";
 
@@ -35,7 +36,13 @@ let currentUser = null;
 let currentUserData = { role: "user", displayName: "", photoURL: DEFAULT_AVATAR };
 let activeRoomId = "global_room"; 
 let activeRoomIsDM = false;
+
+// Canlı dinləyicilərin (Unsubscribe) idarəetmə dəyişənləri
 let unsubscribeMessages = null;
+let unsubscribeUsers = null;
+let unsubscribeRooms = null;
+let unsubscribeTyping = null;
+let unsubscribeSelfDestruct = null;
 let typingTimeout = null;
 
 // Reaktiv status və mesaj idarəetməsi üçün keş dəyişənləri
@@ -106,7 +113,6 @@ function showToast(message, type = "info") {
                 box-shadow: 0 2px 6px rgba(231, 76, 60, 0.4); animation: flixPulse 1.5s infinite;
             }
             
-            /* Düymələri yan-yana yığmaq üçün action qabı */
             .user-actions {
                 display: flex;
                 align-items: center;
@@ -114,7 +120,6 @@ function showToast(message, type = "info") {
                 margin-left: auto;
             }
             
-            /* Rol dəyişmə düyməsinin stilləri */
             .role-toggle-btn {
                 background: none;
                 border: none; color: #3498db; cursor: pointer;
@@ -122,7 +127,6 @@ function showToast(message, type = "info") {
             }
             .role-toggle-btn:hover { opacity: 1; }
             
-            /* Admin tərəfindən çata əlavə edilən istifadəçi silmə düyməsinin stilləri */
             .admin-user-delete-btn {
                 background: none;
                 border: none; color: #e74c3c; cursor: pointer;
@@ -164,7 +168,6 @@ function showToast(message, type = "info") {
     }, 4000);
 }
 
-// Firebase xətalarını doğma Azərbaycan dilinə tərcümə edən funksiya
 function localizeFirebaseError(err) {
     switch(err.code) {
         case "auth/email-already-in-use": return "Bu e-poçt ünvanı ilə artıq qeydiyyatdan keçilib.";
@@ -199,10 +202,8 @@ async function uploadImageToImgBB(file) {
 }
 
 // ==========================================================================
-// 2D. HESAB SILMƏ VƏ ÖZÜNÜ-MƏHV ETMƏ MEXANİZMİ (Cloud Functions Olmadan)
+// 2D. HESAB SILMƏ VƏ ÖZÜNÜ-MƏHV ETMƏ MEXANİZMİ
 // ==========================================================================
-
-// A) İstifadəçinin Öz Hesabını Parametrlərdən Silməsi Funksiyası
 async function deleteAccount() {
     const user = auth.currentUser;
     if (!user) {
@@ -230,7 +231,6 @@ async function deleteAccount() {
     }
 }
 
-// B) Admin tərəfindən istifadəçinin Firestore sənədinin silinməsi (Çat otağından qovma)
 async function adminDeleteUser(targetUserId) {
     const confirmDelete = confirm("Bu istifadəçini çatdan və sistemdən tamamilə silmək istədiyinize əminsiniz?");
     if (!confirmDelete) return;
@@ -245,14 +245,11 @@ async function adminDeleteUser(targetUserId) {
     }
 }
 
-// C) İstifadəçinin Rolunu Dəyişən Funksiya (Admin <-> User Keçidi)
 async function changeUserRole(userId, currentRole) {
     const newRole = currentRole === 'admin' ? 'user' : 'admin';
     try {
         const userRef = doc(db, "users", userId);
-        await updateDoc(userRef, {
-            role: newRole
-        });
+        await updateDoc(userRef, { role: newRole });
         showToast(`${newRole === 'admin' ? 'İstifadəçi Admin edildi!' : 'Admin statusu ləğv edildi!'}`, "success");
     } catch (error) {
         console.error("Rol dəyişərkən xəta:", error);
@@ -260,13 +257,11 @@ async function changeUserRole(userId, currentRole) {
     }
 }
 
-// D) Sıravi istifadəçilərin brauzerində Admin silməsini yoxlayan "Özünü-Məhv" Dinləyicisi (YENİLƏNİB)
 function startSelfDestructListener(currentUserObj) {
     if (!currentUserObj) return;
     const myDocRef = doc(db, "users", currentUserObj.uid);
     let isInitialLoad = true;
-
-    onSnapshot(myDocRef, async (snapshot) => {
+    unsubscribeSelfDestruct = onSnapshot(myDocRef, async (snapshot) => {
         if (isInitialLoad) {
             isInitialLoad = false;
             return;
@@ -286,7 +281,6 @@ function startSelfDestructListener(currentUserObj) {
     });
 }
 
-// Pəncərə mühitində idarəetmə üçün funksiyaları qlobala çıxarırıq (HTML düymələri üçün)
 window.adminDeleteUser = adminDeleteUser;
 window.changeUserRole = changeUserRole;
 
@@ -419,8 +413,41 @@ function setupPresence(user) {
 }
 
 // ==========================================================================
-// 6. İSTİFADƏÇİ SİYAHISININ RENDERİ VƏ DM KEÇİDLƏRİ
+// 6. İSTİFADƏÇİ SİYAHISININ RENDERİ, LİSTENERİ VƏ DM KEÇİDLƏRİ
 // ==========================================================================
+function listenUsersAndPresence() {
+    if (unsubscribeUsers) unsubscribeUsers();
+    if (unsubscribeRooms) unsubscribeRooms();
+
+    // 1. Firestore: Bütün istifadəçilərin canlı siyahısı
+    unsubscribeUsers = onSnapshot(collection(db, "users"), (snapshot) => {
+        currentUsersList = [];
+        snapshot.forEach(doc => {
+            const uData = doc.data();
+            if (uData.uid !== currentUser.uid) {
+                currentUsersList.push(uData);
+            }
+        });
+        renderUsersList(currentUsersList, currentStatuses, currentRooms);
+    });
+
+    // 2. Realtime DB: İstifadəçilərin On/Off statusları
+    onValue(ref(rtdb, "presence"), (snap) => {
+        currentStatuses = snap.val() || {};
+        renderUsersList(currentUsersList, currentStatuses, currentRooms);
+    });
+
+    // 3. Firestore: Şəxsi otaqlar və bildiriş dataları
+    const roomsQuery = query(collection(db, "rooms"), where("participants", "arrayContains", currentUser.uid));
+    unsubscribeRooms = onSnapshot(roomsQuery, (snapshot) => {
+        currentRooms = {};
+        snapshot.forEach(doc => {
+            currentRooms[doc.id] = doc.data();
+        });
+        renderUsersList(currentUsersList, currentStatuses, currentRooms);
+    });
+}
+
 function renderUsersList(users, statuses, rooms) {
     if (!currentUser || !currentUserData) return;
     usersList.innerHTML = "";
@@ -429,25 +456,24 @@ function renderUsersList(users, statuses, rooms) {
         const isTyping = statuses[user.uid] && statuses[user.uid].typingTo === activeRoomId;
         const userAvatar = user.photoURL || DEFAULT_AVATAR;
 
-        // Oxunmamış mesaj sayının hesablanması sahəsi
         const roomId = [currentUser.uid, user.uid].sort().join("_");
         const roomData = rooms[roomId];
         const unreadCount = roomData ? (roomData[`unread_${currentUser.uid}`] || 0) : 0;
         const badgeHtml = unreadCount > 0 ? `<span class="unread-badge">${unreadCount}</span>` : '';
 
-        // --- YENİ: Adminlər üçün Sarı Ulduz İkonu ---
+        // --- Adminlər üçün Sarı Ulduz İkonu ---
         const adminStarHtml = user.role === "admin" 
             ? `<i class="fa-solid fa-star" style="color: #f1c40f; margin-left: 6px; font-size: 12px;" title="Admin"></i>` 
             : '';
 
-        // 1. Rol dəyişmə düyməsini HTML olaraq hazırla (Yalnız Admin görə bilər)
+        // Rol dəyişmə düyməsi (Yalnız Admin görə bilər)
         const roleButtonHtml = currentUserData.role === "admin" 
             ? `<button class="role-toggle-btn" onclick="event.stopPropagation(); changeUserRole('${user.uid}', '${user.role}')" title="Rolu dəyiş (Hal-hazırda: ${user.role})">
                  <i class="fa-solid ${user.role === 'admin' ? 'fa-user-shield' : 'fa-user'}"></i>
                </button>` 
             : '';
 
-        // 2. Əgər daxil olan şəxs Admindirsə, istifadəçinin yanına silmə ikonlu buton render edirik
+        // İstifadəçi silmə düyməsi (Yalnız Admin görə bilər)
         const adminDeleteHtml = currentUserData.role === "admin" 
             ? `<button class="admin-user-delete-btn" onclick="event.stopPropagation(); adminDeleteUser('${user.uid}')" title="İstifadəçini sil">
                  <i class="fa-solid fa-user-minus"></i>
@@ -481,7 +507,6 @@ function startDirectMessage(targetUser) {
     document.getElementById("activeRoomSub").innerText = "Şəxsi Məxfi Söhbət";
     btnGlobalRoom.classList.remove("active");
     
-    // Keçid etdiyimiz üçün öz oxunmamış bildirişlərimizi dərhal təmizləyirik
     setDoc(doc(db, "rooms", activeRoomId), {
         roomId: activeRoomId, isDM: true, participants: [currentUser.uid, targetUser.uid],
         lastMessageAt: serverTimestamp(),
@@ -518,10 +543,7 @@ function loadMessages() {
         chatMessagesArea.innerHTML = "";
         messages.forEach(msg => appendMessageElement(msg));
         chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight;
-        
-        checkActiveRoomTyping();
 
-        // Aktiv pəncərədə yeni mesajların sayğacı artarsa avtomatik sıfırlama təhlükəsizliyi
         if (activeRoomIsDM && currentRooms[activeRoomId]?.[`unread_${currentUser.uid}`] > 0) {
             setDoc(doc(db, "rooms", activeRoomId), { [`unread_${currentUser.uid}`]: 0 }, { merge: true });
         }
@@ -542,8 +564,7 @@ function appendMessageElement(msg) {
     }
 
     const msgAvatar = msg.senderAvatar || DEFAULT_AVATAR;
-    const time = msg.createdAt ?
-    new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "...";
+    const time = msg.createdAt ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "...";
 
     wrapper.innerHTML = `
         <img src="${msgAvatar}" class="msg-avatar" alt="">
@@ -599,7 +620,6 @@ async function sendMessage() {
             fileType: fileType,
             createdAt: serverTimestamp()
         });
-        // Şəkil və ya mesaj şəxsidirsə (DM), qarşı tərəfin profilinə unread triggeri atırıq (+1 artırır)
         if (activeRoomIsDM) {
             const targetUserId = activeRoomId.split("_").find(id => id !== currentUser.uid);
             await setDoc(doc(db, "rooms", activeRoomId), { 
@@ -615,21 +635,27 @@ async function sendMessage() {
 sendMessageBtn.addEventListener("click", sendMessage);
 messageInputField.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
 
+// ==========================================================================
+// 7B. INDIKATOR PROSESI (Dondurmayan Tək Qlobal Dinləyici)
+// ==========================================================================
 function checkActiveRoomTyping() {
-    onValue(ref(rtdb, "presence"), (snap) => {
+    if (unsubscribeTyping) unsubscribeTyping();
+    unsubscribeTyping = onValue(ref(rtdb, "presence"), (snap) => {
         const statuses = snap.val() || {};
         let someoneTyping = false;
 
         for (let uid in statuses) {
-            if (uid !== currentUser.uid && statuses[uid].typingTo === activeRoomId) {
+            if (currentUser && uid !== currentUser.uid && statuses[uid].typingTo === activeRoomId) {
                 someoneTyping = true;
                 break;
             }
         }
 
         const indicator = document.getElementById("typingIndicator");
-        if (someoneTyping) indicator.classList.remove("hidden");
-        else indicator.classList.add("hidden");
+        if (indicator) {
+            if (someoneTyping) indicator.classList.remove("hidden");
+            else indicator.classList.add("hidden");
+        }
     });
 }
 
@@ -686,7 +712,7 @@ profileSettingsForm.addEventListener("submit", async (e) => {
         try {
             newAvatarUrl = await uploadImageToImgBB(avatarFile);
         } catch (err) { 
-            showToast(err.message, "error"); 
+            showToast(err.message, "error");
             submitBtn.innerText = originalBtnText;
             submitBtn.disabled = false;
             return; 
@@ -698,7 +724,6 @@ profileSettingsForm.addEventListener("submit", async (e) => {
         await setDoc(doc(db, "users", currentUser.uid), {
             displayName: newName, photoURL: newAvatarUrl
         }, { merge: true });
-        
         currentUserData.displayName = newName;
         currentUserData.photoURL = newAvatarUrl;
         
@@ -707,13 +732,13 @@ profileSettingsForm.addEventListener("submit", async (e) => {
 
         showToast("Profil məlumatlarınız uğurla yeniləndi!", "success");
         settingsModal.classList.remove("active");
-    } catch (err) { showToast("Sistem xətası: " + err.message, "error"); }
-    finally {
+    } catch (err) { 
+        showToast("Sistem xətası: " + err.message, "error");
+    } finally {
         submitBtn.innerText = originalBtnText;
         submitBtn.disabled = false;
     }
 });
-
 document.getElementById("deleteAccBtn")?.addEventListener("click", deleteAccount);
 
 // ==========================================================================
@@ -740,8 +765,10 @@ onAuthStateChanged(auth, async (user) => {
 
         setupPresence(user);
         listenUsersAndPresence();
+        checkActiveRoomTyping(); // Kritik düzəliş: Donmanın qarşısını almaq üçün burada 1 dəfə başladılır!
         loadMessages();
         
+        if (unsubscribeSelfDestruct) unsubscribeSelfDestruct();
         startSelfDestructListener(user);
     } else {
         currentUser = null;
@@ -749,7 +776,13 @@ onAuthStateChanged(auth, async (user) => {
         openSettingsBtn.classList.add("hidden");
         chatScreen.classList.remove("active");
         authScreen.classList.add("active");
-        if(unsubscribeMessages) unsubscribeMessages();
+        
+        // Çıxış edildikdə bütün canlı dinləyicilər tamamilə sıfırlanır (Yaddaş sızmasının qarşısı alınır)
+        if (unsubscribeMessages) unsubscribeMessages();
+        if (unsubscribeUsers) unsubscribeUsers();
+        if (unsubscribeRooms) unsubscribeRooms();
+        if (unsubscribeTyping) unsubscribeTyping();
+        if (unsubscribeSelfDestruct) unsubscribeSelfDestruct();
     }
 });
 
