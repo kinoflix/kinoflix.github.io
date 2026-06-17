@@ -13,11 +13,8 @@ import {
 import { 
     getDatabase, ref, set, onValue, onDisconnect, serverTimestamp as rtdbTimestamp 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { 
-    getStorage, ref as storageRef, uploadBytes, getDownloadURL 
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-// Müstəqil konfiqurasiya faylının importu
+// Müstəqil konfiqurasiya faylının importu (Firebase Storage silindi)
 import { firebaseConfig } from "./config.js";
 
 // İnfrastrukturun başladılması
@@ -25,7 +22,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const rtdb = getDatabase(app);
-const storage = getStorage(app);
+
+// IMGBB PULSUZ ŞƏKİL HOSTİNQ KONFİQURASİYASI
+const IMGBB_API_KEY = "5437281cb3fb0c2e28ca265eefa6eaf7";
 
 // ==========================================================================
 // 2. QLOOBAL DƏYİŞƏNLƏR VƏ DOM ELEMENTLƏRİ
@@ -59,6 +58,31 @@ const themeToggle = document.getElementById("themeToggle");
 const siteLogo = document.getElementById("siteLogo");
 
 // ==========================================================================
+// 2B. IMGBB API ÜZƏRİNDƏN ŞƏKİL YÜKLƏMƏ MÜHƏRRİKİ (Helper Function)
+// ==========================================================================
+async function uploadImageToImgBB(file) {
+    // Sənəd yüklənməsinin qarşısını almaq üçün yoxlama
+    if (!file.type.startsWith("image/")) {
+        throw new Error("ImgBB yalnız şəkil fayllarını (JPG, PNG, WEBP, GIF) dəstəkləyir. Zəhmət olmasa şəkil seçin.");
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+        method: "POST",
+        body: formData
+    });
+
+    if (!response.ok) {
+        throw new Error("Şəkil serverə yüklənərkən xəta baş verdi.");
+    }
+
+    const resData = await response.json();
+    return resData.data.url; // Birbaşa şəkil linkini qaytarır (.jpg/.png)
+}
+
+// ==========================================================================
 // 3. MÖVZU ENGINI (Theme Toggle Logic)
 // ==========================================================================
 function updateThemeUI(theme) {
@@ -79,7 +103,6 @@ themeToggle.addEventListener('click', () => {
     updateThemeUI(newTheme);
 });
 
-// Səhifə yüklənəndə mövzunu bərpa etmək
 const savedTheme = localStorage.getItem('flix-theme') || 'dark';
 document.body.setAttribute('data-theme', savedTheme);
 updateThemeUI(savedTheme);
@@ -257,7 +280,6 @@ function loadMessages() {
         messages.forEach(msg => appendMessageElement(msg));
         chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight;
         
-        // Digər istifadəçilərin yazma indikatorunu yoxlamaq
         checkActiveRoomTyping();
     });
 }
@@ -272,11 +294,7 @@ function appendMessageElement(msg) {
 
     let contentHtml = `<p>${escapeHTML(msg.text)}</p>`;
     if (msg.fileURL) {
-        if (msg.fileType && msg.fileType.startsWith("image/")) {
-            contentHtml += `<img src="${msg.fileURL}" class="chat-shared-image" alt="Şəkil" onclick="window.open('${msg.fileURL}')">`;
-        } else {
-            contentHtml += `<a href="${msg.fileURL}" target="_blank" style="color:var(--accent); text-decoration:underline; font-size:0.85rem;"><i class="fa-solid fa-file"></i> Sənədə Bax</a>`;
-        }
+        contentHtml += `<img src="${msg.fileURL}" class="chat-shared-image" alt="Paylaşılan Şəkil" onclick="window.open('${msg.fileURL}')">`;
     }
 
     const time = msg.createdAt ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "...";
@@ -302,12 +320,15 @@ function appendMessageElement(msg) {
     chatMessagesArea.appendChild(wrapper);
 }
 
+// YENİLƏNMİŞ MESAJ GÖNDƏRMƏ - IMGBB İNTEQRASİYALI
 async function sendMessage() {
     const text = messageInputField.value.trim();
     const fileInput = document.getElementById("chatFileInput");
     const file = fileInput.files[0];
 
     if (!text && !file) return;
+    
+    // İnterfeysi anında təmizləyirik ki, istifadəçi gözləməsin
     messageInputField.value = "";
     fileInput.value = "";
 
@@ -316,11 +337,13 @@ async function sendMessage() {
 
     if (file) {
         try {
-            const fileRef = storageRef(storage, `chat_files/${activeRoomId}/${Date.now()}_${file.name}`);
-            const uploadTask = await uploadBytes(fileRef, file);
-            fileURL = await getDownloadURL(uploadTask.ref);
+            // Firebase Storage əvəzinə ImgBB-yə yükləyirik
+            fileURL = await uploadImageToImgBB(file);
             fileType = file.type;
-        } catch (err) { alert("Fayl yüklənmədi: " + err.message); return; }
+        } catch (err) { 
+            alert("Xəta: " + err.message); 
+            return; 
+        }
     }
 
     try {
@@ -329,7 +352,7 @@ async function sendMessage() {
             senderName: currentUserData.displayName || "Anonim",
             senderAvatar: currentUserData.photoURL || "https://via.placeholder.com/40",
             text: text,
-            fileURL: fileURL,
+            fileURL: fileURL, // ImgBB-dən gələn birbaşa link bura yazılır
             fileType: fileType,
             createdAt: serverTimestamp()
         });
@@ -341,12 +364,10 @@ async function sendMessage() {
 sendMessageBtn.addEventListener("click", sendMessage);
 messageInputField.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
 
-// Pəncərə daxilində "yazır..." animasiyasının yoxlanması
 function checkActiveRoomTyping() {
     onValue(ref(rtdb, "presence"), (snap) => {
         const statuses = snap.val() || {};
         let someoneTyping = false;
-        let typerName = "";
 
         for (let uid in statuses) {
             if (uid !== currentUser.uid && statuses[uid].typingTo === activeRoomId) {
@@ -356,11 +377,8 @@ function checkActiveRoomTyping() {
         }
 
         const indicator = document.getElementById("typingIndicator");
-        if (someoneTyping) {
-            indicator.classList.remove("hidden");
-        } else {
-            indicator.classList.add("hidden");
-        }
+        if (someoneTyping) indicator.classList.remove("hidden");
+        else indicator.classList.add("hidden");
     });
 }
 
@@ -373,7 +391,7 @@ messageInputField.addEventListener("input", () => {
 });
 
 // ==========================================================================
-// 8. PROFİL MODALININ IDARƏEDİLMƏSİ (Settings form)
+// 8. PROFİL MODALININ IDARƏEDİLMƏSİ - IMGBB İNTEQRASİYALI
 // ==========================================================================
 openSettingsBtn.addEventListener("click", () => {
     document.getElementById("settingsDisplayName").value = currentUserData.displayName;
@@ -390,10 +408,12 @@ profileSettingsForm.addEventListener("submit", async (e) => {
 
     if (avatarFile) {
         try {
-            const avatarRef = storageRef(storage, `avatars/${currentUser.uid}/profile.jpg`);
-            const uploadTask = await uploadBytes(avatarRef, avatarFile);
-            newAvatarUrl = await getDownloadURL(uploadTask.ref);
-        } catch (err) { alert("Avatar yüklənmədi: " + err.message); return; }
+            // Profil avatarını da ImgBB-yə yükləyib linkini alırıq
+            newAvatarUrl = await uploadImageToImgBB(avatarFile);
+        } catch (err) { 
+            alert("Xəta: " + err.message); 
+            return; 
+        }
     }
 
     try {
