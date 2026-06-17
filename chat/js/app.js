@@ -23,14 +23,15 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const rtdb = getDatabase(app);
 
-// IMGBB PULSUZ ŞƏKİL HOSTİNQ KONFİQURASİYASI
+// IMGBB VƏ GLOBAL DEFAULT AVATAR KONFİQURASİYASI
 const IMGBB_API_KEY = "5437281cb3fb0c2e28ca265eefa6eaf7";
+const DEFAULT_AVATAR = "https://ibb.co/gL7ZcDqz"; 
 
 // ==========================================================================
-// 2. QLOOBAL DƏYİŞƏNLƏR VƏ DOM ELEMENTLƏRİ
+// 2. QLOBAL DƏYİŞƏNLƏR VƏ DOM ELEMENTLƏRİ
 // ==========================================================================
 let currentUser = null;
-let currentUserData = { role: "user", displayName: "" };
+let currentUserData = { role: "user", displayName: "", photoURL: DEFAULT_AVATAR };
 let activeRoomId = "global_room"; 
 let activeRoomIsDM = false;
 let unsubscribeMessages = null;
@@ -61,7 +62,6 @@ const siteLogo = document.getElementById("siteLogo");
 // 2B. IMGBB API ÜZƏRİNDƏN ŞƏKİL YÜKLƏMƏ MÜHƏRRİKİ (Helper Function)
 // ==========================================================================
 async function uploadImageToImgBB(file) {
-    // Sənəd yüklənməsinin qarşısını almaq üçün yoxlama
     if (!file.type.startsWith("image/")) {
         throw new Error("ImgBB yalnız şəkil fayllarını (JPG, PNG, WEBP, GIF) dəstəkləyir. Zəhmət olmasa şəkil seçin.");
     }
@@ -79,7 +79,7 @@ async function uploadImageToImgBB(file) {
     }
 
     const resData = await response.json();
-    return resData.data.url; // Birbaşa şəkil linkini qaytarır (.jpg/.png)
+    return resData.data.url; 
 }
 
 // ==========================================================================
@@ -128,11 +128,11 @@ registerForm.addEventListener("submit", async (e) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const user = userCredential.user;
-        await updateProfile(user, { displayName: name, photoURL: "https://via.placeholder.com/40" });
+        await updateProfile(user, { displayName: name, photoURL: DEFAULT_AVATAR });
         
         await setDoc(doc(db, "users", user.uid), {
             uid: user.uid, displayName: name, email: email,
-            photoURL: "https://via.placeholder.com/40", role: "user", createdAt: serverTimestamp()
+            photoURL: DEFAULT_AVATAR, role: "user", createdAt: serverTimestamp()
         });
         registerForm.reset();
     } catch (err) { alert("Qeydiyyat xətası: " + err.message); }
@@ -156,8 +156,12 @@ document.getElementById("googleAuthBtn").addEventListener("click", async () => {
         
         if (!userDoc.exists()) {
             await setDoc(userDocRef, {
-                uid: user.uid, displayName: user.displayName || "Anonim", email: user.email,
-                photoURL: user.photoURL || "https://via.placeholder.com/40", role: "user", createdAt: serverTimestamp()
+                uid: user.uid, 
+                displayName: user.displayName || "Anonim", 
+                email: user.email,
+                photoURL: user.photoURL || DEFAULT_AVATAR, 
+                role: "user", 
+                createdAt: serverTimestamp()
             });
         }
     } catch (err) { alert("Google giriş xətası: " + err.message); }
@@ -217,12 +221,15 @@ function renderUsersList(users, statuses) {
     users.forEach(user => {
         const userStatus = statuses[user.uid] ? statuses[user.uid].status : "offline";
         const isTyping = statuses[user.uid] && statuses[user.uid].typingTo === activeRoomId;
+        
+        // Şəkli olmayan istifadəçilərə default avatar bağlayırıq
+        const userAvatar = user.photoURL || DEFAULT_AVATAR;
 
         const li = document.createElement("li");
         li.className = `user-item ${activeRoomId.includes(user.uid) ? 'active' : ''}`;
         li.innerHTML = `
             <div class="avatar-wrapper">
-                <img src="${user.photoURL}" class="avatar" alt="">
+                <img src="${userAvatar}" class="avatar" alt="">
                 <span class="status-indicator ${userStatus}"></span>
             </div>
             <span class="username">${escapeHTML(user.displayName)}</span>
@@ -297,10 +304,12 @@ function appendMessageElement(msg) {
         contentHtml += `<img src="${msg.fileURL}" class="chat-shared-image" alt="Paylaşılan Şəkil" onclick="window.open('${msg.fileURL}')">`;
     }
 
+    // Şəkli gəlməyən mesajların yerinə default avatarı yazdırırıq
+    const msgAvatar = msg.senderAvatar || DEFAULT_AVATAR;
     const time = msg.createdAt ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "...";
 
     wrapper.innerHTML = `
-        <img src="${msg.senderAvatar}" class="msg-avatar" alt="">
+        <img src="${msgAvatar}" class="msg-avatar" alt="">
         <div class="message-bubble">
             <span class="sender-name">${escapeHTML(msg.senderName)} ${deleteBtnHtml}</span>
             ${contentHtml}
@@ -320,7 +329,6 @@ function appendMessageElement(msg) {
     chatMessagesArea.appendChild(wrapper);
 }
 
-// YENİLƏNMİŞ MESAJ GÖNDƏRMƏ - IMGBB İNTEQRASİYALI
 async function sendMessage() {
     const text = messageInputField.value.trim();
     const fileInput = document.getElementById("chatFileInput");
@@ -328,7 +336,6 @@ async function sendMessage() {
 
     if (!text && !file) return;
     
-    // İnterfeysi anında təmizləyirik ki, istifadəçi gözləməsin
     messageInputField.value = "";
     fileInput.value = "";
 
@@ -337,7 +344,6 @@ async function sendMessage() {
 
     if (file) {
         try {
-            // Firebase Storage əvəzinə ImgBB-yə yükləyirik
             fileURL = await uploadImageToImgBB(file);
             fileType = file.type;
         } catch (err) { 
@@ -350,9 +356,9 @@ async function sendMessage() {
         await addDoc(collection(db, "rooms", activeRoomId, "messages"), {
             senderId: currentUser.uid,
             senderName: currentUserData.displayName || "Anonim",
-            senderAvatar: currentUserData.photoURL || "https://via.placeholder.com/40",
+            senderAvatar: currentUserData.photoURL || DEFAULT_AVATAR,
             text: text,
-            fileURL: fileURL, // ImgBB-dən gələn birbaşa link bura yazılır
+            fileURL: fileURL, 
             fileType: fileType,
             createdAt: serverTimestamp()
         });
@@ -391,11 +397,11 @@ messageInputField.addEventListener("input", () => {
 });
 
 // ==========================================================================
-// 8. PROFİL MODALININ IDARƏEDİLMƏSİ - YENİLƏNMİŞ (F5 PROBLLEMİ HƏLL OLUNDU)
+// 8. PROFİL MODALININ IDARƏEDİLMƏSİ - YENİLƏNMİŞ (F5 PROBLEMDƏN XALAS OLDUQ)
 // ==========================================================================
 openSettingsBtn.addEventListener("click", () => {
     document.getElementById("settingsDisplayName").value = currentUserData.displayName;
-    document.getElementById("settingsAvatarPreview").src = currentUserData.photoURL;
+    document.getElementById("settingsAvatarPreview").src = currentUserData.photoURL || DEFAULT_AVATAR;
     settingsModal.classList.add("active");
 });
 closeSettingsBtn.addEventListener("click", () => settingsModal.classList.remove("active"));
@@ -404,9 +410,8 @@ profileSettingsForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const newName = document.getElementById("settingsDisplayName").value.trim();
     const avatarFile = document.getElementById("avatarFileInput").files[0];
-    let newAvatarUrl = currentUserData.photoURL;
+    let newAvatarUrl = currentUserData.photoURL || DEFAULT_AVATAR;
 
-    // Düyməni yüklənir rejiminə salaq
     const submitBtn = profileSettingsForm.querySelector("button[type='submit']");
     const originalBtnText = submitBtn.innerText;
     submitBtn.innerText = "Yüklənir...";
@@ -429,13 +434,12 @@ profileSettingsForm.addEventListener("submit", async (e) => {
             displayName: newName, photoURL: newAvatarUrl
         }, { merge: true });
         
-        // --- KRİTİK HISSƏ: F5 etmədən interfeysi və qlobal dəyişəni anında yeniləyirik ---
+        // F5 etmədən interfeysi anında təzələyirik
         currentUserData.displayName = newName;
         currentUserData.photoURL = newAvatarUrl;
         
         document.getElementById("currentUserName").innerText = newName;
         document.getElementById("currentUserAvatar").src = newAvatarUrl;
-        // ---------------------------------------------------------------------------------
 
         alert("Profil uğurla yeniləndi!");
         settingsModal.classList.remove("active");
@@ -456,11 +460,11 @@ onAuthStateChanged(auth, async (user) => {
         if (userDoc.exists()) {
             currentUserData = userDoc.data();
         } else {
-            currentUserData = { role: "user", displayName: user.displayName, photoURL: user.photoURL };
+            currentUserData = { role: "user", displayName: user.displayName, photoURL: user.photoURL || DEFAULT_AVATAR };
         }
 
         document.getElementById("currentUserName").innerText = currentUserData.displayName || "Anonim";
-        document.getElementById("currentUserAvatar").src = currentUserData.photoURL || "https://via.placeholder.com/40";
+        document.getElementById("currentUserAvatar").src = currentUserData.photoURL || DEFAULT_AVATAR;
         document.getElementById("currentUserRole").innerText = currentUserData.role === "admin" ? "Admin" : "İstifadəçi";
         
         logoutBtn.classList.remove("hidden");
