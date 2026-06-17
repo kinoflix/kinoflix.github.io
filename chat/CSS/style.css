@@ -631,7 +631,7 @@ body, html {
         left: 0 !important;
     }
 
-    /* 2. Şəxsi mesajlaşma sahəsi tamamilə ümumi çatın üzərinə keçir */
+    /* 2. Şəxsi mesajlaşma sahəsi tamamilə ümumi çatın üzərinə keçir. */
     .private-pane-overlay {
         position: absolute;
         top: 0; /* Başlığın altından, bitişik şəkildə açılır */
@@ -649,3 +649,4 @@ body, html {
         max-width: 88%; /* Mobildə qabarcıqlar bir qədər geniş olsun */
     }
 }
+
