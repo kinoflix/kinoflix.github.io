@@ -421,30 +421,6 @@ function setupPresence(user) {
 // ==========================================================================
 // 6. İSTİFADƏÇİ SİYAHISININ RENDERİ VƏ DM KEÇİDLƏRİ
 // ==========================================================================
-function listenUsersAndPresence() {
-    onSnapshot(collection(db, "users"), (snapshot) => {
-        currentUsersList = [];
-        snapshot.forEach(doc => { if(currentUser && doc.id !== currentUser.uid) currentUsersList.push(doc.data()); });
-        renderUsersList(currentUsersList, currentStatuses, currentRooms);
-    });
-    onValue(ref(rtdb, "presence"), (presenceSnap) => {
-        currentStatuses = presenceSnap.val() || {};
-        renderUsersList(currentUsersList, currentStatuses, currentRooms);
-    });
-    // Daxil olan şəxsi mesajların sayını və yenilənməsini reaktiv izləyirik
-    const qRooms = query(collection(db, "rooms"), where("participants", "array-contains", currentUser.uid));
-    onSnapshot(qRooms, (roomSnap) => {
-        currentRooms = {};
-        roomSnap.forEach(doc => { currentRooms[doc.id] = doc.data(); });
-        renderUsersList(currentUsersList, currentStatuses, currentRooms);
-        
-        // İstifadəçi daxil olduğu DM otağında yeni mesajları oxuyursa, sayğacı anında sıfırlayırıq
-        if (activeRoomIsDM && currentRooms[activeRoomId]?.[`unread_${currentUser.uid}`] > 0) {
-            setDoc(doc(db, "rooms", activeRoomId), { [`unread_${currentUser.uid}`]: 0 }, { merge: true });
-        }
-    });
-}
-
 function renderUsersList(users, statuses, rooms) {
     if (!currentUser || !currentUserData) return;
     usersList.innerHTML = "";
@@ -458,6 +434,11 @@ function renderUsersList(users, statuses, rooms) {
         const roomData = rooms[roomId];
         const unreadCount = roomData ? (roomData[`unread_${currentUser.uid}`] || 0) : 0;
         const badgeHtml = unreadCount > 0 ? `<span class="unread-badge">${unreadCount}</span>` : '';
+
+        // --- YENİ: Adminlər üçün Sarı Ulduz İkonu ---
+        const adminStarHtml = user.role === "admin" 
+            ? `<i class="fa-solid fa-star" style="color: #f1c40f; margin-left: 6px; font-size: 12px;" title="Admin"></i>` 
+            : '';
 
         // 1. Rol dəyişmə düyməsini HTML olaraq hazırla (Yalnız Admin görə bilər)
         const roleButtonHtml = currentUserData.role === "admin" 
@@ -480,7 +461,7 @@ function renderUsersList(users, statuses, rooms) {
                 <img src="${userAvatar}" class="avatar" alt="">
                 <span class="status-indicator ${userStatus}"></span>
             </div>
-            <span class="username">${escapeHTML(user.displayName)}</span>
+            <span class="username">${escapeHTML(user.displayName)}${adminStarHtml}</span>
             <span class="typing-notify ${isTyping ? '' : 'hidden'}">yazır...</span>
             ${badgeHtml}
             <div class="user-actions">
