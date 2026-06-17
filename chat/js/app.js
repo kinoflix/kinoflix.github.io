@@ -8,7 +8,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { 
     getFirestore, doc, setDoc, getDoc, collection, addDoc, query, 
-    orderBy, limit, onSnapshot, serverTimestamp, deleteDoc 
+    orderBy, limit, onSnapshot, serverTimestamp, deleteDoc,
+    where, getDocs, increment
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { 
     getDatabase, ref, set, onValue, onDisconnect, serverTimestamp as rtdbTimestamp 
@@ -25,7 +26,7 @@ const rtdb = getDatabase(app);
 
 // IMGBB VƏ GLOBAL DEFAULT AVATAR KONFİQURASİYASI
 const IMGBB_API_KEY = "5437281cb3fb0c2e28ca265eefa6eaf7";
-const DEFAULT_AVATAR = "https://i.ibb.co/0pjvscFW/avatar.jpg"; 
+const DEFAULT_AVATAR = "https://i.ibb.co/S7XzY8V/avatar.png"; // Birbaşa şəkil linkiniz (.png/.jpg)
 
 // ==========================================================================
 // 2. QLOBAL DƏYİŞƏNLƏR VƏ DOM ELEMENTLƏRİ
@@ -36,6 +37,11 @@ let activeRoomId = "global_room";
 let activeRoomIsDM = false;
 let unsubscribeMessages = null;
 let typingTimeout = null;
+
+// Reaktiv status və mesaj idarəetməsi üçün keş dəyişənləri
+let currentUsersList = [];
+let currentStatuses = {};
+let currentRooms = {};
 
 // DOM Elementləri
 const authScreen = document.getElementById("authScreen");
@@ -59,11 +65,93 @@ const themeToggle = document.getElementById("themeToggle");
 const siteLogo = document.getElementById("siteLogo");
 
 // ==========================================================================
-// 2B. IMGBB API ÜZƏRİNDƏN ŞƏKİL YÜKLƏMƏ MÜHƏRRİKİ (Helper Function)
+// 2B. MÜASİR AZƏRBAYCAN DİLİNDƏ TOAST BİLDİRİŞ SİSTEMİ (Modern Alert UI)
+// ==========================================================================
+function showToast(message, type = "info") {
+    if (!document.getElementById("flix-toast-styles")) {
+        const style = document.createElement("style");
+        style.id = "flix-toast-styles";
+        style.innerHTML = `
+            .flix-toast-container {
+                position: fixed; top: 20px; right: 20px; z-index: 9999;
+                display: flex; flex-direction: column; gap: 10px;
+            }
+            .flix-toast {
+                background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);
+                color: #1a1a1a; padding: 14px 22px; border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12); font-family: 'Segoe UI', sans-serif;
+                font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 12px;
+                transform: translateX(120%); animation: flixSlideIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                border-left: 5px solid #ccc; max-width: 360px; pointer-events: auto;
+            }
+            [data-theme="dark"] .flix-toast {
+                background: rgba(28, 28, 30, 0.9); color: #ffffff;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            }
+            .flix-toast.success { border-left-color: #2ecc71; }
+            .flix-toast.error { border-left-color: #e74c3c; }
+            .flix-toast.warning { border-left-color: #f39c12; }
+            .flix-toast.info { border-left-color: #3498db; }
+            
+            .unread-badge {
+                background-color: #e74c3c; color: white; border-radius: 20px;
+                padding: 2px 8px; font-size: 11px; font-weight: bold;
+                margin-left: auto; min-width: 18px; text-align: center;
+                box-shadow: 0 2px 6px rgba(231, 76, 60, 0.4); animation: flixPulse 1.5s infinite;
+            }
+            
+            @keyframes flixSlideIn { to { transform: translateX(0); } }
+            @keyframes flixFadeOut { to { opacity: 0; transform: translateY(-15px); } }
+            @keyframes flixPulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.08); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    let container = document.querySelector(".flix-toast-container");
+    if (!container) {
+        container = document.createElement("div");
+        container.className = "flix-toast-container";
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement("div");
+    toast.className = `flix-toast ${type}`;
+    
+    let icon = "💡";
+    if (type === "success") icon = "✅";
+    if (type === "error") icon = "❌";
+    if (type === "warning") icon = "⚠️";
+
+    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.animation = "flixFadeOut 0.4s forwards";
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+}
+
+// Firebase xətalarını doğma Azərbaycan dilinə tərcümə edən funksiya
+function localizeFirebaseError(err) {
+    switch(err.code) {
+        case "auth/email-already-in-use": return "Bu e-poçt ünvanı ilə artıq qeydiyyatdan keçilib.";
+        case "auth/invalid-credential": return "E-poçt ünvanı və ya şifrə yanlışdır.";
+        case "auth/weak-password": return "Şifrə çox zəifdir. Ən azı 6 simvoldan ibarət olmalıdır.";
+        case "auth/invalid-email": return "Daxil etdiyiniz e-poçt strukturu düzgün deyil.";
+        default: return err.message || "Gözlənilməz texniki xəta baş verdi.";
+    }
+}
+
+// ==========================================================================
+// 2C. IMGBB API ÜZƏRİNDƏN ŞƏKİL YÜKLƏMƏ MÜHƏRRİKİ
 // ==========================================================================
 async function uploadImageToImgBB(file) {
     if (!file.type.startsWith("image/")) {
-        throw new Error("ImgBB yalnız şəkil fayllarını (JPG, PNG, WEBP, GIF) dəstəkləyir. Zəhmət olmasa şəkil seçin.");
+        throw new Error("Sistem yalnız şəkil fayllarını (JPG, PNG, WEBP, GIF) dəstəkləyir.");
     }
 
     const formData = new FormData();
@@ -126,6 +214,14 @@ registerForm.addEventListener("submit", async (e) => {
     const pass = document.getElementById("regPassword").value;
 
     try {
+        // 1. İstifadəçi adının unikal olub-olmadığını yoxlayırıq
+        const nameQuery = query(collection(db, "users"), where("displayName", "==", name));
+        const nameSnap = await getDocs(nameQuery);
+        if (!nameSnap.empty) {
+            showToast("Bu istifadəçi adı artıq başqası tərəfindən alınıb. Fərqli ad seçin.", "warning");
+            return;
+        }
+
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const user = userCredential.user;
         await updateProfile(user, { displayName: name, photoURL: DEFAULT_AVATAR });
@@ -135,15 +231,20 @@ registerForm.addEventListener("submit", async (e) => {
             photoURL: DEFAULT_AVATAR, role: "user", createdAt: serverTimestamp()
         });
         registerForm.reset();
-    } catch (err) { alert("Qeydiyyat xətası: " + err.message); }
+        showToast("Qeydiyyat uğurla tamamlandı!", "success");
+    } catch (err) { showToast(localizeFirebaseError(err), "error"); }
 });
 
 loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("loginEmail").value.trim();
     const pass = document.getElementById("loginPassword").value;
-    try { await signInWithEmailAndPassword(auth, email, pass); loginForm.reset(); } 
-    catch (err) { alert("Giriş xətası: " + err.message); }
+    try { 
+        await signInWithEmailAndPassword(auth, email, pass); 
+        loginForm.reset(); 
+        showToast("Xoş gəldiniz!", "success");
+    } 
+    catch (err) { showToast(localizeFirebaseError(err), "error"); }
 });
 
 document.getElementById("googleAuthBtn").addEventListener("click", async () => {
@@ -164,12 +265,14 @@ document.getElementById("googleAuthBtn").addEventListener("click", async () => {
                 createdAt: serverTimestamp()
             });
         }
-    } catch (err) { alert("Google giriş xətası: " + err.message); }
+        showToast("Google ilə uğurla giriş edildi!", "success");
+    } catch (err) { showToast(localizeFirebaseError(err), "error"); }
 });
 
 logoutBtn.addEventListener("click", () => {
     if(currentUser) set(ref(rtdb, `/presence/${currentUser.uid}`), { status: "offline", lastChanged: rtdbTimestamp() });
     signOut(auth);
+    showToast("Hesabdan çıxış edildi.", "info");
 });
 
 // ==========================================================================
@@ -206,24 +309,42 @@ function setupPresence(user) {
 // ==========================================================================
 function listenUsersAndPresence() {
     onSnapshot(collection(db, "users"), (snapshot) => {
-        const usersData = [];
-        snapshot.forEach(doc => { if(doc.id !== currentUser.uid) usersData.push(doc.data()); });
+        currentUsersList = [];
+        snapshot.forEach(doc => { if(doc.id !== currentUser.uid) currentUsersList.push(doc.data()); });
+        renderUsersList(currentUsersList, currentStatuses, currentRooms);
+    });
+    
+    onValue(ref(rtdb, "presence"), (presenceSnap) => {
+        currentStatuses = presenceSnap.val() || {};
+        renderUsersList(currentUsersList, currentStatuses, currentRooms);
+    });
+
+    // Daxil olan şəxsi mesajların sayını və yenilənməsini reaktiv izləyirik
+    const qRooms = query(collection(db, "rooms"), where("participants", "array-contains", currentUser.uid));
+    onSnapshot(qRooms, (roomSnap) => {
+        currentRooms = {};
+        roomSnap.forEach(doc => { currentRooms[doc.id] = doc.data(); });
+        renderUsersList(currentUsersList, currentStatuses, currentRooms);
         
-        onValue(ref(rtdb, "presence"), (presenceSnap) => {
-            const statuses = presenceSnap.val() || {};
-            renderUsersList(usersData, statuses);
-        });
+        // İstifadəçi daxil olduğu DM otağında yeni mesajları oxuyursa, sayğacı anında sıfırlayırıq
+        if (activeRoomIsDM && currentRooms[activeRoomId]?.[`unread_${currentUser.uid}`] > 0) {
+            setDoc(doc(db, "rooms", activeRoomId), { [`unread_${currentUser.uid}`]: 0 }, { merge: true });
+        }
     });
 }
 
-function renderUsersList(users, statuses) {
+function renderUsersList(users, statuses, rooms) {
     usersList.innerHTML = "";
     users.forEach(user => {
         const userStatus = statuses[user.uid] ? statuses[user.uid].status : "offline";
         const isTyping = statuses[user.uid] && statuses[user.uid].typingTo === activeRoomId;
-        
-        // Şəkli olmayan istifadəçilərə default avatar bağlayırıq
         const userAvatar = user.photoURL || DEFAULT_AVATAR;
+
+        // Oxunmamış mesaj sayının hesablanması sahəsi
+        const roomId = [currentUser.uid, user.uid].sort().join("_");
+        const roomData = rooms[roomId];
+        const unreadCount = roomData ? (roomData[`unread_${currentUser.uid}`] || 0) : 0;
+        const badgeHtml = unreadCount > 0 ? `<span class="unread-badge">${unreadCount}</span>` : '';
 
         const li = document.createElement("li");
         li.className = `user-item ${activeRoomId.includes(user.uid) ? 'active' : ''}`;
@@ -234,6 +355,7 @@ function renderUsersList(users, statuses) {
             </div>
             <span class="username">${escapeHTML(user.displayName)}</span>
             <span class="typing-notify ${isTyping ? '' : 'hidden'}">yazır...</span>
+            ${badgeHtml}
         `;
         
         li.addEventListener("click", () => startDirectMessage(user));
@@ -248,9 +370,11 @@ function startDirectMessage(targetUser) {
     document.getElementById("activeRoomSub").innerText = "Şəxsi Məxfi Söhbət";
     btnGlobalRoom.classList.remove("active");
     
+    // Keçid etdiyimiz üçün öz oxunmamış bildirişlərimizi dərhal təmizləyirik
     setDoc(doc(db, "rooms", activeRoomId), {
         roomId: activeRoomId, isDM: true, participants: [currentUser.uid, targetUser.uid],
-        lastMessageAt: serverTimestamp()
+        lastMessageAt: serverTimestamp(),
+        [`unread_${currentUser.uid}`]: 0
     }, { merge: true });
 
     loadMessages();
@@ -288,6 +412,11 @@ function loadMessages() {
         chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight;
         
         checkActiveRoomTyping();
+
+        // Aktiv pəncərədə yeni mesajların sayğacı artarsa avtomatik sıfırlama təhlükəsizliyi
+        if (activeRoomIsDM && currentRooms[activeRoomId]?.[`unread_${currentUser.uid}`] > 0) {
+            setDoc(doc(db, "rooms", activeRoomId), { [`unread_${currentUser.uid}`]: 0 }, { merge: true });
+        }
     });
 }
 
@@ -304,7 +433,6 @@ function appendMessageElement(msg) {
         contentHtml += `<img src="${msg.fileURL}" class="chat-shared-image" alt="Paylaşılan Şəkil" onclick="window.open('${msg.fileURL}')">`;
     }
 
-    // Şəkli gəlməyən mesajların yerinə default avatarı yazdırırıq
     const msgAvatar = msg.senderAvatar || DEFAULT_AVATAR;
     const time = msg.createdAt ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "...";
 
@@ -322,6 +450,7 @@ function appendMessageElement(msg) {
         delBtn.addEventListener("click", async () => {
             if(confirm("Bu mesajı silmək istədiyinizdən əminsiniz?")) {
                 await deleteDoc(doc(db, "rooms", activeRoomId, "messages", msg.id));
+                showToast("Mesaj uğurla silindi.", "info");
             }
         });
     }
@@ -347,7 +476,7 @@ async function sendMessage() {
             fileURL = await uploadImageToImgBB(file);
             fileType = file.type;
         } catch (err) { 
-            alert("Xəta: " + err.message); 
+            showToast(err.message, "error"); 
             return; 
         }
     }
@@ -363,8 +492,17 @@ async function sendMessage() {
             createdAt: serverTimestamp()
         });
         
-        await setDoc(doc(db, "rooms", activeRoomId), { lastMessageAt: serverTimestamp() }, { merge: true });
-    } catch (err) { alert("Mesaj göndərilmə xətası: " + err.message); }
+        // Şəxsi mesajdırsa (DM), qarşı tərəfin profilinə unread triggeri atırıq (+1 artırır)
+        if (activeRoomIsDM) {
+            const targetUserId = activeRoomId.split("_").find(id => id !== currentUser.uid);
+            await setDoc(doc(db, "rooms", activeRoomId), { 
+                lastMessageAt: serverTimestamp(),
+                [`unread_${targetUserId}`]: increment(1)
+            }, { merge: true });
+        } else {
+            await setDoc(doc(db, "rooms", activeRoomId), { lastMessageAt: serverTimestamp() }, { merge: true });
+        }
+    } catch (err) { showToast("Mesaj göndərilərkən xəta: " + err.message, "error"); }
 }
 
 sendMessageBtn.addEventListener("click", sendMessage);
@@ -397,7 +535,7 @@ messageInputField.addEventListener("input", () => {
 });
 
 // ==========================================================================
-// 8. PROFİL MODALININ IDARƏEDİLMƏSİ - YENİLƏNMİŞ (F5 PROBLEMDƏN XALAS OLDUQ)
+// 8. PROFİL MODALININ IDARƏEDİLMƏSİ (Unikal Ad Dəyişdir Dəstəkli)
 // ==========================================================================
 openSettingsBtn.addEventListener("click", () => {
     document.getElementById("settingsDisplayName").value = currentUserData.displayName;
@@ -417,11 +555,32 @@ profileSettingsForm.addEventListener("submit", async (e) => {
     submitBtn.innerText = "Yüklənir...";
     submitBtn.disabled = true;
 
+    // 2. Ad dəyişdirilirsə, başqasının bu adı alıb-almadığını yoxlayırıq
+    if (newName !== currentUserData.displayName) {
+        try {
+            const nameQuery = query(collection(db, "users"), where("displayName", "==", newName));
+            const nameSnap = await getDocs(nameQuery);
+            const isTaken = nameSnap.docs.some(doc => doc.id !== currentUser.uid);
+            
+            if (isTaken) {
+                showToast("Bu istifadəçi adı artıq başqası tərəfindən alınıb. Başqa ad yoxlayın.", "warning");
+                submitBtn.innerText = originalBtnText;
+                submitBtn.disabled = false;
+                return;
+            }
+        } catch (err) {
+            showToast("Yoxlama zamanı xəta baş verdi.", "error");
+            submitBtn.innerText = originalBtnText;
+            submitBtn.disabled = false;
+            return;
+        }
+    }
+
     if (avatarFile) {
         try {
             newAvatarUrl = await uploadImageToImgBB(avatarFile);
         } catch (err) { 
-            alert("Xəta: " + err.message); 
+            showToast(err.message, "error"); 
             submitBtn.innerText = originalBtnText;
             submitBtn.disabled = false;
             return; 
@@ -434,16 +593,15 @@ profileSettingsForm.addEventListener("submit", async (e) => {
             displayName: newName, photoURL: newAvatarUrl
         }, { merge: true });
         
-        // F5 etmədən interfeysi anında təzələyirik
         currentUserData.displayName = newName;
         currentUserData.photoURL = newAvatarUrl;
         
         document.getElementById("currentUserName").innerText = newName;
         document.getElementById("currentUserAvatar").src = newAvatarUrl;
 
-        alert("Profil uğurla yeniləndi!");
+        showToast("Profil məlumatlarınız uğurla yeniləndi!", "success");
         settingsModal.classList.remove("active");
-    } catch (err) { alert("Xəta baş verdi: " + err.message); }
+    } catch (err) { showToast("Sistem xətası: " + err.message, "error"); }
     finally {
         submitBtn.innerText = originalBtnText;
         submitBtn.disabled = false;
