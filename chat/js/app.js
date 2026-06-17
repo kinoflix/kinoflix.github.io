@@ -474,9 +474,9 @@ function openPrivateRoom(targetUser) {
     privateRoomTitle.innerText = targetUser.displayName;
     btnGlobalRoom.classList.remove('active');
     
-    // Ümumi çat başlığını hədəf şəxsə görə yeniləyir
-    if (activeRoomTitle) activeRoomTitle.innerText = targetUser.displayName;
-    if (activeRoomSub) activeRoomSub.innerText = "Şəxsi Söhbət";
+    // TƏLƏB OLUNAN DƏYİŞİKLİK BURADIR:
+    if (activeRoomTitle) activeRoomTitle.innerText = "Şəxsi yazışma"; // Başlıq artıq "Şəxsi yazışma" olaraq sabit qalır
+    if (activeRoomSub) activeRoomSub.innerText = targetUser.displayName; // Alt başlıqda isə seçilən istifadəçinin adı göstərilir
     
     // Ümumi otağı gizlədib şəxsi sahəni açır
     generalChatArea.classList.remove('active');
