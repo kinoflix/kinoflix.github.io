@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KINOFLIX - Real-vaxt Serverless Çat</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%231db954' d='M27.5 162.2L9 187.1h90.5l6.9-130.7-78.9 105.8zM396.3 45.7L267.7 32l135.7 147.2-7.1-133.5zM112.2 218.3l-11.2-22H9.9L234.8 458zm2-31.2h284l-81.5-88.5L256.3 33zm297.3 9.1L277.6 458l224.8-261.7h-90.9zM415.4 69L406 56.4l.9 17.3 6.1 113...'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="authScreen" class="screen active">
+        <div class="auth-container">
+            <div class="auth-logo">
+                <i class="fa-solid fa-film"></i>
+                <h1>KINOFLIX</h1>
+                <p>Canlı İcmalar və Çat Platforması</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <button id="tabLogin" class="auth-tab active">Giriş</button>
+                <button id="tabRegister" class="auth-tab">Qeydiyyat</button>
+            </div>
+
+            <form id="authForm" class="auth-form">
+                <div class="input-group" id="usernameGroup" style="display: none;">
+                    <label for="authUsername"><i class="fa-solid fa-user"></i> İstifadəçi Adı</label>
+                    <input type="text" id="authUsername" placeholder="Ləqəbiniz">
+                </div>
+                <div class="input-group">
+                    <label for="authEmail"><i class="fa-solid fa-envelope"></i> E-poçt</label>
+                    <input type="email" id="authEmail" placeholder="numune@kinoflix.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="authPassword"><i class="fa-solid fa-lock"></i> Şifrə</label>
+                    <input type="password" id="authPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" id="authSubmitBtn" class="auth-btn">Daxil Ol</button>
+            </form>
+
+            <div class="auth-divider"><span>və ya</span></div>
+
+            <button id="googleAuthBtn" class="google-btn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_放大_icon.svg" alt="Google"> Google ilə davam et
+            </button>
+        </div>
+    </div>
+
+    <div id="chatScreen" class="screen">
+        <header class="chat-header">
+            <div class="header-left">
+                <button id="mobileUsersToggleBtn" class="mobile-online-btn">
+                    <i class="fa-solid fa-circle-nodes"></i> Online
+                </button>
+                <div class="logo-area">
+                    <i class="fa-solid fa-film text-accent"></i>
+                    <h2>KINOFLIX Ümumi Çat</h2>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-badge">
+                    <span id="currentUserRole" class="role-tag">İstifadəçi</span>
+                </div>
+                <button id="openSettingsBtn" class="control-btn" title="Ayarlar">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+                <button id="logoutBtn" class="control-btn danger-btn" title="Çıxış">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="chat-main-container">
+            <aside id="usersList" class="users-sidebar">
+                <div class="sidebar-header">
+                    <h3><i class="fa-solid fa-users"></i> Aktiv Şəxslər (<span id="onlineCount">0</span>)</h3>
+                </div>
+                <div id="usersListContainer" class="users-scroll-area">
+                    </div>
+            </aside>
+
+            <main class="chat-messages-zone">
+                
+                <div id="generalChatArea" class="message-pane active-pane">
+                    <div id="generalMessagesContainer" class="messages-wrapper">
+                        </div>
+                    <form id="generalMessageForm" class="message-input-bar">
+                        <input type="text" id="generalMessageInput" placeholder="Ümumi çata mesaj yazın..." autocomplete="off" required>
+                        <div id="generalTypingIndicator" class="typing-indicator-text"></div>
+                        <button type="submit" class="send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+                    </form>
+                </div>
+
+                <div id="privateChatArea" class="message-pane private-pane-overlay">
+                    <div id="privateChatHeader" class="private-chat-trigger-header">
+                        <div class="pm-user-info">
+                            <i class="fa-solid fa-chevron-left pm-back-icon"></i>
+                            <img id="privateChatAvatar" src="https://via.placeholder.com/40" alt="Avatar" class="pm-avatar">
+                            <div>
+                                <h4 id="privateChatTargetName">İstifadəçi</h4>
+                                <span class="pm-status-subtext">Şəxsi Mesajlaşma (Bağlamaq üçün bura toxunun)</span>
+                            </div>
+                        </div>
+                        <button type="button" class="pm-close-btn"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    
+                    <div id="privateMessagesContainer" class="messages-wrapper">
+                        </div>
+                    <form id="privateMessageForm" class="message-input-bar">
+                        <input type="text" id="privateMessageInput" placeholder="Şəxsi mesajınızı yazın..." autocomplete="off" required>
+                        <div id="privateTypingIndicator" class="typing-indicator-text"></div>
+                        <button type="submit" class="send-btn pm-send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+                    </form>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal-backdrop">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-sliders"></i> Profil Ayarları</h3>
+                <button id="closeSettingsBtn" class="modal-close-x">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="profileSettingsForm">
+                    <div class="avatar-upload-wrapper">
+                        <img id="settingsAvatarPreview" src="https://via.placeholder.com/100" alt="Avatar" class="large-avatar">
+                        <label for="avatarFileInput" class="avatar-edit-label">
+                            <i class="fa-solid fa-camera"></i> Şəkil Linki Seç / Yenilə
+                        </label>
+                        <input type="text" id="avatarFileInput" placeholder="Şəkil URL ünvanı (İmgBB və s.)">
+                    </div>
+                    <div class="input-group">
+                        <label for="settingsDisplayName">Görünən Adınız:</label>
+                        <input type="text" id="settingsDisplayName" placeholder="Yeni ləqəb" required>
+                    </div>
+                    <button type="submit" class="save-settings-btn">Dəyişiklikləri Yadda Saxla</button>
+                </form>
+                
+                <div class="danger-zone">
+                    <h4>Hesabın Silinməsi</h4>
+                    <p>Hesabınızı sildiyiniz təqdirdə bütün profil məlumatlarınız çat sistemindən tamamilə təmizlənəcək.</p>
+                    <button id="deleteAccBtn" class="delete-account-btn">
+                        <i class="fa-solid fa-user-xmark"></i> Hesabımı Sil
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
