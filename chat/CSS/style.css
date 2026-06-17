@@ -1,0 +1,651 @@
+/* ==========================================================================
+   1. DİZAYN TOKENLƏRİ VƏ DƏYİŞƏNLƏR (Theme Engine)
+   ========================================================================== */
+:root {
+    --bg: #08101a;
+    --surface: #0f1720;
+    --surface-hover: #172230;
+    --muted: #94a3b8;
+    --accent: #1db954; /* KINOFLIX Yaşılı */
+    --accent-hover: #1aa34a;
+    --text: #e6eef6;
+    --text-muted: #64748b;
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --radius: 16px;
+    --radius-sm: 8px;
+    --shadow: 0 12px 40px rgba(2, 6, 23, 0.7);
+    --header-bg: rgba(8, 16, 26, 0.95);
+    --danger: #d94f5c;
+    --success: #1db954;
+    --me-bubble: #1db954;
+    --other-bubble: #172230;
+}
+
+/* ==========================================================================
+   2. QLOBAL SIFIRLAMA VƏ ƏSAS STİLLƏR
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body, html {
+    background-color: var(--bg);
+    color: var(--text);
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Ekran İdarəetmə Sistemi */
+.screen {
+    display: none !important;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.screen.active {
+    display: flex !important;
+}
+
+/* ==========================================================================
+   3. AUTHENTICATION SCREEN (Giriş / Qeydiyyat)
+   ========================================================================== */
+#authScreen {
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at center, #111e2e 0%, var(--bg) 100%);
+    padding: 20px;
+}
+
+.auth-container {
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: var(--shadow);
+}
+
+.auth-logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.auth-logo i {
+    font-size: 3rem;
+    color: var(--accent);
+    margin-bottom: 10px;
+}
+.auth-logo h1 {
+    font-size: 2rem;
+    letter-spacing: 2px;
+}
+.auth-logo p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.auth-tabs {
+    display: flex;
+    background: rgba(0,0,0,0.2);
+    border-radius: var(--radius-sm);
+    padding: 5px;
+    margin-bottom: 25px;
+}
+.auth-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+}
+.auth-tab.active {
+    background: var(--accent);
+    color: #000;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+.input-group label {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+.input-group input {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--glass-border);
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+.input-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: rgba(0,0,0,0.4);
+}
+
+.auth-btn {
+    width: 100%;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.auth-btn:hover { background: var(--accent-hover); }
+
+.auth-divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+}
+.auth-divider::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 50%; width: 100%; height: 1px;
+    background: var(--glass-border);
+    z-index: 1;
+}
+.auth-divider span {
+    background: var(--surface);
+    padding: 0 15px;
+    position: relative;
+    z-index: 2;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.google-btn {
+    width: 100%;
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+.google-btn:hover { background: #e6e6e6; }
+.google-btn img { width: 20px; height: 20px; }
+
+
+/* ==========================================================================
+   4. MAIN CHAT INTERFACE (Əsas İnterfeys)
+   ========================================================================== */
+#chatScreen {
+    display: flex !important;
+    flex-direction: column;
+}
+
+/* Sabit Başlıq Paneli */
+.chat-header {
+    height: 70px;
+    background: var(--header-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    flex-shrink: 0;
+    z-index: 1100;
+}
+
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.logo-area h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.text-accent { color: var(--accent); }
+
+.mobile-online-btn {
+    display: none; /* Desktopda gizlidir */
+    background: var(--surface-hover);
+    color: var(--accent);
+    border: 1px solid var(--glass-border);
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.role-tag {
+    background: rgba(29, 185, 84, 0.15);
+    color: var(--accent);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.control-btn {
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+.control-btn:hover { background: var(--surface-hover); color: var(--accent); }
+.danger-btn:hover { color: var(--danger) !important; }
+
+/* Struktur Gövdə */
+.chat-main-container {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    height: calc(100% - 70px);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Sol Sidebar - Aktiv İstifadəçilər */
+.users-sidebar {
+    width: 320px;
+    background: var(--surface);
+    border-right: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    z-index: 1050;
+}
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--glass-border);
+}
+.sidebar-header h3 {
+    font-size: 1rem;
+    color: var(--muted);
+}
+.users-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+/* İstifadəçi Kartı */
+.user-item-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 5px;
+}
+.user-item-card:hover {
+    background: var(--surface-hover);
+}
+.user-card-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.user-avatar-wrapper {
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+.user-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.status-dot {
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 12px; height: 12px;
+    background: #64748b;
+    border: 2px solid var(--surface);
+    border-radius: 50%;
+}
+.status-dot.online { background: var(--success); }
+
+.user-details h5 {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+.user-details span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   5. MESSAGES INTERFACE LOGIC (Mesaj Sahələri)
+   ========================================================================== */
+.chat-messages-zone {
+    flex: 1;
+    height: 100%;
+    position: relative;
+    background: var(--bg);
+}
+
+.message-pane {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: none;
+    flex-direction: column;
+}
+.message-pane.active-pane {
+    display: flex;
+}
+
+/* Şəxsi Mesaj Paneli Overlay Üst Qatı */
+.private-pane-overlay {
+    z-index: 950;
+    background: var(--bg);
+}
+
+/* Şəxsi Mesajlaşma Başlığı */
+.private-chat-trigger-header {
+    height: 60px;
+    background: var(--surface-hover);
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    cursor: pointer; /* Toxunulanda bağlanma təəssüratı üçün */
+    transition: background 0.2s;
+}
+.private-chat-trigger-header:hover {
+    background: rgba(29, 185, 84, 0.05);
+}
+.pm-user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.pm-back-icon {
+    display: none;
+    font-size: 1.1rem;
+    color: var(--accent);
+}
+.pm-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.pm-status-subtext {
+    font-size: 0.75rem;
+    color: var(--accent);
+    display: block;
+}
+.pm-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+/* Mesaj Siyahısı Sahəsi */
+.messages-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Mesaj Qabarcıqları */
+.message-bubble-row {
+    display: flex;
+    gap: 12px;
+    max-width: 75%;
+}
+.message-bubble-row.me {
+    margin-left: auto;
+    flex-direction: row-reverse;
+}
+
+.msg-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.msg-content-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.msg-sender-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+}
+.msg-text-wrapper {
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.message-bubble-row.me .msg-text-wrapper {
+    background: var(--me-bubble);
+    color: #000;
+    border-top-right-radius: 0;
+}
+.message-bubble-row.other .msg-text-wrapper {
+    background: var(--other-bubble);
+    color: var(--text);
+    border-top-left-radius: 0;
+}
+
+.msg-timestamp {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    align-self: flex-end;
+    margin-top: 2px;
+}
+.message-bubble-row.me .msg-timestamp { color: rgba(0,0,0,0.6); }
+
+/* Giriş/Yazma Çubuğu */
+.message-input-bar {
+    padding: 15px 20px;
+    background: rgba(15, 23, 32, 0.6);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    gap: 12px;
+    position: relative;
+    align-items: center;
+}
+.message-input-bar input {
+    flex: 1;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--glass-border);
+    padding: 14px 20px;
+    border-radius: 30px;
+    color: #fff;
+    font-size: 0.95rem;
+}
+.message-input-bar input:focus { outline: none; border-color: var(--accent); }
+
+.send-btn {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: transform 0.2s;
+}
+.send-btn:hover { transform: scale(1.05); }
+
+.typing-indicator-text {
+    position: absolute;
+    top: -20px; left: 30px;
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-style: italic;
+}
+
+/* ==========================================================================
+   6. MODAL DIALOGS (Ayarlar pəncərəsi)
+   ========================================================================== */
+.modal-backdrop {
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
+    background: rgba(4, 8, 13, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-backdrop.active { display: flex; }
+
+.modal-box {
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    width: 100%;
+    max-width: 480px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.modal-close-x {
+    background: transparent; border:none; color:var(--muted); font-size: 1.5rem; cursor: pointer;
+}
+.modal-body { padding: 24px; }
+
+.avatar-upload-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.large-avatar {
+    width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent);
+}
+.avatar-edit-label {
+    font-size: 0.85rem; color: var(--accent); cursor: pointer;
+}
+#avatarFileInput {
+    width: 100%; background: rgba(0,0,0,0.2); border:1px solid var(--glass-border); padding: 10px; border-radius: var(--radius-sm); color: #fff;
+}
+
+.save-settings-btn {
+    width: 100%; background: var(--accent); color: #000; border:none; padding: 12px; font-weight: 600; border-radius: var(--radius-sm); cursor: pointer; margin-top: 10px;
+}
+
+.danger-zone {
+    margin-top: 30px; border-top: 1px dashed var(--danger); padding-top: 20px;
+}
+.danger-zone h4 { color: var(--danger); margin-bottom: 5px; }
+.danger-zone p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; }
+.delete-account-btn {
+    background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 10px 16px; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
+}
+.delete-account-btn:hover { background: var(--danger); color: #fff; }
+
+
+/* ==========================================================================
+   7. MOBİL RESPONSIVE SİSTEM (Açar Dəyişikliklər)
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* "Online" düyməsini aktivləşdiririk */
+    .mobile-online-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* 1. Aktiv istifadəçilər siyahısını modal/drawer halına salırıq */
+    .users-sidebar {
+        position: fixed;
+        top: 70px; /* Tam olaraq Başlığın altından başlayır */
+        left: -100%; /* Defolt olaraq tam gizli */
+        width: 280px;
+        height: calc(100% - 70px);
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1200; /* Mesajların üzərinə keçməsi üçün */
+        box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+    }
+    
+    /* Düyməyə basıldıqda sidebarın açılması sinfi */
+    .users-sidebar.mobile-open {
+        left: 0 !important;
+    }
+
+    /* 2. Şəxsi mesajlaşma sahəsi tamamilə ümumi çatın üzərinə keçir */
+    .private-pane-overlay {
+        position: absolute;
+        top: 0; /* Başlığın altından, bitişik şəkildə açılır */
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1150; /* Ümumi çatı tam örtür */
+    }
+    
+    .pm-back-icon {
+        display: inline-block; /* Geri ox ikonu mobildə görünür */
+    }
+
+    .message-bubble-row {
+        max-width: 88%; /* Mobildə qabarcıqlar bir qədər geniş olsun */
+    }
+}
