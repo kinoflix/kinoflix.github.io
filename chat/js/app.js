@@ -953,3 +953,45 @@ function escapeHTML(str) {
     if (!str) return "";
     return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
+
+// Mobil qarşılıqlı əlaqə tənzimləmələri
+document.addEventListener("DOMContentLoaded", () => {
+    const mobileOnlineToggle = document.getElementById("mobileOnlineToggle");
+    const sidebarList = document.querySelector(".sidebar-list-container");
+    const generalChatTab = document.getElementById("generalChatTab");
+    const userItems = document.querySelectorAll(".user-item"); // İstifadəçi adları
+
+    // 1. Online ikonuna basanda sol pəncərənin açılıb-bağlanması
+    if (mobileOnlineToggle && sidebarList) {
+        mobileOnlineToggle.addEventListener("click", (e) => {
+            e.stopPropagation();
+            sidebarList.classList.toggle("mobile-open");
+        });
+    }
+
+    // 2. Hər hansı bir istifadəçiyə (ada) klikləyəndə sol paneli avtomatik bağla
+    // Qeyd: Əgər istifadəçilər dinamik yüklənirsə, bu kodu mövcud klik funksiyanızın içinə yazın
+    document.addEventListener("click", (e) => {
+        if (e.target.closest(".user-item")) {
+            sidebarList.classList.remove("mobile-open");
+        }
+    });
+
+    // Ekranda boş yerə vuranda da sol panel bağlansın
+    document.addEventListener("click", (e) => {
+        if (sidebarList && !sidebarList.contains(e.target) && e.target !== mobileOnlineToggle) {
+            sidebarList.classList.remove("mobile-open");
+        }
+    });
+
+    // 3. "Ümumi Çat" başlığına yenidən vuranda şəxsi çatı bağlamaq
+    if (generalChatTab) {
+        generalChatTab.addEventListener("click", () => {
+            // Sisteminizdə ümumi otağa qayıtmaq üçün mövcud funksiyanı bura çağırın.
+            // Nümunə: if (typeof changeRoom === "function") changeRoom("general");
+            
+            // Əgər şəxsi çat pəncərəsini gizlədən xüsusi sinifiniz varsa, onu sıfırlayın
+            console.log("Ümumi çata qayıdış icra olundu.");
+        });
+    }
+});
