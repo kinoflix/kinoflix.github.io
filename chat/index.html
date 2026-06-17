@@ -72,7 +72,7 @@
                 <div class="auth-divider"><span>və ya</span></div>
 
                 <button id="googleAuthBtn" class="google-btn">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_\" standalone_icon\"_2015.svg" alt="Google">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
                     Google ilə davam et
                 </button>
             </div>
@@ -98,8 +98,7 @@
 
                     <div class="sidebar-list-container">
                         <h3><i class="fa-solid fa-circle text-success"></i> Aktiv İstifadəçilər</h3>
-                        <ul id="usersList" class="users-list">
-                            </ul>
+                        <ul id="usersList" class="users-list"></ul>
                     </div>
                 </aside>
 
@@ -109,12 +108,9 @@
                             <h2 id="activeRoomTitle">Ümumi Çat</h2>
                             <p id="activeRoomSub">Son 50 mesaj göstərilir</p>
                         </div>
-                        <div id="roomActions" class="room-actions">
-                            </div>
                     </div>
 
-                    <div id="chatMessagesArea" class="chat-messages-area">
-                        </div>
+                    <div id="chatMessagesArea" class="chat-messages-area"></div>
 
                     <div id="typingIndicator" class="typing-indicator hidden">
                         <span id="typingText">Kimsə yazır...</span>
@@ -126,9 +122,7 @@
                             <i class="fa-solid fa-paperclip"></i>
                             <input type="file" id="chatFileInput" accept="image/*, application/pdf, text/plain" hidden>
                         </label>
-                        
                         <input type="text" id="messageInputField" placeholder="Mesajınızı yazın..." autocomplete="off">
-                        
                         <button id="sendMessageBtn" class="send-btn">
                             <i class="fa-solid fa-paper-plane"></i>
                         </button>
@@ -149,18 +143,16 @@
             <div class="modal-body">
                 <form id="profileSettingsForm">
                     <div class="avatar-upload-wrapper">
-                        <img id="settingsAvatarPreview" src="https://via.placeholder.com/100" alt="Avatar önbaxış" class="large-avatar">
+                        <img id="settingsAvatarPreview" src="https://via.placeholder.com/100" alt="Avatar" class="large-avatar">
                         <label for="avatarFileInput" class="avatar-edit-label">
                             <i class="fa-solid fa-camera"></i> Şəkil Seç
                         </label>
                         <input type="file" id="avatarFileInput" accept="image/*" hidden>
                     </div>
-
                     <div class="input-group">
                         <label for="settingsDisplayName">Görünən Adınız:</label>
                         <input type="text" id="settingsDisplayName" placeholder="Yeni ləqəb" required>
                     </div>
-
                     <button type="submit" class="save-settings-btn">Dəyişiklikləri Yadda Saxla</button>
                 </form>
             </div>
