@@ -391,7 +391,7 @@ messageInputField.addEventListener("input", () => {
 });
 
 // ==========================================================================
-// 8. PROFİL MODALININ IDARƏEDİLMƏSİ - IMGBB İNTEQRASİYALI
+// 8. PROFİL MODALININ IDARƏEDİLMƏSİ - YENİLƏNMİŞ (F5 PROBLLEMİ HƏLL OLUNDU)
 // ==========================================================================
 openSettingsBtn.addEventListener("click", () => {
     document.getElementById("settingsDisplayName").value = currentUserData.displayName;
@@ -406,12 +406,19 @@ profileSettingsForm.addEventListener("submit", async (e) => {
     const avatarFile = document.getElementById("avatarFileInput").files[0];
     let newAvatarUrl = currentUserData.photoURL;
 
+    // Düyməni yüklənir rejiminə salaq
+    const submitBtn = profileSettingsForm.querySelector("button[type='submit']");
+    const originalBtnText = submitBtn.innerText;
+    submitBtn.innerText = "Yüklənir...";
+    submitBtn.disabled = true;
+
     if (avatarFile) {
         try {
-            // Profil avatarını da ImgBB-yə yükləyib linkini alırıq
             newAvatarUrl = await uploadImageToImgBB(avatarFile);
         } catch (err) { 
             alert("Xəta: " + err.message); 
+            submitBtn.innerText = originalBtnText;
+            submitBtn.disabled = false;
             return; 
         }
     }
@@ -422,9 +429,21 @@ profileSettingsForm.addEventListener("submit", async (e) => {
             displayName: newName, photoURL: newAvatarUrl
         }, { merge: true });
         
+        // --- KRİTİK HISSƏ: F5 etmədən interfeysi və qlobal dəyişəni anında yeniləyirik ---
+        currentUserData.displayName = newName;
+        currentUserData.photoURL = newAvatarUrl;
+        
+        document.getElementById("currentUserName").innerText = newName;
+        document.getElementById("currentUserAvatar").src = newAvatarUrl;
+        // ---------------------------------------------------------------------------------
+
         alert("Profil uğurla yeniləndi!");
         settingsModal.classList.remove("active");
     } catch (err) { alert("Xəta baş verdi: " + err.message); }
+    finally {
+        submitBtn.innerText = originalBtnText;
+        submitBtn.disabled = false;
+    }
 });
 
 // ==========================================================================
