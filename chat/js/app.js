@@ -610,6 +610,40 @@ function checkActiveRoomTyping() {
     });
 }
 
+// !!! Şəxsi otağı açan funksiyanın içərisinə (openPrivateRoom):
+function openPrivateRoom(targetUser) {
+    activeRoomIsDM = true;
+    activeRoomId = [currentUser.uid, targetUser.uid].sort().join('_');
+    
+    // --- BAŞLIĞI YENİLƏYİRİK ---
+    document.getElementById('activeRoomTitle').innerText = targetUser.displayName; 
+    
+    // ... qalan kodlar olduğu kimi qalır
+    btnGlobalRoom.classList.remove('active');
+    generalChatArea.classList.remove('active');
+    generalChatArea.classList.add('hidden');
+    privateChatArea.classList.remove('hidden');
+    privateChatArea.classList.add('active');
+    // ...
+}
+
+// Ümumi çata qayıdan funksiyanın içərisinə (closePrivateRoom):
+function closePrivateRoom() {
+    activeRoomIsDM = false;
+    activeRoomId = 'global_room';
+    
+    // --- BAŞLIĞI YENİLƏYİRİK ---
+    document.getElementById('activeRoomTitle').innerText = "Ümumi Çat";
+    
+    btnGlobalRoom.classList.add('active');
+    privateChatArea.classList.remove('active');
+    privateChatArea.classList.add('hidden');
+    generalChatArea.classList.remove('hidden');
+    generalChatArea.classList.add('active');
+    // ...
+}
+// !!! Əlavə edilmiş kod sonu
+
 function handleTypingEvent(isTypingToDM) {
     set(ref(rtdb, `presence/${currentUser.uid}/typingTo`), activeRoomId);
     clearTimeout(typingTimeout);
