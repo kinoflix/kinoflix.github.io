@@ -1,5 +1,5 @@
 // ==========================================================================
-// 1. FIREBASE MODULLARININ CDN ÜZƏRİNDƏN İMPORT EDİLMƏSİ (v10 ES6)
+// 1. FIREBASE MODULLARININ VƏ CONFIG-İN İMPORT EDİLMƏSİ
 // ==========================================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
@@ -8,7 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { 
     getFirestore, doc, setDoc, getDoc, collection, addDoc, query, 
-    orderBy, limit, onSnapshot, where, serverTimestamp, deleteDoc 
+    orderBy, limit, onSnapshot, serverTimestamp, deleteDoc 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { 
     getDatabase, ref, set, onValue, onDisconnect, serverTimestamp as rtdbTimestamp 
@@ -17,18 +17,8 @@ import {
     getStorage, ref as storageRef, uploadBytes, getDownloadURL 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-// ==========================================================================
-// 2. FIREBASE KONFİQURASİYASI (Bunu öz layihə açarlarınızla əvəzləyin)
-// ==========================================================================
-const firebaseConfig = {
-    apiKey: "AIzaSyYOUR_ACTUAL_API_KEY_HERE",
-    authDomain: "your-app.firebaseapp.com",
-    databaseURL: "https://your-app-default-rtdb.firebaseio.com",
-    projectId: "your-app",
-    storageBucket: "your-app.appspot.com",
-    messagingSenderId: "1234567890",
-    appId: "1:123456:web:abcdef"
-};
+// Müstəqil konfiqurasiya faylının importu
+import { firebaseConfig } from "./config.js";
 
 // İnfrastrukturun başladılması
 const app = initializeApp(firebaseConfig);
@@ -38,11 +28,11 @@ const rtdb = getDatabase(app);
 const storage = getStorage(app);
 
 // ==========================================================================
-// 3. QOLBAL DYİŞƏNLƏR VƏ DOOM ELEMENTLƏRİ
+// 2. QLOOBAL DƏYİŞƏNLƏR VƏ DOM ELEMENTLƏRİ
 // ==========================================================================
 let currentUser = null;
 let currentUserData = { role: "user", displayName: "" };
-let activeRoomId = "global_room"; // Standart olaraq ümumi çat
+let activeRoomId = "global_room"; 
 let activeRoomIsDM = false;
 let unsubscribeMessages = null;
 let typingTimeout = null;
@@ -65,12 +55,38 @@ const chatMessagesArea = document.getElementById("chatMessagesArea");
 const usersList = document.getElementById("usersList");
 const btnGlobalRoom = document.getElementById("btnGlobalRoom");
 const activeRoomTitle = document.getElementById("activeRoomTitle");
+const themeToggle = document.getElementById("themeToggle");
+const siteLogo = document.getElementById("siteLogo");
 
 // ==========================================================================
-// 4. AUTENTİFİKASİYA MƏNTİQİ (Auth & Tabs)
+// 3. MÖVZU ENGINI (Theme Toggle Logic)
 // ==========================================================================
+function updateThemeUI(theme) {
+    const isDark = theme === 'dark';
+    themeToggle.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+    const logoColor = isDark ? 'white' : 'black';
+    siteLogo.src = `../FILES/IMG/logos/${logoColor}.png`;
+    siteLogo.onerror = function() { 
+        this.src = `FILES/IMG/logos/${logoColor}.png`; 
+        this.onerror = null; 
+    };
+}
 
-// Giriş/Qeydiyyat Tab keçidləri
+themeToggle.addEventListener('click', () => {
+    const newTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('flix-theme', newTheme);
+    updateThemeUI(newTheme);
+});
+
+// Səhifə yüklənəndə mövzunu bərpa etmək
+const savedTheme = localStorage.getItem('flix-theme') || 'dark';
+document.body.setAttribute('data-theme', savedTheme);
+updateThemeUI(savedTheme);
+
+// ==========================================================================
+// 4. AUTENTİFİKASİYA İDARƏETMƏSİ (Auth Logic)
+// ==========================================================================
 tabLogin.addEventListener("click", () => {
     tabLogin.classList.add("active"); tabRegister.classList.remove("active");
     loginForm.classList.add("active"); registerForm.classList.remove("active");
@@ -80,7 +96,6 @@ tabRegister.addEventListener("click", () => {
     registerForm.classList.add("active"); loginForm.classList.remove("active");
 });
 
-// Email/Şifrə ilə Qeydiyyat
 registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const name = document.getElementById("regName").value.trim();
@@ -88,11 +103,10 @@ registerForm.addEventListener("submit", async (e) => {
     const pass = document.getElementById("regPassword").value;
 
     try {
-        const userCredential = await currentUserWithEmailAndPassword(auth, email, pass);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const user = userCredential.user;
         await updateProfile(user, { displayName: name, photoURL: "https://via.placeholder.com/40" });
         
-        // Firestore-da istifadəçi sənədi yarat
         await setDoc(doc(db, "users", user.uid), {
             uid: user.uid, displayName: name, email: email,
             photoURL: "https://via.placeholder.com/40", role: "user", createdAt: serverTimestamp()
@@ -101,7 +115,6 @@ registerForm.addEventListener("submit", async (e) => {
     } catch (err) { alert("Qeydiyyat xətası: " + err.message); }
 });
 
-// Email/Şifrə ilə Giriş
 loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("loginEmail").value.trim();
@@ -110,7 +123,6 @@ loginForm.addEventListener("submit", async (e) => {
     catch (err) { alert("Giriş xətası: " + err.message); }
 });
 
-// Google ilə Giriş
 document.getElementById("googleAuthBtn").addEventListener("click", async () => {
     const provider = new GoogleAuthProvider();
     try {
@@ -119,7 +131,6 @@ document.getElementById("googleAuthBtn").addEventListener("click", async () => {
         const userDocRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userDocRef);
         
-        // Əgər bazada yoxdursa, yeni istifadəçi kimi qeyd et
         if (!userDoc.exists()) {
             await setDoc(userDocRef, {
                 uid: user.uid, displayName: user.displayName || "Anonim", email: user.email,
@@ -129,14 +140,13 @@ document.getElementById("googleAuthBtn").addEventListener("click", async () => {
     } catch (err) { alert("Google giriş xətası: " + err.message); }
 });
 
-// Çıxış Prosesi
 logoutBtn.addEventListener("click", () => {
     if(currentUser) set(ref(rtdb, `/presence/${currentUser.uid}`), { status: "offline", lastChanged: rtdbTimestamp() });
     signOut(auth);
 });
 
 // ==========================================================================
-// 5. STATUS VƏ REALTIME PRESENCE SYSTEM
+// 5. CANLI STATUS SİSTEMİ (Presence Engine)
 // ==========================================================================
 function setupPresence(user) {
     const statusRef = ref(rtdb, `/presence/${user.uid}`);
@@ -144,7 +154,6 @@ function setupPresence(user) {
 
     onValue(connectedRef, (snap) => {
         if (snap.val() === true) {
-            // Brauzer qapananda və ya əlaqə kəsiləndə avtomatik offline et
             onDisconnect(statusRef).set({
                 status: "offline", lastChanged: rtdbTimestamp(), typingTo: null
             }).then(() => {
@@ -153,35 +162,29 @@ function setupPresence(user) {
         }
     });
 
-    // "Away" (Boşda) detektoru - 5 dəqiqə hərəkətsizlik olduqda
     let idleTimer;
     const resetIdleTimer = () => {
         clearTimeout(idleTimer);
-        set(statusRef, { status: "online", lastChanged: rtdbTimestamp(), typingTo: activeRoomId });
+        set(statusRef, { status: "online", lastChanged: rtdbTimestamp(), typingTo: null });
         idleTimer = setTimeout(() => {
             set(statusRef, { status: "away", lastChanged: rtdbTimestamp(), typingTo: null });
         }, 5 * 60 * 1000); 
     };
-    window.onload = resetIdleTimer;
     window.onmousemove = resetIdleTimer;
     window.onkeypress = resetIdleTimer;
 }
 
 // ==========================================================================
-// 6. AKTİV İSTİFADƏÇİLƏRİN VƏ STATUSLARIN LİSTƏLƏNMƏSİ
+// 6. İSTİFADƏÇİ SİYAHISININ RENDERİ VƏ DM KEÇİDLƏRİ
 // ==========================================================================
 function listenUsersAndPresence() {
-    // Firestore-dan istifadəçiləri alırıq
     onSnapshot(collection(db, "users"), (snapshot) => {
         const usersData = [];
         snapshot.forEach(doc => { if(doc.id !== currentUser.uid) usersData.push(doc.data()); });
         
-        // RTDB-dən canlı statusları dinləyirik
-        onSnapshot(collection(db, "users"), () => { // Trigger update on status sync
-            onValue(ref(rtdb, "presence"), (presenceSnap) => {
-                const statuses = presenceSnap.val() || {};
-                renderUsersList(usersData, statuses);
-            });
+        onValue(ref(rtdb, "presence"), (presenceSnap) => {
+            const statuses = presenceSnap.val() || {};
+            renderUsersList(usersData, statuses);
         });
     });
 }
@@ -203,7 +206,6 @@ function renderUsersList(users, statuses) {
             <span class="typing-notify ${isTyping ? '' : 'hidden'}">yazır...</span>
         `;
         
-        // İstifadəçiyə kliklədikdə Şəxsi Mesajlaşma (DM) otağı yarat/keç
         li.addEventListener("click", () => startDirectMessage(user));
         usersList.appendChild(li);
     });
@@ -211,13 +213,11 @@ function renderUsersList(users, statuses) {
 
 function startDirectMessage(targetUser) {
     activeRoomIsDM = true;
-    // DM Room ID yaradılması: İki UID əlifba sırası ilə birləşdirilir (Məsələn: uid1_uid2)
     activeRoomId = [currentUser.uid, targetUser.uid].sort().join("_");
     activeRoomTitle.innerText = targetUser.displayName;
     document.getElementById("activeRoomSub").innerText = "Şəxsi Məxfi Söhbət";
     btnGlobalRoom.classList.remove("active");
     
-    // Otaq sənədini Firestore-da yarat/yenilə (Security rules üçün lazımdır)
     setDoc(doc(db, "rooms", activeRoomId), {
         roomId: activeRoomId, isDM: true, participants: [currentUser.uid, targetUser.uid],
         lastMessageAt: serverTimestamp()
@@ -236,7 +236,7 @@ btnGlobalRoom.addEventListener("click", () => {
 });
 
 // ==========================================================================
-// 7. REAL-VAXT MESAJLAŞMA SİSTEMİ (Firestore + Pagination)
+// 7. REAL-VAXT MESAJ AXINI (Messaging Core)
 // ==========================================================================
 function loadMessages() {
     if (unsubscribeMessages) unsubscribeMessages();
@@ -251,13 +251,14 @@ function loadMessages() {
     unsubscribeMessages = onSnapshot(msgQuery, (snapshot) => {
         let messages = [];
         snapshot.forEach(doc => { messages.push({ id: doc.id, ...doc.data() }); });
-        
-        // Descending gələn mesajları ekranda düzgün sıralamaq üçün tərs çeviririk
         messages.reverse();
         
         chatMessagesArea.innerHTML = "";
         messages.forEach(msg => appendMessageElement(msg));
-        chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight; // Avtomatik aşağı sürüşdürmə
+        chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight;
+        
+        // Digər istifadəçilərin yazma indikatorunu yoxlamaq
+        checkActiveRoomTyping();
     });
 }
 
@@ -266,13 +267,12 @@ function appendMessageElement(msg) {
     const wrapper = document.createElement("div");
     wrapper.className = `message-wrapper ${isMe ? 'me' : 'other'}`;
 
-    // Admin və ya mesaj sahibidirsə silmə düyməsini göstər
     const canDelete = isMe || currentUserData.role === "admin";
     const deleteBtnHtml = canDelete ? `<button class="delete-msg-btn" data-id="${msg.id}"><i class="fa-solid fa-trash"></i></button>` : '';
 
     let contentHtml = `<p>${escapeHTML(msg.text)}</p>`;
     if (msg.fileURL) {
-        if (msg.fileType.startsWith("image/")) {
+        if (msg.fileType && msg.fileType.startsWith("image/")) {
             contentHtml += `<img src="${msg.fileURL}" class="chat-shared-image" alt="Şəkil" onclick="window.open('${msg.fileURL}')">`;
         } else {
             contentHtml += `<a href="${msg.fileURL}" target="_blank" style="color:var(--accent); text-decoration:underline; font-size:0.85rem;"><i class="fa-solid fa-file"></i> Sənədə Bax</a>`;
@@ -290,7 +290,6 @@ function appendMessageElement(msg) {
         </div>
     `;
 
-    // Silmə hadisəsi
     const delBtn = wrapper.querySelector(".delete-msg-btn");
     if(delBtn) {
         delBtn.addEventListener("click", async () => {
@@ -303,7 +302,6 @@ function appendMessageElement(msg) {
     chatMessagesArea.appendChild(wrapper);
 }
 
-// Mesaj Göndərilməsi
 async function sendMessage() {
     const text = messageInputField.value.trim();
     const fileInput = document.getElementById("chatFileInput");
@@ -336,7 +334,6 @@ async function sendMessage() {
             createdAt: serverTimestamp()
         });
         
-        // Otağın son aktivlik vaxtını yeniləyirik
         await setDoc(doc(db, "rooms", activeRoomId), { lastMessageAt: serverTimestamp() }, { merge: true });
     } catch (err) { alert("Mesaj göndərilmə xətası: " + err.message); }
 }
@@ -344,17 +341,39 @@ async function sendMessage() {
 sendMessageBtn.addEventListener("click", sendMessage);
 messageInputField.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
 
-// "... yazır" (Typing Indikatoru) məntiqi
+// Pəncərə daxilində "yazır..." animasiyasının yoxlanması
+function checkActiveRoomTyping() {
+    onValue(ref(rtdb, "presence"), (snap) => {
+        const statuses = snap.val() || {};
+        let someoneTyping = false;
+        let typerName = "";
+
+        for (let uid in statuses) {
+            if (uid !== currentUser.uid && statuses[uid].typingTo === activeRoomId) {
+                someoneTyping = true;
+                break;
+            }
+        }
+
+        const indicator = document.getElementById("typingIndicator");
+        if (someoneTyping) {
+            indicator.classList.remove("hidden");
+        } else {
+            indicator.classList.add("hidden");
+        }
+    });
+}
+
 messageInputField.addEventListener("input", () => {
     set(ref(rtdb, `/presence/${currentUser.uid}/typingTo`), activeRoomId);
     clearTimeout(typingTimeout);
     typingTimeout = setTimeout(() => {
         set(ref(rtdb, `/presence/${currentUser.uid}/typingTo`), null);
-    }, 2000);
+    }, 1800);
 });
 
 // ==========================================================================
-// 8. PROFİL AYARLARI SİSTEMİ (Firebase Storage İnteqrasiyalı)
+// 8. PROFİL MODALININ IDARƏEDİLMƏSİ (Settings form)
 // ==========================================================================
 openSettingsBtn.addEventListener("click", () => {
     document.getElementById("settingsDisplayName").value = currentUserData.displayName;
@@ -378,9 +397,7 @@ profileSettingsForm.addEventListener("submit", async (e) => {
     }
 
     try {
-        // Auth profilini yenilə
         await updateProfile(currentUser, { displayName: newName, photoURL: newAvatarUrl });
-        // Firestore sənədini yenilə
         await setDoc(doc(db, "users", currentUser.uid), {
             displayName: newName, photoURL: newAvatarUrl
         }, { merge: true });
@@ -391,12 +408,11 @@ profileSettingsForm.addEventListener("submit", async (e) => {
 });
 
 // ==========================================================================
-// 9. CODA CAN VERƏN MASTER OBSERVABLE (OnAuthStateChanged)
+// 9. MASTER OBSERVER (Auth State Monitor)
 // ==========================================================================
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUser = user;
-        // Firestore-dan istifadəçi rolunu və datalarını çək
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
             currentUserData = userDoc.data();
@@ -404,7 +420,6 @@ onAuthStateChanged(auth, async (user) => {
             currentUserData = { role: "user", displayName: user.displayName, photoURL: user.photoURL };
         }
 
-        // UI elementlərini aktivləşdir
         document.getElementById("currentUserName").innerText = currentUserData.displayName || "Anonim";
         document.getElementById("currentUserAvatar").src = currentUserData.photoURL || "https://via.placeholder.com/40";
         document.getElementById("currentUserRole").innerText = currentUserData.role === "admin" ? "Admin" : "İstifadəçi";
@@ -428,12 +443,9 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 // ==========================================================================
-// 10. TƏHLÜKƏSİZLİK VƏ KÖMƏKÇİ FUNKSİYALAR (XSS Anti-Sanitization)
+// 10. TƏHLÜKƏSİZLİK FUNKSİYALARI (Anti-XSS Protection)
 // ==========================================================================
 function escapeHTML(str) {
     if (!str) return "";
     return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
-
-// Mobil üçün ekran sürüşdürmə dəstəyi (CSS hissəsində qeyd olunan idarəetmə üçün)
-// Bura ehtiyac olduqda mobil menyu düyməsi üçün funksiyalar bağlana bilər.
