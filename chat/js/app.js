@@ -505,30 +505,42 @@ document.getElementById('forgotPasswordBtn').addEventListener('click', async () 
     }
 });
 
-// Fayl adı göstəricisi - Ümumi çat
+// Fayl önizləmə barı - Ümumi çat
 document.getElementById('chatFileInput').addEventListener('change', (e) => {
     const file = e.target.files[0];
-    const display = document.getElementById('chatFileNameDisplay');
+    const bar = document.getElementById('chatFilePreviewBar');
+    const nameSpan = document.getElementById('chatFileNameDisplay');
     if (file) {
-        display.textContent = file.name;
-        display.classList.remove('hidden');
+        nameSpan.textContent = file.name;
+        bar.classList.remove('hidden');
     } else {
-        display.textContent = '';
-        display.classList.add('hidden');
+        nameSpan.textContent = '';
+        bar.classList.add('hidden');
     }
 });
+document.getElementById('chatFileClearBtn').addEventListener('click', () => {
+    document.getElementById('chatFileInput').value = '';
+    document.getElementById('chatFileNameDisplay').textContent = '';
+    document.getElementById('chatFilePreviewBar').classList.add('hidden');
+});
 
-// Fayl adı göstəricisi - Şəxsi çat
+// Fayl önizləmə barı - Şəxsi çat
 document.getElementById('privateFileInput').addEventListener('change', (e) => {
     const file = e.target.files[0];
-    const display = document.getElementById('privateFileNameDisplay');
+    const bar = document.getElementById('privateFilePreviewBar');
+    const nameSpan = document.getElementById('privateFileNameDisplay');
     if (file) {
-        display.textContent = file.name;
-        display.classList.remove('hidden');
+        nameSpan.textContent = file.name;
+        bar.classList.remove('hidden');
     } else {
-        display.textContent = '';
-        display.classList.add('hidden');
+        nameSpan.textContent = '';
+        bar.classList.add('hidden');
     }
+});
+document.getElementById('privateFileClearBtn').addEventListener('click', () => {
+    document.getElementById('privateFileInput').value = '';
+    document.getElementById('privateFileNameDisplay').textContent = '';
+    document.getElementById('privateFilePreviewBar').classList.add('hidden');
 });
 
 /* ==========================================================================
@@ -832,9 +844,11 @@ async function submitMessage(isDMContext) {
 
     if (!text && !file) return;
     textInput.value = ''; fileInput.value = '';
-    // Fayl adı görüntüsünü sıfırla
-    const fileDisplay = isDMContext ? document.getElementById('privateFileNameDisplay') : document.getElementById('chatFileNameDisplay');
-    if (fileDisplay) { fileDisplay.textContent = ''; fileDisplay.classList.add('hidden'); }
+    // Fayl önizləmə barını sıfırla
+    const previewBar = isDMContext ? document.getElementById('privateFilePreviewBar') : document.getElementById('chatFilePreviewBar');
+    const nameSpan = isDMContext ? document.getElementById('privateFileNameDisplay') : document.getElementById('chatFileNameDisplay');
+    if (previewBar) { previewBar.classList.add('hidden'); }
+    if (nameSpan) { nameSpan.textContent = ''; }
 
     let fileURL = null; let fileType = null;
     if (file) {
