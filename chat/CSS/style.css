@@ -310,19 +310,124 @@ body {
 .modal-card { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius); width: 100%; max-width: 400px; box-shadow: var(--shadow); animation: scaleUp 0.2s ease-out; }
 .modal-header { padding: 18px 24px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
 .close-modal-btn { background: none; border: none; color: var(--text); font-size: 1.8rem; cursor: pointer; }
-.modal-body { padding: 24px; }
-#profileSettingsForm { display: flex; flex-direction: column; gap: 20px; }
-.avatar-upload-wrapper { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.large-avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
-.avatar-edit-label { font-size: 0.85rem; color: var(--accent); cursor: pointer; font-weight: bold; }
-.save-settings-btn { background: var(--accent); color: white; border: none; padding: 12px; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; }
 
-.danger-zone { margin-top: 30px; padding: 20px; border-top: 1px solid rgba(231, 76, 60, 0.2); text-align: center; }
-.danger-zone h4 { color: #e74c3c; margin-bottom: 10px; font-size: 16px; }
-.danger-zone p { color: #888; font-size: 13px; margin-bottom: 15px; line-height: 1.4; }
-.delete-account-btn { background: transparent; border: 1px solid #e74c3c; color: #e74c3c; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; }
-.delete-account-btn:hover { background: #e74c3c; color: #fff; }
-.input-group label { font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
+/* Ayarlar modalı xüsusi ölçüsü */
+.settings-modal-card {
+    max-width: 460px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+.settings-modal-body {
+    overflow-y: auto;
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Hər bölmə ayrı kart paneli */
+.settings-section {
+    background: var(--bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.settings-section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    margin-bottom: 2px;
+}
+
+/* Avatar sətri */
+.settings-avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.settings-avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+.large-avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); display: block; }
+.avatar-camera-btn {
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 26px; height: 26px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    border: 2px solid var(--surface);
+    transition: background 0.2s;
+}
+.avatar-camera-btn i { font-size: 0.65rem; color: #fff; }
+.avatar-camera-btn:hover { background: var(--accent-hover); }
+.settings-avatar-meta { flex: 1; min-width: 0; }
+.file-name-display {
+    font-size: 0.75rem; color: var(--accent);
+    display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* Form sahələri */
+.settings-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.settings-field label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 600;
+}
+.settings-field input {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    outline: none;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+    font-family: inherit;
+}
+.settings-field input:focus { border-color: var(--accent); }
+
+/* Yadda saxla düyməsi */
+.settings-save-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    align-self: flex-end;
+    transition: background 0.2s;
+    min-width: 130px;
+}
+.settings-save-btn:hover { background: var(--accent-hover); }
+.settings-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Danger zone */
+.danger-zone { padding: 16px; border: 1px solid rgba(217, 79, 92, 0.25); border-radius: var(--radius-sm); text-align: center; background: var(--bg); }
+.danger-zone h4 { color: var(--danger); margin-bottom: 8px; font-size: 0.9rem; }
+.danger-zone p { color: var(--muted); font-size: 0.78rem; margin-bottom: 12px; line-height: 1.5; }
+.delete-account-btn { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 9px 18px; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+.delete-account-btn:hover { background: var(--danger); color: #fff; }
 
 /* Şifrə Göstər/Gizlət Düyməsi */
 .password-toggle-btn {
