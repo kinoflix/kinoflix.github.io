@@ -184,54 +184,75 @@
     </main>
 
     <div id="settingsModal" class="modal-overlay">
-        <div class="modal-card" style="max-width:460px; max-height:90vh; display:flex; flex-direction:column;">
+        <div class="modal-card settings-modal-card">
             <div class="modal-header">
                 <h3>Profil Ayarları</h3>
                 <button id="closeSettingsBtn" class="close-modal-btn">&times;</button>
             </div>
-            <div class="modal-body" style="overflow-y:auto; flex:1;">
-                <form id="profileSettingsForm">
-                    <div class="avatar-upload-wrapper">
-                        <img id="settingsAvatarPreview" src="https://via.placeholder.com/100" alt="Avatar" class="large-avatar">
-                        <label for="avatarFileInput" class="avatar-edit-label">
-                            <i class="fa-solid fa-camera"></i> Şəkil Seç
-                        </label>
-                        <span id="avatarFileNameDisplay" class="file-name-display"></span>
-                        <input type="file" id="avatarFileInput" accept="image/*" hidden>
-                    </div>
-                    <div class="input-group">
-                        <label for="settingsDisplayName">Görünən Adınız:</label>
-                        <input type="text" id="settingsDisplayName" placeholder="Yeni ləqəb" required>
-                    </div>
-                    <button type="submit" class="save-settings-btn">Dəyişiklikləri Yadda Saxla</button>
-                </form>
+            <div class="modal-body settings-modal-body">
 
-                <hr style="border-color: var(--glass-border); margin: 20px 0;">
-
-                <form id="changeEmailForm" style="display:flex; flex-direction:column; gap:14px;">
-                    <h4 style="color: var(--text); font-size:15px;">E-poçt Ünvanını Yenilə</h4>
-                    <div class="input-group">
-                        <label for="newEmailInput">Yeni E-poçt:</label>
-                        <input type="email" id="newEmailInput" placeholder="Yeni e-poçt ünvanı" required>
+                <!-- Profil bölməsi -->
+                <div class="settings-section">
+                    <div class="settings-avatar-row">
+                        <div class="settings-avatar-wrap">
+                            <img id="settingsAvatarPreview" src="https://via.placeholder.com/100" alt="Avatar" class="large-avatar">
+                            <label for="avatarFileInput" class="avatar-camera-btn" title="Şəkil seç">
+                                <i class="fa-solid fa-camera"></i>
+                            </label>
+                            <input type="file" id="avatarFileInput" accept="image/*" hidden>
+                        </div>
+                        <div class="settings-avatar-meta">
+                            <span id="avatarFileNameDisplay" class="file-name-display"></span>
+                        </div>
                     </div>
-                    <button type="submit" class="save-settings-btn">E-poçtu Yenilə</button>
-                </form>
+                    <form id="profileSettingsForm">
+                        <div class="settings-field">
+                            <label for="settingsDisplayName">Görünən ad</label>
+                            <input type="text" id="settingsDisplayName" placeholder="Ləqəbiniz" required>
+                        </div>
+                        <button type="submit" class="settings-save-btn">
+                            <i class="fa-solid fa-check"></i> Yadda Saxla
+                        </button>
+                    </form>
+                </div>
 
-                <hr style="border-color: var(--glass-border); margin: 20px 0;">
+                <!-- E-poçt bölməsi -->
+                <div class="settings-section">
+                    <p class="settings-section-title">E-poçt ünvanını yenilə</p>
+                    <form id="changeEmailForm">
+                        <div class="settings-field">
+                            <label for="emailCurrentPasswordInput">Cari şifrə</label>
+                            <input type="password" id="emailCurrentPasswordInput" placeholder="Mövcud şifrəniz" required>
+                        </div>
+                        <div class="settings-field">
+                            <label for="newEmailInput">Yeni e-poçt</label>
+                            <input type="email" id="newEmailInput" placeholder="Yeni e-poçt ünvanı" required>
+                        </div>
+                        <button type="submit" class="settings-save-btn">
+                            <i class="fa-solid fa-check"></i> Yadda Saxla
+                        </button>
+                    </form>
+                </div>
 
-                <form id="changePasswordForm" style="display:flex; flex-direction:column; gap:14px;">
-                    <h4 style="color: var(--text); font-size:15px;">Şifrəni Yenilə</h4>
-                    <div class="input-group">
-                        <label for="currentPasswordInput">Köhnə Şifrə:</label>
-                        <input type="password" id="currentPasswordInput" placeholder="Mövcud şifrəniz" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="newPasswordInput">Yeni Şifrə:</label>
-                        <input type="password" id="newPasswordInput" placeholder="Yeni şifrə (min. 6 simvol)" required>
-                    </div>
-                    <button type="submit" class="save-settings-btn">Şifrəni Dəyiş</button>
-                </form>
-                
+                <!-- Şifrə bölməsi -->
+                <div class="settings-section">
+                    <p class="settings-section-title">Şifrəni yenilə</p>
+                    <form id="changePasswordForm">
+                        <div class="settings-field">
+                            <label for="currentPasswordInput">Cari şifrə</label>
+                            <input type="password" id="currentPasswordInput" placeholder="Mövcud şifrəniz" required>
+                        </div>
+                        <div class="settings-field">
+                            <label for="newPasswordInput">Yeni şifrə</label>
+                            <input type="password" id="newPasswordInput" placeholder="Yeni şifrə (min. 6 simvol)" required>
+                        </div>
+                        <button type="submit" class="settings-save-btn">
+                            <i class="fa-solid fa-check"></i> Yadda Saxla
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Hesabı sil -->
                 <div class="danger-zone">
                     <h4>Hesabın Silinməsi</h4>
                     <p>Hesabınızı sildiyiniz təqdirdə bütün profil məlumatlarınız çat sistemindən tamamilə təmizlənəcək.</p>
@@ -239,6 +260,7 @@
                         <i class="fa-solid fa-user-xmark"></i> Hesabımı Sil
                     </button>
                 </div>
+
             </div>
         </div>
     </div>
