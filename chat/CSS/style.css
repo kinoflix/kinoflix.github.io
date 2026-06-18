@@ -1,406 +1,379 @@
 /* ==========================================================================
-   KinoFlix Premium Chat Modern Style Core
+   1. DİZAYN TOKENLƏRİ VƏ DƏYİŞƏNLƏR (Theme Engine)
    ========================================================================== */
-
 :root {
-    --bg-main: #f5f7fb;
-    --bg-card: #ffffff;
-    --primary-color: #543728; /* Brend Rəng */
-    --primary-light: #f7f4f2;
-    --text-main: #2c3e50;
-    --text-muted: #7f8c8d;
-    --border-color: #e2e8f0;
-    --msg-me-bg: #543728;
-    --msg-me-text: #ffffff;
-    --msg-other-bg: #eaeaea;
-    --msg-other-text: #1a1a1a;
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
-    --shadow-md: 0 10px 25px rgba(0,0,0,0.08);
+    --bg: #08101a;
+    --surface: #0f1720;
+    --surface-hover: #172230;
+    --muted: #94a3b8;
+    --accent: #1db954; /* KINOFLIX Yaşılı */
+    --accent-hover: #1aa34a;
+    --text: #e6eef6;
+    --text-muted: #64748b;
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --radius: 16px;
+    --radius-sm: 8px;
+    --shadow: 0 12px 40px rgba(2, 6, 23, 0.7);
+    --header-bg: rgba(8, 16, 26, 0.85);
+    --danger: #d94f5c;
+    --success: #1db954;
+    --me-bubble: #1db954;
+    --other-bubble: #172230;
 }
 
-[data-theme="dark"] {
-    --bg-main: #0f0f11;
-    --bg-card: #18181c;
-    --primary-color: #f39c12;
-    --primary-light: #2c2519;
-    --text-main: #f5f6fa;
-    --text-muted: #95a5a6;
-    --border-color: #2a2a32;
-    --msg-me-bg: #f39c12;
-    --msg-me-text: #000000;
-    --msg-other-bg: #26262b;
-    --msg-other-text: #ffffff;
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-    --shadow-md: 0 10px 30px rgba(0,0,0,0.5);
+[data-theme="light"] {
+    --bg: #f4f6f9;
+    --surface: #ffffff;
+    --surface-hover: #f1f5f9;
+    --muted: #475569;
+    --accent: #0b74ff;
+    --accent-hover: #0062e3;
+    --text: #0f172a;
+    --text-muted: #94a3b8;
+    --glass: rgba(0, 0, 0, 0.02);
+    --glass-border: rgba(0, 0, 0, 0.08);
+    --shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+    --header-bg: rgba(244, 246, 249, 0.85);
+    --me-bubble: #0b74ff;
+    --other-bubble: #f1f5f9;
 }
 
+/* ==========================================================================
+   2. BAZA VƏ RESET AYARLARI
+   ========================================================================== */
 * {
-    margin: 0; padding: 0; box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    font-family: "Varela Round", sans-serif;
 }
 
 body {
-    background: var(--bg-main);
-    color: var(--text-main);
-    height: 100vh; overflow: hidden;
+    background: var(--bg);
+    color: var(--text);
     transition: background 0.3s, color 0.3s;
+    line-height: 1.5;
+    overflow: hidden; 
+    height: 100vh;
+    height: 100dvh; /* Mobildə URL sətri üçün dinamik hündürlük */
 }
 
-/* ==========================================================================
-   1. AUTENTİFİKASİYA EKRANI DİZAYNI
-   ========================================================================== */
-.auth-container {
-    position: fixed; inset: 0; background: var(--bg-main);
-    display: none; align-items: center; justify-content: center; z-index: 10000;
-    padding: 20px;
-}
-.auth-container.active { display: flex; }
-
-.auth-card {
-    background: var(--bg-card); width: 100%; max-width: 440px;
-    border-radius: 24px; padding: 35px; box-shadow: var(--shadow-md);
-    border: 1px solid var(--border-color);
-}
-
-.auth-header { text-align: center; margin-bottom: 25px; }
-.auth-header h2 { font-size: 26px; font-weight: 800; color: var(--primary-color); margin-bottom: 6px; }
-.auth-header p { font-size: 13.5px; color: var(--text-muted); }
-
-.auth-tabs {
-    display: flex; background: var(--bg-main); padding: 5px;
-    border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--border-color);
-}
-.tab-btn {
-    flex: 1; padding: 10px; border: none; background: none;
-    font-size: 14px; font-weight: 600; color: var(--text-muted);
-    cursor: pointer; border-radius: 9px; transition: all 0.2s;
-}
-.tab-btn.active {
-    background: var(--bg-card); color: var(--primary-color);
-    box-shadow: var(--shadow-sm);
-}
-
-.auth-form { display: none; flex-direction: column; }
-.auth-form.active { display: flex; }
-.auth-form h3 { font-size: 18px; margin-bottom: 20px; color: var(--text-main); }
-
-.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
-.form-group label { font-size: 13px; font-weight: 600; color: var(--text-main); }
-.form-group input {
-    width: 100%; padding: 12px 16px; border-radius: 12px;
-    border: 1px solid var(--border-color); background: var(--bg-main);
-    color: var(--text-main); font-size: 14.5px; transition: border-color 0.2s;
-}
-.form-group input:focus { outline: none; border-color: var(--primary-color); }
-
-.auth-submit-btn {
-    width: 100%; padding: 14px; background: var(--primary-color);
-    color: white; border: none; border-radius: 12px; font-size: 15px;
-    font-weight: 600; cursor: pointer; margin-top: 10px; transition: opacity 0.2s;
-}
-[data-theme="dark"] .auth-submit-btn { color: #000; font-weight: 700; }
-.auth-submit-btn:hover { opacity: 0.9; }
-
-.divider {
-    display: flex; align-items: center; text-align: center;
-    margin: 20px 0; color: var(--text-muted); font-size: 13px;
-}
-.divider::before, .divider::after {
-    content: ''; flex: 1; border-bottom: 1px solid var(--border-color);
-}
-.divider span { padding: 0 10px; }
-
-.google-btn {
-    width: 100%; padding: 12px; background: transparent;
-    border: 1px solid var(--border-color); color: var(--text-main);
-    border-radius: 12px; font-size: 14px; font-weight: 600;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    gap: 10px; transition: background 0.2s;
-}
-.google-btn:hover { background: var(--primary-light); }
-
-/* ==========================================================================
-   2. ÇAT ƏSAS STRUKTURU
-   ========================================================================== */
-.chat-container {
-    display: none; height: 100vh; width: 100vw;
-}
-.chat-container.active { display: flex; }
-
-/* PANEL: SOL SİDEBAR */
-.sidebar {
-    width: 320px; background: var(--bg-card);
-    border-right: 1px solid var(--border-color);
-    display: flex; flex-direction: column;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 99;
-}
-
-.sidebar-header {
-    padding: 20px; border-bottom: 1px solid var(--border-color);
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; background: var(--bg-card); z-index: 10;
-}
-.sidebar-header h3 { font-size: 18px; font-weight: 700; }
-
-.global-room-btn {
-    margin: 15px 15px 5px 15px; padding: 12px 15px;
-    background: var(--bg-main); border-radius: 14px;
-    display: flex; align-items: center; gap: 14px; cursor: pointer;
-    border: 1px solid transparent; transition: all 0.2s;
-}
-.global-room-btn.active {
-    background: var(--primary-light); border-color: var(--primary-color);
-}
-.global-icon-wrapper {
-    width: 40px; height: 40px; background: var(--primary-color);
-    color: white; border-radius: 12px; display: flex;
-    align-items: center; justify-content: center; font-size: 18px;
-}
-[data-theme="dark"] .global-icon-wrapper { color: #000; }
-.global-room-info { display: flex; flex-direction: column; }
-.global-room-info .room-name { font-weight: 600; font-size: 14.5px; }
-.global-room-info .room-status { font-size: 11.5px; color: var(--primary-color); font-weight: 500; }
-
-.users-list {
-    list-style: none; overflow-y: auto; flex: 1; padding: 10px 15px;
-}
-.user-item {
-    display: flex; align-items: center; gap: 12px; padding: 10px 12px;
-    border-radius: 12px; cursor: pointer; margin-bottom: 6px;
-    transition: background 0.2s; position: relative;
-}
-.user-item:hover { background: var(--bg-main); }
-.user-item.active { background: var(--primary-light); }
-
-.avatar-wrapper { position: relative; width: 42px; height: 42px; flex-shrink: 0; }
-.avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #ccc; }
-.status-indicator {
-    position: absolute; bottom: 1px; right: 1px;
-    width: 11px; height: 11px; border-radius: 50%;
-    border: 2px solid var(--bg-card);
-}
-.status-indicator.online { background-color: #2ecc71; }
-.status-indicator.away { background-color: #f1c40f; }
-.status-indicator.offline { background-color: #95a5a6; }
-
-.user-item div { display: flex; flex-direction: column; flex: 1; }
-.user-item .username { font-size: 14px; font-weight: 600; display: flex; align-items: center; }
-.user-item .typing-notify { font-size: 11.5px; color: #2ecc71; font-weight: 500; }
-
-.sidebar-footer {
-    padding: 15px; border-top: 1px solid var(--border-color);
-    background: var(--bg-main); display: flex; flex-direction: column; gap: 12px;
-}
-.user-profile-summary { display: flex; align-items: center; gap: 12px; }
-.user-meta { display: flex; flex-direction: column; }
-.user-meta .username { font-size: 14px; font-weight: 700; }
-.user-meta .role-badge { font-size: 11px; color: var(--text-muted); font-weight: 500; }
-
-.footer-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.action-circle-btn {
-    flex: 1; padding: 10px; border: 1px solid var(--border-color);
-    background: var(--bg-card); color: var(--text-main);
-    border-radius: 10px; cursor: pointer; font-size: 14px;
-    transition: all 0.2s; display: flex; align-items: center; justify-content: center;
-}
-.action-circle-btn:hover { background: var(--primary-light); border-color: var(--primary-color); }
-.action-circle-btn.logout:hover { background: #fce8e6; border-color: #e74c3c; color: #e74c3c; }
-
-/* PANEL: SAĞ ƏSAS ÇAT AREA */
-.chat-main {
-    flex: 1; display: flex; flex-direction: column; background: var(--bg-main);
-}
-.chat-main-header {
-    height: 70px; background: var(--bg-card);
-    border-bottom: 1px solid var(--border-color);
-    display: flex; align-items: center; padding: 0 25px; gap: 20px;
-}
-.site-logo { height: 38px; object-fit: contain; }
-.active-room-details h4 { font-size: 16px; font-weight: 700; }
-.active-room-details span { font-size: 12px; color: var(--text-muted); }
-
-.chat-content-layers { flex: 1; position: relative; }
-.chat-area-wrapper {
-    position: absolute; inset: 0; display: none; flex-direction: column;
-}
-.chat-area-wrapper.active { display: flex; }
-.chat-area-wrapper.hidden { display: none; }
-
-.private-chat-header-bar {
-    background: #e1f5fe; color: #0288d1; padding: 10px 20px;
-    font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px;
-    cursor: pointer; border-bottom: 1px solid rgba(2, 136, 209, 0.1);
-}
-[data-theme="dark"] .private-chat-header-bar { background: #0d2535; color: #29b6f6; }
-
-.chat-messages {
-    flex: 1; overflow-y: auto; padding: 25px;
-    display: flex; flex-direction: column; gap: 16px;
-}
-
-/* MESAJ BALONLARI STRUKTURU */
-.message-wrapper { display: flex; gap: 12px; max-width: 70%; align-items: flex-start; }
-.message-wrapper.me { align-self: flex-end; flex-direction: row-reverse; }
-.message-wrapper.other { align-self: flex-start; }
-
-.msg-avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
-.message-bubble {
-    padding: 12px 16px; border-radius: 18px; position: relative;
-    box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 4px;
-}
-.message-wrapper.me .message-bubble {
-    background: var(--msg-me-bg); color: var(--msg-me-text);
-    border-top-right-radius: 2px;
-}
-.message-wrapper.other .message-bubble {
-    background: var(--msg-other-bg); color: var(--msg-other-text);
-    border-top-left-radius: 2px;
-}
-
-.sender-name { font-size: 11.5px; font-weight: 700; opacity: 0.7; display: flex; align-items: center; gap: 8px; justify-content: space-between; }
-.message-bubble p { font-size: 14.2px; line-height: 1.4; word-break: break-word; }
-.timestamp { font-size: 10px; opacity: 0.5; align-self: flex-end; margin-top: 2px; }
-
-.delete-msg-btn {
-    background: none; border: none; color: inherit; cursor: pointer;
-    font-size: 11px; opacity: 0.4; transition: opacity 0.2s;
-}
-.delete-msg-btn:hover { opacity: 1; }
-
-.chat-shared-image {
-    max-width: 100%; max-height: 240px; border-radius: 10px;
-    margin-top: 6px; cursor: pointer; transition: opacity 0.2s;
-}
-.chat-shared-image:hover { opacity: 0.9; }
-
-/* GİRİŞ PANELİ */
-.chat-input-panel {
-    padding: 15px 25px 20px 25px; background: var(--bg-card);
-    border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px;
-}
-.file-upload-btn {
-    width: 44px; height: 44px; background: var(--bg-main);
-    border-radius: 12px; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: var(--text-muted); font-size: 18px; transition: all 0.2s;
-}
-.file-upload-btn:hover { color: var(--primary-color); background: var(--primary-light); }
-
-.chat-input-panel input[type="text"] {
-    flex: 1; padding: 13px 20px; border-radius: 12px;
-    border: 1px solid var(--border-color); background: var(--bg-main);
-    color: var(--text-main); font-size: 14.5px;
-}
-.chat-input-panel input[type="text"]:focus { outline: none; border-color: var(--primary-color); }
-
-.send-btn {
-    width: 44px; height: 44px; background: var(--primary-color);
-    color: white; border: none; border-radius: 12px; font-size: 16px;
-    cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s;
-}
-[data-theme="dark"] .send-btn { color: #000; }
-.send-btn:hover { transform: scale(1.04); }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
 .hidden { display: none !important; }
 
 /* ==========================================================================
-   3. PROFİL MODAL AYARLARI
+   3. APP HEADER
    ========================================================================== */
-.modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-    backdrop-filter: blur(4px); display: none; align-items: center;
-    justify-content: center; z-index: 10000; padding: 20px;
-}
-.modal-overlay.active { display: flex; }
-
-.modal-card {
-    background: var(--bg-card); width: 100%; max-width: 460px;
-    border-radius: 20px; padding: 30px; box-shadow: var(--shadow-md);
-    border: 1px solid var(--border-color); animation: modalScale 0.25s ease-out;
-}
-@keyframes modalScale { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-.modal-header {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px;
-}
-.modal-header h3 { font-size: 19px; font-weight: 700; }
-.close-modal-btn { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
-
-.modal-footer-buttons {
-    display: flex; items-center; justify-content: space-between; gap: 12px; margin-top: 25px;
-}
-.btn-primary {
-    padding: 12px 20px; background: var(--primary-color); color: white;
-    border: none; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer;
-}
-[data-theme="dark"] .btn-primary { color: #000; font-weight: 700; }
-.btn-danger-outline {
-    padding: 12px 20px; background: transparent; color: #e74c3c;
-    border: 1px solid #e74c3c; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer;
-}
-.btn-danger-outline:hover { background: #fce8e6; }
-
-.mobile-toggle-btn { display: none; }
-
-/* ==========================================================================
-   4. SEÇİLMİŞ FAYL VƏ MÜASİR ROL İKONLARI ODALARI
-   ========================================================================== */
-.user-actions {
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 72px;
+    background: var(--header-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-left: auto;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 1000;
+    border-bottom: 1px solid var(--glass-border);
 }
 
-.role-toggle-btn, .admin-ban-btn, .admin-user-delete-btn, .ignore-toggle-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+.logo img { height: 32px; width: auto; display: block; }
+.header-actions { display: flex; align-items: center; gap: 12px; }
+
+.icon-btn {
+    background: var(--glass); border: 1px solid var(--glass-border); color: var(--text);
+    width: 42px; height: 42px; border-radius: 50%; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; font-size: 1.1rem; transition: all 0.2s ease;
+}
+.icon-btn:hover { background: var(--accent); color: #fff; transform: scale(1.05); border-color: var(--accent); }
+
+.logout-btn {
+    background: var(--danger); color: white; border: none; padding: 10px 16px;
+    border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; display: flex;
+    align-items: center; gap: 8px; transition: opacity 0.2s;
+}
+.logout-btn:hover { opacity: 0.9; }
+
+/* ==========================================================================
+   4. APPIN ƏSAS KONTEYNERİ
+   ========================================================================== */
+.main-container {
+    margin-top: 72px;
+    height: calc(100vh - 72px);
+    height: calc(100dvh - 72px); /* Mobil üçün dəqiq hesablama */
+    position: relative;
+    width: 100%;
+}
+
+/* ==========================================================================
+   5. AUTENTIFIKASIYA EKRANI
+   ========================================================================== */
+.auth-screen { display: none; align-items: center; justify-content: center; height: 100%; padding: 20px; }
+.auth-screen.active { display: flex; }
+.auth-card { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius); width: 100%; max-width: 420px; padding: 32px; box-shadow: var(--shadow); animation: fadeIn 0.3s ease-out; }
+.auth-tabs { display: flex; border-bottom: 1px solid var(--glass-border); margin-bottom: 24px; }
+.auth-tab { flex: 1; background: none; border: none; color: var(--muted); padding: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: color 0.2s; position: relative; }
+.auth-tab.active { color: var(--accent); }
+.auth-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: var(--accent); }
+.auth-form { display: none; flex-direction: column; gap: 16px; }
+.auth-form.active { display: flex; }
+.auth-form h2 { font-size: 1.5rem; margin-bottom: 8px; }
+.input-group { position: relative; display: flex; flex-direction: column; }
+.input-group i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+.input-group input { width: 100%; padding: 14px 14px 14px 44px; border-radius: var(--radius-sm); border: 1px solid var(--glass-border); background: var(--bg); color: var(--text); outline: none; font-size: 0.95rem; transition: border-color 0.2s; }
+.input-group input:focus { border-color: var(--accent); }
+.submit-btn { background: var(--accent); color: white; border: none; padding: 14px; border-radius: var(--radius-sm); font-weight: bold; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
+.submit-btn:hover { background: var(--accent-hover); }
+.auth-divider { text-align: center; margin: 20px 0; position: relative; }
+.auth-divider::before { content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 1px; background: var(--glass-border); z-index: 1; }
+.auth-divider span { background: var(--surface); padding: 0 12px; color: var(--muted); font-size: 0.85rem; position: relative; z-index: 2; }
+.google-btn { width: 100%; background: #fff; color: #1f2937; border: 1px solid #e5e7eb; padding: 12px; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; font-size: 0.95rem; transition: background 0.2s; }
+.google-btn:hover { background: #f9fafb; }
+.google-btn img { width: 20px; height: 20px; }
+
+/* ==========================================================================
+   6. ÇAT EKRANI (Sidebar + Chat Window)
+   ========================================================================== */
+.chat-screen { display: none; height: 100%; width: 100%; }
+.chat-screen.active { display: block; }
+.chat-layout { display: flex; height: 100%; width: 100%; overflow: hidden; }
+
+/* SOL PANEL: SIDEBAR */
+.sidebar { width: 320px; background: var(--surface); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; flex-shrink: 0; }
+.current-user-card { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+.avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: var(--glass-border); }
+.user-info { display: flex; flex-direction: column; gap: 2px; }
+.user-info .name { font-weight: bold; font-size: 0.95rem; }
+.role-badge { font-size: 0.75rem; background: var(--glass); padding: 2px 8px; border-radius: 20px; color: var(--accent); border: 1px solid var(--glass-border); width: max-content; }
+.sidebar-navigation { padding: 15px 20px; flex-shrink: 0; }
+.nav-tab { width: 100%; padding: 12px 16px; background: var(--glass); border: 1px solid var(--glass-border); color: var(--text); border-radius: var(--radius-sm); text-align: left; font-weight: bold; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.2s; }
+.nav-tab.active, .nav-tab:hover { background: var(--accent); color: white; border-color: var(--accent); }
+.sidebar-list-container { flex: 1; overflow-y: auto; padding: 0 20px 20px 20px; display: flex; flex-direction: column; }
+.sidebar-list-container h3 { font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; position: sticky; top: 0; background: var(--surface); padding-top: 8px; z-index: 1; }
+.text-success { color: var(--success); font-size: 0.6rem; }
+.users-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.user-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.2s; }
+.user-item:hover, .user-item.active { background: var(--surface-hover); }
+.avatar-wrapper { position: relative; display: inline-block; }
+.status-indicator { position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--surface); }
+.status-indicator.online { background: var(--success); }
+.status-indicator.offline { background: var(--text-muted); }
+.status-indicator.away { background: #f59e0b; }
+.user-item .username { font-size: 0.95rem; font-weight: 500; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.typing-notify { font-size: 0.75rem; color: var(--accent); font-style: italic; animation: pulse 1s infinite alternate; }
+
+/* SAĞ PANEL: ÇAT PƏNCƏRƏSİ */
+.chat-window { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    background: rgba(0, 0, 0, 0.02); 
+    position: relative; 
+    overflow: hidden; /* Vacib: Çat ekranını daşmalara qarşı qoruyur */
+}
+
+/* Daim Sabit Qalan Ümumi Başlıq */
+.chat-window-header {
+    padding: 16px 24px; 
+    background: var(--surface); 
+    border-bottom: 1px solid var(--glass-border);
+    display: flex; justify-content: space-between; align-items: center; 
+    z-index: 10;
+    flex-shrink: 0; /* Vacib: Daşma olanda sıxışmır */
+}
+.active-room-info h2 { font-size: 1.1rem; font-weight: bold; }
+.active-room-info p { font-size: 0.8rem; color: var(--muted); }
+
+/* ÇAT LAYERS (İstər ümumi, istər şəxsi olsun bu classla idarə olunur) */
+.chat-layer {
+    flex: 1; 
+    display: flex; 
+    flex-direction: column;
+    overflow: hidden; /* Daxilindəki elementləri kilidləyir */
+}
+.chat-layer:not(.active) { display: none !important; }
+
+/* Şəxsi Çat Başlığı (Geri qayıtmaq üçün) */
+.private-chat-header {
+    padding: 12px 24px;
+    background: var(--surface-hover);
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    gap: 15px;
     cursor: pointer;
-    font-size: 13px;
-    padding: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 28px;
-    height: 28px;
+    transition: background 0.2s;
+    flex-shrink: 0; /* Vacib: Input bar və scroll tərəfindən yeyilmir */
 }
+.private-chat-header:hover { background: var(--surface); }
+.private-chat-header i { font-size: 1.2rem; color: var(--text-muted); }
+.pm-info h3 { font-size: 1rem; color: var(--text); margin-bottom: 2px; }
+.pm-info p { font-size: 0.75rem; color: var(--accent); }
 
-[data-theme="light"] .role-toggle-btn, 
-[data-theme="light"] .admin-ban-btn, 
-[data-theme="light"] .admin-user-delete-btn, 
-[data-theme="light"] .ignore-toggle-btn {
-    background: rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba(0, 0, 0, 0.06);
+/* MESAJLAR SAHƏSİ (SCROLL BURADADIR) */
+.chat-messages-area { 
+    flex: 1; 
+    padding: 24px; 
+    overflow-y: auto; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 16px; 
 }
+.message-wrapper { display: flex; gap: 12px; max-width: 75%; animation: slideUp 0.25s ease-out forwards; }
+.message-wrapper.me { align-self: flex-end; flex-direction: row-reverse; }
+.message-wrapper.other { align-self: flex-start; }
+.msg-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.message-bubble { padding: 12px 16px; border-radius: 14px; font-size: 0.95rem; position: relative; word-break: break-word; }
+.message-wrapper.me .message-bubble { background: var(--me-bubble); color: white; border-top-right-radius: 0; box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 25%, transparent); }
+.message-wrapper.other .message-bubble { background: var(--other-bubble); color: var(--text); border-top-left-radius: 0; border: 1px solid var(--glass-border); }
+.sender-name { display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 4px; opacity: 0.7; }
+.message-bubble p { margin-bottom: 4px; }
+.message-bubble img.chat-shared-image { max-width: 100%; max-height: 240px; border-radius: var(--radius-sm); margin-top: 5px; display: block; cursor: pointer; }
+.timestamp { display: block; font-size: 0.7rem; text-align: right; opacity: 0.6; }
 
-.role-toggle-btn { color: #3498db; }
-.role-toggle-btn:hover { background: rgba(52, 152, 219, 0.15); border-color: #3498db; transform: scale(1.1); }
+.delete-msg-btn { background: none; border: none; color: rgba(255,255,255,0.4); cursor: pointer; font-size: 0.75rem; margin-left: 6px; transition: color 0.2s; }
+.message-wrapper.other .delete-msg-btn { color: var(--text-muted); }
+.delete-msg-btn:hover { color: var(--danger) !important; }
 
-.admin-ban-btn { color: #f39c12; }
-.admin-ban-btn:hover { background: rgba(243, 156, 18, 0.15); border-color: #f39c12; transform: scale(1.1); }
+.typing-indicator { padding: 8px 24px; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--muted); flex-shrink: 0; }
+.typing-indicator .dots { display: flex; gap: 3px; }
+.typing-indicator .dots span { width: 6px; height: 6px; background: var(--muted); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+.typing-indicator .dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator .dots span:nth-child(2) { animation-delay: -0.16s; }
 
-.admin-user-delete-btn { color: #e74c3c; }
-.admin-user-delete-btn:hover { background: rgba(231, 76, 60, 0.15); border-color: #e74c3c; transform: scale(1.1); }
-
-.ignore-toggle-btn { color: #95a5a6; }
-.ignore-toggle-btn:hover { background: rgba(149, 165, 166, 0.15); border-color: #95a5a6; transform: scale(1.1); }
+/* INPUT BAR (YAZI SAHƏSİ) - TAM ALTDA SABİT QALIR */
+.chat-input-bar { 
+    padding: 16px 24px; 
+    background: var(--surface); 
+    border-top: 1px solid var(--glass-border); 
+    display: flex; 
+    align-items: center; gap: 16px; 
+    flex-shrink: 0; /* Vacib: Heç bir halda ekranın altına itmir */
+}
+.attach-btn { color: var(--muted); font-size: 1.2rem; cursor: pointer; transition: color 0.2s; }
+.attach-btn:hover { color: var(--accent); }
+.chat-input-bar input { flex: 1; padding: 14px 18px; background: var(--bg); border: 1px solid var(--glass-border); color: var(--text); border-radius: var(--radius-sm); outline: none; font-size: 0.95rem; transition: border-color 0.2s; }
+.chat-input-bar input:focus { border-color: var(--accent); }
+.send-btn { background: var(--accent); color: white; border: none; width: 46px; height: 46px; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: background 0.2s; }
+.send-btn:hover { background: var(--accent-hover); }
 
 /* ==========================================================================
-   5. RESPONSIVE MOBİL OPTİMİZASİYASI
+   7. MODAL VƏ TƏHLÜKƏ BÖLGƏSİ
    ========================================================================== */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 2000; }
+.modal-overlay.active { display: flex; }
+.modal-card { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius); width: 100%; max-width: 400px; box-shadow: var(--shadow); animation: scaleUp 0.2s ease-out; }
+.modal-header { padding: 18px 24px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
+.close-modal-btn { background: none; border: none; color: var(--text); font-size: 1.8rem; cursor: pointer; }
+.modal-body { padding: 24px; }
+#profileSettingsForm { display: flex; flex-direction: column; gap: 20px; }
+.avatar-upload-wrapper { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.large-avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
+.avatar-edit-label { font-size: 0.85rem; color: var(--accent); cursor: pointer; font-weight: bold; }
+.save-settings-btn { background: var(--accent); color: white; border: none; padding: 12px; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; }
+
+.danger-zone { margin-top: 30px; padding: 20px; border-top: 1px solid rgba(231, 76, 60, 0.2); text-align: center; }
+.danger-zone h4 { color: #e74c3c; margin-bottom: 10px; font-size: 16px; }
+.danger-zone p { color: #888; font-size: 13px; margin-bottom: 15px; line-height: 1.4; }
+.delete-account-btn { background: transparent; border: 1px solid #e74c3c; color: #e74c3c; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; }
+.delete-account-btn:hover { background: #e74c3c; color: #fff; }
+.input-group label { font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
+
+/* Şifrə Göstər/Gizlət Düyməsi */
+.password-toggle-btn {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--muted); cursor: pointer;
+    font-size: 0.9rem; padding: 4px; transition: color 0.2s;
+}
+.password-toggle-btn:hover { color: var(--accent); }
+.input-group:has(.password-toggle-btn) input { padding-right: 42px; }
+
+/* Şifrəni Unutdum Linki */
+.forgot-password-link {
+    background: none; border: none; color: var(--accent); cursor: pointer;
+    font-size: 0.82rem; text-decoration: underline; padding: 0; transition: opacity 0.2s;
+}
+.forgot-password-link:hover { opacity: 0.75; }
+
+/* Fayl adı göstəricisi */
+.file-name-display {
+    font-size: 0.78rem; color: var(--accent); max-width: 120px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    display: block; margin-top: 4px;
+}
+.chat-file-name {
+    font-size: 0.75rem; color: var(--accent); max-width: 100px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-shrink: 0;
+}
+
+/* Müasir Adminlik Düymələri */
+.role-toggle-btn {
+    background: none; border: 1px solid transparent; color: #3498db;
+    cursor: pointer; font-size: 13px; padding: 5px 7px; border-radius: 6px;
+    opacity: 0.75; transition: all 0.2s;
+}
+.role-toggle-btn:hover { opacity: 1; background: rgba(52,152,219,0.15); border-color: rgba(52,152,219,0.3); }
+
+.admin-ban-btn {
+    background: none; border: 1px solid transparent; cursor: pointer;
+    font-size: 13px; padding: 5px 7px; border-radius: 6px; opacity: 0.75; transition: all 0.2s;
+}
+.admin-ban-btn:hover { opacity: 1; background: rgba(243,156,18,0.15); border-color: rgba(243,156,18,0.3); }
+
+.admin-user-delete-btn {
+    background: none; border: 1px solid transparent; color: #e74c3c;
+    cursor: pointer; font-size: 13px; padding: 5px 7px; border-radius: 6px; opacity: 0.75; transition: all 0.2s;
+}
+.admin-user-delete-btn:hover { opacity: 1; background: rgba(231,76,60,0.15); border-color: rgba(231,76,60,0.3); }
+
+.ignore-btn {
+    background: none; border: 1px solid transparent; color: var(--muted);
+    cursor: pointer; font-size: 13px; padding: 5px 7px; border-radius: 6px; opacity: 0.75; transition: all 0.2s;
+}
+.ignore-btn:hover { opacity: 1; background: rgba(100,116,139,0.15); border-color: rgba(100,116,139,0.3); }
+.ignore-btn.active { color: #f39c12; opacity: 1; }
+
+/* ==========================================================================
+   8. ANIMASIYALAR VƏ MOBİL RESPONSIVE
+   ========================================================================== */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scaleUp { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { from { opacity: 0.6; } to { opacity: 1; } }
+@keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+
+/* Yalnız mobildə görünəcək elementlər */
+.mobile-only { display: none; }
+
 @media (max-width: 768px) {
+    .mobile-only { display: flex; }
+    
+    .chat-window { width: 100%; }
+    .message-wrapper { max-width: 85%; }
+    .chat-input-bar { padding: 12px 16px; }
+    
+    /* Mobil Sidebar Logic (Drawer) */
     .sidebar {
-        position: absolute; left: 0; top: 0; bottom: 0;
-        transform: translateX(-100%); width: 290px;
+        position: absolute;
+        left: -100%;
+        top: 0;
+        height: 100%;
+        width: 280px;
+        z-index: 1100; /* Çat pəncərəsinin üzərinə çıxır */
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 10px 0 30px rgba(0,0,0,0.5);
     }
-    .sidebar.mobile-open { transform: translateX(0); box-shadow: var(--shadow-md); }
-    .mobile-toggle-btn {
-        display: flex; width: 40px; height: 40px; background: var(--bg-main);
-        border: 1px solid var(--border-color); border-radius: 10px;
-        align-items: center; justify-content: center; cursor: pointer; color: var(--text-main);
+    
+    .sidebar.mobile-open {
+        left: 0;
     }
-    .message-wrapper { max-width: 88%; }
-    .chat-main-header { padding: 0 15px; gap: 12px; }
 }
