@@ -160,32 +160,41 @@ function showToast(message, type = "info") {
             }
             
             .role-toggle-btn {
-                background: none;
-                border: 1px solid transparent; color: #3498db; cursor: pointer;
-                font-size: 13px; padding: 5px 7px; border-radius: 6px; opacity: 0.75; transition: all 0.2s;
+                background: rgba(52,152,219,0.1);
+                border: 1px solid rgba(52,152,219,0.25); color: #3498db; cursor: pointer;
+                font-size: 12px; width: 28px; height: 28px; border-radius: 8px;
+                display: inline-flex; align-items: center; justify-content: center;
+                transition: all 0.18s; flex-shrink: 0;
             }
-            .role-toggle-btn:hover { opacity: 1; background: rgba(52,152,219,0.15); border-color: rgba(52,152,219,0.3); }
+            .role-toggle-btn:hover { background: #3498db; color: #fff; border-color: #3498db; transform: scale(1.08); }
             
             .admin-ban-btn {
-                background: none;
-                border: 1px solid transparent; cursor: pointer;
-                font-size: 13px; padding: 5px 7px; border-radius: 6px; opacity: 0.75; transition: all 0.2s;
+                background: rgba(243,156,18,0.1);
+                border: 1px solid rgba(243,156,18,0.25); cursor: pointer;
+                font-size: 12px; width: 28px; height: 28px; border-radius: 8px;
+                display: inline-flex; align-items: center; justify-content: center;
+                transition: all 0.18s; flex-shrink: 0;
             }
-            .admin-ban-btn:hover { opacity: 1; background: rgba(243,156,18,0.15); border-color: rgba(243,156,18,0.3); }
+            .admin-ban-btn:hover { background: #f39c12; border-color: #f39c12; transform: scale(1.08); }
+            .admin-ban-btn:hover i { color: #fff !important; }
 
             .admin-user-delete-btn {
-                background: none;
-                border: 1px solid transparent; color: #e74c3c; cursor: pointer;
-                font-size: 13px; padding: 5px 7px; border-radius: 6px; opacity: 0.75; transition: all 0.2s;
+                background: rgba(231,76,60,0.1);
+                border: 1px solid rgba(231,76,60,0.25); color: #e74c3c; cursor: pointer;
+                font-size: 12px; width: 28px; height: 28px; border-radius: 8px;
+                display: inline-flex; align-items: center; justify-content: center;
+                transition: all 0.18s; flex-shrink: 0;
             }
-            .admin-user-delete-btn:hover { opacity: 1; background: rgba(231,76,60,0.15); border-color: rgba(231,76,60,0.3); }
+            .admin-user-delete-btn:hover { background: #e74c3c; color: #fff; border-color: #e74c3c; transform: scale(1.08); }
             
             .ignore-btn {
-                background: none; border: 1px solid transparent; color: #94a3b8;
-                cursor: pointer; font-size: 13px; padding: 5px 7px; border-radius: 6px; opacity: 0.75; transition: all 0.2s;
+                background: rgba(100,116,139,0.1); border: 1px solid rgba(100,116,139,0.2); color: #94a3b8;
+                cursor: pointer; font-size: 12px; width: 28px; height: 28px; border-radius: 8px;
+                display: inline-flex; align-items: center; justify-content: center;
+                transition: all 0.18s; flex-shrink: 0;
             }
-            .ignore-btn:hover { opacity: 1; background: rgba(100,116,139,0.15); border-color: rgba(100,116,139,0.3); }
-            .ignore-btn.active { color: #f39c12; opacity: 1; }
+            .ignore-btn:hover { background: rgba(100,116,139,0.25); border-color: rgba(100,116,139,0.4); transform: scale(1.08); }
+            .ignore-btn.active { color: #f39c12; background: rgba(243,156,18,0.1); border-color: rgba(243,156,18,0.3); }
             
             @keyframes flixSlideIn { to { transform: translateX(0); } }
             @keyframes flixFadeOut { to { opacity: 0; transform: translateY(-15px); } }
@@ -368,13 +377,31 @@ async function toggleIgnoreUser(targetUserId, targetName) {
         showToast(`${escapeHTML(targetName)} uğurla ignor edildi. Onun mesajları sizə görünməyəcək.`, "info");
     }
     try {
-        await setDoc(doc(db, 'ignore_lists', currentUser.uid), { ignored: currentIgnoreList }, { merge: true });
+        // merge:false istifadə etmək əvəzinə tam doc yazırıq ki, Firestore Rules sadə olsun
+        await setDoc(doc(db, 'ignore_lists', currentUser.uid), { 
+            ignored: currentIgnoreList,
+            updatedAt: serverTimestamp()
+        });
     } catch (err) {
-        showToast("İgnor siyahısı yenilənərkən xəta baş verdi.", "error");
+        console.error("İgnor siyahısı xətası:", err.code, err.message);
+        // Xəta olsa əvvəlki vəziyyətə qayıt
+        if (isIgnored) {
+            currentIgnoreList.push(targetUserId);
+        } else {
+            currentIgnoreList = currentIgnoreList.filter(id => id !== targetUserId);
+        }
+        if (err.code === 'permission-denied' || err.code === 'PERMISSION_DENIED') {
+            showToast("İgnor əməliyyatı üçün icazə yoxdur. Firebase Rules-u yoxlayın.", "error");
+        } else {
+            showToast("İgnor siyahısı yenilənərkən xəta baş verdi: " + err.message, "error");
+        }
     }
     renderUsersList();
-    // Ümumi çatı yenilə ki gizlənmiş mesajlar dərhal tətbiq olunsun
     loadGeneralMessages();
+    // Əgər hazırda şəxsi çatdaysaq, orada da tətbiq et
+    if (activeRoomIsDM) {
+        loadPrivateMessages();
+    }
 }
 
 window.adminDeleteUser = adminDeleteUser;
@@ -788,7 +815,11 @@ function loadPrivateMessages() {
         snapshot.forEach(doc => messages.push({ id: doc.id, ...doc.data() }));
         messages.reverse();
         privateMessagesArea.innerHTML = '';
-        messages.forEach(msg => privateMessagesArea.appendChild(createMessageElement(msg, activeRoomId)));
+        messages.forEach(msg => {
+            // İgnor edilən istifadəçinin şəxsi mesajlarını gizlət
+            if (currentIgnoreList.includes(msg.senderId)) return;
+            privateMessagesArea.appendChild(createMessageElement(msg, activeRoomId));
+        });
         privateMessagesArea.scrollTop = privateMessagesArea.scrollHeight;
 
         if (currentRooms[activeRoomId]?.[`unread_${currentUser.uid}`] > 0) {
@@ -911,9 +942,17 @@ privateInputField.addEventListener('input', () => handleTypingEvent(true));
  8. PROFİL MODALININ IDARƏEDİLMƏSİ
  ========================================================================== */
 openSettingsBtn.addEventListener('click', () => {
-    document.getElementById('settingsDisplayName').value = currentUserData.displayName;
+    document.getElementById('settingsDisplayName').value = currentUserData.displayName || '';
     document.getElementById('settingsAvatarPreview').src = currentUserData.photoURL || DEFAULT_AVATAR;
     document.getElementById('avatarFileNameDisplay').textContent = '';
+    // E-poçtu göstər
+    const emailField = document.getElementById('settingsEmailDisplay');
+    if (emailField) emailField.value = currentUser.email || '';
+    // Şifrə sahələrini sıfırla
+    const cpInput = document.getElementById('currentPasswordInput');
+    const npInput = document.getElementById('newPasswordInput');
+    if (cpInput) cpInput.value = '';
+    if (npInput) npInput.value = '';
     settingsModal.classList.add('active');
 });
 
@@ -931,104 +970,133 @@ document.getElementById('avatarFileInput').addEventListener('change', (e) => {
 });
 closeSettingsBtn.addEventListener('click', () => settingsModal.classList.remove('active'));
 
+// Şifrə göstər/gizlət — Settings modal
+document.querySelectorAll('.settings-eye-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const inputId = btn.getAttribute('data-target');
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('i');
+        if (!input) return;
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'fa-solid fa-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'fa-solid fa-eye';
+        }
+    });
+});
+
 profileSettingsForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const newName = document.getElementById('settingsDisplayName').value.trim();
     const avatarFile = document.getElementById('avatarFileInput').files[0];
-    let newAvatarUrl = currentUserData.photoURL || DEFAULT_AVATAR;
-    const submitBtn = profileSettingsForm.querySelector("button[type='submit']");
-    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Yüklənir...'; submitBtn.disabled = true;
+    const currentPass = document.getElementById('currentPasswordInput').value;
+    const newPass = document.getElementById('newPasswordInput').value;
+    const newEmail = (document.getElementById('settingsEmailDisplay')?.value || '').trim();
 
+    // Köhnə şifrə — e-poçt və ya şifrə dəyişirsə məcburidir
+    const emailChanged = newEmail && newEmail !== currentUser.email;
+    const passChanged = newPass.length > 0;
+
+    if ((emailChanged || passChanged) && !currentPass) {
+        showToast("E-poçt və ya şifrəni dəyişmək üçün cari şifrənizi daxil edin.", "warning");
+        return;
+    }
+    if (passChanged && newPass.length < 6) {
+        showToast("Yeni şifrə ən azı 6 simvoldan ibarət olmalıdır.", "warning");
+        return;
+    }
+
+    const submitBtn = profileSettingsForm.querySelector("button[type='submit']");
+    submitBtn.textContent = 'Yüklənir...'; submitBtn.disabled = true;
+
+    let newAvatarUrl = currentUserData.photoURL || DEFAULT_AVATAR;
+
+    // Ad yoxlanışı
     if (newName !== currentUserData.displayName) {
         try {
             const nameSnap = await getDocs(query(collection(db, 'users'), where('displayName', '==', newName)));
-            if (nameSnap.docs.some(doc => doc.id !== currentUser.uid)) {
-                showToast("Bu istifadəçi adı artıq başqası tərəfindən alınıb. Başqa ad yoxlayın.", "warning");
-                submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Yadda Saxla'; submitBtn.disabled = false; return;
+            if (nameSnap.docs.some(d => d.id !== currentUser.uid)) {
+                showToast("Bu istifadəçi adı artıq başqası tərəfindən alınıb.", "warning");
+                submitBtn.textContent = 'Dəyişiklikləri Yadda Saxla'; submitBtn.disabled = false; return;
             }
-        } catch (err) { 
-            showToast("Yoxlama zamanı xəta baş verdi.", "error");
-            submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Yadda Saxla'; submitBtn.disabled = false; return; 
+        } catch (err) {
+            showToast("Ad yoxlama zamanı xəta baş verdi.", "error");
+            submitBtn.textContent = 'Dəyişiklikləri Yadda Saxla'; submitBtn.disabled = false; return;
         }
     }
+
+    // Avatar yüklə
     if (avatarFile) {
-        try { 
-            newAvatarUrl = await uploadImageToImgBB(avatarFile); 
-        } catch (err) { 
+        try { newAvatarUrl = await uploadImageToImgBB(avatarFile); }
+        catch (err) {
             showToast(err.message, "error");
-            submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Yadda Saxla'; submitBtn.disabled = false; return; 
+            submitBtn.textContent = 'Dəyişiklikləri Yadda Saxla'; submitBtn.disabled = false; return;
+        }
+    }
+
+    // Reauth (lazım olduqda)
+    if ((emailChanged || passChanged) && currentPass) {
+        try {
+            const credential = EmailAuthProvider.credential(currentUser.email, currentPass);
+            await reauthenticateWithCredential(currentUser, credential);
+        } catch (err) {
+            if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                showToast("Cari şifrəniz yanlışdır. Zəhmət olmasa düzgün daxil edin.", "error");
+            } else {
+                showToast(localizeFirebaseError(err), "error");
+            }
+            submitBtn.textContent = 'Dəyişiklikləri Yadda Saxla'; submitBtn.disabled = false; return;
         }
     }
 
     try {
+        // Ad + Avatar
         await updateProfile(currentUser, { displayName: newName, photoURL: newAvatarUrl });
-        await setDoc(doc(db, 'users', currentUser.uid), { displayName: newName, photoURL: newAvatarUrl }, { merge: true });
-        currentUserData.displayName = newName; currentUserData.photoURL = newAvatarUrl;
+        const fsUpdate = { displayName: newName, photoURL: newAvatarUrl };
+
+        // E-poçt dəyiş
+        if (emailChanged) {
+            await updateEmail(currentUser, newEmail);
+            fsUpdate.email = newEmail;
+        }
+
+        // Şifrə dəyiş
+        if (passChanged) {
+            await updatePassword(currentUser, newPass);
+        }
+
+        await setDoc(doc(db, 'users', currentUser.uid), fsUpdate, { merge: true });
+
+        currentUserData.displayName = newName;
+        currentUserData.photoURL = newAvatarUrl;
         document.getElementById('currentUserName').innerHTML = escapeHTML(newName) + getRoleStarsHtml(currentUserData.role);
         document.getElementById('currentUserAvatar').src = newAvatarUrl;
-        showToast("Profil məlumatlarınız uğurla yeniləndi!", "success");
+
+        // Sahələri sıfırla
+        document.getElementById('currentPasswordInput').value = '';
+        document.getElementById('newPasswordInput').value = '';
+        if (document.getElementById('settingsEmailDisplay')) document.getElementById('settingsEmailDisplay').value = currentUser.email || newEmail;
+
+        showToast("Dəyişikliklər uğurla yadda saxlandı!", "success");
         settingsModal.classList.remove('active');
-    } catch (err) { 
-        showToast("Sistem xətası: " + err.message, "error"); 
-    } finally { 
-        submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Yadda Saxla'; submitBtn.disabled = false; 
+    } catch (err) {
+        showToast("Sistem xətası: " + localizeFirebaseError(err), "error");
+    } finally {
+        submitBtn.textContent = 'Dəyişiklikləri Yadda Saxla'; submitBtn.disabled = false;
     }
 });
 document.getElementById('deleteAccBtn').addEventListener('click', deleteAccount);
 
-// E-poçt yeniləmə (cari şifrə məcburi)
+// E-poçt yeniləmə (köhnə form — artıq vahid formda idarə olunur, uyğunluq üçün saxlanır)
 document.getElementById('changeEmailForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const currentPassForEmail = document.getElementById('emailCurrentPasswordInput').value;
-    const newEmail = document.getElementById('newEmailInput').value.trim();
-    if (!currentPassForEmail || !newEmail) return;
-    const btn = e.target.querySelector('button[type="submit"]');
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Yüklənir...'; btn.disabled = true;
-    try {
-        const credential = EmailAuthProvider.credential(currentUser.email, currentPassForEmail);
-        await reauthenticateWithCredential(currentUser, credential);
-        await updateEmail(currentUser, newEmail);
-        await setDoc(doc(db, 'users', currentUser.uid), { email: newEmail }, { merge: true });
-        showToast("E-poçt ünvanınız uğurla yeniləndi!", "success");
-        document.getElementById('emailCurrentPasswordInput').value = '';
-        document.getElementById('newEmailInput').value = '';
-        settingsModal.classList.remove('active');
-    } catch (err) {
-        if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-            showToast("Cari şifrəniz yanlışdır. Zəhmət olmasa düzgün daxil edin.", "error");
-        } else {
-            showToast(localizeFirebaseError(err), "error");
-        }
-    } finally { btn.innerHTML = '<i class="fa-solid fa-check"></i> Yadda Saxla'; btn.disabled = false; }
 });
 
-// Şifrə yeniləmə
+// Şifrə yeniləmə (köhnə form — artıq vahid formda idarə olunur, uyğunluq üçün saxlanır)
 document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const currentPass = document.getElementById('currentPasswordInput').value;
-    const newPass = document.getElementById('newPasswordInput').value;
-    if (!currentPass || !newPass) return;
-    if (newPass.length < 6) {
-        showToast("Yeni şifrə ən azı 6 simvoldan ibarət olmalıdır.", "warning");
-        return;
-    }
-    const btn = e.target.querySelector('button[type="submit"]');
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Yüklənir...'; btn.disabled = true;
-    try {
-        const credential = EmailAuthProvider.credential(currentUser.email, currentPass);
-        await reauthenticateWithCredential(currentUser, credential);
-        await updatePassword(currentUser, newPass);
-        showToast("Şifrəniz uğurla yeniləndi!", "success");
-        document.getElementById('currentPasswordInput').value = '';
-        document.getElementById('newPasswordInput').value = '';
-        settingsModal.classList.remove('active');
-    } catch (err) {
-        if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-            showToast("Cari şifrəniz yanlışdır. Zəhmət olmasa düzgün daxil edin.", "error");
-        } else {
-            showToast(localizeFirebaseError(err), "error");
-        }
-    } finally { btn.innerHTML = '<i class="fa-solid fa-check"></i> Yadda Saxla'; btn.disabled = false; }
 });
 
 /* ==========================================================================
