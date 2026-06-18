@@ -285,61 +285,72 @@ async function deleteAccount() {
 }
 
 async function changeUserRole(userId, currentRole) {
-    if (currentUserData.role !== "super_admin") {
+    const myLevel = getRoleLevel(currentUserData.role);
+    if (myLevel !== 4) {
         showToast("Bu əməliyyat üçün Super Admin səlahiyyətiniz olmalıdır!", "error");
         return;
     }
     const newRole = prompt(`İstifadəçinin yeni rolunu daxil edin:\n(super_admin, admin, moderator, user)\n\nHazırki rol: ${currentRole}`, currentRole);
-    if (!newRole) return; 
+    if (!newRole) return;
     const validRoles = ["super_admin", "admin", "moderator", "user"];
     const targetRoleClean = newRole.trim().toLowerCase();
-    if (!validRoles.includes(targetRoleClean)) { 
-        showToast("Yanlış rol daxil edilib! Sistem yalnız: super_admin, admin, moderator, user rollarını dəstəkləyir.", "warning"); 
-        return; 
+    if (!validRoles.includes(targetRoleClean)) {
+        showToast("Yanlış rol! Yalnız: super_admin, admin, moderator, user qəbul edilir.", "warning");
+        return;
     }
     try {
         await updateDoc(doc(db, 'users', userId), { role: targetRoleClean });
         showToast("İstifadəçinin rolu uğurla yeniləndi!", "success");
-    } catch (error) { 
+    } catch (error) {
         console.error("Rol dəyişərkən xəta:", error);
-        showToast("Xəta baş verdi! Rol dəyişdirilə bilmədi.", "error"); 
+        showToast("Rol dəyişdirilə bilmədi: " + error.message, "error");
     }
 }
 
 async function toggleBanUser(targetUserId, isCurrentlyBanned) {
     const myLevel = getRoleLevel(currentUserData.role);
+    // Ban üçün minimum admin (level 3) lazımdır
+    if (myLevel < 3) {
+        showToast("Hesab banlamaq üçün Admin səlahiyyəti tələb olunur!", "error");
+        return;
+    }
     try {
         const targetDoc = await getDoc(doc(db, 'users', targetUserId));
-        if (!targetDoc.exists()) return;
+        if (!targetDoc.exists()) { showToast("İstifadəçi tapılmadı.", "error"); return; }
         const targetLevel = getRoleLevel(targetDoc.data().role);
-        if (myLevel === 4 || (myLevel === 3 && targetLevel < 3)) {
-            const actionText = isCurrentlyBanned ? "banını qaldırmaq" : "banlamaq (sistemdən tam kənarlaşdırmaq)";
-            const confirmAction = confirm(`Bu istifadəçinin ${actionText} istədiyinizdən əminsiniz?`);
-            if (!confirmAction) return;
-            await updateDoc(doc(db, 'users', targetUserId), { isBanned: !isCurrentlyBanned });
-            showToast(`İstifadəçi uğurla ${isCurrentlyBanned ? 'banı qaldırıldı' : 'banlandı'}!`, "success");
-        } else {
-            showToast("Səlahiyyətiniz çatmır! Bu istifadəçi üzərində ban əməliyyatı edə bilməzsiniz.", "error");
+
+        // Super Admin (4): hər kəsi banlaya bilər (digər super_admin-lər də daxil)
+        // Admin (3): yalnız moderator (2) və user (1) banlaya bilər
+        const canBan = (myLevel === 4) || (myLevel === 3 && targetLevel <= 2);
+        if (!canBan) {
+            showToast("Səlahiyyətiniz çatmır! Yalnız öz səlahiyyət səviyyənizdən aşağıdakılara ban tətbiq edə bilərsiniz.", "error");
+            return;
         }
-    } catch (err) { 
+
+        const actionLabel = isCurrentlyBanned ? "banını qaldırmaq" : "banlamaq";
+        if (!confirm(`Bu istifadəçinin ${actionLabel} istədiyinizdən əminsiniz?`)) return;
+
+        await updateDoc(doc(db, 'users', targetUserId), { isBanned: !isCurrentlyBanned });
+        showToast(`İstifadəçi uğurla ${isCurrentlyBanned ? 'banı qaldırıldı' : 'banlandı'}!`, "success");
+    } catch (err) {
         console.error("Ban xətası:", err);
-        showToast("Əməliyyat yerinə yetirilmədi: " + err.message, "error"); 
+        showToast("Ban əməliyyatı yerinə yetirilmədi: " + err.message, "error");
     }
 }
 
 async function adminDeleteUser(targetUserId) {
-    if (getRoleLevel(currentUserData.role) !== 4) {
-        showToast("Bu hesabı kökündən silmək üçün yalnız Super Admin yetkilidir!", "error");
+    const myLevel = getRoleLevel(currentUserData.role);
+    if (myLevel !== 4) {
+        showToast("Hesab silmək üçün yalnız Super Admin yetkilidir!", "error");
         return;
     }
-    const confirmDelete = confirm("DİQQƏT: Bu istifadəçini çatdan və verilənlər bazasından tamamilə silmək istədiyinizə əminsiniz? (Geri qaytarıla bilməz)");
-    if (!confirmDelete) return;
+    if (!confirm("DİQQƏT: Bu istifadəçini bazadan tamamilə silmək istədiyinizə əminsiniz? (Geri qaytarıla bilməz)")) return;
     try {
         await deleteDoc(doc(db, 'users', targetUserId));
-        showToast("İstifadəçi profili silindi. Sistem onu dərhal tamamilə kənarlaşdıracaq.", "success");
-    } catch (err) { 
+        showToast("İstifadəçi profili silindi. Sistem onu dərhal kənarlaşdıracaq.", "success");
+    } catch (err) {
         console.error("Admin silmə xətası:", err);
-        showToast("İstifadəçini silmək mümkün olmadı: " + err.message, "error"); 
+        showToast("İstifadəçini silmək mümkün olmadı: " + err.message, "error");
     }
 }
 
@@ -695,10 +706,29 @@ function renderUsersList() {
         const isTargetBanned = user.isBanned === true;
         const isIgnored = currentIgnoreList.includes(user.uid);
 
-        const roleButtonHtml = (myLevel === 4) ? `<button class="role-toggle-btn" onclick="event.stopPropagation(); changeUserRole('${user.uid}', '${user.role}')" title="Rolu idarə et (Hazırda: ${user.role || 'user'})"><i class="fa-solid fa-user-gear"></i></button>` : '';
-        const canBan = (myLevel === 4) || (myLevel === 3 && targetLevel < 3);
-        const banButtonHtml = canBan ? `<button class="admin-ban-btn" onclick="event.stopPropagation(); toggleBanUser('${user.uid}', ${isTargetBanned})" title="${isTargetBanned ? 'Banı qaldır' : 'Hesabı banla'}"><i class="fa-solid ${isTargetBanned ? 'fa-user-check' : 'fa-user-slash'}" style="color: ${isTargetBanned ? '#2ecc71' : '#f39c12'}"></i></button>` : '';
-        const adminDeleteHtml = (myLevel === 4) ? `<button class="admin-user-delete-btn" onclick="event.stopPropagation(); adminDeleteUser('${user.uid}')" title="İstifadəçini tamamilə sil"><i class="fa-solid fa-user-minus"></i></button>` : '';
+        // ── Düymə görünürlüğü (ierarxiya qaydalarına uyğun) ──────────────────
+        // Rol düyməsi: yalnız super_admin, hər kəsə tətbiq edə bilər
+        const roleButtonHtml = (myLevel === 4)
+            ? `<button class="role-toggle-btn" onclick="event.stopPropagation(); changeUserRole('${user.uid}', '${user.role || 'user'}')" title="Rolu idarə et (Hazırda: ${user.role || 'user'})"><i class="fa-solid fa-user-gear"></i></button>`
+            : '';
+
+        // Ban düyməsi:
+        //   super_admin (4) → hər kəsə (o cümlədən digər super_admin-lərə)
+        //   admin (3)       → yalnız moderator (2) + user (1)
+        const canBan = (myLevel === 4) || (myLevel === 3 && targetLevel <= 2);
+        const banIcon = isTargetBanned
+            ? `<i class="fa-solid fa-user-check" style="color:#2ecc71"></i>`
+            : `<i class="fa-solid fa-user-slash" style="color:#f39c12"></i>`;
+        const banButtonHtml = canBan
+            ? `<button class="admin-ban-btn" onclick="event.stopPropagation(); toggleBanUser('${user.uid}', ${isTargetBanned})" title="${isTargetBanned ? 'Banı qaldır' : 'Hesabı banla'}">${banIcon}</button>`
+            : '';
+
+        // Sil düyməsi: yalnız super_admin, hər kəsi silə bilər
+        const adminDeleteHtml = (myLevel === 4)
+            ? `<button class="admin-user-delete-btn" onclick="event.stopPropagation(); adminDeleteUser('${user.uid}')" title="İstifadəçini bazadan sil"><i class="fa-solid fa-user-minus"></i></button>`
+            : '';
+
+        // İgnor düyməsi: hər kəs, özü xaric
         const ignoreButtonHtml = `<button class="ignore-btn ${isIgnored ? 'active' : ''}" onclick="event.stopPropagation(); toggleIgnoreUser('${user.uid}', '${escapeHTML(user.displayName)}')" title="${isIgnored ? 'İgnoru qaldır' : 'İstifadəçini ignor et'}"><i class="fa-solid ${isIgnored ? 'fa-eye-slash' : 'fa-eye'}"></i></button>`;
 
         const li = document.createElement('li');
@@ -835,13 +865,24 @@ function createMessageElement(msg, roomIdContext) {
 
     const myLevel = getRoleLevel(currentUserData.role);
     const senderLevel = getRoleLevel(userRolesMap[msg.senderId] || 'user');
-    let canDelete = false;
-    if (isMe) canDelete = true;
-    else if (myLevel === 4) canDelete = true;
-    else if (myLevel === 3 && senderLevel < 3) canDelete = true;
-    else if (myLevel === 2 && senderLevel === 1) canDelete = true;
 
-    const deleteBtnHtml = canDelete ? `<button class="delete-msg-btn" data-id="${msg.id}"><i class="fa-solid fa-trash"></i></button>` : '';
+    // Mesaj silmə icazəsi:
+    // - Öz mesajını hər kəs silə bilər
+    // - Super Admin (4): hər kəsin mesajını silə bilər
+    // - Admin (3): moderator (2) və user (1) mesajlarını silə bilər
+    // - Moderator (2): yalnız user (1) mesajlarını silə bilər
+    let canDelete = false;
+    if (isMe) {
+        canDelete = true;
+    } else if (myLevel === 4) {
+        canDelete = true; // super_admin hər kəsin mesajını silir
+    } else if (myLevel === 3 && senderLevel <= 2) {
+        canDelete = true; // admin: moderator + user
+    } else if (myLevel === 2 && senderLevel === 1) {
+        canDelete = true; // moderator: yalnız user
+    }
+
+    const deleteBtnHtml = canDelete ? `<button class="delete-msg-btn" data-id="${msg.id}" title="Mesajı sil"><i class="fa-solid fa-trash"></i></button>` : '';
     let contentHtml = `<p>${escapeHTML(msg.text)}</p>`;
     if (msg.fileURL) contentHtml += `<img src="${msg.fileURL}" class="chat-shared-image" alt="Şəkil" onclick="window.open('${msg.fileURL}')">`;
 
