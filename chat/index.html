@@ -130,12 +130,17 @@
                             <div class="dots"><span></span><span></span><span></span></div>
                         </div>
 
+                        <div id="chatFilePreviewBar" class="file-preview-bar hidden">
+                            <i class="fa-regular fa-image file-preview-icon"></i>
+                            <span id="chatFileNameDisplay" class="file-preview-name"></span>
+                            <button type="button" id="chatFileClearBtn" class="file-clear-btn" title="Faylı sil"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+
                         <div class="chat-input-bar">
-                            <label for="chatFileInput" class="attach-btn" title="Fayl və ya Şəkil göndər">
+                            <label for="chatFileInput" class="attach-btn" title="Şəkil göndər">
                                 <i class="fa-solid fa-paperclip"></i>
                                 <input type="file" id="chatFileInput" accept="image/*, application/pdf, text/plain" hidden>
                             </label>
-                            <span id="chatFileNameDisplay" class="chat-file-name hidden"></span>
                             <input type="text" id="messageInputField" placeholder="Ümumi çata mesaj yazın..." autocomplete="off">
                             <button id="sendMessageBtn" class="send-btn">
                                 <i class="fa-solid fa-paper-plane"></i>
@@ -154,12 +159,17 @@
                         
                         <div id="privateMessagesArea" class="chat-messages-area"></div>
                         
+                        <div id="privateFilePreviewBar" class="file-preview-bar hidden">
+                            <i class="fa-regular fa-image file-preview-icon"></i>
+                            <span id="privateFileNameDisplay" class="file-preview-name"></span>
+                            <button type="button" id="privateFileClearBtn" class="file-clear-btn" title="Faylı sil"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+
                         <div class="chat-input-bar">
                             <label for="privateFileInput" class="attach-btn" title="Fayl göndər">
                                 <i class="fa-solid fa-paperclip"></i>
                                 <input type="file" id="privateFileInput" accept="image/*, application/pdf, text/plain" hidden>
                             </label>
-                            <span id="privateFileNameDisplay" class="chat-file-name hidden"></span>
                             <input type="text" id="privateInputField" placeholder="Şəxsi mesajınızı yazın..." autocomplete="off">
                             <button id="sendPrivateMessageBtn" class="send-btn">
                                 <i class="fa-solid fa-paper-plane"></i>
