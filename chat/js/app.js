@@ -241,6 +241,7 @@ function localizeFirebaseError(err) {
         case "auth/too-many-requests": return "Çox sayda uğursuz cəhd. Bir qədər gözləyin.";
         case "auth/requires-recent-login": return "Bu əməliyyat üçün yenidən giriş etməlisiniz.";
         case "auth/email-already-exists": return "Bu e-poçt ünvanı artıq istifadə edilir.";
+        case "auth/user-not-found": return "Daxil etdiyiniz e-poçt mövcud deyil.";
         default: return err.message || "Gözlənilməz texniki xəta baş verdi.";
     }
 }
