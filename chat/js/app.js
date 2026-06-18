@@ -937,18 +937,18 @@ profileSettingsForm.addEventListener('submit', async (e) => {
     const avatarFile = document.getElementById('avatarFileInput').files[0];
     let newAvatarUrl = currentUserData.photoURL || DEFAULT_AVATAR;
     const submitBtn = profileSettingsForm.querySelector("button[type='submit']");
-    submitBtn.innerText = 'Yüklənir...'; submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Yüklənir...'; submitBtn.disabled = true;
 
     if (newName !== currentUserData.displayName) {
         try {
             const nameSnap = await getDocs(query(collection(db, 'users'), where('displayName', '==', newName)));
             if (nameSnap.docs.some(doc => doc.id !== currentUser.uid)) {
                 showToast("Bu istifadəçi adı artıq başqası tərəfindən alınıb. Başqa ad yoxlayın.", "warning");
-                submitBtn.innerText = 'Dəyişiklikləri Yadda Saxla'; submitBtn.disabled = false; return;
+                submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Yadda Saxla'; submitBtn.disabled = false; return;
             }
         } catch (err) { 
             showToast("Yoxlama zamanı xəta baş verdi.", "error");
-            submitBtn.innerText = 'Dəyişiklikləri Yadda Saxla'; submitBtn.disabled = false; return; 
+            submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Yadda Saxla'; submitBtn.disabled = false; return; 
         }
     }
     if (avatarFile) {
@@ -956,7 +956,7 @@ profileSettingsForm.addEventListener('submit', async (e) => {
             newAvatarUrl = await uploadImageToImgBB(avatarFile); 
         } catch (err) { 
             showToast(err.message, "error");
-            submitBtn.innerText = 'Dəyişiklikləri Yadda Saxla'; submitBtn.disabled = false; return; 
+            submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Yadda Saxla'; submitBtn.disabled = false; return; 
         }
     }
 
@@ -971,31 +971,35 @@ profileSettingsForm.addEventListener('submit', async (e) => {
     } catch (err) { 
         showToast("Sistem xətası: " + err.message, "error"); 
     } finally { 
-        submitBtn.innerText = 'Dəyişiklikləri Yadda Saxla'; submitBtn.disabled = false; 
+        submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Yadda Saxla'; submitBtn.disabled = false; 
     }
 });
 document.getElementById('deleteAccBtn').addEventListener('click', deleteAccount);
 
-// E-poçt yeniləmə
+// E-poçt yeniləmə (cari şifrə məcburi)
 document.getElementById('changeEmailForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const currentPassForEmail = document.getElementById('emailCurrentPasswordInput').value;
     const newEmail = document.getElementById('newEmailInput').value.trim();
-    if (!newEmail) return;
+    if (!currentPassForEmail || !newEmail) return;
     const btn = e.target.querySelector('button[type="submit"]');
-    btn.textContent = 'Yüklənir...'; btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Yüklənir...'; btn.disabled = true;
     try {
+        const credential = EmailAuthProvider.credential(currentUser.email, currentPassForEmail);
+        await reauthenticateWithCredential(currentUser, credential);
         await updateEmail(currentUser, newEmail);
         await setDoc(doc(db, 'users', currentUser.uid), { email: newEmail }, { merge: true });
         showToast("E-poçt ünvanınız uğurla yeniləndi!", "success");
+        document.getElementById('emailCurrentPasswordInput').value = '';
         document.getElementById('newEmailInput').value = '';
         settingsModal.classList.remove('active');
     } catch (err) {
-        if (err.code === 'auth/requires-recent-login') {
-            showToast("Bu əməliyyat üçün yenidən giriş etməlisiniz. Çıxış edib yenidən daxil olun.", "warning");
+        if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+            showToast("Cari şifrəniz yanlışdır. Zəhmət olmasa düzgün daxil edin.", "error");
         } else {
             showToast(localizeFirebaseError(err), "error");
         }
-    } finally { btn.textContent = 'E-poçtu Yenilə'; btn.disabled = false; }
+    } finally { btn.innerHTML = '<i class="fa-solid fa-check"></i> Yadda Saxla'; btn.disabled = false; }
 });
 
 // Şifrə yeniləmə
@@ -1009,7 +1013,7 @@ document.getElementById('changePasswordForm').addEventListener('submit', async (
         return;
     }
     const btn = e.target.querySelector('button[type="submit"]');
-    btn.textContent = 'Yüklənir...'; btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Yüklənir...'; btn.disabled = true;
     try {
         const credential = EmailAuthProvider.credential(currentUser.email, currentPass);
         await reauthenticateWithCredential(currentUser, credential);
@@ -1020,11 +1024,11 @@ document.getElementById('changePasswordForm').addEventListener('submit', async (
         settingsModal.classList.remove('active');
     } catch (err) {
         if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-            showToast("Köhnə şifrəniz yanlışdır. Zəhmət olmasa düzgün daxil edin.", "error");
+            showToast("Cari şifrəniz yanlışdır. Zəhmət olmasa düzgün daxil edin.", "error");
         } else {
             showToast(localizeFirebaseError(err), "error");
         }
-    } finally { btn.textContent = 'Şifrəni Dəyiş'; btn.disabled = false; }
+    } finally { btn.innerHTML = '<i class="fa-solid fa-check"></i> Yadda Saxla'; btn.disabled = false; }
 });
 
 /* ==========================================================================
