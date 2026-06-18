@@ -242,7 +242,8 @@ function localizeFirebaseError(err) {
         case "auth/requires-recent-login": return "Bu əməliyyat üçün yenidən giriş etməlisiniz.";
         case "auth/email-already-exists": return "Bu e-poçt ünvanı artıq istifadə edilir.";
         case "auth/user-not-found": return "Daxil etdiyiniz e-poçt mövcud deyil.";
-        case "auth/cancelled-popup-request": return "Google ilə giriş əməliyyatı dayandırıldı.";
+        case "auth/cancelled-popup-request": return "Google ilə giriş əməliyyatı dayandırılır.";
+        case "auth/popup-closed-by-user": return "Google ilə giriş əməliyyatı dayandırıldı.";
         default: return err.message || "Gözlənilməz texniki xəta baş verdi.";
     }
 }
