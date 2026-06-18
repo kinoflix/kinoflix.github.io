@@ -42,33 +42,32 @@
                 <form id="loginForm" class="auth-form active">
                     <h2>Xoş Gəldiniz</h2>
                     <div class="input-group">
-                        <i class="fa-solid fa-envelope"></i>
+                        <i class="fa-solid fa-envelope left-icon"></i>
                         <input type="email" id="loginEmail" placeholder="E-poçt ünvanı" required>
                     </div>
                     <div class="input-group">
-                        <i class="fa-solid fa-lock"></i>
+                        <i class="fa-solid fa-lock left-icon"></i>
                         <input type="password" id="loginPassword" placeholder="Şifrə" required>
-                        <i class="fa-solid fa-eye password-toggle-icon" id="toggleLoginPasswordBtn" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); left: auto; cursor: pointer; color: var(--muted); z-index: 10;"></i>
+                        <i class="fa-solid fa-eye right-icon toggle-password" data-target="loginPassword"></i>
                     </div>
-                    <div class="forgot-password-container" style="text-align: right; margin-top: -8px; margin-bottom: 8px;">
-                        <a href="#" id="forgotPasswordLink" style="color: var(--accent); font-size: 0.85rem; text-decoration: none; font-weight: 500;">Şifrəni unutdunuzmu?</a>
-                    </div>
+                    <a id="forgotPasswordBtn" class="forgot-password">Şifrəni unutdunuzmu?</a>
                     <button type="submit" class="submit-btn">Sistemə Gir</button>
                 </form>
 
                 <form id="registerForm" class="auth-form">
                     <h2>Hesab Yarat</h2>
                     <div class="input-group">
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-user left-icon"></i>
                         <input type="text" id="regName" placeholder="İstifadəçi adı (Ləqəb)" required>
                     </div>
                     <div class="input-group">
-                        <i class="fa-solid fa-envelope"></i>
+                        <i class="fa-solid fa-envelope left-icon"></i>
                         <input type="email" id="regEmail" placeholder="E-poçt ünvanı" required>
                     </div>
                     <div class="input-group">
-                        <i class="fa-solid fa-lock"></i>
+                        <i class="fa-solid fa-lock left-icon"></i>
                         <input type="password" id="regPassword" placeholder="Şifrə (Min. 6 simvol)" required>
+                        <i class="fa-solid fa-eye right-icon toggle-password" data-target="regPassword"></i>
                     </div>
                     <button type="submit" class="submit-btn">Qeydiyyatı Tamamla</button>
                 </form>
@@ -125,16 +124,12 @@
                             <div class="dots"><span></span><span></span><span></span></div>
                         </div>
 
-                        <div id="generalFileIndicator" class="file-indicator-bar hidden">
-                            <i class="fa-solid fa-image"></i> <span id="generalFileName">fayl_adi.png</span>
-                            <button id="clearGeneralFileBtn" class="clear-file-btn" title="Faylı ləğv et">&times;</button>
-                        </div>
-
                         <div class="chat-input-bar">
-                            <label for="chatFileInput" class="attach-btn" title="Fayl və ya Şəkil göndər">
+                            <label for="chatFileInput" class="attach-btn" title="Şəkil göndər">
                                 <i class="fa-solid fa-paperclip"></i>
                                 <input type="file" id="chatFileInput" accept="image/*" hidden>
                             </label>
+                            <span id="chatFileName" class="file-name-display"></span>
                             <input type="text" id="messageInputField" placeholder="Ümumi çata mesaj yazın..." autocomplete="off">
                             <button id="sendMessageBtn" class="send-btn">
                                 <i class="fa-solid fa-paper-plane"></i>
@@ -153,16 +148,12 @@
                         
                         <div id="privateMessagesArea" class="chat-messages-area"></div>
                         
-                        <div id="privateFileIndicator" class="file-indicator-bar hidden">
-                            <i class="fa-solid fa-image"></i> <span id="privateFileName">fayl_adi.png</span>
-                            <button id="clearPrivateFileBtn" class="clear-file-btn" title="Faylı ləğv et">&times;</button>
-                        </div>
-
                         <div class="chat-input-bar">
-                            <label for="privateFileInput" class="attach-btn" title="Fayl göndər">
+                            <label for="privateFileInput" class="attach-btn" title="Şəkil göndər">
                                 <i class="fa-solid fa-paperclip"></i>
                                 <input type="file" id="privateFileInput" accept="image/*" hidden>
                             </label>
+                            <span id="privateFileName" class="file-name-display"></span>
                             <input type="text" id="privateInputField" placeholder="Şəxsi mesajınızı yazın..." autocomplete="off">
                             <button id="sendPrivateMessageBtn" class="send-btn">
                                 <i class="fa-solid fa-paper-plane"></i>
@@ -177,7 +168,7 @@
     </main>
 
     <div id="settingsModal" class="modal-overlay">
-        <div class="modal-card">
+        <div class="modal-card modal-card-scrollable">
             <div class="modal-header">
                 <h3>Profil Ayarları</h3>
                 <button id="closeSettingsBtn" class="close-modal-btn">&times;</button>
@@ -191,28 +182,25 @@
                         </label>
                         <input type="file" id="avatarFileInput" accept="image/*" hidden>
                     </div>
+                    
                     <div class="input-group">
                         <label for="settingsDisplayName">Görünən Adınız:</label>
                         <input type="text" id="settingsDisplayName" placeholder="Yeni ləqəb" required>
                     </div>
-                    
-                    <div class="input-group">
-                        <label for="settingsEmail">E-poçt Ünvanınız:</label>
-                        <input type="email" id="settingsEmail" placeholder="Yeni e-poçt ünvanı">
-                    </div>
 
-                    <div style="margin: 18px 0 8px 0; font-weight: bold; font-size: 0.9rem; color: var(--accent); border-bottom: 1px solid var(--glass-border); padding-bottom: 6px;">
-                        Təhlükəsizlik və Şifrə Yeniləmə
+                    <div class="input-group">
+                        <label for="settingsEmail">E-poçt ünvanı:</label>
+                        <input type="email" id="settingsEmail" placeholder="E-poçt ünvanı">
                     </div>
 
                     <div class="input-group">
-                        <label for="settingsOldPassword">Cari (Köhnə) Şifrə:</label>
-                        <input type="password" id="settingsOldPassword" placeholder="Dəyişikliklər üçün cari şifrəniz məcburidir">
+                        <label for="settingsNewPassword">Yeni Şifrə (Dəyişmək istəyirsinizsə):</label>
+                        <input type="password" id="settingsNewPassword" placeholder="Yeni şifrə daxil edin">
                     </div>
 
-                    <div class="input-group">
-                        <label for="settingsNewPassword">Yeni Şifrə:</label>
-                        <input type="password" id="settingsNewPassword" placeholder="Yeni şifrə (Dəyişmək istəmirsinizsə boş buraxın)">
+                    <div class="input-group auth-divider-group">
+                        <label for="settingsCurrentPassword" style="color: var(--danger); font-size: 0.8rem; margin-top: 10px;">E-poçt və ya Şifrə yeniləmək üçün mövcud şifrənizi daxil etməyiniz məcburidir!</label>
+                        <input type="password" id="settingsCurrentPassword" placeholder="Cari şifrəniz">
                     </div>
 
                     <button type="submit" class="save-settings-btn">Dəyişiklikləri Yadda Saxla</button>
