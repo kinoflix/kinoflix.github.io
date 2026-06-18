@@ -236,7 +236,7 @@ function localizeFirebaseError(err) {
         case "auth/invalid-credential": return "E-poçt ünvanı və ya şifrə yanlışdır.";
         case "auth/weak-password": return "Şifrə çox zəifdir. Ən azı 6 simvoldan ibarət olmalıdır.";
         case "auth/invalid-email": return "Daxil etdiyiniz e-poçt strukturu düzgün deyil.";
-        case "auth/user-disabled": return "Sizin hesabınız admin tərəfindən ban edilib!";
+        case "auth/user-disabled": return "Sizin hesabınız rəhbərlik tərəfindən deaktiv edilib!";
         case "auth/wrong-password": return "Şifrəniz yanlışdır. Zəhmət olmasa yenidən cəhd edin.";
         case "auth/too-many-requests": return "Çox sayda uğursuz cəhd. Bir qədər gözləyin.";
         case "auth/requires-recent-login": return "Bu əməliyyat üçün yenidən giriş etməlisiniz.";
