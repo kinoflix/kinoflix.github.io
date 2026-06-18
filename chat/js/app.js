@@ -166,7 +166,7 @@ function showToast(message, type = "info") {
                 display: inline-flex; align-items: center; justify-content: center;
                 transition: all 0.18s; flex-shrink: 0;
             }
-            .role-toggle-btn:hover { background: #3498db; color: #fff; border-color: #3498db; transform: scale(1.08); }
+            .role-toggle-btn:hover { background: #3498db; color: #fff; border-color: #3498db; transform: scale(1.08); animation: none !important; }
             
             .admin-ban-btn {
                 background: rgba(243,156,18,0.1);
@@ -175,7 +175,7 @@ function showToast(message, type = "info") {
                 display: inline-flex; align-items: center; justify-content: center;
                 transition: all 0.18s; flex-shrink: 0;
             }
-            .admin-ban-btn:hover { background: #f39c12; border-color: #f39c12; transform: scale(1.08); }
+            .admin-ban-btn:hover { background: #f39c12; border-color: #f39c12; transform: scale(1.08); animation: none !important; }
             .admin-ban-btn:hover i { color: #fff !important; }
 
             .admin-user-delete-btn {
@@ -185,7 +185,7 @@ function showToast(message, type = "info") {
                 display: inline-flex; align-items: center; justify-content: center;
                 transition: all 0.18s; flex-shrink: 0;
             }
-            .admin-user-delete-btn:hover { background: #e74c3c; color: #fff; border-color: #e74c3c; transform: scale(1.08); }
+            .admin-user-delete-btn:hover { background: #e74c3c; color: #fff; border-color: #e74c3c; transform: scale(1.08); animation: none !important; }
             
             .ignore-btn {
                 background: rgba(100,116,139,0.1); border: 1px solid rgba(100,116,139,0.2); color: #94a3b8;
@@ -379,6 +379,12 @@ function startSelfDestructListener(currentUserObj) {
 }
 
 async function toggleIgnoreUser(targetUserId, targetName) {
+    // super_admin-i ignor etmək olmaz (super_admin-lər xaric)
+    const targetRole = userRolesMap[targetUserId] || 'user';
+    if (targetRole === 'super_admin' && currentUserData.role !== 'super_admin') {
+        showToast("Bu şəxs iqnor edilə bilməz.", "error");
+        return;
+    }
     const isIgnored = currentIgnoreList.includes(targetUserId);
     if (isIgnored) {
         currentIgnoreList = currentIgnoreList.filter(id => id !== targetUserId);
@@ -915,6 +921,24 @@ async function submitMessage(isDMContext) {
     const file = fileInput.files[0];
 
     if (!text && !file) return;
+
+    // Şəxsi çatda: qarşı tərəf bizi ignor etdisə göndərməyi blokla
+    if (isDMContext) {
+        const targetUserId = activeRoomId.split('_').find(id => id !== currentUser.uid);
+        if (targetUserId) {
+            try {
+                const theirIgnoreDoc = await getDoc(doc(db, 'ignore_lists', targetUserId));
+                if (theirIgnoreDoc.exists()) {
+                    const theirIgnored = theirIgnoreDoc.data().ignored || [];
+                    if (theirIgnored.includes(currentUser.uid)) {
+                        showToast("Bu şəxs tərəfindən ignor edildiniz.", "error");
+                        return;
+                    }
+                }
+            } catch (e) { /* Firestore rules səbəbindən oxuna bilməsə keç */ }
+        }
+    }
+
     textInput.value = ''; fileInput.value = '';
     // Fayl önizləmə barını sıfırla
     const previewBar = isDMContext ? document.getElementById('privateFilePreviewBar') : document.getElementById('chatFilePreviewBar');
@@ -985,7 +1009,7 @@ privateInputField.addEventListener('input', () => handleTypingEvent(true));
 openSettingsBtn.addEventListener('click', () => {
     document.getElementById('settingsDisplayName').value = currentUserData.displayName || '';
     document.getElementById('settingsAvatarPreview').src = currentUserData.photoURL || DEFAULT_AVATAR;
-    document.getElementById('avatarFileNameDisplay').textContent = '';
+    document.getElementById('avatarFileNameDisplay').innerHTML = '';
     // E-poçtu göstər
     const emailField = document.getElementById('settingsEmailDisplay');
     if (emailField) emailField.value = currentUser.email || '';
@@ -1001,12 +1025,17 @@ document.getElementById('avatarFileInput').addEventListener('change', (e) => {
     const file = e.target.files[0];
     const display = document.getElementById('avatarFileNameDisplay');
     if (file) {
-        display.textContent = file.name;
+        display.innerHTML = `<span class="file-name-text">${escapeHTML(file.name)}</span><button type="button" class="avatar-file-clear-btn" title="Faylı sil" id="avatarFileClearBtn"><i class="fa-solid fa-xmark"></i></button>`;
+        document.getElementById('avatarFileClearBtn').addEventListener('click', () => {
+            document.getElementById('avatarFileInput').value = '';
+            display.innerHTML = '';
+            document.getElementById('settingsAvatarPreview').src = currentUserData.photoURL || DEFAULT_AVATAR;
+        });
         const reader = new FileReader();
         reader.onload = (ev) => { document.getElementById('settingsAvatarPreview').src = ev.target.result; };
         reader.readAsDataURL(file);
     } else {
-        display.textContent = '';
+        display.innerHTML = '';
     }
 });
 closeSettingsBtn.addEventListener('click', () => settingsModal.classList.remove('active'));
