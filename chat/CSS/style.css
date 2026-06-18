@@ -1,141 +1,406 @@
 /* ==========================================================================
-   1. DİZAYN TOKENLƏRİ VƏ DƏYİŞƏNLƏR (Theme Engine)
+   KinoFlix Premium Chat Modern Style Core
    ========================================================================== */
+
 :root {
-    --bg: #08101a;
-    --surface: #0f1720;
-    --surface-hover: #172230;
-    --muted: #94a3b8;
-    --accent: #1db954; /* KINOFLIX Yaşılı */
-    --accent-hover: #1aa34a;
-    --text: #e6eef6;
-    --text-muted: #64748b;
-    --glass: rgba(255, 255, 255, 0.03);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --radius: 16px;
-    --radius-sm: 8px;
-    --shadow: 0 12px 40px rgba(2, 6, 23, 0.7);
-    --header-bg: rgba(8, 16, 26, 0.85);
-    --danger: #d94f5c;
-    --success: #1db954;
-    --me-bubble: #1db954;
-    --other-bubble: #172230;
+    --bg-main: #f5f7fb;
+    --bg-card: #ffffff;
+    --primary-color: #543728; /* Brend Rəng */
+    --primary-light: #f7f4f2;
+    --text-main: #2c3e50;
+    --text-muted: #7f8c8d;
+    --border-color: #e2e8f0;
+    --msg-me-bg: #543728;
+    --msg-me-text: #ffffff;
+    --msg-other-bg: #eaeaea;
+    --msg-other-text: #1a1a1a;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+    --shadow-md: 0 10px 25px rgba(0,0,0,0.08);
 }
 
-[data-theme="light"] {
-    --bg: #f4f6f9;
-    --surface: #ffffff;
+[data-theme="dark"] {
+    --bg-main: #0f0f11;
+    --bg-card: #18181c;
+    --primary-color: #f39c12;
+    --primary-light: #2c2519;
+    --text-main: #f5f6fa;
+    --text-muted: #95a5a6;
+    --border-color: #2a2a32;
+    --msg-me-bg: #f39c12;
+    --msg-me-text: #000000;
+    --msg-other-bg: #26262b;
+    --msg-other-text: #ffffff;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-md: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-body { background: var(--bg); color: var(--text); overflow: hidden; }
+* {
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
 
-/* Ekran Tənzimləmələri */
-.screen { display: none; height: 100vh; width: 100vw; }
-.screen.active { display: flex; animation: fadeIn 0.4s ease; }
+body {
+    background: var(--bg-main);
+    color: var(--text-main);
+    height: 100vh; overflow: hidden;
+    transition: background 0.3s, color 0.3s;
+}
 
-/* Auth */
-.auth-container { margin: auto; background: var(--surface); padding: 40px; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--glass-border); width: 100%; max-width: 400px; text-align: center; }
-.auth-logo { font-size: 24px; font-weight: bold; color: var(--accent); margin-bottom: 20px; }
-.input-group { margin-bottom: 15px; text-align: left; }
-.input-group label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 14px; }
-.input-group input { width: 100%; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--glass-border); background: var(--bg); color: var(--text); outline: none; }
-.input-group input:focus { border-color: var(--accent); }
-.btn-primary { width: 100%; padding: 12px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; transition: 0.3s; }
-.btn-primary:hover { background: var(--accent-hover); }
+/* ==========================================================================
+   1. AUTENTİFİKASİYA EKRANI DİZAYNI
+   ========================================================================== */
+.auth-container {
+    position: fixed; inset: 0; background: var(--bg-main);
+    display: none; align-items: center; justify-content: center; z-index: 10000;
+    padding: 20px;
+}
+.auth-container.active { display: flex; }
 
-/* Əsas App Konteyner */
-.app-container { display: flex; width: 100%; height: 100%; }
+.auth-card {
+    background: var(--bg-card); width: 100%; max-width: 440px;
+    border-radius: 24px; padding: 35px; box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+}
 
-/* Sol Panel (Sidebar) */
-.sidebar { width: 300px; background: var(--surface); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; }
-.sidebar-header { padding: 20px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
-.user-controls { display: flex; gap: 10px; align-items: center; }
-.icon-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; transition: 0.3s; }
-.icon-btn:hover { color: var(--accent); }
-.role-badge { font-size: 11px; background: var(--glass-border); padding: 3px 8px; border-radius: 10px; color: var(--accent); }
+.auth-header { text-align: center; margin-bottom: 25px; }
+.auth-header h2 { font-size: 26px; font-weight: 800; color: var(--primary-color); margin-bottom: 6px; }
+.auth-header p { font-size: 13.5px; color: var(--text-muted); }
 
-/* Aktiv İstifadəçilər Siyahısı & Status İşıqları (FİX EDİLDİ) */
-.user-list { flex: 1; overflow-y: auto; list-style: none; padding: 10px; }
-.user-item { display: flex; align-items: center; padding: 10px; border-radius: var(--radius-sm); cursor: pointer; transition: 0.3s; margin-bottom: 5px; }
-.user-item:hover { background: var(--surface-hover); }
-.avatar-wrapper { position: relative; width: 40px; height: 40px; margin-right: 12px; }
-.avatar-wrapper img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-.status-indicator { position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--surface); background: var(--text-muted); transition: 0.3s; }
-.status-indicator.online { background: var(--success); box-shadow: 0 0 5px var(--success); }
-.status-indicator.away { background: #facc15; box-shadow: 0 0 5px #facc15; }
+.auth-tabs {
+    display: flex; background: var(--bg-main); padding: 5px;
+    border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--border-color);
+}
+.tab-btn {
+    flex: 1; padding: 10px; border: none; background: none;
+    font-size: 14px; font-weight: 600; color: var(--text-muted);
+    cursor: pointer; border-radius: 9px; transition: all 0.2s;
+}
+.tab-btn.active {
+    background: var(--bg-card); color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
 
-.user-details h4 { font-size: 14px; margin: 0; }
-.user-details p { font-size: 12px; color: var(--text-muted); margin: 0; }
+.auth-form { display: none; flex-direction: column; }
+.auth-form.active { display: flex; }
+.auth-form h3 { font-size: 18px; margin-bottom: 20px; color: var(--text-main); }
 
-/* Sağ Panel (Mesajlaşma) */
-.chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg); position: relative; }
-.chat-header { padding: 20px; background: var(--header-bg); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); }
-#closePrivateBtn { background: var(--danger); color: #fff; border: none; padding: 5px 10px; border-radius: var(--radius-sm); cursor: pointer; }
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.form-group label { font-size: 13px; font-weight: 600; color: var(--text-main); }
+.form-group input {
+    width: 100%; padding: 12px 16px; border-radius: 12px;
+    border: 1px solid var(--border-color); background: var(--bg-main);
+    color: var(--text-main); font-size: 14.5px; transition: border-color 0.2s;
+}
+.form-group input:focus { outline: none; border-color: var(--primary-color); }
 
-.messages-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+.auth-submit-btn {
+    width: 100%; padding: 14px; background: var(--primary-color);
+    color: white; border: none; border-radius: 12px; font-size: 15px;
+    font-weight: 600; cursor: pointer; margin-top: 10px; transition: opacity 0.2s;
+}
+[data-theme="dark"] .auth-submit-btn { color: #000; font-weight: 700; }
+.auth-submit-btn:hover { opacity: 0.9; }
 
-/* Mesaj Balonları (Məntiq qorunur) */
-.message { max-width: 70%; display: flex; flex-direction: column; }
-.message.me { align-self: flex-end; }
-.message.other { align-self: flex-start; }
+.divider {
+    display: flex; align-items: center; text-align: center;
+    margin: 20px 0; color: var(--text-muted); font-size: 13px;
+}
+.divider::before, .divider::after {
+    content: ''; flex: 1; border-bottom: 1px solid var(--border-color);
+}
+.divider span { padding: 0 10px; }
 
-.msg-info { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; }
-.message.me .msg-info { text-align: right; }
+.google-btn {
+    width: 100%; padding: 12px; background: transparent;
+    border: 1px solid var(--border-color); color: var(--text-main);
+    border-radius: 12px; font-size: 14px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    gap: 10px; transition: background 0.2s;
+}
+.google-btn:hover { background: var(--primary-light); }
 
-.msg-bubble { padding: 12px 16px; border-radius: 20px; font-size: 14px; word-wrap: break-word; line-height: 1.4; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-.message.me .msg-bubble { background: var(--me-bubble); color: #fff; border-bottom-right-radius: 4px; }
-.message.other .msg-bubble { background: var(--other-bubble); color: var(--text); border-bottom-left-radius: 4px; }
-.msg-bubble img { max-width: 100%; border-radius: var(--radius-sm); margin-top: 5px; }
+/* ==========================================================================
+   2. ÇAT ƏSAS STRUKTURU
+   ========================================================================== */
+.chat-container {
+    display: none; height: 100vh; width: 100vw;
+}
+.chat-container.active { display: flex; }
 
-/* Chat Input və Fayl Əlavə Etmə UI (FİX EDİLDİ) */
-.chat-input-wrapper { background: var(--surface); padding: 15px 20px; border-top: 1px solid var(--glass-border); display: flex; flex-direction: column; gap: 10px; }
+/* PANEL: SOL SİDEBAR */
+.sidebar {
+    width: 320px; background: var(--bg-card);
+    border-right: 1px solid var(--border-color);
+    display: flex; flex-direction: column;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 99;
+}
 
-#filePreviewContainer { position: relative; display: inline-block; max-width: 100px; border-radius: var(--radius-sm); border: 1px solid var(--glass-border); overflow: hidden; }
-#filePreviewImg { width: 100%; display: block; object-fit: cover; }
-#removeFileBtn { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.sidebar-header {
+    padding: 20px; border-bottom: 1px solid var(--border-color);
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; background: var(--bg-card); z-index: 10;
+}
+.sidebar-header h3 { font-size: 18px; font-weight: 700; }
 
-.message-form { display: flex; align-items: center; background: var(--bg); border: 1px solid var(--glass-border); border-radius: 30px; padding: 5px 15px; gap: 10px; }
-.attach-btn { color: var(--text-muted); font-size: 18px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; padding: 5px; }
-.attach-btn:hover { color: var(--accent); }
-#chatInput { flex: 1; background: transparent; border: none; color: var(--text); font-size: 14px; padding: 10px 0; outline: none; }
-.send-btn { background: transparent; color: var(--accent); border: none; font-size: 18px; cursor: pointer; transition: 0.3s; padding: 5px; display: flex; align-items: center; justify-content: center; }
-.send-btn:hover { color: var(--accent-hover); transform: scale(1.1); }
+.global-room-btn {
+    margin: 15px 15px 5px 15px; padding: 12px 15px;
+    background: var(--bg-main); border-radius: 14px;
+    display: flex; align-items: center; gap: 14px; cursor: pointer;
+    border: 1px solid transparent; transition: all 0.2s;
+}
+.global-room-btn.active {
+    background: var(--primary-light); border-color: var(--primary-color);
+}
+.global-icon-wrapper {
+    width: 40px; height: 40px; background: var(--primary-color);
+    color: white; border-radius: 12px; display: flex;
+    align-items: center; justify-content: center; font-size: 18px;
+}
+[data-theme="dark"] .global-icon-wrapper { color: #000; }
+.global-room-info { display: flex; flex-direction: column; }
+.global-room-info .room-name { font-weight: 600; font-size: 14.5px; }
+.global-room-info .room-status { font-size: 11.5px; color: var(--primary-color); font-weight: 500; }
 
-/* Tənzimləmələr Modalı */
-.modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.modal.hidden { display: none; }
-.modal-content { background: var(--surface); padding: 30px; border-radius: var(--radius); width: 100%; max-width: 500px; position: relative; }
-.close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: var(--text-muted); }
-.save-settings-btn { background: var(--accent); color: #fff; border: none; padding: 10px 20px; border-radius: var(--radius-sm); cursor: pointer; width: 100%; margin-top: 10px; }
+.users-list {
+    list-style: none; overflow-y: auto; flex: 1; padding: 10px 15px;
+}
+.user-item {
+    display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+    border-radius: 12px; cursor: pointer; margin-bottom: 6px;
+    transition: background 0.2s; position: relative;
+}
+.user-item:hover { background: var(--bg-main); }
+.user-item.active { background: var(--primary-light); }
 
-/* Təhlükəli Zona */
-.danger-zone { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--glass-border); }
-.delete-account-btn { border: 1px solid #e74c3c; color: #e74c3c; background: transparent; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; width: 100%; gap: 8px; }
-.delete-account-btn:hover { background: #e74c3c; color: #fff; }
+.avatar-wrapper { position: relative; width: 42px; height: 42px; flex-shrink: 0; }
+.avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #ccc; }
+.status-indicator {
+    position: absolute; bottom: 1px; right: 1px;
+    width: 11px; height: 11px; border-radius: 50%;
+    border: 2px solid var(--bg-card);
+}
+.status-indicator.online { background-color: #2ecc71; }
+.status-indicator.away { background-color: #f1c40f; }
+.status-indicator.offline { background-color: #95a5a6; }
 
-/* Toast Bildirişləri */
-#toastContainer { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-.toast { padding: 12px 20px; background: var(--surface-hover); color: var(--text); border-left: 4px solid var(--accent); border-radius: 4px; box-shadow: var(--shadow); animation: slideUp 0.3s ease forwards; }
-.toast.error { border-left-color: var(--danger); }
+.user-item div { display: flex; flex-direction: column; flex: 1; }
+.user-item .username { font-size: 14px; font-weight: 600; display: flex; align-items: center; }
+.user-item .typing-notify { font-size: 11.5px; color: #2ecc71; font-weight: 500; }
 
-/* Util */
+.sidebar-footer {
+    padding: 15px; border-top: 1px solid var(--border-color);
+    background: var(--bg-main); display: flex; flex-direction: column; gap: 12px;
+}
+.user-profile-summary { display: flex; align-items: center; gap: 12px; }
+.user-meta { display: flex; flex-direction: column; }
+.user-meta .username { font-size: 14px; font-weight: 700; }
+.user-meta .role-badge { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+
+.footer-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.action-circle-btn {
+    flex: 1; padding: 10px; border: 1px solid var(--border-color);
+    background: var(--bg-card); color: var(--text-main);
+    border-radius: 10px; cursor: pointer; font-size: 14px;
+    transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+}
+.action-circle-btn:hover { background: var(--primary-light); border-color: var(--primary-color); }
+.action-circle-btn.logout:hover { background: #fce8e6; border-color: #e74c3c; color: #e74c3c; }
+
+/* PANEL: SAĞ ƏSAS ÇAT AREA */
+.chat-main {
+    flex: 1; display: flex; flex-direction: column; background: var(--bg-main);
+}
+.chat-main-header {
+    height: 70px; background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    display: flex; align-items: center; padding: 0 25px; gap: 20px;
+}
+.site-logo { height: 38px; object-fit: contain; }
+.active-room-details h4 { font-size: 16px; font-weight: 700; }
+.active-room-details span { font-size: 12px; color: var(--text-muted); }
+
+.chat-content-layers { flex: 1; position: relative; }
+.chat-area-wrapper {
+    position: absolute; inset: 0; display: none; flex-direction: column;
+}
+.chat-area-wrapper.active { display: flex; }
+.chat-area-wrapper.hidden { display: none; }
+
+.private-chat-header-bar {
+    background: #e1f5fe; color: #0288d1; padding: 10px 20px;
+    font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px;
+    cursor: pointer; border-bottom: 1px solid rgba(2, 136, 209, 0.1);
+}
+[data-theme="dark"] .private-chat-header-bar { background: #0d2535; color: #29b6f6; }
+
+.chat-messages {
+    flex: 1; overflow-y: auto; padding: 25px;
+    display: flex; flex-direction: column; gap: 16px;
+}
+
+/* MESAJ BALONLARI STRUKTURU */
+.message-wrapper { display: flex; gap: 12px; max-width: 70%; align-items: flex-start; }
+.message-wrapper.me { align-self: flex-end; flex-direction: row-reverse; }
+.message-wrapper.other { align-self: flex-start; }
+
+.msg-avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.message-bubble {
+    padding: 12px 16px; border-radius: 18px; position: relative;
+    box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 4px;
+}
+.message-wrapper.me .message-bubble {
+    background: var(--msg-me-bg); color: var(--msg-me-text);
+    border-top-right-radius: 2px;
+}
+.message-wrapper.other .message-bubble {
+    background: var(--msg-other-bg); color: var(--msg-other-text);
+    border-top-left-radius: 2px;
+}
+
+.sender-name { font-size: 11.5px; font-weight: 700; opacity: 0.7; display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+.message-bubble p { font-size: 14.2px; line-height: 1.4; word-break: break-word; }
+.timestamp { font-size: 10px; opacity: 0.5; align-self: flex-end; margin-top: 2px; }
+
+.delete-msg-btn {
+    background: none; border: none; color: inherit; cursor: pointer;
+    font-size: 11px; opacity: 0.4; transition: opacity 0.2s;
+}
+.delete-msg-btn:hover { opacity: 1; }
+
+.chat-shared-image {
+    max-width: 100%; max-height: 240px; border-radius: 10px;
+    margin-top: 6px; cursor: pointer; transition: opacity 0.2s;
+}
+.chat-shared-image:hover { opacity: 0.9; }
+
+/* GİRİŞ PANELİ */
+.chat-input-panel {
+    padding: 15px 25px 20px 25px; background: var(--bg-card);
+    border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px;
+}
+.file-upload-btn {
+    width: 44px; height: 44px; background: var(--bg-main);
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-muted); font-size: 18px; transition: all 0.2s;
+}
+.file-upload-btn:hover { color: var(--primary-color); background: var(--primary-light); }
+
+.chat-input-panel input[type="text"] {
+    flex: 1; padding: 13px 20px; border-radius: 12px;
+    border: 1px solid var(--border-color); background: var(--bg-main);
+    color: var(--text-main); font-size: 14.5px;
+}
+.chat-input-panel input[type="text"]:focus { outline: none; border-color: var(--primary-color); }
+
+.send-btn {
+    width: 44px; height: 44px; background: var(--primary-color);
+    color: white; border: none; border-radius: 12px; font-size: 16px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s;
+}
+[data-theme="dark"] .send-btn { color: #000; }
+.send-btn:hover { transform: scale(1.04); }
+
 .hidden { display: none !important; }
 
 /* ==========================================================================
-   8. ANIMASIYALAR VƏ MOBİL RESPONSIVE
+   3. PROFİL MODAL AYARLARI
    ========================================================================== */
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes scaleUp { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes pulse { from { opacity: 0.6; } to { opacity: 1; } }
-@keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px); display: none; align-items: center;
+    justify-content: center; z-index: 10000; padding: 20px;
+}
+.modal-overlay.active { display: flex; }
 
-.mobile-only { display: none; }
+.modal-card {
+    background: var(--bg-card); width: 100%; max-width: 460px;
+    border-radius: 20px; padding: 30px; box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color); animation: modalScale 0.25s ease-out;
+}
+@keyframes modalScale { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
+.modal-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px;
+}
+.modal-header h3 { font-size: 19px; font-weight: 700; }
+.close-modal-btn { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
+
+.modal-footer-buttons {
+    display: flex; items-center; justify-content: space-between; gap: 12px; margin-top: 25px;
+}
+.btn-primary {
+    padding: 12px 20px; background: var(--primary-color); color: white;
+    border: none; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer;
+}
+[data-theme="dark"] .btn-primary { color: #000; font-weight: 700; }
+.btn-danger-outline {
+    padding: 12px 20px; background: transparent; color: #e74c3c;
+    border: 1px solid #e74c3c; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer;
+}
+.btn-danger-outline:hover { background: #fce8e6; }
+
+.mobile-toggle-btn { display: none; }
+
+/* ==========================================================================
+   4. SEÇİLMİŞ FAYL VƏ MÜASİR ROL İKONLARI ODALARI
+   ========================================================================== */
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.role-toggle-btn, .admin-ban-btn, .admin-user-delete-btn, .ignore-toggle-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 28px;
+    height: 28px;
+}
+
+[data-theme="light"] .role-toggle-btn, 
+[data-theme="light"] .admin-ban-btn, 
+[data-theme="light"] .admin-user-delete-btn, 
+[data-theme="light"] .ignore-toggle-btn {
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.role-toggle-btn { color: #3498db; }
+.role-toggle-btn:hover { background: rgba(52, 152, 219, 0.15); border-color: #3498db; transform: scale(1.1); }
+
+.admin-ban-btn { color: #f39c12; }
+.admin-ban-btn:hover { background: rgba(243, 156, 18, 0.15); border-color: #f39c12; transform: scale(1.1); }
+
+.admin-user-delete-btn { color: #e74c3c; }
+.admin-user-delete-btn:hover { background: rgba(231, 76, 60, 0.15); border-color: #e74c3c; transform: scale(1.1); }
+
+.ignore-toggle-btn { color: #95a5a6; }
+.ignore-toggle-btn:hover { background: rgba(149, 165, 166, 0.15); border-color: #95a5a6; transform: scale(1.1); }
+
+/* ==========================================================================
+   5. RESPONSIVE MOBİL OPTİMİZASİYASI
+   ========================================================================== */
 @media (max-width: 768px) {
-    .mobile-only { display: flex; }
-    .app-container { flex-direction: column; }
-    .sidebar { width: 100%; height: auto; max-height: 30vh; border-right: none; border-bottom: 1px solid var(--glass-border); }
-    .chat-area { height: 70vh; }
+    .sidebar {
+        position: absolute; left: 0; top: 0; bottom: 0;
+        transform: translateX(-100%); width: 290px;
+    }
+    .sidebar.mobile-open { transform: translateX(0); box-shadow: var(--shadow-md); }
+    .mobile-toggle-btn {
+        display: flex; width: 40px; height: 40px; background: var(--bg-main);
+        border: 1px solid var(--border-color); border-radius: 10px;
+        align-items: center; justify-content: center; cursor: pointer; color: var(--text-main);
+    }
+    .message-wrapper { max-width: 88%; }
+    .chat-main-header { padding: 0 15px; gap: 12px; }
 }
