@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KINOFLIX - Real-vaxt Serverless Çat</title>
+    <title>KINOFLIX - Online söhbət</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%231db954' d='M27.5 162.2L9 187.1h90.5l6.9-130.7-78.9 105.8zM396.3 45.7L267.7 32l135.7 147.2-7.1-133.5zM112.2 218.3l-11.2-22H9.9L234.8 458zm2-31.2h284l-81.5-88.5L256.3 33zm297.3 9.1L277.6 458l224.8-261.7h-90.9zM415.4 69L406 56.4l.9 17.3 6.1 113.4h90.3zM113.5 93.5l-4.6 85.6L244.7 32 116.1 45.7zm287.7 102.7h-290l42.4 82.9L256.3 480l144.9-283.8z'/%3E%3C/svg%3E">
     <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -55,7 +55,7 @@
                     <div style="text-align:right; margin-top:-8px;">
                         <button type="button" id="forgotPasswordBtn" class="forgot-password-link">Şifrəni unutdunuzmu?</button>
                     </div>
-                    <button type="submit" class="submit-btn">Sistemə Gir</button>
+                    <button type="submit" class="submit-btn">Daxil ol</button>
                 </form>
 
                 <form id="registerForm" class="auth-form">
@@ -75,7 +75,7 @@
                             <i class="fa-solid fa-eye"></i>
                         </button>
                     </div>
-                    <button type="submit" class="submit-btn">Qeydiyyatı Tamamla</button>
+                    <button type="submit" class="submit-btn">Qeydiyyatı tamamla</button>
                 </form>
 
                 <div class="auth-divider"><span>və ya</span></div>
@@ -207,20 +207,20 @@
                 <!-- Vahid Profil Formu -->
                 <form id="profileSettingsForm" class="settings-unified-form">
                     <div class="settings-field">
-                        <label for="settingsDisplayName">Görünən Adınız:</label>
+                        <label for="settingsDisplayName">İstifadəçi adınız:</label>
                         <input type="text" id="settingsDisplayName" placeholder="İstifadəçi adınız" required>
                     </div>
                     <div class="settings-field">
-                        <label for="settingsEmailDisplay">E-poçt Ünvanınız:</label>
+                        <label for="settingsEmailDisplay">E-poçt ünvanınız:</label>
                         <input type="email" id="settingsEmailDisplay" placeholder="E-poçt ünvanı">
                     </div>
 
                     <div class="settings-security-title">
-                        <i class="fa-solid fa-shield-halved"></i> Təhlükəsizlik — E-poçt və Şifrə Dəyişmə
+                        <i class="fa-solid fa-shield-halved"></i> Təhlükəsizlik ayarları
                     </div>
 
                     <div class="settings-field">
-                        <label for="currentPasswordInput">Cari Şifrə <span style="font-weight:400;color:var(--muted)">(e-poçt/şifrə dəyişiləcəksə məcburidir)</span>:</label>
+                        <label for="currentPasswordInput">Cari Şifrə:</label>
                         <div class="settings-pw-wrap">
                             <input type="password" id="currentPasswordInput" placeholder="Dəyişikliklər üçün cari şifrəniz məcburidir">
                             <button type="button" class="settings-eye-btn" data-target="currentPasswordInput"><i class="fa-solid fa-eye"></i></button>
@@ -235,16 +235,16 @@
                     </div>
 
                     <button type="submit" class="settings-main-save-btn">
-                        Dəyişiklikləri Yadda Saxla
+                        Dəyişiklikləri yadda saxla
                     </button>
                 </form>
 
                 <!-- Hesabı sil -->
                 <div class="danger-zone">
-                    <h4>Hesabın Silinməsi</h4>
-                    <p>Hesabınızı sildiyiniz təqdirdə bütün profil məlumatlarınız çat sistemindən tamamilə təmizlənəcək.</p>
+                    <h4>Hesabın silinməsi</h4>
+                    <p>Hesabınızı sildiyiniz təqdirdə bütün məlumatlarınız sistemdən tamamilə təmizlənəcəkdir. Bu əməliyyatı geri almaq mümkün deyildir!</p>
                     <button id="deleteAccBtn" class="delete-account-btn">
-                        <i class="fa-solid fa-user-xmark"></i> Hesabımı Sil
+                        <i class="fa-solid fa-user-xmark"></i> Hesabımı sil
                     </button>
                 </div>
 
@@ -258,6 +258,6 @@
         <form id="changePasswordForm"><button type="submit"></button></form>
     </div>
 
-    <script type="module" src="js/app.js"></script>
+    <script type="module" src="JS/app.js"></script>
 </body>
 </html>
