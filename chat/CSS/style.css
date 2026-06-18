@@ -128,7 +128,7 @@ body {
 .auth-form.active { display: flex; }
 .auth-form h2 { font-size: 1.5rem; margin-bottom: 8px; }
 .input-group { position: relative; display: flex; flex-direction: column; }
-.input-group i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+.input-group > i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; z-index: 1; }
 .input-group input { width: 100%; padding: 14px 14px 14px 44px; border-radius: var(--radius-sm); border: 1px solid var(--glass-border); background: var(--bg); color: var(--text); outline: none; font-size: 0.95rem; transition: border-color 0.2s; }
 .input-group input:focus { border-color: var(--accent); }
 .submit-btn { background: var(--accent); color: white; border: none; padding: 14px; border-radius: var(--radius-sm); font-weight: bold; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
@@ -161,8 +161,9 @@ body {
 .sidebar-list-container h3 { font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; position: sticky; top: 0; background: var(--surface); padding-top: 8px; z-index: 1; }
 .text-success { color: var(--success); font-size: 0.6rem; }
 .users-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-.user-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.2s; }
-.user-item:hover, .user-item.active { background: var(--surface-hover); }
+.user-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.2s; animation: none !important; }
+.user-item:hover, .user-item.active { background: var(--surface-hover); animation: none !important; }
+.user-item:hover * { animation: none !important; }
 .avatar-wrapper { position: relative; display: inline-block; }
 .status-indicator { position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--surface); }
 .status-indicator.online { background: var(--success); }
@@ -368,9 +369,20 @@ body {
 .avatar-camera-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
 .file-name-display {
     font-size: 0.75rem; color: var(--accent);
-    display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    max-width: 200px; text-align: center;
+    display: inline-flex; align-items: center; gap: 6px;
+    overflow: hidden; max-width: 220px; text-align: center;
 }
+.file-name-display .file-name-text {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.avatar-file-clear-btn {
+    background: none; border: none; cursor: pointer; padding: 0;
+    color: var(--danger); font-size: 0.75rem; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; border-radius: 50%;
+    transition: background 0.15s;
+}
+.avatar-file-clear-btn:hover { background: rgba(217,79,92,0.15); }
 
 /* Vahid Form */
 .settings-unified-form {
@@ -486,12 +498,14 @@ body {
 
 /* Şifrə Göstər/Gizlət Düyməsi */
 .password-toggle-btn {
-    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    position: absolute; right: 0; top: 50%; transform: translateY(-50%);
     background: none; border: none; color: var(--muted); cursor: pointer;
-    font-size: 0.9rem; padding: 4px; transition: color 0.2s;
+    font-size: 0.9rem; padding: 0 14px; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.2s; flex-shrink: 0;
 }
 .password-toggle-btn:hover { color: var(--accent); }
-.input-group:has(.password-toggle-btn) input { padding-right: 42px; }
+.input-group:has(.password-toggle-btn) input { padding-right: 44px; }
 
 /* Şifrəni Unutdum Linki */
 .forgot-password-link {
@@ -530,6 +544,7 @@ body {
     border-color: #3498db;
     transform: scale(1.08);
     box-shadow: 0 3px 10px rgba(52,152,219,0.35);
+    animation: none !important;
 }
 
 .admin-ban-btn {
@@ -548,6 +563,7 @@ body {
     border-color: #f39c12;
     transform: scale(1.08);
     box-shadow: 0 3px 10px rgba(243,156,18,0.35);
+    animation: none !important;
 }
 .admin-ban-btn:hover i { color: #fff !important; }
 
@@ -569,6 +585,7 @@ body {
     border-color: #e74c3c;
     transform: scale(1.08);
     box-shadow: 0 3px 10px rgba(231,76,60,0.35);
+    animation: none !important;
 }
 
 .ignore-btn {
