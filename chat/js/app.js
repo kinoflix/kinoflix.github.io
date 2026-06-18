@@ -5,8 +5,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { 
     getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
     GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, updateProfile,
-    deleteUser, sendPasswordResetEmail, EmailAuthProvider, reauthenticateWithCredential,
-    updatePassword, updateEmail
+    deleteUser, sendPasswordResetEmail, reauthenticateWithCredential, EmailAuthProvider,
+    updateEmail, updatePassword
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { 
     getFirestore, doc, setDoc, getDoc, collection, addDoc, query, 
@@ -32,9 +32,10 @@ const DEFAULT_AVATAR = "https://kinoflix.github.io/chat/img/avatar.jpg";
  2. QLOBAL DƏYİŞƏNLƏR VƏ DOM ELEMENTLƏRİ
  ========================================================================== */
 let currentUser = null;
-let currentUserData = { role: 'user', displayName: '', photoURL: DEFAULT_AVATAR, isBanned: false, ignoredUsers: [] };
+let currentUserData = { role: 'user', displayName: '', photoURL: DEFAULT_AVATAR, isBanned: false };
 let activeRoomId = 'global_room';
 let activeRoomIsDM = false;
+let currentIgnoreList = []; // İgnor edilən istifadəçilərin UID-ləri
 
 // Canlı dinləyicilərin (Unsubscribe) idarəetmə dəyişənləri
 let unsubscribeGeneralMessages = null;
@@ -111,7 +112,7 @@ function getRoleStarsHtml(role) {
     return starsHtml;
 }
 
-// TOAST BILDIRIŞ SİSTEMİ
+// TOAST BILDIRIŞ SİSTEMİ (OLDapp.js-dən inteqrasiya edilib)
 function showToast(message, type = "info") {
     if (!document.getElementById("flix-toast-styles")) {
         const style = document.createElement("style");
@@ -150,6 +151,41 @@ function showToast(message, type = "info") {
                 margin-left: auto; min-width: 18px; text-align: center;
                 box-shadow: 0 2px 6px rgba(231, 76, 60, 0.4); animation: flixPulse 1.5s infinite;
             }
+            
+            .user-actions {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                margin-left: auto;
+            }
+            
+            .role-toggle-btn {
+                background: none;
+                border: 1px solid transparent; color: #3498db; cursor: pointer;
+                font-size: 13px; padding: 5px 7px; border-radius: 6px; opacity: 0.75; transition: all 0.2s;
+            }
+            .role-toggle-btn:hover { opacity: 1; background: rgba(52,152,219,0.15); border-color: rgba(52,152,219,0.3); }
+            
+            .admin-ban-btn {
+                background: none;
+                border: 1px solid transparent; cursor: pointer;
+                font-size: 13px; padding: 5px 7px; border-radius: 6px; opacity: 0.75; transition: all 0.2s;
+            }
+            .admin-ban-btn:hover { opacity: 1; background: rgba(243,156,18,0.15); border-color: rgba(243,156,18,0.3); }
+
+            .admin-user-delete-btn {
+                background: none;
+                border: 1px solid transparent; color: #e74c3c; cursor: pointer;
+                font-size: 13px; padding: 5px 7px; border-radius: 6px; opacity: 0.75; transition: all 0.2s;
+            }
+            .admin-user-delete-btn:hover { opacity: 1; background: rgba(231,76,60,0.15); border-color: rgba(231,76,60,0.3); }
+            
+            .ignore-btn {
+                background: none; border: 1px solid transparent; color: #94a3b8;
+                cursor: pointer; font-size: 13px; padding: 5px 7px; border-radius: 6px; opacity: 0.75; transition: all 0.2s;
+            }
+            .ignore-btn:hover { opacity: 1; background: rgba(100,116,139,0.15); border-color: rgba(100,116,139,0.3); }
+            .ignore-btn.active { color: #f39c12; opacity: 1; }
             
             @keyframes flixSlideIn { to { transform: translateX(0); } }
             @keyframes flixFadeOut { to { opacity: 0; transform: translateY(-15px); } }
@@ -192,7 +228,10 @@ function localizeFirebaseError(err) {
         case "auth/weak-password": return "Şifrə çox zəifdir. Ən azı 6 simvoldan ibarət olmalıdır.";
         case "auth/invalid-email": return "Daxil etdiyiniz e-poçt strukturu düzgün deyil.";
         case "auth/user-disabled": return "Sizin hesabınız admin tərəfindən ban edilib!";
-        case "auth/user-not-found": return "Bu e-poçt ünvanı ilə istifadəçi tapılmadı.";
+        case "auth/wrong-password": return "Şifrəniz yanlışdır. Zəhmət olmasa yenidən cəhd edin.";
+        case "auth/too-many-requests": return "Çox sayda uğursuz cəhd. Bir qədər gözləyin.";
+        case "auth/requires-recent-login": return "Bu əməliyyat üçün yenidən giriş etməlisiniz.";
+        case "auth/email-already-exists": return "Bu e-poçt ünvanı artıq istifadə edilir.";
         default: return err.message || "Gözlənilməz texniki xəta baş verdi.";
     }
 }
@@ -295,29 +334,6 @@ async function adminDeleteUser(targetUserId) {
     }
 }
 
-/* ==========================================================================
- İGNOR SİSTEMİ METODLARI
- ========================================================================== */
-async function toggleIgnoreUser(targetUid) {
-    if (!currentUser) return;
-    let ignoreds = currentUserData.ignoredUsers || [];
-    const isIgnored = ignoreds.includes(targetUid);
-    if (isIgnored) {
-        ignoreds = ignoreds.filter(id => id !== targetUid);
-        showToast("İstifadəçi ignordan çıxarıldı.", "success");
-    } else {
-        ignoreds.push(targetUid);
-        showToast("İstifadəçi ignor edildi. Şəxsi mesaj yaza bilməyəcək və mesajları ümumi çatda sizə görünməyəcək.", "success");
-    }
-    await setDoc(doc(db, 'users', currentUser.uid), { ignoredUsers: ignoreds }, { merge: true });
-    currentUserData.ignoredUsers = ignoreds;
-    renderUsersList();
-    loadGeneralMessages();
-    if (activeRoomIsDM) {
-        loadPrivateMessages();
-    }
-}
-
 function startSelfDestructListener(currentUserObj) {
     if (!currentUserObj) return;
     let isInitialLoad = true;
@@ -340,6 +356,25 @@ function startSelfDestructListener(currentUserObj) {
             setTimeout(() => { window.location.reload(); }, 2000);
         }
     });
+}
+
+async function toggleIgnoreUser(targetUserId, targetName) {
+    const isIgnored = currentIgnoreList.includes(targetUserId);
+    if (isIgnored) {
+        currentIgnoreList = currentIgnoreList.filter(id => id !== targetUserId);
+        showToast(`${escapeHTML(targetName)} artıq ignor siyahınızdan çıxarıldı.`, "info");
+    } else {
+        currentIgnoreList.push(targetUserId);
+        showToast(`${escapeHTML(targetName)} uğurla ignor edildi. Onun mesajları sizə görünməyəcək.`, "info");
+    }
+    try {
+        await setDoc(doc(db, 'ignore_lists', currentUser.uid), { ignored: currentIgnoreList }, { merge: true });
+    } catch (err) {
+        showToast("İgnor siyahısı yenilənərkən xəta baş verdi.", "error");
+    }
+    renderUsersList();
+    // Ümumi çatı yenilə ki gizlənmiş mesajlar dərhal tətbiq olunsun
+    loadGeneralMessages();
 }
 
 window.adminDeleteUser = adminDeleteUser;
@@ -368,7 +403,7 @@ document.body.setAttribute('data-theme', savedTheme);
 updateThemeUI(savedTheme);
 
 /* ==========================================================================
- 4. AUTENTİFİKASİYA İDARƏETMƏSİ & PAROL TOGGLE
+ 4. AUTENTİFİKASİYA İDARƏETMƏSİ
  ========================================================================== */
 tabLogin.addEventListener('click', () => {
     tabLogin.classList.add('active'); tabRegister.classList.remove('active');
@@ -377,51 +412,6 @@ tabLogin.addEventListener('click', () => {
 tabRegister.addEventListener('click', () => {
     tabRegister.classList.add('active'); tabLogin.classList.remove('active');
     registerForm.classList.add('active'); loginForm.classList.remove('active');
-});
-
-// Şifrə Göstər/Gizlət mexanizmi
-const toggleLoginPassword = document.getElementById('toggleLoginPassword');
-if (toggleLoginPassword) {
-    toggleLoginPassword.addEventListener('click', () => {
-        const passInput = document.getElementById('loginPassword');
-        if (passInput.type === 'password') {
-            passInput.type = 'text';
-            toggleLoginPassword.classList.replace('fa-eye', 'fa-eye-slash');
-        } else {
-            passInput.type = 'password';
-            toggleLoginPassword.classList.replace('fa-eye-slash', 'fa-eye');
-        }
-    });
-}
-
-const toggleRegPassword = document.getElementById('toggleRegPassword');
-if (toggleRegPassword) {
-    toggleRegPassword.addEventListener('click', () => {
-        const passInput = document.getElementById('regPassword');
-        if (passInput.type === 'password') {
-            passInput.type = 'text';
-            toggleRegPassword.classList.replace('fa-eye', 'fa-eye-slash');
-        } else {
-            passInput.type = 'password';
-            toggleRegPassword.classList.replace('fa-eye-slash', 'fa-eye');
-        }
-    });
-}
-
-// Şifrəni unutmusunuzmu? linki kliklənmə
-document.getElementById('forgotPasswordBtn').addEventListener('click', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('loginEmail').value.trim();
-    if (!email) {
-        showToast("Lütfən, əvvəlcə e-poçt ünvanınızı daxil edin.", "warning");
-        return;
-    }
-    try {
-        await sendPasswordResetEmail(auth, email);
-        showToast("Şifrə sıfırlama linki e-poçt ünvanınıza göndərildi!", "success");
-    } catch (err) {
-        showToast(localizeFirebaseError(err), "error");
-    }
 });
 
 registerForm.addEventListener('submit', async (e) => {
@@ -436,7 +426,7 @@ registerForm.addEventListener('submit', async (e) => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         await updateProfile(userCredential.user, { displayName: name, photoURL: DEFAULT_AVATAR });
         await setDoc(doc(db, 'users', userCredential.user.uid), {
-            uid: userCredential.user.uid, displayName: name, email: email, photoURL: DEFAULT_AVATAR, role: 'user', isBanned: false, ignoredUsers: [], createdAt: serverTimestamp()
+            uid: userCredential.user.uid, displayName: name, email: email, photoURL: DEFAULT_AVATAR, role: 'user', isBanned: false, createdAt: serverTimestamp()
         });
         registerForm.reset();
         showToast("Qeydiyyat uğurla tamamlandı!", "success");
@@ -458,7 +448,7 @@ document.getElementById('googleAuthBtn').addEventListener('click', async () => {
         const userDoc = await getDoc(doc(db, 'users', result.user.uid));
         if (!userDoc.exists()) {
             await setDoc(doc(db, 'users', result.user.uid), {
-                uid: result.user.uid, displayName: result.user.displayName || 'Anonim', email: result.user.email, photoURL: result.user.photoURL || DEFAULT_AVATAR, role: 'user', isBanned: false, ignoredUsers: [], createdAt: serverTimestamp()
+                uid: result.user.uid, displayName: result.user.displayName || 'Anonim', email: result.user.email, photoURL: result.user.photoURL || DEFAULT_AVATAR, role: 'user', isBanned: false, createdAt: serverTimestamp()
             });
         }
         showToast("Google ilə uğurla giriş edildi!", "success");
@@ -469,6 +459,76 @@ logoutBtn.addEventListener('click', () => {
     if(currentUser) set(ref(rtdb, `presence/${currentUser.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
     signOut(auth);
     showToast("Hesabdan çıxış edildi.", "info");
+});
+
+/* ==========================================================================
+ 4b. ŞİFRƏ GÖSTƏR/GİZLƏT VƏ ŞİFRƏNİ UNUTDUM
+ ========================================================================== */
+// Şifrə göstər/gizlət - Login
+document.getElementById('toggleLoginPassword').addEventListener('click', () => {
+    const input = document.getElementById('loginPassword');
+    const icon = document.querySelector('#toggleLoginPassword i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye';
+    }
+});
+
+// Şifrə göstər/gizlət - Register
+document.getElementById('toggleRegPassword').addEventListener('click', () => {
+    const input = document.getElementById('regPassword');
+    const icon = document.querySelector('#toggleRegPassword i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye';
+    }
+});
+
+// Şifrəni unutdum
+document.getElementById('forgotPasswordBtn').addEventListener('click', async () => {
+    const email = document.getElementById('loginEmail').value.trim();
+    if (!email) {
+        showToast("Zəhmət olmasa əvvəlcə e-poçt ünvanınızı daxil edin.", "warning");
+        return;
+    }
+    try {
+        await sendPasswordResetEmail(auth, email);
+        showToast("Şifrə sıfırlama linki e-poçt ünvanınıza göndərildi. Zəhmət olmasa gələn qutunuzu yoxlayın.", "success");
+    } catch (err) {
+        showToast(localizeFirebaseError(err), "error");
+    }
+});
+
+// Fayl adı göstəricisi - Ümumi çat
+document.getElementById('chatFileInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    const display = document.getElementById('chatFileNameDisplay');
+    if (file) {
+        display.textContent = file.name;
+        display.classList.remove('hidden');
+    } else {
+        display.textContent = '';
+        display.classList.add('hidden');
+    }
+});
+
+// Fayl adı göstəricisi - Şəxsi çat
+document.getElementById('privateFileInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    const display = document.getElementById('privateFileNameDisplay');
+    if (file) {
+        display.textContent = file.name;
+        display.classList.remove('hidden');
+    } else {
+        display.textContent = '';
+        display.classList.add('hidden');
+    }
 });
 
 /* ==========================================================================
@@ -535,66 +595,57 @@ function listenUsersAndPresence() {
     });
 }
 
-/* ==========================================================================
- 6.B İSTİFADƏÇİ SİYAHISININ QAYDALARA UYĞUN SIRALANMASI VƏ RENDERİ
- ========================================================================== */
 function renderUsersList() {
     if (!currentUser || !currentUserData) return;
     usersList.innerHTML = '';
     const myLevel = getRoleLevel(currentUserData.role);
+    const canSeeBanned = myLevel >= 3; // admin və super_admin ban siyahısını görür
 
-    // Filter və Sıralama Sistemi Kodu
-    let sortedUsersList = [...currentUsersList];
-    
-    // Banlanmış olanlar siyahısı yalnız admin və super adminlərdə (myLevel >= 3) görünsün.
-    if (myLevel < 3) {
-        sortedUsersList = sortedUsersList.filter(user => user.isBanned !== true);
-    }
+    // İstifadəçiləri qruplara ayır
+    const roledUsers = [];   // Rolu olanlar (moderator+)
+    const onlineUsers = [];  // Rolu olmayan, onlayn
+    const offlineUsers = []; // Rolu olmayan, oflayn
+    const bannedUsers = [];  // Banlananlar
 
-    sortedUsersList.sort((a, b) => {
-        const aBanned = a.isBanned === true;
-        const bBanned = b.isBanned === true;
+    currentUsersList.forEach(user => {
+        const userStatus = currentStatuses[user.uid]?.status || 'offline';
+        const isTargetBanned = user.isBanned === true;
+        const targetLevel = getRoleLevel(user.role);
 
-        // Qayda 4: Banlanmış olanlar tam şəkildə ən aşağıda yerləşməlidir
-        if (aBanned && !bBanned) return 1;
-        if (!aBanned && bBanned) return -1;
-        if (aBanned && bBanned) {
-            const aLevel = getRoleLevel(a.role || 'user');
-            const bLevel = getRoleLevel(b.role || 'user');
-            if (aLevel !== bLevel) return bLevel - aLevel; // ierarxiyaya uyğun yüksək rolu olan yuxarıda
-            return (a.displayName || '').localeCompare(b.displayName || '', 'az');
+        if (isTargetBanned) {
+            if (canSeeBanned) bannedUsers.push({ ...user, _status: userStatus });
+        } else if (targetLevel > 1) {
+            roledUsers.push({ ...user, _status: userStatus });
+        } else if (userStatus === 'online' || userStatus === 'away') {
+            onlineUsers.push({ ...user, _status: userStatus });
+        } else {
+            offlineUsers.push({ ...user, _status: userStatus });
         }
-
-        const aRole = a.role || 'user';
-        const bRole = b.role || 'user';
-        const aHasRole = ['super_admin', 'admin', 'moderator'].includes(aRole);
-        const bHasRole = ['super_admin', 'admin', 'moderator'].includes(bRole);
-
-        const aStatus = currentStatuses[a.uid]?.status || 'offline';
-        const bStatus = currentStatuses[b.uid]?.status || 'offline';
-        const aOnline = (aStatus === 'online' || aStatus === 'away');
-        const bOnline = (bStatus === 'online' || bStatus === 'away');
-
-        // Qayda 1: Rolu olanlar ən yuxarıda yerləşir
-        if (aHasRole && !bHasRole) return -1;
-        if (!aHasRole && bHasRole) return 1;
-        if (aHasRole && bHasRole) {
-            const aLevel = getRoleLevel(aRole);
-            const bLevel = getRoleLevel(bRole);
-            if (aLevel !== bLevel) return bLevel - aLevel; // Yüksək rol həmişə üstdə
-            if (aOnline && !bOnline) return -1;           // Eyni rolda onlayn üstdə
-            if (!aOnline && bOnline) return 1;
-            return (a.displayName || '').localeCompare(b.displayName || '', 'az'); // Eyni rol + eyni status = Əlifba sırası
-        }
-
-        // Qayda 2 və 3: Rolu olmayan normal istifadəçilərdə onlayn və oflayn ardıcıllığı
-        if (aOnline && !bOnline) return -1;
-        if (!aOnline && bOnline) return 1;
-        return (a.displayName || '').localeCompare(b.displayName || '', 'az');
     });
 
-    sortedUsersList.forEach(user => {
-        const userStatus = currentStatuses[user.uid]?.status || 'offline';
+    // Sıralama funksiyaları
+    const sortByAlpha = (a, b) => (a.displayName || '').localeCompare(b.displayName || '', 'az');
+    
+    roledUsers.sort((a, b) => {
+        const levelDiff = getRoleLevel(b.role) - getRoleLevel(a.role);
+        if (levelDiff !== 0) return levelDiff;
+        const aOnline = (a._status === 'online' || a._status === 'away') ? 0 : 1;
+        const bOnline = (b._status === 'online' || b._status === 'away') ? 0 : 1;
+        if (aOnline !== bOnline) return aOnline - bOnline;
+        return sortByAlpha(a, b);
+    });
+    onlineUsers.sort(sortByAlpha);
+    offlineUsers.sort(sortByAlpha);
+    bannedUsers.sort((a, b) => {
+        const levelDiff = getRoleLevel(b.role) - getRoleLevel(a.role);
+        if (levelDiff !== 0) return levelDiff;
+        return sortByAlpha(a, b);
+    });
+
+    const allSorted = [...roledUsers, ...onlineUsers, ...offlineUsers, ...bannedUsers];
+
+    allSorted.forEach(user => {
+        const userStatus = user._status;
         const isTyping = currentStatuses[user.uid]?.typingTo === activeRoomId;
         const roomId = [currentUser.uid, user.uid].sort().join('_');
         const roomData = currentRooms[roomId];
@@ -603,19 +654,17 @@ function renderUsersList() {
         const roleStarsHtml = getRoleStarsHtml(user.role);
         const targetLevel = getRoleLevel(user.role);
         const isTargetBanned = user.isBanned === true;
-
-        // Müasirləşdirilmiş əməliyyat düymələri və İgnor düyməsi
-        const isIgnored = (currentUserData.ignoredUsers || []).includes(user.uid);
-        const ignoreButtonHtml = `<button class="ignore-toggle-btn" onclick="event.stopPropagation(); toggleIgnoreUser('${user.uid}')" title="${isIgnored ? 'İgnoru qaldır' : 'İstifadəçini ignor et'}"><i class="fa-solid ${isIgnored ? 'fa-eye' : 'fa-eye-slash'}"></i></button>`;
+        const isIgnored = currentIgnoreList.includes(user.uid);
 
         const roleButtonHtml = (myLevel === 4) ? `<button class="role-toggle-btn" onclick="event.stopPropagation(); changeUserRole('${user.uid}', '${user.role}')" title="Rolu idarə et (Hazırda: ${user.role || 'user'})"><i class="fa-solid fa-user-gear"></i></button>` : '';
         const canBan = (myLevel === 4) || (myLevel === 3 && targetLevel < 3);
-        const banButtonHtml = canBan ? `<button class="admin-ban-btn" onclick="event.stopPropagation(); toggleBanUser('${user.uid}', ${isTargetBanned})" title="${isTargetBanned ? 'Banı qaldır' : 'Hesabı banla'}"><i class="fa-solid ${isTargetBanned ? 'fa-user-check' : 'fa-user-slash'}"></i></button>` : '';
+        const banButtonHtml = canBan ? `<button class="admin-ban-btn" onclick="event.stopPropagation(); toggleBanUser('${user.uid}', ${isTargetBanned})" title="${isTargetBanned ? 'Banı qaldır' : 'Hesabı banla'}"><i class="fa-solid ${isTargetBanned ? 'fa-user-check' : 'fa-user-slash'}" style="color: ${isTargetBanned ? '#2ecc71' : '#f39c12'}"></i></button>` : '';
         const adminDeleteHtml = (myLevel === 4) ? `<button class="admin-user-delete-btn" onclick="event.stopPropagation(); adminDeleteUser('${user.uid}')" title="İstifadəçini tamamilə sil"><i class="fa-solid fa-user-minus"></i></button>` : '';
+        const ignoreButtonHtml = `<button class="ignore-btn ${isIgnored ? 'active' : ''}" onclick="event.stopPropagation(); toggleIgnoreUser('${user.uid}', '${escapeHTML(user.displayName)}')" title="${isIgnored ? 'İgnoru qaldır' : 'İstifadəçini ignor et'}"><i class="fa-solid ${isIgnored ? 'fa-eye-slash' : 'fa-eye'}"></i></button>`;
 
         const li = document.createElement('li');
         li.className = `user-item ${activeRoomId.includes(user.uid) ? 'active' : ''}`;
-        const nameStyle = isTargetBanned ? 'text-decoration: line-through; opacity: 0.5;' : '';
+        const nameStyle = isTargetBanned ? 'text-decoration: line-through; opacity: 0.5;' : (isIgnored ? 'opacity: 0.5;' : '');
 
         li.innerHTML = `
             <div class="avatar-wrapper">
@@ -626,15 +675,14 @@ function renderUsersList() {
                 <span class="username" style="${nameStyle}">${escapeHTML(user.displayName)}${roleStarsHtml}</span>
                 <span class="typing-notify ${isTyping ? '' : 'hidden'}">yazır...</span>
                 ${badgeHtml}
-                <div class="user-actions">
-                    ${ignoreButtonHtml}
-                    ${roleButtonHtml}
-                    ${banButtonHtml}
-                    ${adminDeleteHtml}
-                </div>
+                <div class="user-actions">${ignoreButtonHtml}${roleButtonHtml}${banButtonHtml}${adminDeleteHtml}</div>
             </div>
         `;
         li.addEventListener('click', () => {
+            if (isIgnored) {
+                showToast("Bu istifadəçini ignor etdiniz. Söhbət başlatmaq üçün əvvəlcə ignoru qaldırın.", "warning");
+                return;
+            }
             usersSidebar.classList.remove('mobile-open');
             openPrivateRoom(user);
         });
@@ -659,9 +707,11 @@ function closePrivateRoom() {
     activeRoomId = 'global_room';
     btnGlobalRoom.classList.add('active');
     
+    // Ümumi çat başlığını ilkin vəziyyətinə qaytarır
     if (activeRoomTitle) activeRoomTitle.innerText = "Ümumi Çat";
     if (activeRoomSub) activeRoomSub.innerText = "Son 50 mesaj göstərilir";
     
+    // Şəxsi otağı gizlədib ümumini açır
     privateChatArea.classList.remove('active');
     privateChatArea.classList.add('hidden');
     
@@ -678,9 +728,11 @@ function openPrivateRoom(targetUser) {
     privateRoomTitle.innerText = targetUser.displayName;
     btnGlobalRoom.classList.remove('active');
     
-    if (activeRoomTitle) activeRoomTitle.innerText = "Şəxsi yazışma"; 
-    if (activeRoomSub) activeRoomSub.innerText = targetUser.displayName; 
+    // TƏLƏB OLUNAN DƏYİŞİKLİK BURADIR:
+    if (activeRoomTitle) activeRoomTitle.innerText = "Şəxsi yazışma"; // Başlıq artıq "Şəxsi yazışma" olaraq sabit qalır
+    if (activeRoomSub) activeRoomSub.innerText = targetUser.displayName; // Alt başlıqda isə seçilən istifadəçinin adı göstərilir
     
+    // Ümumi otağı gizlədib şəxsi sahəni açır
     generalChatArea.classList.remove('active');
     generalChatArea.classList.add('hidden');
     
@@ -702,17 +754,14 @@ function loadGeneralMessages() {
     const msgQuery = query(collection(db, 'rooms', 'global_room', 'messages'), orderBy('createdAt', 'desc'), limit(50));
     unsubscribeGeneralMessages = onSnapshot(msgQuery, (snapshot) => {
         let messages = [];
-        const myIgnoredList = currentUserData.ignoredUsers || [];
-        snapshot.forEach(doc => {
-            const mData = doc.data();
-            // İgnor edilən şəxsin mesajları ümumi çatda görünməsin
-            if (!myIgnoredList.includes(mData.senderId)) {
-                messages.push({ id: doc.id, ...mData });
-            }
-        });
+        snapshot.forEach(doc => messages.push({ id: doc.id, ...doc.data() }));
         messages.reverse();
         chatMessagesArea.innerHTML = '';
-        messages.forEach(msg => chatMessagesArea.appendChild(createMessageElement(msg, 'global_room')));
+        messages.forEach(msg => {
+            // İgnor edilən istifadəçinin mesajlarını ümumi çatda gizlət
+            if (currentIgnoreList.includes(msg.senderId)) return;
+            chatMessagesArea.appendChild(createMessageElement(msg, 'global_room'));
+        });
         chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight;
     });
 }
@@ -782,25 +831,10 @@ async function submitMessage(isDMContext) {
     const file = fileInput.files[0];
 
     if (!text && !file) return;
-
-    // Şəxsi otaqda qarşı tərəf bizi ignor edibsə mesaj göndərə bilməyək
-    if (isDMContext) {
-        const targetUserId = activeRoomId.split('_').find(id => id !== currentUser.uid);
-        try {
-            const targetDoc = await getDoc(doc(db, 'users', targetUserId));
-            if (targetDoc.exists() && (targetDoc.data().ignoredUsers || []).includes(currentUser.uid)) {
-                showToast("Bu istifadəçi sizi ignor etdiyi üçün ona şəxsi mesaj göndərə bilməzsiniz!", "error");
-                textInput.value = ''; fileInput.value = '';
-                const fileIndicator = document.getElementById(isDMContext ? 'privateFileIndicator' : 'chatFileIndicator');
-                if (fileIndicator) fileIndicator.innerHTML = '';
-                return;
-            }
-        } catch (e) { console.error(e); }
-    }
-
     textInput.value = ''; fileInput.value = '';
-    const fileIndicator = document.getElementById(isDMContext ? 'privateFileIndicator' : 'chatFileIndicator');
-    if (fileIndicator) fileIndicator.innerHTML = '';
+    // Fayl adı görüntüsünü sıfırla
+    const fileDisplay = isDMContext ? document.getElementById('privateFileNameDisplay') : document.getElementById('chatFileNameDisplay');
+    if (fileDisplay) { fileDisplay.textContent = ''; fileDisplay.classList.add('hidden'); }
 
     let fileURL = null; let fileType = null;
     if (file) {
@@ -832,58 +866,6 @@ messageInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') s
 sendPrivateMessageBtn.addEventListener('click', () => submitMessage(true));
 privateInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitMessage(true); });
 
-/* ==========================================================================
- 7.B FAYL SEÇİM ÖNİZLƏMƏ VƏ AD GÖSTƏRİCİ DİNLƏYİCİLƏRİ
- ========================================================================== */
-chatFileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    let indicator = document.getElementById('chatFileIndicator');
-    if (!indicator) {
-        indicator = document.createElement('div');
-        indicator.id = 'chatFileIndicator';
-        indicator.style.cssText = 'font-size: 13px; color: var(--primary-color); padding: 6px 25px; background: var(--bg-card); font-weight: 500;';
-        generalChatArea.insertBefore(indicator, chatFileInput.parentNode);
-    }
-    if (file) {
-        indicator.innerHTML = `<i class="fa-solid fa-image"></i> Göndəriləcək şəkil: <strong>${file.name}</strong> <i class="fa-solid fa-circle-xmark" id="cancelChatFile" style="cursor:pointer; margin-left:10px; color:#e74c3c;"></i>`;
-        document.getElementById('cancelChatFile').addEventListener('click', () => {
-            chatFileInput.value = ''; indicator.innerHTML = '';
-        });
-    } else { indicator.innerHTML = ''; }
-});
-
-privateFileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    let indicator = document.getElementById('privateFileIndicator');
-    if (!indicator) {
-        indicator = document.createElement('div');
-        indicator.id = 'privateFileIndicator';
-        indicator.style.cssText = 'font-size: 13px; color: var(--primary-color); padding: 6px 25px; background: var(--bg-card); font-weight: 500;';
-        privateChatArea.insertBefore(indicator, privateFileInput.parentNode);
-    }
-    if (file) {
-        indicator.innerHTML = `<i class="fa-solid fa-image"></i> Göndəriləcək şəkil: <strong>${file.name}</strong> <i class="fa-solid fa-circle-xmark" id="cancelPrivateFile" style="cursor:pointer; margin-left:10px; color:#e74c3c;"></i>`;
-        document.getElementById('cancelPrivateFile').addEventListener('click', () => {
-            privateFileInput.value = ''; indicator.innerHTML = '';
-        });
-    } else { indicator.innerHTML = ''; }
-});
-
-avatarFileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        document.getElementById('settingsAvatarPreview').src = URL.createObjectURL(file);
-        let nameDisplay = document.getElementById('avatarFileNameDisplay');
-        if (!nameDisplay) {
-            nameDisplay = document.createElement('span');
-            nameDisplay.id = 'avatarFileNameDisplay';
-            nameDisplay.style.cssText = 'font-size: 12px; color: var(--text-muted); display: block; margin-top: 4px;';
-            avatarFileInput.parentNode.appendChild(nameDisplay);
-        }
-        nameDisplay.innerText = "Seçildi: " + file.name;
-    }
-});
-
 function checkActiveRoomTyping() {
     if (unsubscribeTyping) unsubscribeTyping();
     unsubscribeTyping = onValue(ref(rtdb, 'presence'), (snap) => {
@@ -912,33 +894,37 @@ privateInputField.addEventListener('input', () => handleTypingEvent(true));
 
 
 /* ==========================================================================
- 8. PROFİL MODALININ IDARƏEDİLMƏSİ (E-POÇT VƏ ŞİFRƏ YENİLƏMƏSİ)
+ 8. PROFİL MODALININ IDARƏEDİLMƏSİ
  ========================================================================== */
 openSettingsBtn.addEventListener('click', () => {
     document.getElementById('settingsDisplayName').value = currentUserData.displayName;
-    document.getElementById('settingsEmail').value = currentUser.email || '';
     document.getElementById('settingsAvatarPreview').src = currentUserData.photoURL || DEFAULT_AVATAR;
-    document.getElementById('settingsOldPassword').value = '';
-    document.getElementById('settingsNewPassword').value = '';
-    const nameDisplay = document.getElementById('avatarFileNameDisplay');
-    if (nameDisplay) nameDisplay.innerText = '';
+    document.getElementById('avatarFileNameDisplay').textContent = '';
     settingsModal.classList.add('active');
+});
+
+document.getElementById('avatarFileInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    const display = document.getElementById('avatarFileNameDisplay');
+    if (file) {
+        display.textContent = file.name;
+        const reader = new FileReader();
+        reader.onload = (ev) => { document.getElementById('settingsAvatarPreview').src = ev.target.result; };
+        reader.readAsDataURL(file);
+    } else {
+        display.textContent = '';
+    }
 });
 closeSettingsBtn.addEventListener('click', () => settingsModal.classList.remove('active'));
 
 profileSettingsForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const newName = document.getElementById('settingsDisplayName').value.trim();
-    const newEmail = document.getElementById('settingsEmail').value.trim();
-    const oldPass = document.getElementById('settingsOldPassword').value;
-    const newPass = document.getElementById('settingsNewPassword').value;
     const avatarFile = document.getElementById('avatarFileInput').files[0];
     let newAvatarUrl = currentUserData.photoURL || DEFAULT_AVATAR;
-    
     const submitBtn = profileSettingsForm.querySelector("button[type='submit']");
     submitBtn.innerText = 'Yüklənir...'; submitBtn.disabled = true;
 
-    // 1. İSTİFADƏÇİ ADININ YOXLANILMASI
     if (newName !== currentUserData.displayName) {
         try {
             const nameSnap = await getDocs(query(collection(db, 'users'), where('displayName', '==', newName)));
@@ -951,52 +937,6 @@ profileSettingsForm.addEventListener('submit', async (e) => {
             submitBtn.innerText = 'Dəyişiklikləri Yadda Saxla'; submitBtn.disabled = false; return; 
         }
     }
-
-    // 2. PAROL DEYİŞDİRMƏ PROSESİ (Köhnə şifrə məcburidir)
-    if (oldPass || newPass) {
-        if (!oldPass || !newPass) {
-            showToast("Şifrəni yeniləmək üçün həm cari, həm də yeni şifrəni daxil etməlisiniz!", "warning");
-            submitBtn.innerText = 'Dəyişiklikləri Yadda Saxla'; submitBtn.disabled = false; return;
-        }
-        if (newPass.length < 6) {
-            showToast("Yeni şifrə ən azı 6 simvoldan ibarət olmalıdır.", "warning");
-            submitBtn.innerText = 'Dəyişiklikləri Yadda Saxla'; submitBtn.disabled = false; return;
-        }
-        try {
-            const credential = EmailAuthProvider.credential(currentUser.email, oldPass);
-            await reauthenticateWithCredential(currentUser, credential);
-            await updatePassword(currentUser, newPass);
-            showToast("Şifrəniz uğurla yeniləndi!", "success");
-        } catch (err) {
-            console.error(err);
-            if (err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") {
-                showToast("Cari şifrə yanlışdır!", "error");
-            } else {
-                showToast("Şifrə yenilənərkən xəta: " + err.message, "error");
-            }
-            submitBtn.innerText = 'Dəyişiklikləri Yadda Saxla'; submitBtn.disabled = false; return;
-        }
-    }
-
-    // 3. E-POÇT YENİLƏMƏSİ (Təsdiq kodu tələb edilmədən)
-    if (newEmail !== currentUser.email) {
-        try {
-            await updateEmail(currentUser, newEmail);
-            await updateDoc(doc(db, 'users', currentUser.uid), { email: newEmail });
-            showToast("E-poçt ünvanınız uğurla yeniləndi!", "success");
-        } catch (err) {
-            console.error(err);
-            if (err.code === "auth/requires-recent-login") {
-                showToast("E-poçt dəyişmək üçün təhlükəsizlik baxımından yenidən çıxış edib giriş etməlisiniz!", "warning");
-                submitBtn.innerText = 'Dəyişiklikləri Yadda Saxla'; submitBtn.disabled = false; return;
-            } else {
-                showToast("E-poçt yenilənərkən xəta: " + err.message, "error");
-                submitBtn.innerText = 'Dəyişiklikləri Yadda Saxla'; submitBtn.disabled = false; return;
-            }
-        }
-    }
-
-    // 4. AVATARIN YÜKLƏNİLMSİ
     if (avatarFile) {
         try { 
             newAvatarUrl = await uploadImageToImgBB(avatarFile); 
@@ -1006,7 +946,6 @@ profileSettingsForm.addEventListener('submit', async (e) => {
         }
     }
 
-    // BAŞLIQ PROFİL DATA RE-SAVE
     try {
         await updateProfile(currentUser, { displayName: newName, photoURL: newAvatarUrl });
         await setDoc(doc(db, 'users', currentUser.uid), { displayName: newName, photoURL: newAvatarUrl }, { merge: true });
@@ -1023,6 +962,57 @@ profileSettingsForm.addEventListener('submit', async (e) => {
 });
 document.getElementById('deleteAccBtn').addEventListener('click', deleteAccount);
 
+// E-poçt yeniləmə
+document.getElementById('changeEmailForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newEmail = document.getElementById('newEmailInput').value.trim();
+    if (!newEmail) return;
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.textContent = 'Yüklənir...'; btn.disabled = true;
+    try {
+        await updateEmail(currentUser, newEmail);
+        await setDoc(doc(db, 'users', currentUser.uid), { email: newEmail }, { merge: true });
+        showToast("E-poçt ünvanınız uğurla yeniləndi!", "success");
+        document.getElementById('newEmailInput').value = '';
+        settingsModal.classList.remove('active');
+    } catch (err) {
+        if (err.code === 'auth/requires-recent-login') {
+            showToast("Bu əməliyyat üçün yenidən giriş etməlisiniz. Çıxış edib yenidən daxil olun.", "warning");
+        } else {
+            showToast(localizeFirebaseError(err), "error");
+        }
+    } finally { btn.textContent = 'E-poçtu Yenilə'; btn.disabled = false; }
+});
+
+// Şifrə yeniləmə
+document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const currentPass = document.getElementById('currentPasswordInput').value;
+    const newPass = document.getElementById('newPasswordInput').value;
+    if (!currentPass || !newPass) return;
+    if (newPass.length < 6) {
+        showToast("Yeni şifrə ən azı 6 simvoldan ibarət olmalıdır.", "warning");
+        return;
+    }
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.textContent = 'Yüklənir...'; btn.disabled = true;
+    try {
+        const credential = EmailAuthProvider.credential(currentUser.email, currentPass);
+        await reauthenticateWithCredential(currentUser, credential);
+        await updatePassword(currentUser, newPass);
+        showToast("Şifrəniz uğurla yeniləndi!", "success");
+        document.getElementById('currentPasswordInput').value = '';
+        document.getElementById('newPasswordInput').value = '';
+        settingsModal.classList.remove('active');
+    } catch (err) {
+        if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+            showToast("Köhnə şifrəniz yanlışdır. Zəhmət olmasa düzgün daxil edin.", "error");
+        } else {
+            showToast(localizeFirebaseError(err), "error");
+        }
+    } finally { btn.textContent = 'Şifrəni Dəyiş'; btn.disabled = false; }
+});
+
 /* ==========================================================================
  9. MASTER OBSERVER
  ========================================================================== */
@@ -1032,7 +1022,6 @@ onAuthStateChanged(auth, async (user) => {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         if (userDoc.exists()) {
             currentUserData = userDoc.data();
-            if (!currentUserData.ignoredUsers) currentUserData.ignoredUsers = [];
             if (currentUserData.isBanned === true) {
                 showToast("Giriş əngəlləndi! Sizin hesabınız ban edilib.", "error");
                 await signOut(auth); 
@@ -1040,11 +1029,17 @@ onAuthStateChanged(auth, async (user) => {
                 return;
             }
         } else {
-            currentUserData = { role: 'user', displayName: user.displayName, photoURL: user.photoURL || DEFAULT_AVATAR, isBanned: false, ignoredUsers: [] };
+            currentUserData = { role: 'user', displayName: user.displayName, photoURL: user.photoURL || DEFAULT_AVATAR, isBanned: false };
         }
 
         document.getElementById('currentUserName').innerHTML = escapeHTML(currentUserData.displayName || 'Anonim') + getRoleStarsHtml(currentUserData.role);
         document.getElementById('currentUserAvatar').src = currentUserData.photoURL || DEFAULT_AVATAR;
+        
+        // İgnor siyahısını yüklə
+        try {
+            const ignoreDoc = await getDoc(doc(db, 'ignore_lists', user.uid));
+            currentIgnoreList = ignoreDoc.exists() ? (ignoreDoc.data().ignored || []) : [];
+        } catch (err) { currentIgnoreList = []; }
         
         let roleTitle = 'İstifadəçi';
         if (currentUserData.role === 'super_admin') roleTitle = 'Super Admin';
