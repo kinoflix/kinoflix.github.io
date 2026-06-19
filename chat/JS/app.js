@@ -942,6 +942,22 @@ function createMessageElement(msg, roomIdContext) {
 }
 
 async function submitMessage(isDMContext) {
+     // --- MESAJ YAZARKƏN USERI BAZADA YOXLAMA BLOKU ---
+    try {
+        const userDocRef = doc(db, "users", auth.currentUser.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (!userDoc.exists()) {
+            alert("Bu əməliyyatı yerinə yetirməyə icazəniz yoxdur. Hesabınız silinib!");
+            await auth.currentUser.delete(); // Auth-dan təmizlə
+            window.location.reload(); // Səhifəni yenilə
+            return;
+        }
+    } catch (error) {
+        console.error("Yoxlama zamanı xəta:", error);
+        return; // Xəta baş verərsə, mesaj getməsin
+    }
+    // --------------------------
     const textInput = isDMContext ? privateInputField : messageInputField;
     const fileInput = isDMContext ? privateFileInput : chatFileInput;
     const text = textInput.value.trim();
