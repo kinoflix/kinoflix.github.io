@@ -45,6 +45,9 @@ let unsubscribeRooms = null;
 let unsubscribeTyping = null;
 let unsubscribeSelfDestruct = null;
 let typingTimeout = null;
+let unsubscribePresenceConnected = null; // setupPresence-dəki '.info/connected' dinləyicisi (sessiyalar arası sızmanın qarşısını almaq üçün)
+let unsubscribePresenceList = null; // listenUsersAndPresence-dəki 'presence' dinləyicisi
+let isRegistering = false; // Qeydiyyat zamanı onAuthStateChanged-in vaxtından əvvəl (yarımçıq məlumatla) işə düşməsinin qarşısını almaq üçün
 
 let currentUsersList = [];
 let currentStatuses = {};
@@ -466,9 +469,14 @@ registerForm.addEventListener('submit', async (e) => {
     const name = document.getElementById('regName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
     const pass = document.getElementById('regPassword').value;
+    // DİQQƏT: createUserWithEmailAndPassword çağırıldığı an onAuthStateChanged dərhal işə düşür.
+    // Həmin anda hələ updateProfile/setDoc tamamlanmadığından istifadəçi adı boş ola bilirdi
+    // (bəzən "Anonim" görünməsi və siyahıda görünməməsi probleminin əsl səbəbi budur).
+    // isRegistering bayrağı ilə bu yarımçıq init-i bloklayıb, məlumatlar tam yazıldıqdan sonra əl ilə başladırıq.
+    isRegistering = true;
     try {
         const nameSnap = await getDocs(query(collection(db, 'users'), where('displayName', '==', name)));
-        if (!nameSnap.empty) { showToast("Bu istifadəçi adı artıq başqası tərəfindən alınıb. Fərqli ad seçin.", "warning"); return; }
+        if (!nameSnap.empty) { showToast("Bu istifadəçi adı artıq başqası tərəfindən alınıb. Fərqli ad seçin.", "warning"); isRegistering = false; return; }
         
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         await updateProfile(userCredential.user, { displayName: name, photoURL: DEFAULT_AVATAR });
@@ -477,7 +485,12 @@ registerForm.addEventListener('submit', async (e) => {
         });
         registerForm.reset();
         showToast("Qeydiyyat uğurla tamamlandı!", "success");
-    } catch (err) { showToast(localizeFirebaseError(err), "error"); }
+        isRegistering = false;
+        await initializeChatSession(userCredential.user);
+    } catch (err) {
+        isRegistering = false;
+        showToast(localizeFirebaseError(err), "error");
+    }
 });
 
 loginForm.addEventListener('submit', async (e) => {
@@ -595,7 +608,7 @@ document.getElementById('privateFileClearBtn').addEventListener('click', () => {
  ========================================================================== */
 function setupPresence(user) {
     const statusRef = ref(rtdb, `presence/${user.uid}`);
-    onValue(ref(rtdb, '.info/connected'), (snap) => {
+    unsubscribePresenceConnected = onValue(ref(rtdb, '.info/connected'), (snap) => {
         if (snap.val() === true) {
             onDisconnect(statusRef).set({ status: 'offline', lastChanged: rtdbTimestamp(), typingTo: null }).then(() => {
                 set(statusRef, { status: 'online', lastChanged: rtdbTimestamp(), typingTo: null });
@@ -603,13 +616,23 @@ function setupPresence(user) {
         }
     });
     let idleTimer;
+    // DİQQƏT: əvvəllər hər mousemove/keypress hadisəsində birbaşa RTDB-yə yazılırdı.
+    // Bu, presence node-unu saniyədə onlarla dəfə dəyişdirib bütün istifadəçilərdə
+    // siyahının tam yenidən render olunmasına (və nəticədə hover effektinin "yanıb-sönməsinə") səbəb olurdu.
+    // İndi yalnız vəziyyət faktiki olaraq "away" -> "online" keçdikdə yazırıq.
+    let isAway = false;
     const resetIdleTimer = () => {
         clearTimeout(idleTimer);
-        set(statusRef, { status: 'online', lastChanged: rtdbTimestamp(), typingTo: null });
+        if (isAway) {
+            isAway = false;
+            set(statusRef, { status: 'online', lastChanged: rtdbTimestamp(), typingTo: null });
+        }
         idleTimer = setTimeout(() => {
+            isAway = true;
             set(statusRef, { status: 'away', lastChanged: rtdbTimestamp(), typingTo: null });
         }, 5 * 60 * 1000);
     };
+    resetIdleTimer();
     window.onmousemove = resetIdleTimer; window.onkeypress = resetIdleTimer;
 }
 
@@ -629,6 +652,7 @@ document.addEventListener('click', (e) => {
 function listenUsersAndPresence() {
     if (unsubscribeUsers) unsubscribeUsers();
     if (unsubscribeRooms) unsubscribeRooms();
+    if (unsubscribePresenceList) unsubscribePresenceList();
 
     unsubscribeUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
         currentUsersList = []; userRolesMap = {};
@@ -642,7 +666,7 @@ function listenUsersAndPresence() {
         renderUsersList();
     });
 
-    onValue(ref(rtdb, 'presence'), (snap) => {
+    unsubscribePresenceList = onValue(ref(rtdb, 'presence'), (snap) => {
         currentStatuses = snap.val() || {};
         renderUsersList();
     });
@@ -1196,55 +1220,116 @@ document.getElementById('changePasswordForm').addEventListener('submit', async (
 });
 
 /* ==========================================================================
+ 8b. SMAYLIK (EMOJI) PANELİ
+ ========================================================================== */
+const EMOJI_LIST = [
+    "😀","😁","😂","🤣","😊","🙂","😉","😍","😘","😜","🤔","🤨","😎","🥳","🤩",
+    "😢","😭","😡","😱","😴","🥰","😇","😏","😅","🙄","😬","🤐","😮","😞","😔",
+    "👍","👎","👏","🙏","💪","👋","✌️","🤝","👀","🙌",
+    "🔥","🎉","✨","⭐","💯","❤️","💔","✅","❌"
+];
+
+function buildEmojiPicker(panelEl, targetInput) {
+    panelEl.innerHTML = '';
+    EMOJI_LIST.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = emoji;
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            insertEmojiIntoInput(targetInput, emoji);
+        });
+        panelEl.appendChild(btn);
+    });
+}
+
+function insertEmojiIntoInput(inputEl, emoji) {
+    const start = inputEl.selectionStart ?? inputEl.value.length;
+    const end = inputEl.selectionEnd ?? inputEl.value.length;
+    inputEl.value = inputEl.value.slice(0, start) + emoji + inputEl.value.slice(end);
+    const newCursorPos = start + emoji.length;
+    inputEl.focus();
+    inputEl.setSelectionRange(newCursorPos, newCursorPos);
+}
+
+function setupEmojiButton(btnEl, panelEl, targetInput) {
+    if (!btnEl || !panelEl || !targetInput) return;
+    buildEmojiPicker(panelEl, targetInput);
+    btnEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !panelEl.classList.contains('hidden');
+        document.querySelectorAll('.emoji-picker-panel').forEach(p => p.classList.add('hidden'));
+        if (!isOpen) panelEl.classList.remove('hidden');
+    });
+    panelEl.addEventListener('click', (e) => e.stopPropagation());
+}
+
+setupEmojiButton(document.getElementById('chatEmojiBtn'), document.getElementById('chatEmojiPicker'), messageInputField);
+setupEmojiButton(document.getElementById('privateEmojiBtn'), document.getElementById('privateEmojiPicker'), privateInputField);
+
+// Kənara klik edildikdə bütün açıq smaylik panellərini bağlayır
+document.addEventListener('click', () => {
+    document.querySelectorAll('.emoji-picker-panel').forEach(p => p.classList.add('hidden'));
+});
+
+/* ==========================================================================
  9. MASTER OBSERVER
  ========================================================================== */
+async function initializeChatSession(user) {
+    currentUser = user;
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (userDoc.exists()) {
+        currentUserData = userDoc.data();
+        if (currentUserData.isBanned === true) {
+            showToast("Sistemə daxil olmağa icazəniz yoxdur. Sizin hesabınız ban edilib!", "error");
+            await signOut(auth); 
+            setTimeout(() => { window.location.reload(); }, 2000);
+            return;
+        }
+    } else {
+        currentUserData = { role: 'user', displayName: user.displayName, photoURL: user.photoURL || DEFAULT_AVATAR, isBanned: false };
+    }
+
+    document.getElementById('currentUserName').innerHTML = escapeHTML(currentUserData.displayName || 'Anonim') + getRoleStarsHtml(currentUserData.role);
+    document.getElementById('currentUserAvatar').src = currentUserData.photoURL || DEFAULT_AVATAR;
+    
+    // İgnor siyahısını yüklə
+    try {
+        const ignoreDoc = await getDoc(doc(db, 'ignore_lists', user.uid));
+        currentIgnoreList = ignoreDoc.exists() ? (ignoreDoc.data().ignored || []) : [];
+    } catch (err) { currentIgnoreList = []; }
+    
+    let roleTitle = 'İstifadəçi';
+    if (currentUserData.role === 'super_admin') roleTitle = 'Super Admin';
+    else if (currentUserData.role === 'admin') roleTitle = 'Admin';
+    else if (currentUserData.role === 'moderator') roleTitle = 'Moderator';
+    document.getElementById('currentUserRole').innerText = roleTitle;
+    
+    logoutBtn.classList.remove('hidden'); openSettingsBtn.classList.remove('hidden');
+    authScreen.classList.remove('active'); chatScreen.classList.add('active');
+    document.getElementById('appLoader')?.classList.add('hidden');
+
+    setupPresence(user);
+    listenUsersAndPresence();
+    checkActiveRoomTyping(); 
+    
+    loadGeneralMessages();
+    closePrivateRoom();
+    
+    if (unsubscribeSelfDestruct) unsubscribeSelfDestruct();
+    startSelfDestructListener(user);
+}
+
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        currentUser = user;
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists()) {
-            currentUserData = userDoc.data();
-            if (currentUserData.isBanned === true) {
-                showToast("Sistemə daxil olmağa icazəniz yoxdur. Sizin hesabınız ban edilib!", "error");
-                await signOut(auth); 
-                setTimeout(() => { window.location.reload(); }, 2000);
-                return;
-            }
-        } else {
-            currentUserData = { role: 'user', displayName: user.displayName, photoURL: user.photoURL || DEFAULT_AVATAR, isBanned: false };
-        }
-
-        document.getElementById('currentUserName').innerHTML = escapeHTML(currentUserData.displayName || 'Anonim') + getRoleStarsHtml(currentUserData.role);
-        document.getElementById('currentUserAvatar').src = currentUserData.photoURL || DEFAULT_AVATAR;
-        
-        // İgnor siyahısını yüklə
-        try {
-            const ignoreDoc = await getDoc(doc(db, 'ignore_lists', user.uid));
-            currentIgnoreList = ignoreDoc.exists() ? (ignoreDoc.data().ignored || []) : [];
-        } catch (err) { currentIgnoreList = []; }
-        
-        let roleTitle = 'İstifadəçi';
-        if (currentUserData.role === 'super_admin') roleTitle = 'Super Admin';
-        else if (currentUserData.role === 'admin') roleTitle = 'Admin';
-        else if (currentUserData.role === 'moderator') roleTitle = 'Moderator';
-        document.getElementById('currentUserRole').innerText = roleTitle;
-        
-        logoutBtn.classList.remove('hidden'); openSettingsBtn.classList.remove('hidden');
-        authScreen.classList.remove('active'); chatScreen.classList.add('active');
-
-        setupPresence(user);
-        listenUsersAndPresence();
-        checkActiveRoomTyping(); 
-        
-        loadGeneralMessages();
-        closePrivateRoom();
-        
-        if (unsubscribeSelfDestruct) unsubscribeSelfDestruct();
-        startSelfDestructListener(user);
+        // Qeydiyyat axını gedirsə, sessiyanın başladılmasını qeydiyyat formu məlumatlar tam yazıldıqdan sonra özü edəcək
+        if (isRegistering) return;
+        await initializeChatSession(user);
     } else {
         currentUser = null;
         logoutBtn.classList.add('hidden'); openSettingsBtn.classList.add('hidden');
         chatScreen.classList.remove('active'); authScreen.classList.add('active');
+        document.getElementById('appLoader')?.classList.add('hidden');
         
         if (unsubscribeGeneralMessages) unsubscribeGeneralMessages();
         if (unsubscribePrivateMessages) unsubscribePrivateMessages();
@@ -1252,6 +1337,11 @@ onAuthStateChanged(auth, async (user) => {
         if (unsubscribeRooms) unsubscribeRooms();
         if (unsubscribeTyping) unsubscribeTyping();
         if (unsubscribeSelfDestruct) unsubscribeSelfDestruct();
+
+        // Presence dinləyicilərini də təmizləyirik ki, köhnə sessiyanın '.info/connected' geri çağırışı
+        // sonrakı sessiyalarda təsadüfən köhnə istifadəçini yenidən "onlayn" kimi yazmasın
+        if (unsubscribePresenceConnected) { unsubscribePresenceConnected(); unsubscribePresenceConnected = null; }
+        window.onmousemove = null; window.onkeypress = null;
     }
 });
 
