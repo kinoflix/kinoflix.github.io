@@ -942,30 +942,6 @@ function createMessageElement(msg, roomIdContext) {
 }
 
 async function submitMessage(isDMContext) {
-     // --- USER SƏNƏDİ YOXLAMA BLOKU (SERVER MƏCBURİ) ---
-try {
-        const userDocRef = doc(db, "users", auth.currentUser.uid);
-        const userDoc = await getDocFromServer(userDocRef);
-
-        if (!userDoc.exists()) {
-            // Əgər sənəd bazada yoxdursa, frontend-dən dərhal qov
-            alert("Hesabınız silinib və ya bloklanıb.");
-            await auth.currentUser.delete();
-            window.location.reload();
-            return;
-        }
-    } catch (error) {
-        // Əgər Firebase serveri "permission-denied" qaytarırsa (Rules icazə vermirsə)
-        if (error.code === 'permission-denied') {
-            alert("Hesabınız silinib, sistemə girişiniz qadağandır.");
-            await auth.currentUser.delete();
-            window.location.reload();
-            return;
-        }
-        console.error("Yoxlama zamanı xəta:", error);
-        return; 
-    }
-// --------------------------
     const textInput = isDMContext ? privateInputField : messageInputField;
     const fileInput = isDMContext ? privateFileInput : chatFileInput;
     const text = textInput.value.trim();
