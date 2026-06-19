@@ -11,6 +11,12 @@
 </head>
 <body data-theme="dark">
 
+    <!-- Firebase sessiyanı bərpa edib hansı ekranın (giriş/çat) göstəriləcəyini müəyyən edənə qədər
+         bütün səhifəni örtür, beləliklə "Daxil Ol" ekranı qısa müddətə görünüb-itmir (flash) -->
+    <div id="appLoader" class="app-loader">
+        <div class="app-loader-spinner"></div>
+    </div>
+
     <header class="app-header">
         <div class="logo-area">
             <a href="../index.html" class="logo">
@@ -141,6 +147,12 @@
                                 <i class="fa-solid fa-paperclip"></i>
                                 <input type="file" id="chatFileInput" accept="image/*, application/pdf, text/plain" hidden>
                             </label>
+                            <div class="emoji-picker-wrapper">
+                                <button type="button" id="chatEmojiBtn" class="emoji-btn" title="Smaylik əlavə et">
+                                    <i class="fa-regular fa-face-smile"></i>
+                                </button>
+                                <div id="chatEmojiPicker" class="emoji-picker-panel hidden"></div>
+                            </div>
                             <input type="text" id="messageInputField" placeholder="Ümumi çata mesaj yazın..." autocomplete="off">
                             <button id="sendMessageBtn" class="send-btn">
                                 <i class="fa-solid fa-paper-plane"></i>
@@ -170,6 +182,12 @@
                                 <i class="fa-solid fa-paperclip"></i>
                                 <input type="file" id="privateFileInput" accept="image/*, application/pdf, text/plain" hidden>
                             </label>
+                            <div class="emoji-picker-wrapper">
+                                <button type="button" id="privateEmojiBtn" class="emoji-btn" title="Smaylik əlavə et">
+                                    <i class="fa-regular fa-face-smile"></i>
+                                </button>
+                                <div id="privateEmojiPicker" class="emoji-picker-panel hidden"></div>
+                            </div>
                             <input type="text" id="privateInputField" placeholder="Şəxsi mesajınızı yazın..." autocomplete="off">
                             <button id="sendPrivateMessageBtn" class="send-btn">
                                 <i class="fa-solid fa-paper-plane"></i>
