@@ -485,7 +485,7 @@ loginForm.addEventListener('submit', async (e) => {
     try { 
         await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value.trim(), document.getElementById('loginPassword').value); 
         loginForm.reset(); 
-        showToast("Xoş gəldiniz!", "success");
+        showToast("Uğurla giriş edildi. Xoş gəldiniz!", "success");
     } catch (err) { showToast(localizeFirebaseError(err), "error"); }
 });
 
