@@ -942,22 +942,31 @@ function createMessageElement(msg, roomIdContext) {
 }
 
 async function submitMessage(isDMContext) {
-     // --- MESAJ YAZARKƏN USERI BAZADA YOXLAMA BLOKU ---
-    try {
-        const userDocRef = doc(db, "users", auth.currentUser.uid);
-        const userDoc = await getDoc(userDocRef);
+     // --- USER SƏNƏDİ YOXLAMA BLOKU (SERVER MƏCBURİ) ---
+try {
+    const userDocRef = doc(db, "users", auth.currentUser.uid);
+    
+    // ƏSAS DƏYİŞİKLİK BURADADIR: 'source' olaraq 'server' qeyd edirik
+    const userDoc = await getDocFromServer(userDocRef);
 
-        if (!userDoc.exists()) {
-            alert("Bu əməliyyatı yerinə yetirməyə icazəniz yoxdur. Hesabınız silinib!");
-            await auth.currentUser.delete(); // Auth-dan təmizlə
-            window.location.reload(); // Səhifəni yenilə
-            return;
+    if (!userDoc.exists()) {
+        alert("Hesabınız silinib və ya bloklanıb.");
+        try {
+            await auth.currentUser.delete();
+        } catch (authError) {
+            console.error("Auth silinməsi zamanı xəta (ola bilsin login tələb olunur):", authError);
         }
-    } catch (error) {
-        console.error("Yoxlama zamanı xəta:", error);
-        return; // Xəta baş verərsə, mesaj getməsin
+        window.location.reload(); 
+        return;
     }
-    // --------------------------
+} catch (error) {
+    // Əgər internet yoxdursa və ya serverə çata bilmiriksə, 
+    // təhlükəsizlik üçün mesajın getməsini bloklayırıq.
+    console.error("Yoxlama zamanı xəta:", error);
+    alert("Sistem yoxlaması aparıla bilmədi, zəhmət olmasa internetinizi yoxlayın.");
+    return; 
+}
+// --------------------------
     const textInput = isDMContext ? privateInputField : messageInputField;
     const fileInput = isDMContext ? privateFileInput : chatFileInput;
     const text = textInput.value.trim();
