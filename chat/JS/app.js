@@ -944,28 +944,27 @@ function createMessageElement(msg, roomIdContext) {
 async function submitMessage(isDMContext) {
      // --- USER SƏNƏDİ YOXLAMA BLOKU (SERVER MƏCBURİ) ---
 try {
-    const userDocRef = doc(db, "users", auth.currentUser.uid);
-    
-    // ƏSAS DƏYİŞİKLİK BURADADIR: 'source' olaraq 'server' qeyd edirik
-    const userDoc = await getDocFromServer(userDocRef);
+        const userDocRef = doc(db, "users", auth.currentUser.uid);
+        const userDoc = await getDocFromServer(userDocRef);
 
-    if (!userDoc.exists()) {
-        alert("Hesabınız silinib və ya bloklanıb.");
-        try {
+        if (!userDoc.exists()) {
+            // Əgər sənəd bazada yoxdursa, frontend-dən dərhal qov
+            alert("Hesabınız silinib və ya bloklanıb.");
             await auth.currentUser.delete();
-        } catch (authError) {
-            console.error("Auth silinməsi zamanı xəta (ola bilsin login tələb olunur):", authError);
+            window.location.reload();
+            return;
         }
-        window.location.reload(); 
-        return;
+    } catch (error) {
+        // Əgər Firebase serveri "permission-denied" qaytarırsa (Rules icazə vermirsə)
+        if (error.code === 'permission-denied') {
+            alert("Hesabınız silinib, sistemə girişiniz qadağandır.");
+            await auth.currentUser.delete();
+            window.location.reload();
+            return;
+        }
+        console.error("Yoxlama zamanı xəta:", error);
+        return; 
     }
-} catch (error) {
-    // Əgər internet yoxdursa və ya serverə çata bilmiriksə, 
-    // təhlükəsizlik üçün mesajın getməsini bloklayırıq.
-    console.error("Yoxlama zamanı xəta:", error);
-    alert("Sistem yoxlaması aparıla bilmədi, zəhmət olmasa internetinizi yoxlayın.");
-    return; 
-}
 // --------------------------
     const textInput = isDMContext ? privateInputField : messageInputField;
     const fileInput = isDMContext ? privateFileInput : chatFileInput;
