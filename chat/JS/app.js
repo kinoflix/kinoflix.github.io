@@ -994,7 +994,13 @@ async function submitMessage(isDMContext) {
         } else {
             await setDoc(doc(db, 'rooms', 'global_room'), { lastMessageAt: serverTimestamp() }, { merge: true });
         }
-    } catch (err) { showToast("Mesaj göndərilərkən xəta: " + err.message, "error"); }
+    } catch (err) { if (err.code === 'permission-denied') {
+    alert("Hesabınız silinib və ya bloklanıb. Sistemdən çıxarılırsınız.");
+    auth.currentUser.delete().catch(() => {});
+    window.location.reload();
+    return;
+}
+ showToast("Mesaj göndərilərkən xəta: " + err.message, "error"); }
 }
 
 sendMessageBtn.addEventListener('click', () => submitMessage(false));
