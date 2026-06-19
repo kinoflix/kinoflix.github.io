@@ -365,7 +365,7 @@ function startSelfDestructListener(currentUserObj) {
         if (!snapshot.exists()) {
             try { 
                 await deleteUser(currentUserObj); 
-                showToast("Hesabınız Super Admin tərəfindən silindi!", "error");
+                showToast("Hesabınız sistemdən silindi!", "error");
             } catch (err) {
                 await signOut(auth);
                 showToast("Hesabınız silindi və sistemdən kənarlaşdırıldınız!", "error");
@@ -374,7 +374,7 @@ function startSelfDestructListener(currentUserObj) {
             return;
         }
         if (snapshot.data()?.isBanned) {
-            showToast("Sizin hesabınız admin tərəfindən ban edildi!", "error");
+            showToast("Hesabınız ban edildi!", "error");
             await signOut(auth);
             setTimeout(() => { window.location.reload(); }, 2000);
         }
@@ -1205,7 +1205,7 @@ onAuthStateChanged(auth, async (user) => {
         if (userDoc.exists()) {
             currentUserData = userDoc.data();
             if (currentUserData.isBanned === true) {
-                showToast("Giriş əngəlləndi! Sizin hesabınız ban edilib.", "error");
+                showToast("Sistemə daxil olmağa icazəniz yoxdur. Sizin hesabınız ban edilib!", "error");
                 await signOut(auth); 
                 setTimeout(() => { window.location.reload(); }, 2000);
                 return;
