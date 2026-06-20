@@ -1621,43 +1621,31 @@ function escapeHTML(str) {
 })();
                 
 /* ==========================================================================
-   *** GHOST SESSION TƏMİZLƏYİCİ ***
+   MÜSTƏQİL GHOST TƏMİZLƏYİCİ (Kodlarına heç bir zərər vermir)
    ========================================================================== */
+(function() {
+    // Bu kod avtomatik özünü işə salır və heç bir funksiyanı dəyişmir.
+    setInterval(async () => {
+        try {
+            const snapshot = await get(ref(rtdb, 'presence'));
+            if (!snapshot.exists()) return;
 
-async function runGhostCleanup() {
-    try {
-        const presenceRef = ref(rtdb, 'presence');
-        const snapshot = await get(presenceRef);
-        
-        if (!snapshot.exists()) return;
+            const now = Date.now();
+            // 5 dəqiqə ərzində heç bir yenilənmə olmayıbsa (lastChanged dəyişməyibsə)
+            const LIMIT = 5 * 60 * 1000; 
 
-        const now = Date.now();
-        const LIMIT = 60 * 1000; // 1 dəqiqə limit
-
-        snapshot.forEach((child) => {
-            const uid = child.key;
-            const data = child.val();
-
-            // Status 'online' və ya 'away'dirsə yoxla
-            if (data && (data.status === 'online' || data.status === 'away')) {
-                // Əgər son dəyişiklik 1 dəqiqədən çoxdursa, ghost-dur
-                if (now - data.lastChanged > LIMIT) {
-                    console.warn(`Ghost aşkarlandı və təmizləndi: ${uid}`);
-                    set(ref(rtdb, `presence/${uid}`), { 
-                        status: 'offline', 
-                        lastChanged: rtdbTimestamp(),
-                        typingTo: null 
-                    });
+            snapshot.forEach((child) => {
+                const data = child.val();
+                if (data && (data.status === 'online' || data.status === 'away')) {
+                    if (now - data.lastChanged > LIMIT) {
+                        set(ref(rtdb, `presence/${child.key}`), { 
+                            status: 'offline', 
+                            lastChanged: rtdbTimestamp(),
+                            typingTo: null 
+                        });
+                    }
                 }
-            }
-        });
-    } catch (error) {
-        console.error("Təmizləmə prosesində xəta baş verdi:", error);
-    }
-}
-
-// 1. Fayl yüklənən kimi dərhal işə sal
-runGhostCleanup();
-
-// 2. Hər 1 dəqiqədən bir avtomatik təkrarla
-setInterval(runGhostCleanup, 60 * 1000);
+            });
+        } catch (e) { /* Səssizcə ötür */ }
+    }, 60 * 1000); // Hər 1 dəqiqədən bir yoxla
+})();
