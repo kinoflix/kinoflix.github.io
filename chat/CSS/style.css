@@ -766,3 +766,28 @@ body {
 .user-element:hover { /* Siyahı və ikonlar üçün istifadə etdiyiniz spesifik sinif adlarına uyğun olaraq */
     animation: none !important;
 }
+
+/* ==========================================================================
+   IP VƏ CİHAZ BANI DÜYMƏSİ (ŞƏBƏKƏ)
+   ========================================================================== */
+.admin-network-ban-btn {
+    background: rgba(142, 68, 173, 0.1);
+    border: 1px solid rgba(142, 68, 173, 0.25);
+    color: #8e44ad;
+    cursor: pointer;
+    font-size: 12px;
+    width: 28px; height: 28px;
+    min-width: 28px;
+    border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: all 0.18s;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+.admin-network-ban-btn:hover {
+    background: #8e44ad;
+    color: #fff;
+    border-color: #8e44ad;
+    transform: scale(1.08);
+    box-shadow: 0 3px 10px rgba(142, 68, 173, 0.35);
+}
