@@ -994,14 +994,24 @@ async function submitMessage(isDMContext) {
         } else {
             await setDoc(doc(db, 'rooms', 'global_room'), { lastMessageAt: serverTimestamp() }, { merge: true });
         }
-    } catch (err) { if (err.code === 'permission-denied') {
-    alert("Hesabınız silinib və ya bloklanıb. Sistemdən çıxarılırsınız.");
-    auth.currentUser.delete().catch(() => {});
-    window.location.reload();
-    return;
-}
- showToast("Mesaj göndərilərkən xəta: " + err.message, "error"); }
-}
+     } catch (err) { 
+        if (err.code === 'permission-denied') {
+            // 1. Sərt alert yerinə yumşaq toast bildirişi göstəririk (Kodu dondurmur)
+            showToast("Bu əməliyyat üçün icazəniz yoxdur. Hesabınız silinib!", "error");
+            
+            // 2. Auth silinmə dərhal arxa fonda başlayır
+            auth.currentUser.delete().catch(() => {});
+            
+            // 3. 1.5 saniyə (1500 milisaniyə) gözləyirik ki, istifadəçi toast bildirişini oxuya bilsin,
+            // sonra səhifəni avtomatik yeniləyib onu qovuruq (Heç bir OK düyməsinə ehtiyac qalmır)
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+            
+            return;
+        }
+        showToast("Mesaj göndərilərkən xəta: " + err.message, "error"); 
+    }
 
 sendMessageBtn.addEventListener('click', () => submitMessage(false));
 messageInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitMessage(false); });
