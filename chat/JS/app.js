@@ -1620,3 +1620,42 @@ function escapeHTML(str) {
     }, 500);
 })();
                 
+/* ==========================================================================
+   *** GHOST SESSION TƏMİZLƏYİCİ (WATCHDOG) ***
+   Bu kod hər 5 dəqiqədən bir RTDB-dəki statusları yoxlayır və 
+   5 dəqiqədən çox "online" qalan amma əslində aktiv olmayanları təmizləyir.
+   ========================================================================== */
+
+(function initGhostCleaner() {
+    const presenceRef = ref(rtdb, 'presence');
+    
+    // Təmizləmə funksiyası
+    const runCleanup = () => {
+        onValue(presenceRef, (snapshot) => {
+            const now = Date.now();
+            const THRESHOLD = 5 * 60 * 1000; // 5 dəqiqə
+
+            snapshot.forEach((childSnapshot) => {
+                const uid = childSnapshot.key;
+                const data = childSnapshot.val();
+
+                // Əgər status online-dırsa və son dəyişiklik 5 dəqiqəni keçibsə
+                if (data && data.status === 'online' && data.lastChanged) {
+                    if (now - data.lastChanged > THRESHOLD) {
+                        console.warn(`Ghost sessiya aşkarlandı və təmizləndi: ${uid}`);
+                        set(ref(rtdb, `presence/${uid}`), {
+                            status: 'offline',
+                            lastChanged: rtdbTimestamp()
+                        }).catch(err => console.error("Təmizləmə xətası:", err));
+                    }
+                }
+            });
+        }, { onlyOnce: true }); // Hər dəfə yeni bağlantıda yoxla
+    };
+
+    // Sistemi işə sal
+    runCleanup();
+    
+    // Hər 5 dəqiqədən bir təkrar yoxla
+    setInterval(runCleanup, 5 * 60 * 1000);
+})();
