@@ -1621,41 +1621,43 @@ function escapeHTML(str) {
 })();
                 
 /* ==========================================================================
-   *** GHOST SESSION TƏMİZLƏYİCİ (WATCHDOG) ***
-   Bu kod hər 5 dəqiqədən bir RTDB-dəki statusları yoxlayır və 
-   5 dəqiqədən çox "online" qalan amma əslində aktiv olmayanları təmizləyir.
+   *** GHOST SESSION TƏMİZLƏYİCİ ***
    ========================================================================== */
 
-(function initGhostCleaner() {
-    const presenceRef = ref(rtdb, 'presence');
-    
-    // Təmizləmə funksiyası
-    const runCleanup = () => {
-        onValue(presenceRef, (snapshot) => {
-            const now = Date.now();
-            const THRESHOLD = 5 * 60 * 1000; // 5 dəqiqə
+async function runGhostCleanup() {
+    try {
+        const presenceRef = ref(rtdb, 'presence');
+        const snapshot = await get(presenceRef);
+        
+        if (!snapshot.exists()) return;
 
-            snapshot.forEach((childSnapshot) => {
-                const uid = childSnapshot.key;
-                const data = childSnapshot.val();
+        const now = Date.now();
+        const LIMIT = 60 * 1000; // 1 dəqiqə limit
 
-                // Əgər status online-dırsa və son dəyişiklik 5 dəqiqəni keçibsə
-                if (data && data.status === 'online' && data.lastChanged) {
-                    if (now - data.lastChanged > THRESHOLD) {
-                        console.warn(`Ghost sessiya aşkarlandı və təmizləndi: ${uid}`);
-                        set(ref(rtdb, `presence/${uid}`), {
-                            status: 'offline',
-                            lastChanged: rtdbTimestamp()
-                        }).catch(err => console.error("Təmizləmə xətası:", err));
-                    }
+        snapshot.forEach((child) => {
+            const uid = child.key;
+            const data = child.val();
+
+            // Status 'online' və ya 'away'dirsə yoxla
+            if (data && (data.status === 'online' || data.status === 'away')) {
+                // Əgər son dəyişiklik 1 dəqiqədən çoxdursa, ghost-dur
+                if (now - data.lastChanged > LIMIT) {
+                    console.warn(`Ghost aşkarlandı və təmizləndi: ${uid}`);
+                    set(ref(rtdb, `presence/${uid}`), { 
+                        status: 'offline', 
+                        lastChanged: rtdbTimestamp(),
+                        typingTo: null 
+                    });
                 }
-            });
-        }, { onlyOnce: true }); // Hər dəfə yeni bağlantıda yoxla
-    };
+            }
+        });
+    } catch (error) {
+        console.error("Təmizləmə prosesində xəta baş verdi:", error);
+    }
+}
 
-    // Sistemi işə sal
-    runCleanup();
-    
-    // Hər 5 dəqiqədən bir təkrar yoxla
-    setInterval(runCleanup, 5 * 60 * 1000);
-})();
+// 1. Fayl yüklənən kimi dərhal işə sal
+runGhostCleanup();
+
+// 2. Hər 1 dəqiqədən bir avtomatik təkrarla
+setInterval(runGhostCleanup, 60 * 1000);
