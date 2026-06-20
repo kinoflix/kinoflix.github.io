@@ -1472,8 +1472,8 @@ function escapeHTML(str) {
                     <div style="width: 80px; height: 80px; background: rgba(231, 76, 60, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; border: 2px solid rgba(231,76,60,0.5);">
                         <i class="fa-solid fa-network-wired" style="font-size: 32px; color: #e74c3c;"></i>
                     </div>
-                    <h2 style="margin: 0 0 15px 0; font-size: 24px; letter-spacing: 1px; color: #fff;">GİRİŞ QADAĞANDIR</h2>
-                    <p style="color:#94a3b8; margin: 0; font-size: 15px; line-height: 1.6;">Sizin IP ünvanınız və ya cihazınız Kinoflix icma qaydalarını pozduğuna görə sistemdən <strong style="color:#e74c3c;">tamamilə uzaqlaşdırılıb</strong>.</p>
+                    <h2 style="margin: 0 0 15px 0; font-size: 24px; letter-spacing: 1px; color: #fff;">GİRİŞ QADAĞANDIR! IP ADRESİNİZ VƏ YA CİHAZINIZ BAN EDİLİB!</h2>
+                    <p style="color:#94a3b8; margin: 0; font-size: 15px; line-height: 1.6;">Sizin IP ünvanınız və ya cihazınız KINOFLIX platformasının qaydalarını pozduğuna görə sistemin <strong style="color:#e74c3c;">qara siyahısına</strong>əlavə edilib!</p>
                 </div>
             </div>
         `;
