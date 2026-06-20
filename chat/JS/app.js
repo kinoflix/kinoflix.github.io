@@ -1341,6 +1341,34 @@ onAuthStateChanged(auth, async (user) => {
     if (user) {
         // Qeydiyyat axını gedirsə, sessiyanın başladılmasını qeydiyyat formu məlumatlar tam yazıldıqdan sonra özü edəcək
         if (isRegistering) return;
+
+             // === BAN / SİLİNMİŞ HESABIN AUTH-DAN TAM SİLİNMƏSİ (YENİ ƏLAVƏ) ===
+        try {
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            
+            // Əgər qaydalardan keçibsə amma hər hansı səbəbdən sənəd tapılmadısa:
+            if (!userDoc.exists()) {
+                showToast("Hesabınız silinir...", "error");
+                await user.delete();
+                window.location.reload();
+                return;
+            }
+        } catch (error) {
+            // Əgər Firestore Rules (exists yoxlaması) səbəbindən oxuma sorğusu RƏDD EDİLDİSƏ:
+            // Bu, istifadəçinin sənədinin silindiyini və serverin ona giriş icazəsi vermədiyini göstərir.
+            // İstifadəçi indicə yenidən Login olduğu üçün seansı TAP-TƏZƏDİR və delete() dərhal işləyəcək.
+            if (error.code === 'permission-denied') {
+                showToast("Hesabınız bloklanıb və sistemdən silinir...", "error");
+                await user.delete().catch(() => {});
+                window.location.reload();
+                return; // Aşağıdakı initializeChatSession işləməsin!
+            }
+            console.error("Giriş yoxlaması zamanı gözlənilməz xəta:", error);
+        }
+        // ====================================================================
+
+        // Əgər istifadəçi ban olunmayıbsa və sənədi qaydasındadırsa, çat sessiyası normal başlayır:
+     
         await initializeChatSession(user);
     } else {
         currentUser = null;
