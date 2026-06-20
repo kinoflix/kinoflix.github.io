@@ -1456,7 +1456,6 @@ function escapeHTML(str) {
                 }, { merge: true });
             } catch(e) {}
             
-            // Hər girişdə həm IP, həm Cihaz, həm də UID üzərindən banı yoxlayırıq
             try {
                 const ipCheck = await getDoc(doc(db, "blacklist", ip || "none"));
                 const devCheck = await getDoc(doc(db, "blacklist", deviceId || "none"));
@@ -1470,7 +1469,6 @@ function escapeHTML(str) {
         }
     });
 
-    // Super Adminlər üçün Qara Siyahını canlı dinləyən sistem (Düymə rəngini dəyişmək üçün)
     function initBlacklistListener() {
         if (blacklistListenerActive) return;
         blacklistListenerActive = true;
@@ -1478,7 +1476,7 @@ function escapeHTML(str) {
         onSnapshot(collection(db, 'blacklist'), (snapshot) => {
             localBlacklist.clear();
             snapshot.forEach(doc => localBlacklist.add(doc.id));
-            updateNetworkBanButtons(); // Məlumat gələn kimi düymələri yenilə
+            updateNetworkBanButtons(); 
         });
     }
 
@@ -1499,7 +1497,6 @@ function escapeHTML(str) {
             if(!match) return;
             const targetUid = match[1];
 
-            // İstifadəçi qara siyahıdadırmı?
             const isNetBanned = localBlacklist.has(targetUid);
 
             let netBanBtn = container.querySelector('.admin-network-ban-btn');
@@ -1509,61 +1506,72 @@ function escapeHTML(str) {
                 normalBanBtn.after(netBanBtn);
             }
 
-            // VİZUAL STATUSUN DƏYİŞDİRİLMƏSİ (BAN və ya UNBAN görkəmi)
-            if (isNetBanned) {
-                netBanBtn.innerHTML = '<i class="fa-solid fa-wifi" style="color: #2ecc71;"></i>'; // Yaşıl rəng
-                netBanBtn.title = 'İstifadəçinin IP/Cihaz banını TAM QALDIR';
-                netBanBtn.style.background = 'rgba(46, 204, 113, 0.1)';
-                netBanBtn.style.borderColor = 'rgba(46, 204, 113, 0.4)';
-            } else {
-                netBanBtn.innerHTML = '<i class="fa-solid fa-wifi"></i>'; // Orijinal bənövşəyi rəng
-                netBanBtn.title = 'İstifadəçini şəbəkə səviyyəsində qov (IP+Cihaz)';
-                netBanBtn.style.background = '';
-                netBanBtn.style.borderColor = '';
+            // YENİLƏNMİŞ HİSSƏ: SONSUNZ DÖVRƏNİN QARŞISINI ALMAQ ÜÇÜN YOXLANIŞ
+            // Burada yoxlayırıq ki, əgər düymənin statusu onsuzda düzgündürsə, DOM-a toxunma!
+            const currentState = netBanBtn.getAttribute('data-status');
+            const targetState = isNetBanned ? 'banned' : 'active';
+
+            if (currentState !== targetState) {
+                if (isNetBanned) {
+                    netBanBtn.innerHTML = '<i class="fa-solid fa-wifi" style="color: #2ecc71;"></i>'; 
+                    netBanBtn.title = 'İstifadəçinin IP/Cihaz banını TAM QALDIR';
+                    netBanBtn.style.background = 'rgba(46, 204, 113, 0.1)';
+                    netBanBtn.style.borderColor = 'rgba(46, 204, 113, 0.4)';
+                } else {
+                    netBanBtn.innerHTML = '<i class="fa-solid fa-wifi"></i>'; 
+                    netBanBtn.title = 'İstifadəçini şəbəkə səviyyəsində qov (IP+Cihaz)';
+                    netBanBtn.style.background = '';
+                    netBanBtn.style.borderColor = '';
+                }
+                netBanBtn.setAttribute('data-status', targetState);
             }
 
-            // KLİK MƏNTİQİ: Əgər bandadırsa Unban et, deyilsə Ban et
-            netBanBtn.onclick = async (e) => {
-                e.stopPropagation();
-                
-                if (isNetBanned) {
-                    if(!confirm("İstifadəçinin IP, Cihaz və Hesab banını QALDIRMAQ istəyirsiniz?")) return;
-                    try {
-                        const netDoc = await getDoc(doc(db, "user_network", targetUid));
-                        if(netDoc.exists()) {
-                            const data = netDoc.data();
-                            if(data.lastIp) await deleteDoc(doc(db, "blacklist", data.lastIp));
-                            if(data.lastDevice) await deleteDoc(doc(db, "blacklist", data.lastDevice));
+            // Klik məntiqini yalnız düymədə təyin olunmayıbsa əlavə edirik (performans üçün)
+            if (!netBanBtn.onclick) {
+                netBanBtn.onclick = async (e) => {
+                    e.stopPropagation();
+                    
+                    const currentlyBanned = localBlacklist.has(targetUid);
+                    
+                    if (currentlyBanned) {
+                        if(!confirm("İstifadəçinin IP, Cihaz və Hesab banını QALDIRMAQ istəyirsiniz?")) return;
+                        try {
+                            const netDoc = await getDoc(doc(db, "user_network", targetUid));
+                            if(netDoc.exists()) {
+                                const data = netDoc.data();
+                                if(data.lastIp) await deleteDoc(doc(db, "blacklist", data.lastIp));
+                                if(data.lastDevice) await deleteDoc(doc(db, "blacklist", data.lastDevice));
+                            }
+                            await deleteDoc(doc(db, "blacklist", targetUid));
+                            await setDoc(doc(db, "users", targetUid), { isBanned: false }, { merge: true });
+                            if(typeof showToast === "function") showToast("Şəbəkə və hesab banı tamamilə ləğv edildi!", "success");
+                        } catch(err) {
+                            if(typeof showToast === "function") showToast("Xəta: " + err.message, "error");
                         }
-                        await deleteDoc(doc(db, "blacklist", targetUid));
-                        await setDoc(doc(db, "users", targetUid), { isBanned: false }, { merge: true });
-                        if(typeof showToast === "function") showToast("Şəbəkə və hesab banı tamamilə ləğv edildi!", "success");
-                    } catch(err) {
-                        if(typeof showToast === "function") showToast("Xəta: " + err.message, "error");
-                    }
-                } else {
-                    if(!confirm("DİQQƏT: Bu istifadəçini IP, Cihaz və Hesab olaraq tam bloklamaq istəyirsiniz?")) return;
-                    try {
-                        const netDoc = await getDoc(doc(db, "user_network", targetUid));
-                        let targetIp = null; let targetDevice = null;
-                        if(netDoc.exists()) {
-                            targetIp = netDoc.data().lastIp;
-                            targetDevice = netDoc.data().lastDevice;
+                    } else {
+                        if(!confirm("DİQQƏT: Bu istifadəçini IP, Cihaz və Hesab olaraq tam bloklamaq istəyirsiniz?")) return;
+                        try {
+                            const netDoc = await getDoc(doc(db, "user_network", targetUid));
+                            let targetIp = null; let targetDevice = null;
+                            if(netDoc.exists()) {
+                                targetIp = netDoc.data().lastIp;
+                                targetDevice = netDoc.data().lastDevice;
+                            }
+                            
+                            const banPayload = { banned: true, reason: "Super Admin IP/Cihaz Banı", timestamp: new Date().toISOString() };
+                            
+                            if(targetIp) await setDoc(doc(db, "blacklist", targetIp), banPayload);
+                            if(targetDevice) await setDoc(doc(db, "blacklist", targetDevice), banPayload);
+                            await setDoc(doc(db, "blacklist", targetUid), banPayload);
+                            
+                            await setDoc(doc(db, "users", targetUid), { isBanned: true }, { merge: true });
+                            if(typeof showToast === "function") showToast("İstifadəçi şəbəkə səviyyəsində uğurla banlandı!", "success");
+                        } catch(err) {
+                            if(typeof showToast === "function") showToast("Səlahiyyət xətası: " + err.message, "error");
                         }
-                        
-                        const banPayload = { banned: true, reason: "Super Admin IP/Cihaz Banı", timestamp: new Date().toISOString() };
-                        
-                        if(targetIp) await setDoc(doc(db, "blacklist", targetIp), banPayload);
-                        if(targetDevice) await setDoc(doc(db, "blacklist", targetDevice), banPayload);
-                        await setDoc(doc(db, "blacklist", targetUid), banPayload);
-                        
-                        await setDoc(doc(db, "users", targetUid), { isBanned: true }, { merge: true });
-                        if(typeof showToast === "function") showToast("İstifadəçi şəbəkə səviyyəsində uğurla banlandı!", "success");
-                    } catch(err) {
-                        if(typeof showToast === "function") showToast("Səlahiyyət xətası: " + err.message, "error");
                     }
-                }
-            };
+                };
+            }
         });
     }
 
@@ -1576,6 +1584,5 @@ function escapeHTML(str) {
             clearInterval(startObserver);
         }
     }, 500);
-})();
-                 
-                                                          
+})(); 
+                                                         
