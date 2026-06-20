@@ -292,26 +292,58 @@ async function deleteAccount() {
 
 async function changeUserRole(userId, currentRole) {
     const myLevel = getRoleLevel(currentUserData.role);
-    if (myLevel !== 4) {
-        showToast("Bu əməliyyat üçün Super Admin səlahiyyətiniz olmalıdır!", "error");
+    
+    // 1. Ən azı Admin (Level 3) olmalıdır
+    if (myLevel < 3) {
+        showToast("Bu əməliyyat üçün ən azı Admin səlahiyyətiniz olmalıdır!", "error");
         return;
     }
-    const newRole = prompt(`İstifadəçinin yeni rolunu daxil edin:\n(super_admin, admin, moderator, user)\n\nHazırki rol: ${currentRole}`, currentRole);
-    if (!newRole) return;
-    const validRoles = ["super_admin", "admin", "moderator", "user"];
-    const targetRoleClean = newRole.trim().toLowerCase();
-    if (!validRoles.includes(targetRoleClean)) {
-        showToast("Yanlış rol! Yalnız: super_admin, admin, moderator, user qəbul edilir.", "warning");
-        return;
+
+    const targetLevel = getRoleLevel(currentRole);
+    let newRole = null;
+
+    // 2. Super Admin Məntiqi (Sərbəst)
+    if (myLevel === 4) {
+        newRole = prompt(`İstifadəçinin yeni rolunu daxil edin:\n(super_admin, admin, moderator, user)\n\nHazırki rol: ${currentRole}`, currentRole);
+        if (!newRole) return;
+        
+        const validRoles = ["super_admin", "admin", "moderator", "user"];
+        newRole = newRole.trim().toLowerCase();
+        
+        if (!validRoles.includes(newRole)) {
+            showToast("Yanlış rol! Yalnız: super_admin, admin, moderator, user qəbul edilir.", "warning");
+            return;
+        }
+    } 
+    // 3. Admin Məntiqi (Məhdud)
+    else if (myLevel === 3) {
+        // Admin yalnız Admin və Super Admin-lərə toxuna bilməz
+        if (targetLevel > 2) {
+            showToast("Adminlər yalnız 'user' və 'moderator' rollarını dəyişə bilər!", "error");
+            return;
+        }
+        
+        newRole = prompt(`İstifadəçinin yeni rolunu daxil edin:\n(moderator, user)\n\nHazırki rol: ${currentRole}`, currentRole);
+        if (!newRole) return;
+        
+        const validRoles = ["moderator", "user"];
+        newRole = newRole.trim().toLowerCase();
+        
+        if (!validRoles.includes(newRole)) {
+            showToast("Adminlər yalnız 'moderator' və ya 'user' rolu verə bilər.", "warning");
+            return;
+        }
     }
+
     try {
-        await updateDoc(doc(db, 'users', userId), { role: targetRoleClean });
+        await updateDoc(doc(db, 'users', userId), { role: newRole });
         showToast("İstifadəçinin rolu uğurla yeniləndi!", "success");
     } catch (error) {
         console.error("Rol dəyişərkən xəta:", error);
         showToast("Rol dəyişdirilə bilmədi: " + error.message, "error");
     }
 }
+
 
 async function toggleBanUser(targetUserId, isCurrentlyBanned) {
     const myLevel = getRoleLevel(currentUserData.role);
@@ -740,10 +772,11 @@ function renderUsersList() {
         const isIgnored = currentIgnoreList.includes(user.uid);
 
         // ── Düymə görünürlüğü (ierarxiya qaydalarına uyğun) ──────────────────
-        // Rol düyməsi: yalnız super_admin, hər kəsə tətbiq edə bilər
-        const roleButtonHtml = (myLevel === 4)
-            ? `<button class="role-toggle-btn" onclick="event.stopPropagation(); changeUserRole('${user.uid}', '${user.role || 'user'}')" title="Rolu idarə et (Hazırda: ${user.role || 'user'})"><i class="fa-solid fa-user-gear"></i></button>`
-            : '';
+        // Əgər Super Adminsə hər kəsdə, Admindirsə yalnız moderator və user-lərdə görünsün
+        const roleButtonHtml = (myLevel === 4 || (myLevel === 3 && targetLevel <= 2))
+           ? `<button class="role-toggle-btn" onclick="event.stopPropagation(); changeUserRole('${user.uid}', '${user.role || 'user'}')" title="Rolu idarə et (Hazırda: ${user.role || 'user'})"><i class="fa-solid fa-user-gear"></i></button>`
+           : '';
+
 
         // Ban düyməsi:
         //   super_admin (4) → hər kəsə (o cümlədən digər super_admin-lərə)
