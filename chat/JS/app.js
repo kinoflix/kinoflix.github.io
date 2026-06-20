@@ -1012,6 +1012,7 @@ async function submitMessage(isDMContext) {
         }
         showToast("Mesaj göndərilərkən xəta: " + err.message, "error"); 
     }
+}
 
 sendMessageBtn.addEventListener('click', () => submitMessage(false));
 messageInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitMessage(false); });
