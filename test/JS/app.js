@@ -1413,11 +1413,12 @@ function escapeHTML(str) {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 /* ==========================================================================
- 10. KINOFLIX ŞƏBƏKƏ (IP & DEVICE) BAN SİSTEMİ 
- (Mövcud koda toxunmadan sıfır müdaxilə ilə işləyir)
+ 10. KINOFLIX ŞƏBƏKƏ (IP & DEVICE) BAN SİSTEMİ
  ========================================================================== */
 (function() {
-    // 1. Köməkçi Funksiyalar
+    let localBlacklist = new Set();
+    let blacklistListenerActive = false;
+
     async function fetchCurrentIP() {
         try { const res = await fetch('https://api.ipify.org?format=json'); const data = await res.json(); return data.ip; } 
         catch { return null; }
@@ -1430,35 +1431,38 @@ function escapeHTML(str) {
         return 'dev_' + Math.abs(hash);
     }
 
-    async function enforceBanUI() {
+    function enforceBanUI() {
         document.body.innerHTML = `
-            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:#08101a; color:#e74c3c; font-family:'Varela Round', sans-serif;">
-                <i class="fa-solid fa-network-wired" style="font-size: 60px; margin-bottom: 20px;"></i>
-                <h2>ŞƏBƏKƏ BLOKU</h2>
-                <p style="color:#94a3b8; margin-top:10px;">Sizin IP ünvanınız və ya cihazınız Kinoflix sistemindən uzaqlaşdırılıb.</p>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; height:100dvh; background: radial-gradient(circle at center, #1a0b12 0%, #08101a 100%); color:#e74c3c; font-family:'Varela Round', sans-serif; text-align:center; padding:20px; box-sizing:border-box; overflow:hidden;">
+                <div style="background: rgba(231, 76, 60, 0.05); border: 1px solid rgba(231, 76, 60, 0.2); padding: 40px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-width: 450px; width: 100%; backdrop-filter: blur(10px);">
+                    <div style="width: 80px; height: 80px; background: rgba(231, 76, 60, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; border: 2px solid rgba(231,76,60,0.5);">
+                        <i class="fa-solid fa-network-wired" style="font-size: 32px; color: #e74c3c;"></i>
+                    </div>
+                    <h2 style="margin: 0 0 15px 0; font-size: 24px; letter-spacing: 1px; color: #fff;">GİRİŞ QADAĞANDIR</h2>
+                    <p style="color:#94a3b8; margin: 0; font-size: 15px; line-height: 1.6;">Sizin IP ünvanınız və ya cihazınız Kinoflix icma qaydalarını pozduğuna görə sistemdən <strong style="color:#e74c3c;">tamamilə uzaqlaşdırılıb</strong>.</p>
+                </div>
             </div>
         `;
     }
 
-    // 2. Auth Sistemini dinləyərək datanı bazaya qeyd edirik və ban yoxlaması edirik
     auth.onAuthStateChanged(async (user) => {
         if(user) {
             const ip = await fetchCurrentIP();
             const deviceId = getDeviceFingerprint();
             
-            // Öz məlumatlarını log olaraq yaz
             try {
                 await setDoc(doc(db, 'user_network', user.uid), {
                     userId: user.uid, lastIp: ip, lastDevice: deviceId, updatedAt: new Date().toISOString()
                 }, { merge: true });
             } catch(e) {}
             
-            // Sistem blokunu yoxla
+            // Hər girişdə həm IP, həm Cihaz, həm də UID üzərindən banı yoxlayırıq
             try {
                 const ipCheck = await getDoc(doc(db, "blacklist", ip || "none"));
                 const devCheck = await getDoc(doc(db, "blacklist", deviceId || "none"));
+                const uidCheck = await getDoc(doc(db, "blacklist", user.uid));
                 
-                if (ipCheck.exists() || devCheck.exists()) {
+                if (ipCheck.exists() || devCheck.exists() || uidCheck.exists()) {
                     auth.signOut().catch(()=>{});
                     enforceBanUI();
                 }
@@ -1466,19 +1470,28 @@ function escapeHTML(str) {
         }
     });
 
-    // 3. DOM İzləyicisi (Siyahıya avtomatik şəbəkə banı düyməsi daxil etmək)
-    const observer = new MutationObserver(() => {
-        const actionsContainers = document.querySelectorAll('.user-actions');
+    // Super Adminlər üçün Qara Siyahını canlı dinləyən sistem (Düymə rəngini dəyişmək üçün)
+    function initBlacklistListener() {
+        if (blacklistListenerActive) return;
+        blacklistListenerActive = true;
         
-        actionsContainers.forEach(container => {
-            // Əgər düyməni artıq əlavə etmişiksə, toxunma
-            if (container.querySelector('.admin-network-ban-btn')) return;
+        onSnapshot(collection(db, 'blacklist'), (snapshot) => {
+            localBlacklist.clear();
+            snapshot.forEach(doc => localBlacklist.add(doc.id));
+            updateNetworkBanButtons(); // Məlumat gələn kimi düymələri yenilə
+        });
+    }
 
-            // Əgər istifadəçinin normal ban düyməsini görə bilmirsə (səlahiyyəti çatmırsa), şəbəkə banını da görməsin
+    function updateNetworkBanButtons() {
+        if (!currentUserData || currentUserData.role !== 'super_admin') return;
+        
+        initBlacklistListener();
+
+        const actionsContainers = document.querySelectorAll('.user-actions');
+        actionsContainers.forEach(container => {
             const normalBanBtn = container.querySelector('.admin-ban-btn');
             if (!normalBanBtn) return;
 
-            // Normal düymənin 'onclick' funksiyasından UID-ni cımbızla çıxarırıq: toggleBanUser('UID', isBanned)
             const onclickCode = normalBanBtn.getAttribute('onclick');
             if(!onclickCode) return;
             
@@ -1486,46 +1499,76 @@ function escapeHTML(str) {
             if(!match) return;
             const targetUid = match[1];
 
-            // 4. Avtomatik düyməni yaradırıq
-            const netBanBtn = document.createElement('button');
-            netBanBtn.className = 'admin-network-ban-btn';
-            netBanBtn.innerHTML = '<i class="fa-solid fa-wifi"></i>';
-            netBanBtn.title = 'İstifadəçini şəbəkə səviyyəsində qov (IP+Cihaz)';
-            
+            // İstifadəçi qara siyahıdadırmı?
+            const isNetBanned = localBlacklist.has(targetUid);
+
+            let netBanBtn = container.querySelector('.admin-network-ban-btn');
+            if (!netBanBtn) {
+                netBanBtn = document.createElement('button');
+                netBanBtn.className = 'admin-network-ban-btn';
+                normalBanBtn.after(netBanBtn);
+            }
+
+            // VİZUAL STATUSUN DƏYİŞDİRİLMƏSİ (BAN və ya UNBAN görkəmi)
+            if (isNetBanned) {
+                netBanBtn.innerHTML = '<i class="fa-solid fa-wifi" style="color: #2ecc71;"></i>'; // Yaşıl rəng
+                netBanBtn.title = 'İstifadəçinin IP/Cihaz banını TAM QALDIR';
+                netBanBtn.style.background = 'rgba(46, 204, 113, 0.1)';
+                netBanBtn.style.borderColor = 'rgba(46, 204, 113, 0.4)';
+            } else {
+                netBanBtn.innerHTML = '<i class="fa-solid fa-wifi"></i>'; // Orijinal bənövşəyi rəng
+                netBanBtn.title = 'İstifadəçini şəbəkə səviyyəsində qov (IP+Cihaz)';
+                netBanBtn.style.background = '';
+                netBanBtn.style.borderColor = '';
+            }
+
+            // KLİK MƏNTİQİ: Əgər bandadırsa Unban et, deyilsə Ban et
             netBanBtn.onclick = async (e) => {
                 e.stopPropagation();
-                if(!confirm("DİQQƏT: Bu istifadəçini IP, Cihaz və Hesab olaraq tam bloklamaq istəyirsiniz?")) return;
                 
-                try {
-                    // İstifadəçinin şəbəkə məlumatlarını tapırıq
-                    const netDoc = await getDoc(doc(db, "user_network", targetUid));
-                    if(!netDoc.exists()) {
-                        if(typeof showToast === "function") showToast("Şəbəkə məlumatı tapılmadı!", "error");
-                        return;
+                if (isNetBanned) {
+                    if(!confirm("İstifadəçinin IP, Cihaz və Hesab banını QALDIRMAQ istəyirsiniz?")) return;
+                    try {
+                        const netDoc = await getDoc(doc(db, "user_network", targetUid));
+                        if(netDoc.exists()) {
+                            const data = netDoc.data();
+                            if(data.lastIp) await deleteDoc(doc(db, "blacklist", data.lastIp));
+                            if(data.lastDevice) await deleteDoc(doc(db, "blacklist", data.lastDevice));
+                        }
+                        await deleteDoc(doc(db, "blacklist", targetUid));
+                        await setDoc(doc(db, "users", targetUid), { isBanned: false }, { merge: true });
+                        if(typeof showToast === "function") showToast("Şəbəkə və hesab banı tamamilə ləğv edildi!", "success");
+                    } catch(err) {
+                        if(typeof showToast === "function") showToast("Xəta: " + err.message, "error");
                     }
-                    
-                    const data = netDoc.data();
-                    const banPayload = { banned: true, reason: "Admin IP/Cihaz Banı", timestamp: new Date().toISOString() };
-                    
-                    // Qara siyahıya atırıq
-                    if(data.lastIp) await setDoc(doc(db, "blacklist", data.lastIp), banPayload);
-                    if(data.lastDevice) await setDoc(doc(db, "blacklist", data.lastDevice), banPayload);
-                    
-                    // Normal Firestore hesabı banını da aktivləşdiririk ki, hesab mütləq bloka düşsün
-                    await setDoc(doc(db, "users", targetUid), { isBanned: true }, { merge: true });
-                    
-                    if(typeof showToast === "function") showToast("İstifadəçi şəbəkə səviyyəsində uğurla banlandı!", "success");
-                } catch(err) {
-                    if(typeof showToast === "function") showToast("Səlahiyyət xətası: " + err.message, "error");
+                } else {
+                    if(!confirm("DİQQƏT: Bu istifadəçini IP, Cihaz və Hesab olaraq tam bloklamaq istəyirsiniz?")) return;
+                    try {
+                        const netDoc = await getDoc(doc(db, "user_network", targetUid));
+                        let targetIp = null; let targetDevice = null;
+                        if(netDoc.exists()) {
+                            targetIp = netDoc.data().lastIp;
+                            targetDevice = netDoc.data().lastDevice;
+                        }
+                        
+                        const banPayload = { banned: true, reason: "Super Admin IP/Cihaz Banı", timestamp: new Date().toISOString() };
+                        
+                        if(targetIp) await setDoc(doc(db, "blacklist", targetIp), banPayload);
+                        if(targetDevice) await setDoc(doc(db, "blacklist", targetDevice), banPayload);
+                        await setDoc(doc(db, "blacklist", targetUid), banPayload);
+                        
+                        await setDoc(doc(db, "users", targetUid), { isBanned: true }, { merge: true });
+                        if(typeof showToast === "function") showToast("İstifadəçi şəbəkə səviyyəsində uğurla banlandı!", "success");
+                    } catch(err) {
+                        if(typeof showToast === "function") showToast("Səlahiyyət xətası: " + err.message, "error");
+                    }
                 }
             };
-
-            // Normal ban düyməsinin yanına əlavə edirik
-            normalBanBtn.after(netBanBtn);
         });
-    });
+    }
 
-    // Səhifədə "#usersList" elementi yarandıqda və yeniləndikdə izləməyə başla
+    const observer = new MutationObserver(() => updateNetworkBanButtons());
+
     const startObserver = setInterval(() => {
         const usersListEl = document.getElementById('usersList');
         if (usersListEl) {
@@ -1534,4 +1577,5 @@ function escapeHTML(str) {
         }
     }, 500);
 })();
+                 
                                                           
