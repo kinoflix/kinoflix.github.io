@@ -1342,30 +1342,48 @@ onAuthStateChanged(auth, async (user) => {
         // Qeydiyyat axını gedirsə, sessiyanın başladılmasını qeydiyyat formu məlumatlar tam yazıldıqdan sonra özü edəcək
         if (isRegistering) return;
 
-             // === BAN / SİLİNMİŞ HESABIN AUTH-DAN TAM SİLİNMƏSİ (YENİ ƏLAVƏ) ===
+                     // === SİLİNMİŞ HESABLARIN AUTH SİYAHISINDAN TƏMİZLƏNMƏSİ ===
         try {
             const userDoc = await getDoc(doc(db, 'users', user.uid));
             
-            // Əgər qaydalardan keçibsə amma hər hansı səbəbdən sənəd tapılmadısa:
+            // Əgər istifadəçinin Firestore sənədi silinibdirsə:
             if (!userDoc.exists()) {
-                showToast("Hesabınız silinir...", "error");
-                await user.delete();
-                window.location.reload();
-                return;
+                try {
+                    // Seans təzədirsə, Auth hesabını dərhal silirik:
+                    await user.delete();
+                    showToast("Hesabınız sistemdən tamamilə silindi.", "success");
+                    window.location.reload();
+                    return;
+                } catch (authError) {
+                    // Seans köhnədirsə, istifadəçini çıxışa məcbur edirik:
+                    if (authError.code === 'auth/requires-recent-login') {
+                        showToast("Təhlükəsizlik doğrulaması tələb olunur. Yenidən daxil olun.", "info");
+                        await signOut(auth).catch(() => {});
+                        window.location.reload();
+                        return;
+                    }
+                    throw authError;
+                }
             }
         } catch (error) {
-            // Əgər Firestore Rules (exists yoxlaması) səbəbindən oxuma sorğusu RƏDD EDİLDİSƏ:
-            // Bu, istifadəçinin sənədinin silindiyini və serverin ona giriş icazəsi vermədiyini göstərir.
-            // İstifadəçi indicə yenidən Login olduğu üçün seansı TAP-TƏZƏDİR və delete() dərhal işləyəcək.
+            // Firestore Qaydaları (Rules) oxuma sorğusunu birbaşa rədd edərsə:
             if (error.code === 'permission-denied') {
-                showToast("Hesabınız bloklanıb və sistemdən silinir...", "error");
-                await user.delete().catch(() => {});
-                window.location.reload();
-                return; // Aşağıdakı initializeChatSession işləməsin!
+                try {
+                    await user.delete();
+                    window.location.reload();
+                    return;
+                } catch (authError) {
+                    if (authError.code === 'auth/requires-recent-login') {
+                        showToast("Sessiya müddəti bitib. Yenidən giriş edin.", "info");
+                        await signOut(auth).catch(() => {});
+                        window.location.reload();
+                        return;
+                    }
+                }
             }
-            console.error("Giriş yoxlaması zamanı gözlənilməz xəta:", error);
+            console.error("Giriş yoxlanışı zamanı gözlənilməz xəta:", error);
         }
-        // ====================================================================
+        // =========================================================
 
         // Əgər istifadəçi ban olunmayıbsa və sənədi qaydasındadırsa, çat sessiyası normal başlayır:
      
