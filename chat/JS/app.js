@@ -1621,63 +1621,104 @@ function escapeHTML(str) {
 })();
                 
 /* ==========================================================================
- GHOST HESABLARIN AVTOMATİK TƏMİZLƏNMƏSİ
+ GHOST HESABLARIN AVTOMATİK TƏMİZLƏNMƏSİ (PATCH) — v2
+ --------------------------------------------------------------------------
+ v1-dən fərq: artıq YALNIZ banlı hesabları yox, ban statusundan asılı 
+ olmadan, faktiki olaraq onlayn olmayan BÜTÜN hesabları hədəfləyir.
+
+ NİYƏ HEARTBEAT LAZIMDIR:
+ onDisconnect() yalnız RTDB serverinin socket-i REAL "ölü" kimi aşkar 
+ etdiyi anda işə düşür. Bəzi hallarda (noutbuk yuxuya keçəndə, tab uzun 
+ müddət arxa planda qalanda, enforceBanUI() kimi DOM-u əvəz edən amma 
+ səhifəni real bağlamayan ssenarilərdə) socket texniki "qoşulu" qalır, 
+ halbuki istifadəçi faktiki aktiv deyil. Bunu aşkar etməyin yeganə etibarlı 
+ yolu hər klientin müntəzəm "mən buradayam" siqnalı (heartbeat) göndərməsi 
+ və admin sweep-in bu siqnalın nə vaxtdan kəsildiyini yoxlamasıdır.
+
+ PERFORMANS: heartbeat AYRI bir RTDB node-una (heartbeats/{uid}) yazılır, 
+ `presence`-ə yox — çünki listenUsersAndPresence() bütün `presence` 
+ ağacını dinləyir və ona hər yazış BÜTÜN qoşulu istifadəçilərdə siyahının 
+ yenidən render olunmasına səbəb olur. `heartbeats` ayrı node olduğu üçün 
+ bu dinləyicini tətikləmir.
+
+ TƏLƏB OLUNAN YENİ RTDB QAYDASI (presence/admin_uids qaydalarına əlavə):
+   "heartbeats": {
+     ".read": "auth != null",
+     "$uid": { ".write": "auth != null && auth.uid == $uid" }
+   }
+
+ Bu fayl mövcud app.js-ə TOXUNMUR — sadəcə onun SONUNA əlavə edilməlidir.
  ========================================================================== */
 (function () {
-    const GHOST_CHECK_INTERVAL_MS = 5 * 60 * 1000; // 5 dəqiqə
-    const FIRST_RUN_DELAY_MS = 15 * 1000; // tətbiq tam yüklənsin deyə ilk yoxlamanı bir az gecikdir
+    const HEARTBEAT_INTERVAL_MS = 2 * 60 * 1000;  // hər istifadəçi 2 dəqiqədə bir "buradayam" yazır
+    const SWEEP_INTERVAL_MS = 5 * 60 * 1000;       // admin sweep hər 5 dəqiqədən bir
+    const STALE_THRESHOLD_MS = 6 * 60 * 1000;      // 6+ dəqiqə heartbeat yoxdursa -> ghost
+    const FIRST_HEARTBEAT_DELAY_MS = 3 * 1000;
+    const FIRST_SWEEP_DELAY_MS = 20 * 1000;
 
-    let ghostSweepRunning = false;
+    let sweepRunning = false;
+
+    // --- 1) HƏR İSTİFADƏÇİ: öz heartbeat-ini yazır ---
+    function sendHeartbeat() {
+        if (!currentUser) return;
+        set(ref(rtdb, `heartbeats/${currentUser.uid}`), rtdbTimestamp()).catch(() => {});
+    }
+    setTimeout(sendHeartbeat, FIRST_HEARTBEAT_DELAY_MS);
+    setInterval(sendHeartbeat, HEARTBEAT_INTERVAL_MS);
+
+    // --- 2) ADMIN/SUPER_ADMIN: presence + heartbeats müqayisəsi ---
+    function readOnce(path) {
+        return new Promise((resolve) => {
+            onValue(ref(rtdb, path), (snap) => resolve(snap.val() || {}), { onlyOnce: true });
+        });
+    }
 
     async function sweepGhostAccounts() {
-        // Yalnız giriş etmiş və admin+ səlahiyyəti olan klient bu əməliyyatı aparsın
         if (!currentUser || !currentUserData) return;
-        if (typeof getRoleLevel !== 'function') return;
-        if (getRoleLevel(currentUserData.role) < 3) return; // admin və ya super_admin
-
-        // Eyni anda iki sweep-in üst-üstə düşməsinin qarşısını al
-        if (ghostSweepRunning) return;
-        ghostSweepRunning = true;
+        if (typeof getRoleLevel !== 'function' || getRoleLevel(currentUserData.role) < 3) return;
+        if (sweepRunning) return;
+        sweepRunning = true;
 
         try {
-            const bannedSnap = await getDocs(
-                query(collection(db, 'users'), where('isBanned', '==', true))
-            );
+            const [presenceData, heartbeatData] = await Promise.all([
+                readOnce('presence'),
+                readOnce('heartbeats')
+            ]);
 
-            if (bannedSnap.empty) return;
+            const now = Date.now();
+            let ghostCount = 0;
 
-            bannedSnap.forEach((userDoc) => {
-                const uid = userDoc.id;
-                if (!uid) return;
+            Object.keys(presenceData).forEach((uid) => {
+                const p = presenceData[uid];
+                if (!p || (p.status !== 'online' && p.status !== 'away')) return;
 
-                const statusRef = ref(rtdb, `presence/${uid}`);
+                const lastBeat = heartbeatData[uid];
+                // Heartbeat heç gəlməyibsə (köhnə tab, yeni qoşulma) - toxunma, false-positive riskindən qaç
+                if (!lastBeat) return;
 
-                // Bir dəfəlik oxu (onlyOnce) — daimi dinləyici yaratmırıq ki,
-                // yaddaş sızması və ya artıq trafik yaranmasın
-                onValue(
-                    statusRef,
-                    (snap) => {
-                        const data = snap.val();
-                        if (data && (data.status === 'online' || data.status === 'away')) {
-                            set(statusRef, {
-                                status: 'offline',
-                                lastChanged: rtdbTimestamp(),
-                                typingTo: null
-                            }).catch(() => {
-                                // Yazış uğursuz olarsa (icazə və s.) səssizcə keç
-                            });
-                        }
-                    },
-                    { onlyOnce: true }
-                );
+                if (now - lastBeat > STALE_THRESHOLD_MS) {
+                    ghostCount++;
+                    set(ref(rtdb, `presence/${uid}`), {
+                        status: 'offline',
+                        lastChanged: rtdbTimestamp(),
+                        typingTo: null
+                    }).catch((err) => console.error('[ghost-sweep] yazış xətası:', uid, err.message));
+                }
             });
+
+            if (ghostCount > 0) {
+                console.log(`[ghost-sweep] ${ghostCount} ghost hesab offline edildi`);
+            }
         } catch (e) {
-            // Əsas tətbiqin işinə mane olmasın deyə xətanı udulur
+            console.error('[ghost-sweep] xəta:', e.message);
         } finally {
-            ghostSweepRunning = false;
+            sweepRunning = false;
         }
     }
 
-    setTimeout(sweepGhostAccounts, FIRST_RUN_DELAY_MS);
-    setInterval(sweepGhostAccounts, GHOST_CHECK_INTERVAL_MS);
+    setTimeout(sweepGhostAccounts, FIRST_SWEEP_DELAY_MS);
+    setInterval(sweepGhostAccounts, SWEEP_INTERVAL_MS);
+
+    // Test üçün: konsoldan dərhal işə salmaq olar -> __debugGhostSweep()
+    window.__debugGhostSweep = sweepGhostAccounts;
 })();
