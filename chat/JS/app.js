@@ -1621,31 +1621,63 @@ function escapeHTML(str) {
 })();
                 
 /* ==========================================================================
-   MÜSTƏQİL GHOST TƏMİZLƏYİCİ (Kodlarına heç bir zərər vermir)
-   ========================================================================== */
-(function() {
-    // Bu kod avtomatik özünü işə salır və heç bir funksiyanı dəyişmir.
-    setInterval(async () => {
+ GHOST HESABLARIN AVTOMATİK TƏMİZLƏNMƏSİ
+ ========================================================================== */
+(function () {
+    const GHOST_CHECK_INTERVAL_MS = 5 * 60 * 1000; // 5 dəqiqə
+    const FIRST_RUN_DELAY_MS = 15 * 1000; // tətbiq tam yüklənsin deyə ilk yoxlamanı bir az gecikdir
+
+    let ghostSweepRunning = false;
+
+    async function sweepGhostAccounts() {
+        // Yalnız giriş etmiş və admin+ səlahiyyəti olan klient bu əməliyyatı aparsın
+        if (!currentUser || !currentUserData) return;
+        if (typeof getRoleLevel !== 'function') return;
+        if (getRoleLevel(currentUserData.role) < 3) return; // admin və ya super_admin
+
+        // Eyni anda iki sweep-in üst-üstə düşməsinin qarşısını al
+        if (ghostSweepRunning) return;
+        ghostSweepRunning = true;
+
         try {
-            const snapshot = await get(ref(rtdb, 'presence'));
-            if (!snapshot.exists()) return;
+            const bannedSnap = await getDocs(
+                query(collection(db, 'users'), where('isBanned', '==', true))
+            );
 
-            const now = Date.now();
-            // 5 dəqiqə ərzində heç bir yenilənmə olmayıbsa (lastChanged dəyişməyibsə)
-            const LIMIT = 5 * 60 * 1000; 
+            if (bannedSnap.empty) return;
 
-            snapshot.forEach((child) => {
-                const data = child.val();
-                if (data && (data.status === 'online' || data.status === 'away')) {
-                    if (now - data.lastChanged > LIMIT) {
-                        set(ref(rtdb, `presence/${child.key}`), { 
-                            status: 'offline', 
-                            lastChanged: rtdbTimestamp(),
-                            typingTo: null 
-                        });
-                    }
-                }
+            bannedSnap.forEach((userDoc) => {
+                const uid = userDoc.id;
+                if (!uid) return;
+
+                const statusRef = ref(rtdb, `presence/${uid}`);
+
+                // Bir dəfəlik oxu (onlyOnce) — daimi dinləyici yaratmırıq ki,
+                // yaddaş sızması və ya artıq trafik yaranmasın
+                onValue(
+                    statusRef,
+                    (snap) => {
+                        const data = snap.val();
+                        if (data && (data.status === 'online' || data.status === 'away')) {
+                            set(statusRef, {
+                                status: 'offline',
+                                lastChanged: rtdbTimestamp(),
+                                typingTo: null
+                            }).catch(() => {
+                                // Yazış uğursuz olarsa (icazə və s.) səssizcə keç
+                            });
+                        }
+                    },
+                    { onlyOnce: true }
+                );
             });
-        } catch (e) { /* Səssizcə ötür */ }
-    }, 60 * 1000); // Hər 1 dəqiqədən bir yoxla
+        } catch (e) {
+            // Əsas tətbiqin işinə mane olmasın deyə xətanı udulur
+        } finally {
+            ghostSweepRunning = false;
+        }
+    }
+
+    setTimeout(sweepGhostAccounts, FIRST_RUN_DELAY_MS);
+    setInterval(sweepGhostAccounts, GHOST_CHECK_INTERVAL_MS);
 })();
