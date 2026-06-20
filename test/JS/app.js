@@ -1412,3 +1412,126 @@ function escapeHTML(str) {
     if (!str) return '';
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
+/* ==========================================================================
+ 10. KINOFLIX ŞƏBƏKƏ (IP & DEVICE) BAN SİSTEMİ 
+ (Mövcud koda toxunmadan sıfır müdaxilə ilə işləyir)
+ ========================================================================== */
+(function() {
+    // 1. Köməkçi Funksiyalar
+    async function fetchCurrentIP() {
+        try { const res = await fetch('https://api.ipify.org?format=json'); const data = await res.json(); return data.ip; } 
+        catch { return null; }
+    }
+
+    function getDeviceFingerprint() {
+        const info = window.navigator.userAgent + window.navigator.language + window.screen.width + window.screen.height;
+        let hash = 0;
+        for (let i = 0; i < info.length; i++) { hash = ((hash << 5) - hash) + info.charCodeAt(i); hash |= 0; }
+        return 'dev_' + Math.abs(hash);
+    }
+
+    async function enforceBanUI() {
+        document.body.innerHTML = `
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:#08101a; color:#e74c3c; font-family:'Varela Round', sans-serif;">
+                <i class="fa-solid fa-network-wired" style="font-size: 60px; margin-bottom: 20px;"></i>
+                <h2>ŞƏBƏKƏ BLOKU</h2>
+                <p style="color:#94a3b8; margin-top:10px;">Sizin IP ünvanınız və ya cihazınız Kinoflix sistemindən uzaqlaşdırılıb.</p>
+            </div>
+        `;
+    }
+
+    // 2. Auth Sistemini dinləyərək datanı bazaya qeyd edirik və ban yoxlaması edirik
+    auth.onAuthStateChanged(async (user) => {
+        if(user) {
+            const ip = await fetchCurrentIP();
+            const deviceId = getDeviceFingerprint();
+            
+            // Öz məlumatlarını log olaraq yaz
+            try {
+                await setDoc(doc(db, 'user_network', user.uid), {
+                    userId: user.uid, lastIp: ip, lastDevice: deviceId, updatedAt: new Date().toISOString()
+                }, { merge: true });
+            } catch(e) {}
+            
+            // Sistem blokunu yoxla
+            try {
+                const ipCheck = await getDoc(doc(db, "blacklist", ip || "none"));
+                const devCheck = await getDoc(doc(db, "blacklist", deviceId || "none"));
+                
+                if (ipCheck.exists() || devCheck.exists()) {
+                    auth.signOut().catch(()=>{});
+                    enforceBanUI();
+                }
+            } catch(e) {}
+        }
+    });
+
+    // 3. DOM İzləyicisi (Siyahıya avtomatik şəbəkə banı düyməsi daxil etmək)
+    const observer = new MutationObserver(() => {
+        const actionsContainers = document.querySelectorAll('.user-actions');
+        
+        actionsContainers.forEach(container => {
+            // Əgər düyməni artıq əlavə etmişiksə, toxunma
+            if (container.querySelector('.admin-network-ban-btn')) return;
+
+            // Əgər istifadəçinin normal ban düyməsini görə bilmirsə (səlahiyyəti çatmırsa), şəbəkə banını da görməsin
+            const normalBanBtn = container.querySelector('.admin-ban-btn');
+            if (!normalBanBtn) return;
+
+            // Normal düymənin 'onclick' funksiyasından UID-ni cımbızla çıxarırıq: toggleBanUser('UID', isBanned)
+            const onclickCode = normalBanBtn.getAttribute('onclick');
+            if(!onclickCode) return;
+            
+            const match = onclickCode.match(/toggleBanUser\('([^']+)'/);
+            if(!match) return;
+            const targetUid = match[1];
+
+            // 4. Avtomatik düyməni yaradırıq
+            const netBanBtn = document.createElement('button');
+            netBanBtn.className = 'admin-network-ban-btn';
+            netBanBtn.innerHTML = '<i class="fa-solid fa-wifi"></i>';
+            netBanBtn.title = 'İstifadəçini şəbəkə səviyyəsində qov (IP+Cihaz)';
+            
+            netBanBtn.onclick = async (e) => {
+                e.stopPropagation();
+                if(!confirm("DİQQƏT: Bu istifadəçini IP, Cihaz və Hesab olaraq tam bloklamaq istəyirsiniz?")) return;
+                
+                try {
+                    // İstifadəçinin şəbəkə məlumatlarını tapırıq
+                    const netDoc = await getDoc(doc(db, "user_network", targetUid));
+                    if(!netDoc.exists()) {
+                        if(typeof showToast === "function") showToast("Şəbəkə məlumatı tapılmadı!", "error");
+                        return;
+                    }
+                    
+                    const data = netDoc.data();
+                    const banPayload = { banned: true, reason: "Admin IP/Cihaz Banı", timestamp: new Date().toISOString() };
+                    
+                    // Qara siyahıya atırıq
+                    if(data.lastIp) await setDoc(doc(db, "blacklist", data.lastIp), banPayload);
+                    if(data.lastDevice) await setDoc(doc(db, "blacklist", data.lastDevice), banPayload);
+                    
+                    // Normal Firestore hesabı banını da aktivləşdiririk ki, hesab mütləq bloka düşsün
+                    await setDoc(doc(db, "users", targetUid), { isBanned: true }, { merge: true });
+                    
+                    if(typeof showToast === "function") showToast("İstifadəçi şəbəkə səviyyəsində uğurla banlandı!", "success");
+                } catch(err) {
+                    if(typeof showToast === "function") showToast("Səlahiyyət xətası: " + err.message, "error");
+                }
+            };
+
+            // Normal ban düyməsinin yanına əlavə edirik
+            normalBanBtn.after(netBanBtn);
+        });
+    });
+
+    // Səhifədə "#usersList" elementi yarandıqda və yeniləndikdə izləməyə başla
+    const startObserver = setInterval(() => {
+        const usersListEl = document.getElementById('usersList');
+        if (usersListEl) {
+            observer.observe(usersListEl, { childList: true, subtree: true });
+            clearInterval(startObserver);
+        }
+    }, 500);
+})();
+                                                          
