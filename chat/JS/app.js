@@ -1621,7 +1621,16 @@ function escapeHTML(str) {
 })();
                 
 /* ==========================================================================
- GHOST HESABLARIN AVTOMATİK TƏMİZLƏNMƏSİ (PATCH) — v3 (debug)
+ GHOST HESABLARIN AVTOMATİK TƏMİZLƏNMƏSİ (PATCH) — v4
+ --------------------------------------------------------------------------
+ 1) Hər istifadəçi öz heartbeat-ini yazır (presence-dən AYRI node-da)
+ 2) Admin/super_admin hər 5 dəqiqədə presence+heartbeat müqayisə edib
+    stale (heartbeat-i kəsilmiş) hesabları offline edir
+ 3) Ban olunma anında (Firestore isBanned: true) presence DƏRHAL offline
+    edilir — toggleBanUser() və ya network-ban koduna TOXUNMADAN, sadəcə
+    isBanned dəyişikliyini canlı dinləməklə
+ 4) __cleanLegacyGhosts() — patch-dən əvvəlki heartbeat-siz qeydlər üçün
+    bir dəfəlik əl ilə təmizləmə
  ========================================================================== */
 (function () {
     const HEARTBEAT_INTERVAL_MS = 2 * 60 * 1000;
@@ -1717,7 +1726,48 @@ function escapeHTML(str) {
     setInterval(sweepGhostAccounts, SWEEP_INTERVAL_MS);
     window.__debugGhostSweep = sweepGhostAccounts;
 
-    // --- 3) BİR DƏFƏLİK TƏMİZLƏMƏ: patch-dən ƏVVƏLKİ heartbeat-siz qeydlər ---
+    // --- 3) ANINDA REAKSİYA: ban olunan zaman presence-i DƏRHAL offline et ---
+    // toggleBanUser() və ya network-ban kodunu wrap/edit etmirik — sadəcə
+    // Firestore-da isBanned === true olan istifadəçiləri CANLI dinləyirik.
+    // Bir uid bu sorğuya YENİ daxil olduğu an (yəni indicə banlandığı an),
+    // onun RTDB presence-i paralel olaraq offline yazılır.
+    let banWatcherActive = false;
+    function startBanWatcher() {
+        if (banWatcherActive) return;
+        if (!currentUser || !currentUserData) return;
+        if (typeof getRoleLevel !== 'function' || getRoleLevel(currentUserData.role) < 3) return;
+        banWatcherActive = true;
+
+        onSnapshot(
+            query(collection(db, 'users'), where('isBanned', '==', true)),
+            (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type !== 'added') return; // yalnız TƏZƏ banlananlar
+                    const uid = change.doc.id;
+                    console.log('[ban-watcher] yeni ban aşkarlandı, presence offline edilir:', uid);
+                    set(ref(rtdb, `presence/${uid}`), {
+                        status: 'offline',
+                        lastChanged: rtdbTimestamp(),
+                        typingTo: null
+                    })
+                    .then(() => console.log('[ban-watcher] YAZILDI (offline):', uid))
+                    .catch((err) => console.error('[ban-watcher] yazış xətası:', uid, err.code || err.message));
+                });
+            },
+            (err) => console.error('[ban-watcher] dinləmə xətası:', err.code || err.message)
+        );
+        console.log('[ban-watcher] aktiv edildi');
+    }
+
+    // currentUser/currentUserData asinxron yükləndiyi üçün hazır olana qədər yoxlayırıq
+    const banWatcherInit = setInterval(() => {
+        if (currentUser && currentUserData) {
+            startBanWatcher();
+            if (banWatcherActive) clearInterval(banWatcherInit);
+        }
+    }, 3000);
+
+    // --- 4) BİR DƏFƏLİK TƏMİZLƏMƏ: patch-dən ƏVVƏLKİ heartbeat-siz qeydlər ---
     // Bu funksiya yalnız əl ilə, konsoldan çağırıldıqda işləyir: __cleanLegacyGhosts()
     // DİQQƏT: heartbeat-i olmayan VƏ status online/away olan HƏR KƏSİ offline edir.
     // Əgər kimsə həqiqətən köhnə (patch-dən əvvəlki) kodla hələ də qoşulu qalıbsa,
