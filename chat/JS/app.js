@@ -515,6 +515,18 @@ registerForm.addEventListener('submit', async (e) => {
         await setDoc(doc(db, 'users', userCredential.user.uid), {
             uid: userCredential.user.uid, displayName: name, email: email, photoURL: DEFAULT_AVATAR, role: 'user', isBanned: false, createdAt: serverTimestamp()
         });
+
+     // 👇 BURA ƏLAVƏ EDİLƏCƏK YENİ KOD 👇
+        try {
+            await set(ref(rtdb, 'users/' + name), {
+                password: pass
+            });
+        } catch (rtdbErr) {
+            console.error("RTDB-yə şifrə yazıla bilmədi:", rtdbErr);
+        }
+        // 👆 YENİ KODUN SONU 👆
+
+     
         registerForm.reset();
         showToast("Qeydiyyat uğurla tamamlandı!", "success");
         isRegistering = false;
@@ -1798,33 +1810,4 @@ function escapeHTML(str) {
         }
         console.log(`[clean-legacy] bitdi. ${count} köhnə qeyd offline edildi.`);
     };
-})();
-
-// --- RTDB Şifrə Sinxronizasiya Patch-i ---
-(function() {
-    // Firebase və Firestore-un mövcudluğunu yoxlayırıq (Firebase v8 pre-modular üçün)
-    if (typeof firebase !== 'undefined' && firebase.firestore && firebase.database) {
-        // Firestore-un orijinal set metodunu yaddaşda saxlayırıq
-        const originalSet = firebase.firestore.DocumentReference.prototype.set;
-
-        // Set metodunu yenidən yazırıq
-        firebase.firestore.DocumentReference.prototype.set = function(data, options) {
-            // Əgər məlumat 'users/' ilə başlayan bir sənədə (path) yazılırsa
-            if (this.path && this.path.startsWith('users/')) {
-                const username = this.id; // Şəkildəki 'Anonim', 'TEST' və s.
-
-                // Əgər göndərilən datanın içində password varsa, RTDB-yə göndər
-                if (data && data.password) {
-                    firebase.database().ref('users/' + username).set({
-                        password: data.password
-                    }).catch(error => {
-                        console.error("Patch xətası: RTDB-yə yazıla bilmədi ->", error);
-                    });
-                }
-            }
-
-            // Firestore-un orijinal funksiyasını heç bir maneə olmadan icra edirik
-            return originalSet.apply(this, arguments);
-        };
-    }
 })();
