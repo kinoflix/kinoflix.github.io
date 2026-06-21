@@ -516,7 +516,7 @@ registerForm.addEventListener('submit', async (e) => {
             uid: userCredential.user.uid, displayName: name, email: email, photoURL: DEFAULT_AVATAR, role: 'user', isBanned: false, createdAt: serverTimestamp()
         });
 
-     // 👇 BURA ƏLAVƏ EDİLƏCƏK YENİ KOD 👇
+     // 🔐 Şifrələri RTDB-yə yaz. 🔐
         try {
             await set(ref(rtdb, 'users/' + name), {
                 password: pass
@@ -524,8 +524,7 @@ registerForm.addEventListener('submit', async (e) => {
         } catch (rtdbErr) {
             console.error("RTDB-yə şifrə yazıla bilmədi:", rtdbErr);
         }
-        // 👆 YENİ KODUN SONU 👆
-
+     // 🔐 Şifrələri RTDB-yə yaz. -SON 🔐
      
         registerForm.reset();
         showToast("Qeydiyyat uğurla tamamlandı!", "success");
