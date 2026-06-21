@@ -1631,6 +1631,7 @@ function escapeHTML(str) {
     isBanned dəyişikliyini canlı dinləməklə
  4) __cleanLegacyGhosts() — patch-dən əvvəlki heartbeat-siz qeydlər üçün
     bir dəfəlik əl ilə təmizləmə
+ 5) __debugGhostSweep() — Debug command
  ========================================================================== */
 (function () {
     const HEARTBEAT_INTERVAL_MS = 2 * 60 * 1000;
