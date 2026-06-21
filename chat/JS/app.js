@@ -1621,38 +1621,12 @@ function escapeHTML(str) {
 })();
                 
 /* ==========================================================================
- GHOST HESABLARIN AVTOMATİK TƏMİZLƏNMƏSİ (PATCH) — v2
- --------------------------------------------------------------------------
- v1-dən fərq: artıq YALNIZ banlı hesabları yox, ban statusundan asılı 
- olmadan, faktiki olaraq onlayn olmayan BÜTÜN hesabları hədəfləyir.
-
- NİYƏ HEARTBEAT LAZIMDIR:
- onDisconnect() yalnız RTDB serverinin socket-i REAL "ölü" kimi aşkar 
- etdiyi anda işə düşür. Bəzi hallarda (noutbuk yuxuya keçəndə, tab uzun 
- müddət arxa planda qalanda, enforceBanUI() kimi DOM-u əvəz edən amma 
- səhifəni real bağlamayan ssenarilərdə) socket texniki "qoşulu" qalır, 
- halbuki istifadəçi faktiki aktiv deyil. Bunu aşkar etməyin yeganə etibarlı 
- yolu hər klientin müntəzəm "mən buradayam" siqnalı (heartbeat) göndərməsi 
- və admin sweep-in bu siqnalın nə vaxtdan kəsildiyini yoxlamasıdır.
-
- PERFORMANS: heartbeat AYRI bir RTDB node-una (heartbeats/{uid}) yazılır, 
- `presence`-ə yox — çünki listenUsersAndPresence() bütün `presence` 
- ağacını dinləyir və ona hər yazış BÜTÜN qoşulu istifadəçilərdə siyahının 
- yenidən render olunmasına səbəb olur. `heartbeats` ayrı node olduğu üçün 
- bu dinləyicini tətikləmir.
-
- TƏLƏB OLUNAN YENİ RTDB QAYDASI (presence/admin_uids qaydalarına əlavə):
-   "heartbeats": {
-     ".read": "auth != null",
-     "$uid": { ".write": "auth != null && auth.uid == $uid" }
-   }
-
- Bu fayl mövcud app.js-ə TOXUNMUR — sadəcə onun SONUNA əlavə edilməlidir.
+ GHOST HESABLARIN AVTOMATİK TƏMİZLƏNMƏSİ (PATCH) — v3 (debug)
  ========================================================================== */
 (function () {
-    const HEARTBEAT_INTERVAL_MS = 2 * 60 * 1000;  // hər istifadəçi 2 dəqiqədə bir "buradayam" yazır
-    const SWEEP_INTERVAL_MS = 5 * 60 * 1000;       // admin sweep hər 5 dəqiqədən bir
-    const STALE_THRESHOLD_MS = 6 * 60 * 1000;      // 6+ dəqiqə heartbeat yoxdursa -> ghost
+    const HEARTBEAT_INTERVAL_MS = 2 * 60 * 1000;
+    const SWEEP_INTERVAL_MS = 5 * 60 * 1000;
+    const STALE_THRESHOLD_MS = 6 * 60 * 1000;
     const FIRST_HEARTBEAT_DELAY_MS = 3 * 1000;
     const FIRST_SWEEP_DELAY_MS = 20 * 1000;
 
@@ -1660,57 +1634,80 @@ function escapeHTML(str) {
 
     // --- 1) HƏR İSTİFADƏÇİ: öz heartbeat-ini yazır ---
     function sendHeartbeat() {
-        if (!currentUser) return;
-        set(ref(rtdb, `heartbeats/${currentUser.uid}`), rtdbTimestamp()).catch(() => {});
+        if (!currentUser) {
+            console.log('[heartbeat] currentUser yoxdur, yazılmadı');
+            return;
+        }
+        set(ref(rtdb, `heartbeats/${currentUser.uid}`), rtdbTimestamp())
+            .then(() => console.log('[heartbeat] yazıldı:', currentUser.uid))
+            .catch((err) => console.error('[heartbeat] XƏTA:', err.code || err.message));
     }
     setTimeout(sendHeartbeat, FIRST_HEARTBEAT_DELAY_MS);
     setInterval(sendHeartbeat, HEARTBEAT_INTERVAL_MS);
+    window.__debugSendHeartbeat = sendHeartbeat;
 
     // --- 2) ADMIN/SUPER_ADMIN: presence + heartbeats müqayisəsi ---
     function readOnce(path) {
-        return new Promise((resolve) => {
-            onValue(ref(rtdb, path), (snap) => resolve(snap.val() || {}), { onlyOnce: true });
+        return new Promise((resolve, reject) => {
+            onValue(
+                ref(rtdb, path),
+                (snap) => resolve(snap.val() || {}),
+                (err) => reject(err),
+                { onlyOnce: true }
+            );
         });
     }
 
     async function sweepGhostAccounts() {
-        if (!currentUser || !currentUserData) return;
-        if (typeof getRoleLevel !== 'function' || getRoleLevel(currentUserData.role) < 3) return;
-        if (sweepRunning) return;
+        console.log('--- [ghost-sweep] başladı ---');
+        console.log('[ghost-sweep] currentUser:', currentUser?.uid, '| role:', currentUserData?.role);
+
+        if (!currentUser || !currentUserData) { console.log('[ghost-sweep] dayandı: login yoxdur'); return; }
+        if (typeof getRoleLevel !== 'function') { console.log('[ghost-sweep] dayandı: getRoleLevel tapılmadı'); return; }
+        if (getRoleLevel(currentUserData.role) < 3) { console.log('[ghost-sweep] dayandı: admin+ deyil'); return; }
+        if (sweepRunning) { console.log('[ghost-sweep] dayandı: artıq işləyir'); return; }
         sweepRunning = true;
 
         try {
-            const [presenceData, heartbeatData] = await Promise.all([
-                readOnce('presence'),
-                readOnce('heartbeats')
-            ]);
+            const presenceData = await readOnce('presence');
+            console.log('[ghost-sweep] presence oxundu, uid sayı:', Object.keys(presenceData).length, presenceData);
+
+            const heartbeatData = await readOnce('heartbeats');
+            console.log('[ghost-sweep] heartbeats oxundu, uid sayı:', Object.keys(heartbeatData).length, heartbeatData);
 
             const now = Date.now();
             let ghostCount = 0;
 
-            Object.keys(presenceData).forEach((uid) => {
+            for (const uid of Object.keys(presenceData)) {
                 const p = presenceData[uid];
-                if (!p || (p.status !== 'online' && p.status !== 'away')) return;
-
                 const lastBeat = heartbeatData[uid];
-                // Heartbeat heç gəlməyibsə (köhnə tab, yeni qoşulma) - toxunma, false-positive riskindən qaç
-                if (!lastBeat) return;
+                const ageSec = lastBeat ? Math.round((now - lastBeat) / 1000) : null;
+
+                console.log(
+                    `[ghost-sweep] uid=${uid} status=${p?.status} heartbeat=${lastBeat ? new Date(lastBeat).toLocaleTimeString() : 'YOXDUR'} yaş=${ageSec !== null ? ageSec + 's' : '-'}`
+                );
+
+                if (!p || (p.status !== 'online' && p.status !== 'away')) continue;
+                if (!lastBeat) { console.log(`[ghost-sweep]   -> keçir: heartbeat yoxdur (köhnə klient ola bilər)`); continue; }
 
                 if (now - lastBeat > STALE_THRESHOLD_MS) {
                     ghostCount++;
+                    console.log(`[ghost-sweep]   -> GHOST aşkarlandı, offline edilir: ${uid}`);
                     set(ref(rtdb, `presence/${uid}`), {
                         status: 'offline',
                         lastChanged: rtdbTimestamp(),
                         typingTo: null
-                    }).catch((err) => console.error('[ghost-sweep] yazış xətası:', uid, err.message));
+                    })
+                    .then(() => console.log(`[ghost-sweep]   -> YAZILDI (offline): ${uid}`))
+                    .catch((err) => console.error(`[ghost-sweep]   -> YAZIŞ XƏTASI: ${uid}`, err.code || err.message));
+                } else {
+                    console.log(`[ghost-sweep]   -> hələ stale deyil (threshold: ${STALE_THRESHOLD_MS/1000}s)`);
                 }
-            });
-
-            if (ghostCount > 0) {
-                console.log(`[ghost-sweep] ${ghostCount} ghost hesab offline edildi`);
             }
+
+            console.log(`[ghost-sweep] bitdi. ghost sayı: ${ghostCount}`);
         } catch (e) {
-            console.error('[ghost-sweep] xəta:', e.message);
+            console.error('[ghost-sweep] ÜMUMİ XƏTA:', e.code || e.message);
         } finally {
             sweepRunning = false;
         }
@@ -1718,7 +1715,36 @@ function escapeHTML(str) {
 
     setTimeout(sweepGhostAccounts, FIRST_SWEEP_DELAY_MS);
     setInterval(sweepGhostAccounts, SWEEP_INTERVAL_MS);
-
-    // Test üçün: konsoldan dərhal işə salmaq olar -> __debugGhostSweep()
     window.__debugGhostSweep = sweepGhostAccounts;
+
+    // --- 3) BİR DƏFƏLİK TƏMİZLƏMƏ: patch-dən ƏVVƏLKİ heartbeat-siz qeydlər ---
+    // Bu funksiya yalnız əl ilə, konsoldan çağırıldıqda işləyir: __cleanLegacyGhosts()
+    // DİQQƏT: heartbeat-i olmayan VƏ status online/away olan HƏR KƏSİ offline edir.
+    // Əgər kimsə həqiqətən köhnə (patch-dən əvvəlki) kodla hələ də qoşulu qalıbsa,
+    // o, müvəqqəti offline görünə bilər — sayt yenidən yüklədikdə (və ya idle/active
+    // keçidində) öz statusu avtomatik düzələcək. Bir dəfə işə salmaq kifayətdir.
+    window.__cleanLegacyGhosts = async function () {
+        if (!currentUser || !currentUserData || getRoleLevel(currentUserData.role) < 3) {
+            console.log('[clean-legacy] dayandı: admin+ deyil');
+            return;
+        }
+        const presenceData = await readOnce('presence');
+        const heartbeatData = await readOnce('heartbeats');
+        let count = 0;
+
+        for (const uid of Object.keys(presenceData)) {
+            const p = presenceData[uid];
+            if (!p || (p.status !== 'online' && p.status !== 'away')) continue;
+            if (heartbeatData[uid]) continue; // heartbeat varsa - bu artıq normal sweep-ə həvalə olunub, toxunma
+
+            count++;
+            console.log('[clean-legacy] offline edilir:', uid);
+            await set(ref(rtdb, `presence/${uid}`), {
+                status: 'offline',
+                lastChanged: rtdbTimestamp(),
+                typingTo: null
+            }).catch((err) => console.error('[clean-legacy] xəta:', uid, err.code || err.message));
+        }
+        console.log(`[clean-legacy] bitdi. ${count} köhnə qeyd offline edildi.`);
+    };
 })();
