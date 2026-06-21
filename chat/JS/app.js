@@ -1038,6 +1038,10 @@ async function submitMessage(isDMContext) {
                 ? `messages/private/${activeRoomId}/${docRef.id}` 
                 : `messages/global/${docRef.id}`;
 
+         // DEBUG ÜÇÜN BU İKİ SƏTRİ ƏLAVƏ ET
+            console.log("RTDB-yə yazılır, Yol:", rtdbPath);
+            console.log("Məlumat:", { text: text, senderId: currentUser.uid });
+
             await set(ref(rtdb, rtdbPath), {
                 senderId: currentUser.uid,
                 senderName: currentUserData.displayName || 'Anonim',
