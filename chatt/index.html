@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KINOFLIX - Online söhbət</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%231db954' d='M27.5 162.2L9 187.1h90.5l6.9-130.7-78.9 105.8zM396.3 45.7L267.7 32l135.7 147.2-7.1-133.5zM112.2 218.3l-11.2-22H9.9L234.8 458zm2-31.2h284l-81.5-88.5L256.3 33zm297.3 9.1L277.6 458l224.8-261.7h-90.9zM415.4 69L406 56.4l.9 17.3 6.1 113.4h90.3zM113.5 93.5l-4.6 85.6L244.7 32 116.1 45.7zm287.7 102.7h-290l42.4 82.9L256.3 480l144.9-283.8z'/%3E%3C/svg%3E">
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="dark">
+
+    <div id="appLoader" class="app-loader">
+        <div class="app-loader-spinner"></div>
+    </div>
+
+    <header class="app-header">
+        <div class="logo-area">
+            <a href="../index.html" class="logo">
+                <img id="siteLogo" src="../FILES/IMG/logos/white.png" alt="KINOFLIX">
+            </a>
+        </div>
+        <div class="header-actions">
+            <button id="themeToggle" class="icon-btn" title="Mövzunu dəyiş">
+                <i class="fa-solid fa-sun"></i>
+            </button>
+            <button id="openSettingsBtn" class="icon-btn hidden" title="Profil Tənzimləmələri">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+            <button id="logoutBtn" class="logout-btn hidden">
+                <i class="fa-solid fa-right-from-bracket"></i> Çıxış
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+
+        <section id="authScreen" class="auth-screen active">
+            <div class="auth-card">
+                <div class="auth-tabs">
+                    <button id="tabLogin" class="auth-tab active">Daxil Ol</button>
+                    <button id="tabRegister" class="auth-tab">Qeydiyyat</button>
+                </div>
+
+                <form id="loginForm" class="auth-form active">
+                    <h2 style="text-align:center;">Xoş gəldiniz!</h2>
+                    <div class="input-group">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="loginIdentifier" placeholder="İstifadəçi adı və ya e-poçt" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="loginPassword" placeholder="Şifrə" required>
+                        <button type="button" id="toggleLoginPassword" class="password-toggle-btn" tabindex="-1">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <div style="text-align:right; margin-top:-8px;">
+                        <button type="button" id="forgotPasswordBtn" class="forgot-password-link">Şifrəni unutdunuzmu?</button>
+                    </div>
+                    <button type="submit" class="submit-btn">Daxil ol</button>
+                </form>
+
+                <form id="registerForm" class="auth-form">
+                    <h2 style="text-align:center;">Hesab Yarat</h2>
+                    <div class="input-group">
+                        <i class="fa-solid fa-at"></i>
+                        <input type="text" id="regUsername" placeholder="İstifadəçi adı (3-10 simvol, A-Z, 0-9, _, .)" required>
+                    </div>
+                    <div id="regUsernameFeedback" class="field-feedback"></div>
+
+                    <div class="input-group">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="regFirstName" placeholder="Ad" required>
+                    </div>
+                    <div id="regFirstNameFeedback" class="field-feedback"></div>
+
+                    <div class="input-group">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="regLastName" placeholder="Soyad" required>
+                    </div>
+                    <div id="regLastNameFeedback" class="field-feedback"></div>
+
+                    <div class="input-group">
+                        <i class="fa-solid fa-envelope"></i>
+                        <input type="email" id="regEmail" placeholder="E-poçt ünvanı" required>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="regPassword" placeholder="Şifrə (Min. 6 simvol)" required>
+                        <button type="button" id="toggleRegPassword" class="password-toggle-btn" tabindex="-1">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="regPasswordConfirm" placeholder="Şifrəni təkrar daxil edin" required>
+                        <button type="button" id="toggleRegPasswordConfirm" class="password-toggle-btn" tabindex="-1">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <div id="regPasswordConfirmFeedback" class="field-feedback"></div>
+
+                    <button type="submit" class="submit-btn">Qeydiyyatı tamamla</button>
+                </form>
+
+                <div class="auth-divider"><span>və ya</span></div>
+
+                <button id="googleAuthBtn" class="google-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
+                    Google ilə davam et
+                </button>
+            </div>
+        </section>
+
+        <section id="chatScreen" class="chat-screen">
+            <div class="chat-layout">
+                
+                <aside id="usersSidebar" class="sidebar">
+                    <div class="current-user-card">
+                        <img id="currentUserAvatar" src="https://via.placeholder.com/40" alt="Avatar" class="avatar">
+                        <div class="user-info">
+                            <span id="currentUserName" class="name">Yüklənir...</span>
+                            <span id="currentUserRole" class="role-badge">İstifadəçi</span>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-navigation">
+                        <button id="btnGlobalRoom" class="nav-tab active">
+                            <i class="fa-solid fa-earth-americas"></i> Ümumi Çat
+                        </button>
+                        <button id="btnAdminRoom" class="nav-tab hidden">
+                            <i class="fa-solid fa-shield-halved"></i> Rəhbərlik otağı
+                        </button>
+                    </div>
+
+                    <div class="sidebar-list-container">
+                        <h3><i class="fa-solid fa-circle text-success"></i> Aktiv İstifadəçilər</h3>
+                        <ul id="usersList" class="users-list"></ul>
+                    </div>
+                </aside>
+
+                <section class="chat-window">
+                    <div class="chat-window-header">
+                        <div class="active-room-info">
+                            <h2 id="activeRoomTitle">Ümumi Çat</h2>
+                            <p id="activeRoomSub">Son 50 mesaj göstərilir</p>
+                        </div>
+                        <button id="mobileUsersToggleBtn" class="icon-btn mobile-only" title="Aktiv İstifadəçilər">
+                            <i class="fa-solid fa-users"></i>
+                        </button>
+                    </div>
+
+                    <div id="generalChatArea" class="chat-layer active">
+                        <div id="chatMessagesArea" class="chat-messages-area"></div>
+
+                        <div id="typingIndicator" class="typing-indicator hidden">
+                            <span id="typingText">Kimsə yazır...</span>
+                            <div class="dots"><span></span><span></span><span></span></div>
+                        </div>
+
+                        <div id="chatFilePreviewBar" class="file-preview-bar hidden">
+                            <i class="fa-regular fa-image file-preview-icon"></i>
+                            <span id="chatFileNameDisplay" class="file-preview-name"></span>
+                            <button type="button" id="chatFileClearBtn" class="file-clear-btn" title="Faylı sil"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+
+                        <div class="chat-input-bar">
+                            <label for="chatFileInput" class="attach-btn" title="Şəkil göndər">
+                                <i class="fa-solid fa-paperclip"></i>
+                                <input type="file" id="chatFileInput" accept="image/*, application/pdf, text/plain" hidden>
+                            </label>
+                            <div class="emoji-picker-wrapper">
+                                <button type="button" id="chatEmojiBtn" class="emoji-btn" title="Smaylik əlavə et">
+                                    <i class="fa-regular fa-face-smile"></i>
+                                </button>
+                                <div id="chatEmojiPicker" class="emoji-picker-panel hidden"></div>
+                            </div>
+                            <input type="text" id="messageInputField" placeholder="Ümumi çata mesaj yazın..." autocomplete="off">
+                            <button id="sendMessageBtn" class="send-btn">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="privateChatArea" class="chat-layer hidden">
+                        <div id="privateChatHeader" class="private-chat-header" title="Geri qayıt">
+                            <i class="fa-solid fa-chevron-left"></i>
+                            <div class="pm-info">
+                                <h3 id="privateRoomTitle">İstifadəçi Adı</h3>
+                                <p>Şəxsi Söhbət</p>
+                            </div>
+                        </div>
+                        
+                        <div id="privateMessagesArea" class="chat-messages-area"></div>
+                        
+                        <div id="privateFilePreviewBar" class="file-preview-bar hidden">
+                            <i class="fa-regular fa-image file-preview-icon"></i>
+                            <span id="privateFileNameDisplay" class="file-preview-name"></span>
+                            <button type="button" id="privateFileClearBtn" class="file-clear-btn" title="Faylı sil"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+
+                        <div class="chat-input-bar">
+                            <label for="privateFileInput" class="attach-btn" title="Fayl göndər">
+                                <i class="fa-solid fa-paperclip"></i>
+                                <input type="file" id="privateFileInput" accept="image/*, application/pdf, text/plain" hidden>
+                            </label>
+                            <div class="emoji-picker-wrapper">
+                                <button type="button" id="privateEmojiBtn" class="emoji-btn" title="Smaylik əlavə et">
+                                    <i class="fa-regular fa-face-smile"></i>
+                                </button>
+                                <div id="privateEmojiPicker" class="emoji-picker-panel hidden"></div>
+                            </div>
+                            <input type="text" id="privateInputField" placeholder="Şəxsi mesajınızı yazın..." autocomplete="off">
+                            <button id="sendPrivateMessageBtn" class="send-btn">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal-card settings-modal-card">
+            <div class="modal-header">
+                <h3>Profil Ayarları</h3>
+                <button id="closeSettingsBtn" class="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body settings-modal-body">
+
+                <!-- Avatar -->
+                <div class="settings-avatar-center">
+                    <div class="settings-avatar-wrap">
+                        <img id="settingsAvatarPreview" src="https://via.placeholder.com/100" alt="Avatar" class="large-avatar">
+                        <label for="avatarFileInput" class="avatar-camera-btn" title="Şəkil seç">
+                            <i class="fa-solid fa-camera"></i> Şəkil Seç
+                        </label>
+                        <input type="file" id="avatarFileInput" accept="image/*" hidden>
+                    </div>
+                    <span id="avatarFileNameDisplay" class="file-name-display"></span>
+                </div>
+
+                <!-- Vahid Profil Formu -->
+                <form id="profileSettingsForm" class="settings-unified-form">
+                    <div class="settings-field">
+                        <label for="settingsUsername">İstifadəçi adı (@username):</label>
+                        <input type="text" id="settingsUsername" placeholder="username" required>
+                    </div>
+                    <div class="settings-field">
+                        <label for="settingsFirstName">Ad:</label>
+                        <input type="text" id="settingsFirstName" placeholder="Ad" required>
+                    </div>
+                    <div class="settings-field">
+                        <label for="settingsLastName">Soyad:</label>
+                        <input type="text" id="settingsLastName" placeholder="Soyad" required>
+                    </div>
+                    <div class="settings-field">
+                        <label for="settingsEmailDisplay">E-poçt ünvanınız:</label>
+                        <input type="email" id="settingsEmailDisplay" placeholder="E-poçt ünvanı">
+                    </div>
+
+                    <div class="settings-security-title">
+                        <i class="fa-solid fa-shield-halved"></i> Təhlükəsizlik ayarları
+                    </div>
+
+                    <div class="settings-field">
+                        <label for="currentPasswordInput">Cari Şifrə:</label>
+                        <div class="settings-pw-wrap">
+                            <input type="password" id="currentPasswordInput" placeholder="E-poçt və şifrə dəyişikliyi zamanı məcburidir.">
+                            <button type="button" class="settings-eye-btn" data-target="currentPasswordInput"><i class="fa-solid fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <div class="settings-field">
+                        <label for="newPasswordInput">Yeni Şifrə:</label>
+                        <div class="settings-pw-wrap">
+                            <input type="password" id="newPasswordInput" placeholder="Yeni şifrə (Dəyişmək istəmirsinizsə boş buraxın.)">
+                            <button type="button" class="settings-eye-btn" data-target="newPasswordInput"><i class="fa-solid fa-eye"></i></button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="settings-main-save-btn">
+                        Dəyişiklikləri yadda saxla
+                    </button>
+                </form>
+
+                <!-- Hesabı sil -->
+                <div class="danger-zone">
+                    <h4>Hesabın silinməsi</h4>
+                    <p>Hesabınızı sildiyiniz təqdirdə bütün məlumatlarınız sistemdən tamamilə təmizlənəcəkdir. Bu əməliyyatı geri almaq mümkün deyildir!</p>
+                    <button id="deleteAccBtn" class="delete-account-btn">
+                        <i class="fa-solid fa-user-xmark"></i> Hesabımı sil
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Köhnə formlar üçün gizli saxlama (JS referansları üçün) -->
+    <div hidden>
+        <form id="changeEmailForm"><input id="emailCurrentPasswordInput"><input id="newEmailInput"><button type="submit"></button></form>
+        <form id="changePasswordForm"><button type="submit"></button></form>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
