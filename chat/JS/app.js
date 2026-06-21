@@ -1024,11 +1024,34 @@ async function submitMessage(isDMContext) {
     }
 
     try {
-        await addDoc(collection(db, 'rooms', activeRoomId, 'messages'), {
+        // Mesaj RTDB-yə yazılmasın (const docRef sətrini tam sil) : await addDoc(collection(db, 'rooms', activeRoomId, 'messages'), {
+            const docRef = await addDoc(collection(db, 'rooms', activeRoomId, 'messages'), {
             senderId: currentUser.uid, senderName: currentUserData.displayName || 'Anonim',
             senderAvatar: currentUserData.photoURL || DEFAULT_AVATAR, text: text,
             fileURL: fileURL, fileType: fileType, createdAt: serverTimestamp()
         });
+
+      // 📨 Mesajı RTDB-yə yazan kodlar: 📨
+        try {
+            // Əgər DM (şəxsi) çattdırsa private qovluğuna, deyilsə global qovluğuna yazır
+            const rtdbPath = isDMContext 
+                ? `messages/private/${activeRoomId}/${docRef.id}` 
+                : `messages/global/${docRef.id}`;
+
+            await set(ref(rtdb, rtdbPath), {
+                senderId: currentUser.uid,
+                senderName: currentUserData.displayName || 'Anonim',
+                senderAvatar: currentUserData.photoURL || DEFAULT_AVATAR,
+                text: text,
+                fileURL: fileURL,
+                fileType: fileType,
+                // RTDB üçün import etdiyimiz 'rtdbTimestamp' funksiyasından istifadə edirik
+                createdAt: rtdbTimestamp() 
+            });
+        } catch (rtdbErr) {
+            console.error("Mesaj RTDB-yə sinxronizasiya oluna bilmədi:", rtdbErr);
+        }
+        // 📨 Mesajı RTDB-yə yazan kodlar-Son 📨
 
         if (isDMContext) {
             const targetUserId = activeRoomId.split('_').find(id => id !== currentUser.uid);
@@ -1056,7 +1079,7 @@ async function submitMessage(isDMContext) {
         }
         showToast("Mesaj göndərilərkən xəta: " + err.message, "error"); 
     }
-}
+ }
 
 sendMessageBtn.addEventListener('click', () => submitMessage(false));
 messageInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitMessage(false); });
