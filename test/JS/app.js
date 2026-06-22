@@ -777,7 +777,8 @@ function renderUsersList() {
         const canBan = (myLevel === 4) || (myLevel === 3 && targetLevel <= 2);
         const canDelete = (myLevel === 4);
         const canIgnore = true;
-        const canWhois = (myLevel === 4); // Yalnız Super Admin
+        const canWhois = (myLevel === 4);
+        const canTempBan = (myLevel >= 2 && targetLevel < myLevel);
 
         let dropdownItems = '';
 
@@ -805,9 +806,13 @@ function renderUsersList() {
             dropdownItems += `<button class="dropdown-item network-ban-action" data-uid="${user.uid}"><i class="fa-solid fa-wifi"></i><span class="label">IP/Cihaz banı</span></button>`;
         }
 
-        // === YENİ: Whois (yalnız Super Admin) ===
         if (canWhois) {
             dropdownItems += `<button class="dropdown-item whois-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}"><i class="fa-solid fa-circle-info"></i><span class="label">Whois</span></button>`;
+        }
+
+        // Vaxt ilə qov (moderator, admin, super_admin) - özündən aşağı səviyyədə olanlara
+        if (canTempBan) {
+            dropdownItems += `<button class="dropdown-item temp-ban-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}"><i class="fa-solid fa-clock"></i><span class="label">Vaxt ilə qov</span></button>`;
         }
 
         const dropdownHtml = dropdownItems ? `
@@ -882,9 +887,13 @@ function renderUsersList() {
             } else if (item.classList.contains('network-ban-action')) {
                 const uid = item.dataset.uid;
                 handleNetworkBan(uid);
-            } else if (item.classList.contains('whois-action')) { // YENİ
+            } else if (item.classList.contains('whois-action')) {
                 const uid = item.dataset.uid;
                 showWhois(uid);
+            } else if (item.classList.contains('temp-ban-action')) {
+                const uid = item.dataset.uid;
+                const name = item.dataset.name;
+                showTempBanModal(uid, name);
             }
         });
     });
@@ -1605,10 +1614,31 @@ function startSelfDestructListener(currentUserObj) {
             setTimeout(() => { window.location.reload(); }, 2000);
             return;
         }
-        if (snapshot.data()?.isBanned) {
+        const data = snapshot.data();
+        // Ban müddəti yoxlaması
+        if (data.isBanned && data.banExpires) {
+            const expires = data.banExpires.toDate ? data.banExpires.toDate() : new Date(data.banExpires);
+            if (expires <= new Date()) {
+                // Ban müddəti bitib, avtomatik aç
+                await updateDoc(doc(db, 'users', currentUserObj.uid), {
+                    isBanned: false,
+                    banExpires: null
+                });
+                showToast("Ban müddətiniz bitdi, artıq daxil ola bilərsiniz.", "success");
+                return; // yeniləmədən sonra snapshot yenidən gələcək
+            } else {
+                // Hələ ban aktivdir
+                showToast(`Siz ${formatDuration(Math.round((expires - new Date()) / 60000))} müddətinə banlandınız!`, "error");
+                await signOut(auth);
+                setTimeout(() => { window.location.reload(); }, 2000);
+                return;
+            }
+        } else if (data.isBanned) {
+            // Əgər banExpires yoxdursa, sadəcə ban mesajı
             showToast("Hesabınız ban edildi!", "error");
             await signOut(auth);
             setTimeout(() => { window.location.reload(); }, 2000);
+            return;
         }
     });
 }
@@ -1659,6 +1689,33 @@ async function initializeChatSession(user) {
         };
     }
 
+    // Cari istifadəçinin ban müddətini yoxla
+    if (currentUserData.isBanned && currentUserData.banExpires) {
+        const expires = currentUserData.banExpires.toDate ? currentUserData.banExpires.toDate() : new Date(currentUserData.banExpires);
+        if (expires <= new Date()) {
+            // Ban müddəti bitib, avtomatik aç
+            await updateDoc(doc(db, 'users', user.uid), {
+                isBanned: false,
+                banExpires: null
+            });
+            currentUserData.isBanned = false;
+            currentUserData.banExpires = null;
+            showToast("Ban müddətiniz bitdi, artıq daxil ola bilərsiniz.", "success");
+        } else {
+            // Hələ ban aktivdir
+            showToast(`Siz ${formatDuration(Math.round((expires - new Date()) / 60000))} müddətinə banlandınız!`, "error");
+            await signOut(auth);
+            setTimeout(() => { window.location.reload(); }, 2000);
+            return;
+        }
+    } else if (currentUserData.isBanned) {
+        // Köhnə ban (müddətsiz)
+        showToast("Hesabınız ban edildi!", "error");
+        await signOut(auth);
+        setTimeout(() => { window.location.reload(); }, 2000);
+        return;
+    }
+
     const displayName = currentUserData.displayName || `${currentUserData.firstName || ''} ${currentUserData.lastName || ''}`.trim() || 'Anonim';
     document.getElementById('currentUserName').innerHTML = escapeHTML(displayName) + getRoleStarsHtml(currentUserData.role);
     document.getElementById('currentUserAvatar').src = currentUserData.photoURL || DEFAULT_AVATAR;
@@ -1694,8 +1751,11 @@ async function initializeChatSession(user) {
     if (unsubscribeSelfDestruct) unsubscribeSelfDestruct();
     startSelfDestructListener(user);
 
-    // === YENİ: IP və cihaz məlumatlarını yenilə ===
+    // IP və cihaz məlumatlarını yenilə
     updateUserNetwork().catch(() => {});
+    
+    // Vaxt ilə qov üçün ban təmizləmə mexanizmini işə sal
+    startBanCleanup();
 }
 
 /* ==========================================================================
@@ -1986,3 +2046,125 @@ document.getElementById('whoisModal').addEventListener('click', (e) => {
         document.getElementById('whoisModal').classList.remove('active');
     }
 });
+
+/* ==========================================================================
+ 20d. VAXT İLƏ QOV FUNKSİYASI (YENİ)
+ ========================================================================== */
+
+let tempBanTargetUid = null;
+
+function showTempBanModal(uid, name) {
+    tempBanTargetUid = uid;
+    document.getElementById('tempBanTargetName').textContent = `İstifadəçi: @${escapeHTML(name)}`;
+    document.getElementById('tempBanModal').classList.add('active');
+    // Default olaraq 1 dəqiqə seçilsin
+    const defaultRadio = document.querySelector('input[name="tempBanDuration"][value="1"]');
+    if (defaultRadio) defaultRadio.checked = true;
+}
+
+document.getElementById('closeTempBanBtn').addEventListener('click', () => {
+    document.getElementById('tempBanModal').classList.remove('active');
+});
+document.getElementById('tempBanModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+        document.getElementById('tempBanModal').classList.remove('active');
+    }
+});
+
+document.getElementById('confirmTempBanBtn').addEventListener('click', async () => {
+    const selected = document.querySelector('input[name="tempBanDuration"]:checked');
+    if (!selected) {
+        showToast("Zəhmət olmasa bir müddət seçin.", "warning");
+        return;
+    }
+    const minutes = parseInt(selected.value, 10);
+    if (!tempBanTargetUid) return;
+    await applyTempBan(tempBanTargetUid, minutes);
+    document.getElementById('tempBanModal').classList.remove('active');
+    tempBanTargetUid = null;
+});
+
+async function applyTempBan(targetUid, minutes) {
+    const myLevel = getRoleLevel(currentUserData.role);
+    if (myLevel < 2) {
+        showToast("Bu əməliyyat üçün icazəniz yoxdur.", "error");
+        return;
+    }
+
+    try {
+        const targetDoc = await getDoc(doc(db, 'users', targetUid));
+        if (!targetDoc.exists()) {
+            showToast("İstifadəçi tapılmadı.", "error");
+            return;
+        }
+        const targetLevel = getRoleLevel(targetDoc.data().role);
+        if (targetLevel >= myLevel) {
+            showToast("Səlahiyyətiniz çatmır! Öz səviyyənizdən aşağı olanları qova bilərsiniz.", "error");
+            return;
+        }
+
+        const now = new Date();
+        const expires = new Date(now.getTime() + minutes * 60 * 1000);
+
+        await updateDoc(doc(db, 'users', targetUid), {
+            isBanned: true,
+            banExpires: expires
+        });
+
+        const durationStr = formatDuration(minutes);
+        showToast(`İstifadəçi @${escapeHTML(targetDoc.data().username || '')} ${durationStr} müddətinə qovuldu.`, "success");
+
+    } catch (err) {
+        console.error("Temp ban xətası:", err);
+        showToast("Əməliyyat uğursuz oldu: " + err.message, "error");
+    }
+}
+
+function formatDuration(minutes) {
+    if (minutes < 60) return `${minutes} dəqiqə`;
+    if (minutes < 1440) {
+        const hours = Math.floor(minutes / 60);
+        return `${hours} saat`;
+    }
+    if (minutes < 10080) {
+        const days = Math.floor(minutes / 1440);
+        return `${days} gün`;
+    }
+    return `${Math.floor(minutes / 10080)} həftə`;
+}
+
+// Avtomatik ban açma mexanizmi (hər 30 saniyə)
+let banCleanupInterval = null;
+
+function startBanCleanup() {
+    if (banCleanupInterval) clearInterval(banCleanupInterval);
+    banCleanupInterval = setInterval(async () => {
+        try {
+            const now = new Date();
+            const q = query(collection(db, 'users'), where('isBanned', '==', true));
+            const snap = await getDocs(q);
+            let updates = 0;
+            for (const docSnap of snap.docs) {
+                const data = docSnap.data();
+                if (data.banExpires) {
+                    const expires = data.banExpires.toDate ? data.banExpires.toDate() : new Date(data.banExpires);
+                    if (expires <= now) {
+                        await updateDoc(doc(db, 'users', docSnap.id), {
+                            isBanned: false,
+                            banExpires: null
+                        });
+                        updates++;
+                        if (docSnap.id === currentUser?.uid) {
+                            showToast("Ban müddətiniz bitdi, artıq daxil ola bilərsiniz.", "success");
+                        }
+                    }
+                }
+            }
+            if (updates > 0) {
+                console.log(`[BanCleanup] ${updates} istifadəçinin banı avtomatik açıldı.`);
+            }
+        } catch (err) {
+            console.error('[BanCleanup] Xəta:', err);
+        }
+    }, 30000);
+}
