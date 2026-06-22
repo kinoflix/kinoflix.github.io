@@ -778,7 +778,7 @@ function renderUsersList() {
         const canDelete = (myLevel === 4);
         const canIgnore = true;
         const canWhois = (myLevel === 4);
-        const canTempBan = (myLevel >= 2 && targetLevel < myLevel);
+        const canTempBan = (myLevel >= 2 && (myLevel === 4 || targetLevel < myLevel));
 
         let dropdownItems = '';
 
