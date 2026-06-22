@@ -65,14 +65,12 @@
                 <form id="registerForm" class="auth-form">
                     <h2 style="text-align:center;">Hesab Yarat</h2>
 
-                    <!-- İstifadəçi adı (@username) -->
                     <div class="input-group">
                         <i class="fa-solid fa-at"></i>
                         <input type="text" id="regUsername" placeholder="İstifadəçi adı (3-10 simvol)" required autocomplete="off">
                     </div>
                     <div id="usernameCheckMsg" class="check-message"></div>
 
-                    <!-- Ad və Soyad yan-yana -->
                     <div class="name-row">
                         <div class="input-group half">
                             <i class="fa-solid fa-user"></i>
@@ -84,13 +82,11 @@
                         </div>
                     </div>
 
-                    <!-- E-poçt -->
                     <div class="input-group">
                         <i class="fa-solid fa-envelope"></i>
                         <input type="email" id="regEmail" placeholder="E-poçt ünvanı" required>
                     </div>
 
-                    <!-- Şifrə -->
                     <div class="input-group">
                         <i class="fa-solid fa-lock"></i>
                         <input type="password" id="regPassword" placeholder="Şifrə (Min. 6 simvol)" required>
@@ -99,7 +95,6 @@
                         </button>
                     </div>
 
-                    <!-- Şifrə təkrarı -->
                     <div class="input-group">
                         <i class="fa-solid fa-lock"></i>
                         <input type="password" id="regPasswordConfirm" placeholder="Şifrəni təkrarlayın" required>
@@ -189,11 +184,13 @@
                     </div>
 
                     <div id="privateChatArea" class="chat-layer hidden">
-                        <div id="privateChatHeader" class="private-chat-header" title="Ümumi çata qayıt">
+                        <div id="privateChatHeader" class="private-chat-header">
                             <i class="fa-solid fa-chevron-left"></i>
+                            <img id="privateChatAvatar" src="" alt="" class="avatar" style="width:36px;height:36px;flex-shrink:0;border-radius:50%;object-fit:cover;">
                             <div class="pm-info">
                                 <h3 id="privateRoomTitle">İstifadəçi Adı</h3>
-                                <p>Şəxsi Söhbət (Qayıtmaq üçün toxunun)</p>
+                                <p id="privateRoomUsername" style="font-size:0.75rem;color:var(--muted);"></p>
+                                <p style="font-size:0.7rem;color:var(--text-muted);">Şəxsi Söhbət (Qayıtmaq üçün toxunun)</p>
                             </div>
                         </div>
                         
@@ -237,7 +234,6 @@
             </div>
             <div class="modal-body settings-modal-body">
 
-                <!-- Avatar -->
                 <div class="settings-avatar-center">
                     <div class="settings-avatar-wrap">
                         <img id="settingsAvatarPreview" src="https://via.placeholder.com/100" alt="Avatar" class="large-avatar">
@@ -249,10 +245,8 @@
                     <span id="avatarFileNameDisplay" class="file-name-display"></span>
                 </div>
 
-                <!-- Vahid Profil Formu -->
                 <form id="profileSettingsForm" class="settings-unified-form">
 
-                    <!-- Username (dəyişilə bilən) -->
                     <div class="settings-field">
                         <label>İstifadəçi adı (@username):</label>
                         <input type="text" id="settingsUsername" placeholder="İstifadəçi adı" required>
@@ -298,7 +292,6 @@
                     </button>
                 </form>
 
-                <!-- Hesabı sil -->
                 <div class="danger-zone">
                     <h4>Hesabın silinməsi</h4>
                     <p>Hesabınızı sildiyiniz təqdirdə bütün məlumatlarınız sistemdən tamamilə təmizlənəcəkdir. Bu əməliyyatı geri almaq mümkün deyildir!</p>
@@ -311,7 +304,6 @@
         </div>
     </div>
 
-    <!-- Köhnə formlar üçün gizli saxlama (JS referansları üçün) -->
     <div hidden>
         <form id="changeEmailForm"><input id="emailCurrentPasswordInput"><input id="newEmailInput"><button type="submit"></button></form>
         <form id="changePasswordForm"><button type="submit"></button></form>
