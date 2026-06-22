@@ -2098,7 +2098,10 @@ async function applyTempBan(targetUid, minutes) {
             return;
         }
         const targetLevel = getRoleLevel(targetDoc.data().role);
-        if (targetLevel >= myLevel) {
+        
+        // Super Admin (myLevel === 4) istənilən səviyyəni qova bilər,
+        // digər hallarda isə öz səviyyəsindən aşağı olanları
+        if (myLevel !== 4 && targetLevel >= myLevel) {
             showToast("Səlahiyyətiniz çatmır! Öz səviyyənizdən aşağı olanları qova bilərsiniz.", "error");
             return;
         }
