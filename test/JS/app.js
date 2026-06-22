@@ -59,6 +59,8 @@ let currentUsersList = [];
 let currentStatuses = {};
 let currentRooms = {};
 let userRolesMap = {};
+/* DƏYİŞİKLİK: istifadəçi məlumatları üçün ayrıca map (username-ləri saxlamaq üçün) */
+let userDataMap = {};
 
 // DOM Elementləri
 const authScreen = document.getElementById('authScreen');
@@ -94,6 +96,8 @@ const chatFileInput = document.getElementById('chatFileInput');
 const privateChatArea = document.getElementById('privateChatArea');
 const privateChatHeader = document.getElementById('privateChatHeader');
 const privateRoomTitle = document.getElementById('privateRoomTitle');
+const privateRoomUsername = document.getElementById('privateRoomUsername');
+const privateChatAvatar = document.getElementById('privateChatAvatar');
 const privateMessagesArea = document.getElementById('privateMessagesArea');
 const privateInputField = document.getElementById('privateInputField');
 const sendPrivateMessageBtn = document.getElementById('sendPrivateMessageBtn');
@@ -135,7 +139,6 @@ const getRoleLevel = (role) => {
     return 1;
 };
 
-/* DƏYİŞİKLİK: rol ulduzları - yeni rəng sxemi və sinif əlavəsi */
 const getRoleStarsHtml = (role) => {
     let color = '';
     let starClass = '';
@@ -287,7 +290,6 @@ async function checkUsernameAvailability(username) {
     }
 }
 
-// Qeydiyyat username yoxlaması
 regUsername.addEventListener('input', () => {
     clearTimeout(usernameCheckTimeout);
     const val = regUsername.value.trim();
@@ -319,7 +321,6 @@ regUsername.addEventListener('input', () => {
     }, 400);
 });
 
-// Settings username yoxlaması
 settingsUsername.addEventListener('input', () => {
     clearTimeout(settingsUsernameCheckTimeout);
     const val = settingsUsername.value.trim();
@@ -358,7 +359,6 @@ settingsUsername.addEventListener('input', () => {
     }, 400);
 });
 
-// Şifrə təkrarı yoxlaması
 regPasswordConfirm.addEventListener('input', () => {
     const p1 = regPassword.value;
     const p2 = regPasswordConfirm.value;
@@ -635,14 +635,41 @@ function listenUsersAndPresence() {
     if (unsubscribePresenceList) unsubscribePresenceList();
 
     unsubscribeUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
-        currentUsersList = []; userRolesMap = {};
-        if (currentUser && currentUserData) userRolesMap[currentUser.uid] = currentUserData.role || 'user';
+        currentUsersList = [];
+        userRolesMap = {};
+        userDataMap = {}; // DƏYİŞİKLİK: hər dəfə təmizlə
+        if (currentUser && currentUserData) {
+            userRolesMap[currentUser.uid] = currentUserData.role || 'user';
+            userDataMap[currentUser.uid] = {
+                username: currentUserData.username || '',
+                displayName: currentUserData.displayName || '',
+                firstName: currentUserData.firstName || '',
+                lastName: currentUserData.lastName || '',
+                photoURL: currentUserData.photoURL || DEFAULT_AVATAR,
+                role: currentUserData.role || 'user'
+            };
+        }
         snapshot.forEach(doc => {
             const uData = doc.data();
             userRolesMap[uData.uid] = uData.role || 'user';
+            userDataMap[uData.uid] = {
+                username: uData.username || '',
+                displayName: uData.displayName || '',
+                firstName: uData.firstName || '',
+                lastName: uData.lastName || '',
+                photoURL: uData.photoURL || DEFAULT_AVATAR,
+                role: uData.role || 'user',
+                isBanned: uData.isBanned || false
+            };
             if (uData.uid !== currentUser.uid) currentUsersList.push(uData);
         });
         renderUsersList();
+        // DƏYİŞİKLİK: mesajlar yenidən render olunmalıdır ki, @username görünsün
+        if (activeRoomId === 'global_room') {
+            // loadGeneralMessages artıq onSnapshot ilə işləyir, avtomatik yenilənəcək
+        } else if (activeRoomIsDM) {
+            // loadPrivateMessages də onSnapshot ilə işləyir
+        }
     });
 
     unsubscribePresenceList = onValue(ref(rtdb, 'presence'), (snap) => {
@@ -862,14 +889,21 @@ function closePrivateRoom() {
     renderUsersList();
 }
 
-/* DƏYİŞİKLİK: şəxsi otaq açıldıqda başlığa ulduz əlavə olunur */
+/* DƏYİŞİKLİK: şəxsi otaq başlığında avatar, ad və @username göstər */
 function openPrivateRoom(targetUser) {
     activeRoomIsDM = true;
     activeRoomId = [currentUser.uid, targetUser.uid].sort().join('_');
     const displayName = targetUser.displayName || targetUser.username || 'İstifadəçi';
+    const username = targetUser.username || '';
+    const avatar = targetUser.photoURL || DEFAULT_AVATAR;
     const targetRole = targetUser.role || 'user';
     const roleStars = getRoleStarsHtml(targetRole);
+
+    // Başlıqda avatar, ad + ulduz, @username
+    privateChatAvatar.src = avatar;
     privateRoomTitle.innerHTML = escapeHTML(displayName) + roleStars;
+    privateRoomUsername.textContent = `@${escapeHTML(username)}`;
+
     btnGlobalRoom.classList.remove('active');
     if (activeRoomTitle) activeRoomTitle.innerText = "Şəxsi yazışma";
     if (activeRoomSub) activeRoomSub.innerText = displayName;
@@ -925,7 +959,7 @@ function loadPrivateMessages() {
     });
 }
 
-/* DƏYİŞİKLİK: mesaj elementində göndərən adına ulduz əlavə olunur */
+/* DƏYİŞİKLİK: mesaj elementində göndərən adı və @username göstər */
 function createMessageElement(msg, roomIdContext) {
     const isMe = msg.senderId === currentUser.uid;
     const wrapper = document.createElement('div');
@@ -941,20 +975,36 @@ function createMessageElement(msg, roomIdContext) {
     else if (myLevel === 2 && senderLevel === 1) canDelete = true;
 
     const deleteBtnHtml = canDelete ? `<button class="delete-msg-btn" data-id="${msg.id}" title="Mesajı sil"><i class="fa-solid fa-trash"></i></button>` : '';
+
+    // Göndərənin username-ni tap
+    let senderUsername = '';
+    if (msg.senderUsername) {
+        senderUsername = msg.senderUsername;
+    } else {
+        // userDataMap-dan bax
+        const userData = userDataMap[msg.senderId];
+        if (userData && userData.username) {
+            senderUsername = userData.username;
+        }
+    }
+
     let contentHtml = `<p>${escapeHTML(msg.text)}</p>`;
     if (msg.fileURL) contentHtml += `<img src="${msg.fileURL}" class="chat-shared-image" alt="Şəkil" onclick="window.open('${msg.fileURL}')">`;
 
     const time = msg.createdAt ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "...";
     
-    // Göndərən adına ulduz əlavə et
     const senderRole = userRolesMap[msg.senderId] || 'user';
     const roleStars = getRoleStarsHtml(senderRole);
     const senderNameHtml = escapeHTML(msg.senderName) + roleStars;
+
+    // DƏYİŞİKLİK: sender name altına @username əlavə et
+    const usernameHtml = senderUsername ? `<span class="sender-username">@${escapeHTML(senderUsername)}</span>` : '';
 
     wrapper.innerHTML = `
         <img src="${msg.senderAvatar || DEFAULT_AVATAR}" class="msg-avatar" alt="">
         <div class="message-bubble">
             <span class="sender-name">${senderNameHtml} ${deleteBtnHtml}</span>
+            ${usernameHtml}
             ${contentHtml}
             <span class="timestamp">${time}</span>
         </div>
@@ -1008,11 +1058,15 @@ async function submitMessage(isDMContext) {
         catch (err) { showToast(err.message, "error"); return; }
     }
 
+    // DƏYİŞİKLİK: mesaja senderUsername əlavə et
+    const senderUsername = currentUserData.username || '';
+
     try {
         const docRef = await addDoc(collection(db, 'rooms', activeRoomId, 'messages'), {
             senderId: currentUser.uid,
             senderName: currentUserData.displayName || 'Anonim',
             senderAvatar: currentUserData.photoURL || DEFAULT_AVATAR,
+            senderUsername: senderUsername,
             text: text,
             fileURL: fileURL,
             fileType: fileType,
@@ -1025,6 +1079,7 @@ async function submitMessage(isDMContext) {
                 senderId: currentUser.uid,
                 senderName: currentUserData.displayName || 'Anonim',
                 senderAvatar: currentUserData.photoURL || DEFAULT_AVATAR,
+                senderUsername: senderUsername,
                 text: text,
                 fileURL: fileURL,
                 fileType: fileType,
@@ -1151,7 +1206,6 @@ profileSettingsForm.addEventListener('submit', async (e) => {
     const passChanged = newPass.length > 0;
     const usernameChanged = newUsername && newUsername !== currentUserData.username;
 
-    // Username yoxlaması
     if (usernameChanged) {
         if (!isValidUsername(newUsername)) {
             showToast("İstifadəçi adı qaydalara uyğun deyil (3-10 simvol, yalnız A-Z, 0-9, . _, . başda/sonda olmaz, .. olmaz).", "error");
@@ -1239,6 +1293,15 @@ profileSettingsForm.addEventListener('submit', async (e) => {
         settingsEmailDisplay.value = currentUser.email || newEmail;
         settingsUsernameCheckMsg.textContent = '';
         settingsUsernameCheckMsg.className = 'check-message';
+
+        // userDataMap-ı yenilə
+        if (userDataMap[currentUser.uid]) {
+            userDataMap[currentUser.uid].username = newUsername;
+            userDataMap[currentUser.uid].displayName = displayName;
+            userDataMap[currentUser.uid].firstName = newFirstName;
+            userDataMap[currentUser.uid].lastName = newLastName;
+            userDataMap[currentUser.uid].photoURL = newAvatarUrl;
+        }
 
         showToast("Dəyişikliklər uğurla yadda saxlandı!", "success");
         settingsModal.classList.remove('active');
