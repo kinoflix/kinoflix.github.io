@@ -11,6 +11,10 @@
 </head>
 <body data-theme="dark">
 
+    <div id="appLoader" class="app-loader">
+        <div class="app-loader-spinner"></div>
+    </div>
+
     <header class="app-header">
         <div class="logo-area">
             <a href="../index.html" class="logo">
@@ -43,7 +47,7 @@
                     <h2 style="text-align:center;">Xoş gəldiniz!</h2>
                     <div class="input-group">
                         <i class="fa-solid fa-envelope"></i>
-                        <input type="email" id="loginEmail" placeholder="E-poçt ünvanı" required>
+                        <input type="text" id="loginEmailOrUsername" placeholder="E-poçt və ya istifadəçi adı" required>
                     </div>
                     <div class="input-group">
                         <i class="fa-solid fa-lock"></i>
@@ -60,14 +64,33 @@
 
                 <form id="registerForm" class="auth-form">
                     <h2 style="text-align:center;">Hesab Yarat</h2>
+
+                    <!-- İstifadəçi adı (@username) -->
                     <div class="input-group">
-                        <i class="fa-solid fa-user"></i>
-                        <input type="text" id="regName" placeholder="İstifadəçi adı (Ləqəb)" required>
+                        <i class="fa-solid fa-at"></i>
+                        <input type="text" id="regUsername" placeholder="İstifadəçi adı (3-10 simvol)" required autocomplete="off">
                     </div>
+                    <div id="usernameCheckMsg" class="check-message"></div>
+
+                    <!-- Ad və Soyad yan-yana -->
+                    <div class="name-row">
+                        <div class="input-group half">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="regFirstName" placeholder="Adınız" required>
+                        </div>
+                        <div class="input-group half">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="regLastName" placeholder="Soyadınız" required>
+                        </div>
+                    </div>
+
+                    <!-- E-poçt -->
                     <div class="input-group">
                         <i class="fa-solid fa-envelope"></i>
                         <input type="email" id="regEmail" placeholder="E-poçt ünvanı" required>
                     </div>
+
+                    <!-- Şifrə -->
                     <div class="input-group">
                         <i class="fa-solid fa-lock"></i>
                         <input type="password" id="regPassword" placeholder="Şifrə (Min. 6 simvol)" required>
@@ -75,6 +98,17 @@
                             <i class="fa-solid fa-eye"></i>
                         </button>
                     </div>
+
+                    <!-- Şifrə təkrarı -->
+                    <div class="input-group">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="regPasswordConfirm" placeholder="Şifrəni təkrarlayın" required>
+                        <button type="button" id="toggleRegPasswordConfirm" class="password-toggle-btn" tabindex="-1">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <div id="passwordCheckMsg" class="check-message"></div>
+
                     <button type="submit" class="submit-btn">Qeydiyyatı tamamla</button>
                 </form>
 
@@ -213,15 +247,28 @@
                         <input type="file" id="avatarFileInput" accept="image/*" hidden>
                     </div>
                     <span id="avatarFileNameDisplay" class="file-name-display"></span>
-                    <i id="clearAvatarBtn" class="fa-solid fa-xmark" style="display: none; cursor: pointer; color: var(--danger); margin-left: 8px; font-size: 14px; transition: transform 0.2s;" title="Seçimi ləğv et"></i>
                 </div>
 
                 <!-- Vahid Profil Formu -->
                 <form id="profileSettingsForm" class="settings-unified-form">
+
+                    <!-- Username (dəyişilə bilən) -->
                     <div class="settings-field">
-                        <label for="settingsDisplayName">İstifadəçi adınız:</label>
-                        <input type="text" id="settingsDisplayName" placeholder="İstifadəçi adınız" required>
+                        <label>İstifadəçi adı (@username):</label>
+                        <input type="text" id="settingsUsername" placeholder="İstifadəçi adı" required>
+                        <div id="settingsUsernameCheckMsg" class="check-message"></div>
                     </div>
+
+                    <div class="settings-field">
+                        <label for="settingsFirstName">Adınız:</label>
+                        <input type="text" id="settingsFirstName" placeholder="Adınız" required>
+                    </div>
+
+                    <div class="settings-field">
+                        <label for="settingsLastName">Soyadınız:</label>
+                        <input type="text" id="settingsLastName" placeholder="Soyadınız" required>
+                    </div>
+
                     <div class="settings-field">
                         <label for="settingsEmailDisplay">E-poçt ünvanınız:</label>
                         <input type="email" id="settingsEmailDisplay" placeholder="E-poçt ünvanı">
