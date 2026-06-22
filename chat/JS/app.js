@@ -237,7 +237,7 @@ function showToast(message, type = "info") {
 function localizeFirebaseError(err) {
     switch(err.code) {
         case "auth/email-already-in-use": return "Bu e-poçt ünvanı ilə artıq qeydiyyatdan keçilib.";
-        case "auth/invalid-credential": return "E-poçt ünvanı və ya şifrə yanlışdır.";
+        case "auth/invalid-credential": return "İstifadəçi adı, e-poçt və ya şifrə yanlışdır.";
         case "auth/weak-password": return "Şifrə çox zəifdir. Ən azı 6 simvoldan ibarət olmalıdır.";
         case "auth/invalid-email": return "Daxil etdiyiniz e-poçt strukturu düzgün deyil.";
         case "auth/user-disabled": return "Sizin hesabınız rəhbərlik tərəfindən deaktiv edilib!";
