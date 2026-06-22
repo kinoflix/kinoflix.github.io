@@ -143,13 +143,13 @@ const getRoleStarsHtml = (role) => {
     let color = '';
     let starClass = '';
     if (role === 'super_admin') {
-        color = '#e74c3c';
+        color = '#f1c40f';
         starClass = 'super-admin-star';
     } else if (role === 'admin') {
-        color = '#3498db';
+        color = '#e74c3c';
         starClass = 'admin-star';
     } else if (role === 'moderator') {
-        color = '#f1c40f';
+        color = '#3498db';
         starClass = 'moderator-star';
     } else {
         return '';
