@@ -787,9 +787,9 @@ function renderUsersList() {
             const ignoreIcon = isIgnored ? 'fa-eye-slash' : 'fa-eye';
             dropdownItems += `<button class="dropdown-item ignore-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}"><i class="fa-solid ${ignoreIcon}"></i><span class="label">${ignoreLabel}</span></button>`;
         }
-
-        if (canRole) {
-            dropdownItems += `<button class="dropdown-item role-action" data-uid="${user.uid}" data-role="${user.role || 'user'}"><i class="fa-solid fa-user-gear"></i><span class="label">Rolu dəyiş</span></button>`;
+     
+        if (canTempBan) {
+            dropdownItems += `<button class="dropdown-item temp-ban-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}"><i class="fa-solid fa-clock"></i><span class="label">Vaxt ilə qov</span></button>`;
         }
 
         if (canBan) {
@@ -797,23 +797,23 @@ function renderUsersList() {
             const banIcon = isTargetBanned ? 'fa-user-check' : 'fa-user-slash';
             dropdownItems += `<button class="dropdown-item ban-action" data-uid="${user.uid}" data-banned="${isTargetBanned}"><i class="fa-solid ${banIcon}"></i><span class="label">${banLabel}</span></button>`;
         }
+     
+        if (myLevel === 4) {
+            dropdownItems += `<button class="dropdown-item network-ban-action" data-uid="${user.uid}"><i class="fa-solid fa-wifi"></i><span class="label">IP/Cihaz banı</span></button>`;
+        }
 
         if (canDelete) {
             dropdownItems += `<button class="dropdown-item delete-action danger" data-uid="${user.uid}"><i class="fa-solid fa-user-minus"></i><span class="label">Hesabı sil</span></button>`;
         }
 
-        if (myLevel === 4) {
-            dropdownItems += `<button class="dropdown-item network-ban-action" data-uid="${user.uid}"><i class="fa-solid fa-wifi"></i><span class="label">IP/Cihaz banı</span></button>`;
+        if (canRole) {
+            dropdownItems += `<button class="dropdown-item role-action" data-uid="${user.uid}" data-role="${user.role || 'user'}"><i class="fa-solid fa-user-gear"></i><span class="label">Rolu dəyiş</span></button>`;
         }
 
         if (canWhois) {
             dropdownItems += `<button class="dropdown-item whois-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}"><i class="fa-solid fa-circle-info"></i><span class="label">Whois</span></button>`;
         }
 
-        // Vaxt ilə qov (moderator, admin, super_admin) - özündən aşağı səviyyədə olanlara
-        if (canTempBan) {
-            dropdownItems += `<button class="dropdown-item temp-ban-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}"><i class="fa-solid fa-clock"></i><span class="label">Vaxt ilə qov</span></button>`;
-        }
 
         const dropdownHtml = dropdownItems ? `
             <div class="user-actions-wrapper">
