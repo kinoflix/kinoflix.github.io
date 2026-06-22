@@ -132,6 +132,9 @@
                         <button id="btnGlobalRoom" class="nav-tab active">
                             <i class="fa-solid fa-earth-americas"></i> Ümumi Çat
                         </button>
+                        <button id="btnAdminRoom" class="nav-tab hidden">
+                            <i class="fa-solid fa-crown"></i> Rəhbərlik otağı
+                        </button>
                     </div>
 
                     <div class="sidebar-list-container">
@@ -178,6 +181,36 @@
                             </div>
                             <input type="text" id="messageInputField" placeholder="Ümumi çata mesaj yazın..." autocomplete="off">
                             <button id="sendMessageBtn" class="send-btn">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Admin otağı üçün əlavə chat layer (başlanğıcda hidden) -->
+                    <div id="adminChatArea" class="chat-layer hidden">
+                        <div id="adminMessagesArea" class="chat-messages-area"></div>
+                        <div id="adminTypingIndicator" class="typing-indicator hidden">
+                            <span>Kimsə yazır...</span>
+                            <div class="dots"><span></span><span></span><span></span></div>
+                        </div>
+                        <div id="adminFilePreviewBar" class="file-preview-bar hidden">
+                            <i class="fa-regular fa-image file-preview-icon"></i>
+                            <span id="adminFileNameDisplay" class="file-preview-name"></span>
+                            <button type="button" id="adminFileClearBtn" class="file-clear-btn" title="Faylı sil"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="chat-input-bar">
+                            <label for="adminFileInput" class="attach-btn" title="Şəkil göndər">
+                                <i class="fa-solid fa-paperclip"></i>
+                                <input type="file" id="adminFileInput" accept="image/*, application/pdf, text/plain" hidden>
+                            </label>
+                            <div class="emoji-picker-wrapper">
+                                <button type="button" id="adminEmojiBtn" class="emoji-btn" title="Smaylik əlavə et">
+                                    <i class="fa-regular fa-face-smile"></i>
+                                </button>
+                                <div id="adminEmojiPicker" class="emoji-picker-panel hidden"></div>
+                            </div>
+                            <input type="text" id="adminInputField" placeholder="Rəhbərlik otağına mesaj yazın..." autocomplete="off">
+                            <button id="sendAdminMessageBtn" class="send-btn">
                                 <i class="fa-solid fa-paper-plane"></i>
                             </button>
                         </div>
