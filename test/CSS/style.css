@@ -6,7 +6,7 @@
     --surface: #0f1720;
     --surface-hover: #172230;
     --muted: #94a3b8;
-    --accent: #1db954; /* KINOFLIX Yaşılı */
+    --accent: #1db954;
     --accent-hover: #1aa34a;
     --text: #e6eef6;
     --text-muted: #64748b;
@@ -20,6 +20,7 @@
     --success: #1db954;
     --me-bubble: #1db954;
     --other-bubble: #172230;
+    --dropdown-bg: #1a2535;
 }
 
 [data-theme="light"] {
@@ -37,6 +38,7 @@
     --header-bg: rgba(244, 246, 249, 0.85);
     --me-bubble: #0b74ff;
     --other-bubble: #f1f5f9;
+    --dropdown-bg: #ffffff;
 }
 
 /* ==========================================================================
@@ -54,9 +56,9 @@ body {
     color: var(--text);
     transition: background 0.3s, color 0.3s;
     line-height: 1.5;
-    overflow: hidden; 
+    overflow: hidden;
     height: 100vh;
-    height: 100dvh; /* Mobildə URL sətri üçün dinamik hündürlük */
+    height: 100dvh;
 }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -95,12 +97,8 @@ body {
     align-items: center; justify-content: center; font-size: 1.1rem; transition: all 0.2s ease;
 }
 .icon-btn:hover { background: var(--accent); color: #fff; transform: scale(1.05); border-color: var(--accent); transform: scale(1.1) rotate(15deg);
-                /* Neon effekti əlavə olundu */
-  box-shadow: 
-    0 0 10px var(--accent),
-    0 0 20px var(--accent),
-    0 0 35px color-mix(in srgb, var(--accent) 70%, transparent);
-                }
+  box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent), 0 0 35px color-mix(in srgb, var(--accent) 70%, transparent);
+}
 
 .logout-btn {
     background: var(--danger); color: white; border: none; padding: 10px 16px;
@@ -110,7 +108,7 @@ body {
 .logout-btn:hover { opacity: 0.9; }
 
 /* ==========================================================================
-   3b. İLKİN YÜKLƏNMƏ EKRANI (Firebase sessiyanı bərpa edənə qədər)
+   3b. İLKİN YÜKLƏNMƏ EKRANI
    ========================================================================== */
 .app-loader {
     position: fixed;
@@ -137,7 +135,7 @@ body {
 .main-container {
     margin-top: 72px;
     height: calc(100vh - 72px);
-    height: calc(100dvh - 72px); /* Mobil üçün dəqiq hesablama */
+    height: calc(100dvh - 72px);
     position: relative;
     width: 100%;
 }
@@ -145,28 +143,210 @@ body {
 /* ==========================================================================
    5. AUTENTIFIKASIYA EKRANI
    ========================================================================== */
-.auth-screen { display: none; align-items: center; justify-content: center; height: 100%; padding: 20px; }
+.auth-screen {
+    display: none;
+    align-items: center;          /* DƏYİŞİKLİK: əvvəl flex-start idi, indi mərkəz */
+    justify-content: center;
+    height: 100%;
+    padding: 20px;
+    overflow-y: auto;
+}
 .auth-screen.active { display: flex; }
-.auth-card { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius); width: 100%; max-width: 420px; padding: 32px; box-shadow: var(--shadow); animation: fadeIn 0.3s ease-out; }
-.auth-tabs { display: flex; border-bottom: 1px solid var(--glass-border); margin-bottom: 24px; }
-.auth-tab { flex: 1; background: none; border: none; color: var(--muted); padding: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: color 0.2s; position: relative; }
+
+.auth-card {
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 420px;
+    padding: 32px;
+    box-shadow: var(--shadow);
+    animation: fadeIn 0.3s ease-out;
+    margin: auto;
+}
+
+.auth-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--glass-border);
+    margin-bottom: 24px;
+}
+.auth-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--muted);
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+    position: relative;
+}
 .auth-tab.active { color: var(--accent); }
-.auth-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: var(--accent); }
-.auth-form { display: none; flex-direction: column; gap: 16px; }
+.auth-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--accent);
+}
+
+.auth-form {
+    display: none;
+    flex-direction: column;
+    gap: 16px;
+}
 .auth-form.active { display: flex; }
 .auth-form h2 { font-size: 1.5rem; margin-bottom: 8px; }
-.input-group { position: relative; display: flex; flex-direction: column; }
-.input-group > i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; z-index: 1; }
-.input-group input { width: 100%; padding: 14px 14px 14px 44px; border-radius: var(--radius-sm); border: 1px solid var(--glass-border); background: var(--bg); color: var(--text); outline: none; font-size: 0.95rem; transition: border-color 0.2s; }
+
+/* ===== Input qrupları ===== */
+.input-group {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.input-group > i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+    z-index: 2;
+}
+.input-group input {
+    width: 100%;
+    padding: 14px 14px 14px 44px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--glass-border);
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+    position: relative;
+}
 .input-group input:focus { border-color: var(--accent); }
-.submit-btn { background: var(--accent); color: white; border: none; padding: 14px; border-radius: var(--radius-sm); font-weight: bold; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
+
+/* ===== Check mesajları ===== */
+.check-message {
+    font-size: 0.8rem;
+    min-height: 0;
+    padding-left: 2px;
+    transition: color 0.2s;
+    margin-top: -4px;
+}
+.check-message:empty { display: none; }
+.check-message.success { color: var(--success); }
+.check-message.error { color: var(--danger); }
+
+/* ===== Ad və Soyad yan-yana ===== */
+.name-row {
+    display: flex;
+    gap: 12px;
+}
+.name-row .input-group {
+    flex: 1;
+}
+.name-row .input-group input {
+    padding-left: 38px;
+}
+.name-row .input-group i {
+    left: 12px;
+}
+
+.submit-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
 .submit-btn:hover { background: var(--accent-hover); }
-.auth-divider { text-align: center; margin: 20px 0; position: relative; }
-.auth-divider::before { content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 1px; background: var(--glass-border); z-index: 1; }
-.auth-divider span { background: var(--surface); padding: 0 12px; color: var(--muted); font-size: 0.85rem; position: relative; z-index: 2; }
-.google-btn { width: 100%; background: #fff; color: #1f2937; border: 1px solid #e5e7eb; padding: 12px; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; font-size: 0.95rem; transition: background 0.2s; }
+
+.auth-divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+}
+.auth-divider::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    background: var(--glass-border);
+    z-index: 1;
+}
+.auth-divider span {
+    background: var(--surface);
+    padding: 0 12px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    position: relative;
+    z-index: 2;
+}
+
+.google-btn {
+    width: 100%;
+    background: #fff;
+    color: #1f2937;
+    border: 1px solid #e5e7eb;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+}
 .google-btn:hover { background: #f9fafb; }
 .google-btn img { width: 20px; height: 20px; }
+
+.password-toggle-btn {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0 14px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+    flex-shrink: 0;
+    z-index: 2;
+}
+.password-toggle-btn:hover { color: var(--accent); }
+.input-group:has(.password-toggle-btn) input { padding-right: 44px; }
+
+.forgot-password-link {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 0.82rem;
+    text-decoration: underline;
+    padding: 0;
+    transition: opacity 0.2s;
+}
+.forgot-password-link:hover { opacity: 0.75; }
 
 /* ==========================================================================
    6. ÇAT EKRANI (Sidebar + Chat Window)
@@ -175,63 +355,293 @@ body {
 .chat-screen.active { display: block; }
 .chat-layout { display: flex; height: 100%; width: 100%; overflow: hidden; }
 
-/* SOL PANEL: SIDEBAR */
-.sidebar { width: 320px; background: var(--surface); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; flex-shrink: 0; }
-.current-user-card { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
-.avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: var(--glass-border); }
-.user-info { display: flex; flex-direction: column; gap: 2px; }
+.sidebar {
+    width: 320px;
+    background: var(--surface);
+    border-right: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+.current-user-card {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--glass-border);
+    flex-shrink: 0;
+}
+.avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--glass-border);
+}
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
 .user-info .name { font-weight: bold; font-size: 0.95rem; }
-.role-badge { font-size: 0.75rem; background: var(--glass); padding: 2px 8px; border-radius: 20px; color: var(--accent); border: 1px solid var(--glass-border); width: max-content; }
+.role-badge {
+    font-size: 0.75rem;
+    background: var(--glass);
+    padding: 2px 8px;
+    border-radius: 20px;
+    color: var(--accent);
+    border: 1px solid var(--glass-border);
+    width: max-content;
+}
 .sidebar-navigation { padding: 15px 20px; flex-shrink: 0; }
-.nav-tab { width: 100%; padding: 12px 16px; background: var(--glass); border: 1px solid var(--glass-border); color: var(--text); border-radius: var(--radius-sm); text-align: left; font-weight: bold; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.2s; }
-.nav-tab.active, .nav-tab:hover { background: var(--accent); color: white; border-color: var(--accent); }
-.sidebar-list-container { flex: 1; overflow-y: auto; padding: 0 20px 20px 20px; display: flex; flex-direction: column; }
-.sidebar-list-container h3 { font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; position: sticky; top: 0; background: var(--surface); padding-top: 8px; z-index: 1; }
+.nav-tab {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    text-align: left;
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+.nav-tab.active, .nav-tab:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+.sidebar-list-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 20px 20px 20px;
+    display: flex;
+    flex-direction: column;
+}
+.sidebar-list-container h3 {
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    padding-top: 8px;
+    z-index: 1;
+}
 .text-success { color: var(--success); font-size: 0.6rem; }
 .users-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-.user-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.2s; animation: none !important; }
-.user-item:hover, .user-item.active { background: var(--surface-hover); animation: none !important; }
-.user-item:hover * { animation: none !important; }
-.avatar-wrapper { position: relative; display: inline-block; }
-.status-indicator { position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--surface); }
+
+/* ===== Yenilənmiş user-item ===== */
+.user-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+}
+.user-item:hover { background: var(--surface-hover); }
+
+.avatar-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+.status-indicator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--surface);
+}
 .status-indicator.online { background: var(--success); }
 .status-indicator.offline { background: var(--text-muted); }
 .status-indicator.away { background: #f59e0b; }
-.user-item .username { font-size: 0.95rem; font-weight: 500; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.typing-notify { font-size: 0.75rem; color: var(--accent); font-style: italic; animation: pulse 1s infinite alternate; }
 
-/* SAĞ PANEL: ÇAT PƏNCƏRƏSİ */
+.user-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.user-text .username-line {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent);
+    word-break: break-word;
+}
+.user-text .name-line {
+    font-size: 0.8rem;
+    color: var(--muted);
+    word-break: break-word;
+}
+.user-text .typing-notify {
+    font-size: 0.7rem;
+    color: var(--accent);
+    font-style: italic;
+    animation: pulse 1s infinite alternate;
+}
+
+/* Unread badge */
+.unread-badge {
+    background-color: #e74c3c;
+    color: white;
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 4px;
+    min-width: 18px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(231, 76, 60, 0.4);
+    animation: flixPulse 1.5s infinite;
+    flex-shrink: 0;
+}
+
+/* ===== DROPDOWN MENYU ===== */
+.user-actions-wrapper {
+    position: relative;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+.user-actions-menu-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.user-actions-menu-btn:hover {
+    background: var(--glass-border);
+    color: var(--text);
+}
+.user-actions-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    min-width: 160px;
+    background: var(--dropdown-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+    padding: 6px 0;
+    display: none;
+    flex-direction: column;
+    z-index: 1200;
+    animation: scaleUp 0.12s ease-out;
+}
+.user-actions-dropdown.open { display: flex; }
+.user-actions-dropdown .dropdown-item {
+    background: none;
+    border: none;
+    color: var(--text);
+    padding: 8px 16px;
+    text-align: left;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+.user-actions-dropdown .dropdown-item:hover {
+    background: var(--surface-hover);
+}
+.user-actions-dropdown .dropdown-item.danger { color: var(--danger); }
+/* DƏYİŞİKLİK: dropdown ikonunun sabit ölçü və yerdəyişməməsi üçün */
+.user-actions-dropdown .dropdown-item i {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+    flex-shrink: 0;
+}
+.user-actions-dropdown .dropdown-item .label { flex: 1; }
+
+/* ===== Admin dropdown ikon hover ===== */
+.dropdown-item.role-action:hover i {
+    color: #fff;
+    background: #3498db;
+}
+.dropdown-item.ban-action:hover i {
+    color: #fff;
+    background: #f39c12;
+}
+.dropdown-item.delete-action:hover i {
+    color: #fff;
+    background: #e74c3c;
+}
+.dropdown-item.ignore-action:hover i {
+    color: #fff;
+    background: #94a3b8;
+}
+.dropdown-item.network-ban-action:hover i {
+    color: #fff;
+    background: #8e44ad;
+}
+
+/* Admin ikon rəngləri (default) */
+.dropdown-item.role-action i { color: #3498db; }
+.dropdown-item.ban-action i { color: #f39c12; }
+.dropdown-item.delete-action i { color: #e74c3c; }
+.dropdown-item.ignore-action i { color: #94a3b8; }
+.dropdown-item.network-ban-action i { color: #8e44ad; }
+
+/* ==========================================================================
+   7. ÇAT PƏNCƏRƏSİ VƏ MESAJLAR
+   ========================================================================== */
 .chat-window { 
     flex: 1; 
     display: flex; 
     flex-direction: column; 
     background: rgba(0, 0, 0, 0.02); 
     position: relative; 
-    overflow: hidden; /* Vacib: Çat ekranını daşmalara qarşı qoruyur */
+    overflow: hidden;
 }
 
-/* Daim Sabit Qalan Ümumi Başlıq */
 .chat-window-header {
     padding: 16px 24px; 
     background: var(--surface); 
     border-bottom: 1px solid var(--glass-border);
     display: flex; justify-content: space-between; align-items: center; 
     z-index: 10;
-    flex-shrink: 0; /* Vacib: Daşma olanda sıxışmır */
+    flex-shrink: 0;
 }
 .active-room-info h2 { font-size: 1.1rem; font-weight: bold; }
 .active-room-info p { font-size: 0.8rem; color: var(--muted); }
 
-/* ÇAT LAYERS (İstər ümumi, istər şəxsi olsun bu classla idarə olunur) */
 .chat-layer {
     flex: 1; 
     display: flex; 
     flex-direction: column;
-    overflow: hidden; /* Daxilindəki elementləri kilidləyir */
+    overflow: hidden;
 }
 .chat-layer:not(.active) { display: none !important; }
 
-/* Şəxsi Çat Başlığı (Geri qayıtmaq üçün) */
 .private-chat-header {
     padding: 12px 24px;
     background: var(--surface-hover);
@@ -241,14 +651,13 @@ body {
     gap: 15px;
     cursor: pointer;
     transition: background 0.2s;
-    flex-shrink: 0; /* Vacib: Input bar və scroll tərəfindən yeyilmir */
+    flex-shrink: 0;
 }
 .private-chat-header:hover { background: var(--surface); }
 .private-chat-header i { font-size: 1.2rem; color: var(--text-muted); }
 .pm-info h3 { font-size: 1rem; color: var(--text); margin-bottom: 2px; }
 .pm-info p { font-size: 0.75rem; color: var(--accent); }
 
-/* MESAJLAR SAHƏSİ (SCROLL BURADADIR) */
 .chat-messages-area { 
     flex: 1; 
     padding: 24px; 
@@ -279,7 +688,6 @@ body {
 .typing-indicator .dots span:nth-child(1) { animation-delay: -0.32s; }
 .typing-indicator .dots span:nth-child(2) { animation-delay: -0.16s; }
 
-/* Fayl Önizləmə Barı (input barın üstündə) */
 .file-preview-bar {
     display: flex;
     align-items: center;
@@ -290,11 +698,7 @@ body {
     animation: fadeIn 0.2s ease-out;
 }
 .file-preview-bar.hidden { display: none !important; }
-.file-preview-icon {
-    color: var(--accent);
-    font-size: 1rem;
-    flex-shrink: 0;
-}
+.file-preview-icon { color: var(--accent); font-size: 1rem; flex-shrink: 0; }
 .file-preview-name {
     flex: 1;
     font-size: 0.82rem;
@@ -316,13 +720,14 @@ body {
     flex-shrink: 0;
 }
 .file-clear-btn:hover { background: rgba(217, 79, 92, 0.12); }
+
 .chat-input-bar { 
     padding: 16px 24px; 
     background: var(--surface); 
     border-top: 1px solid var(--glass-border); 
     display: flex; 
     align-items: center; gap: 16px; 
-    flex-shrink: 0; /* Vacib: Heç bir halda ekranın altına itmir */
+    flex-shrink: 0;
 }
 .attach-btn { color: var(--muted); font-size: 1.2rem; cursor: pointer; transition: color 0.2s; }
 .attach-btn:hover { color: var(--accent); }
@@ -331,7 +736,6 @@ body {
 .send-btn { background: var(--accent); color: white; border: none; width: 46px; height: 46px; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: background 0.2s; }
 .send-btn:hover { background: var(--accent-hover); }
 
-/* Smaylik (Emoji) Düyməsi və Paneli */
 .emoji-picker-wrapper { position: relative; flex-shrink: 0; }
 .emoji-btn {
     background: none;
@@ -378,16 +782,48 @@ body {
 .emoji-picker-panel button:hover { background: var(--surface-hover); }
 
 /* ==========================================================================
-   7. MODAL VƏ TƏHLÜKƏ BÖLGƏSİ
+   8. MODAL VƏ PROFİL AYARLARI
    ========================================================================== */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 2000; }
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(2, 6, 23, 0.6);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
 .modal-overlay.active { display: flex; }
-.modal-card { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius); width: 100%; max-width: 400px; box-shadow: var(--shadow); animation: scaleUp 0.2s ease-out; }
-.modal-header { padding: 18px 24px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
-.close-modal-btn { background: none; border: none; color: var(--text); font-size: 1.8rem; cursor: pointer; line-height: 1; }
+.modal-card {
+    background: var(--surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--shadow);
+    animation: scaleUp 0.2s ease-out;
+}
+.modal-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.close-modal-btn {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+}
 .close-modal-btn:hover { color: var(--muted); }
 
-/* Ayarlar modalı */
 .settings-modal-card {
     max-width: 480px;
     max-height: 92vh;
@@ -403,7 +839,6 @@ body {
     gap: 16px;
 }
 
-/* Avatar Mərkəzi Blok */
 .settings-avatar-center {
     display: flex;
     flex-direction: column;
@@ -449,23 +884,14 @@ body {
 .file-name-display .file-name-text {
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.avatar-file-clear-btn {
-    background: none; border: none; cursor: pointer; padding: 0;
-    color: var(--danger); font-size: 0.75rem; flex-shrink: 0;
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 16px; height: 16px; border-radius: 50%;
-    transition: background 0.15s;
-}
-.avatar-file-clear-btn:hover { background: rgba(217,79,92,0.15); }
 
-/* Vahid Form */
+/* Settings formu */
 .settings-unified-form {
     display: flex;
     flex-direction: column;
     gap: 14px;
 }
 
-/* Form sahələri */
 .settings-field {
     display: flex;
     flex-direction: column;
@@ -490,8 +916,10 @@ body {
 }
 .settings-field input:focus { border-color: var(--accent); }
 .settings-field input[readonly] { opacity: 0.6; cursor: default; }
+.settings-field .check-message {
+    margin-top: -2px;
+}
 
-/* Şifrə inputu ilə göz düyməsi */
 .settings-pw-wrap {
     position: relative;
     display: flex;
@@ -511,7 +939,6 @@ body {
 }
 .settings-eye-btn:hover { color: var(--accent); }
 
-/* Təhlükəsizlik başlığı */
 .settings-security-title {
     font-size: 0.85rem;
     font-weight: 700;
@@ -524,7 +951,6 @@ body {
     margin-top: 2px;
 }
 
-/* Əsas Yadda Saxla düyməsi */
 .settings-main-save-btn {
     width: 100%;
     background: var(--accent);
@@ -542,196 +968,51 @@ body {
 .settings-main-save-btn:hover { background: var(--accent-hover); }
 .settings-main-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* Köhnə save btn (uyğunluq üçün saxlanır) */
-.settings-save-btn {
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    padding: 10px 16px;
+.danger-zone {
+    padding: 16px;
+    border: 1px solid rgba(217, 79, 92, 0.25);
     border-radius: var(--radius-sm);
-    font-weight: 700;
-    font-size: 0.88rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    align-self: flex-end;
-    transition: background 0.2s;
-    min-width: 130px;
+    text-align: center;
+    background: var(--bg);
 }
-.settings-save-btn:hover { background: var(--accent-hover); }
-.settings-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-/* Danger zone */
-.danger-zone { padding: 16px; border: 1px solid rgba(217, 79, 92, 0.25); border-radius: var(--radius-sm); text-align: center; background: var(--bg); }
 .danger-zone h4 { color: var(--danger); margin-bottom: 8px; font-size: 0.9rem; }
 .danger-zone p { color: var(--muted); font-size: 0.78rem; margin-bottom: 12px; line-height: 1.5; }
-.delete-account-btn { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 9px 18px; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+.delete-account-btn {
+    background: transparent;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    padding: 9px 18px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
 .delete-account-btn:hover { background: var(--danger); color: #fff; }
 
-/* Şifrə Göstər/Gizlət Düyməsi */
-.password-toggle-btn {
-    position: absolute; right: 0; top: 50%; transform: translateY(-50%);
-    background: none; border: none; color: var(--muted); cursor: pointer;
-    font-size: 0.9rem; padding: 0 14px; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    transition: color 0.2s; flex-shrink: 0;
-}
-.password-toggle-btn:hover { color: var(--accent); }
-.input-group:has(.password-toggle-btn) input { padding-right: 44px; }
-
-/* Şifrəni Unutdum Linki */
-.forgot-password-link {
-    background: none; border: none; color: var(--accent); cursor: pointer;
-    font-size: 0.82rem; text-decoration: underline; padding: 0; transition: opacity 0.2s;
-}
-.forgot-password-link:hover { opacity: 0.75; }
-
-/* Fayl adı göstəricisi */
-.file-name-display {
-    font-size: 0.78rem; color: var(--accent); max-width: 120px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    display: block; margin-top: 4px;
-}
-.chat-file-name {
-    font-size: 0.75rem; color: var(--accent); max-width: 100px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-shrink: 0;
-}
-
-/* Müasir Adminlik Düymələri */
-
-/* DÜZƏLİŞ: Bu qaydalar əvvəllər yalnız showToast() funksiyası ilk dəfə çağırılanda
-   JS tərəfindən dinamik <style> kimi əlavə olunurdu. Səhifə təzələndikdə (refresh) və
-   istifadəçi artıq daxil olmuş şəkildə avtomatik sessiya açılanda heç bir toast
-   göstərilmədiyi üçün bu qaydalar yüklənmirdi və admin ikonları arasındakı boşluq
-   itib bir-birinə yapışırdı. İndi statik stildə olduğu üçün hər zaman mövcuddur. */
-.user-actions {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-left: auto;
-}
-.unread-badge {
-    background-color: #e74c3c;
-    color: white;
-    border-radius: 20px;
-    padding: 2px 8px;
-    font-size: 11px;
-    font-weight: bold;
-    margin-left: auto;
-    min-width: 18px;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(231, 76, 60, 0.4);
-    animation: flixPulse 1.5s infinite;
-}
-@keyframes flixPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.08); }
-    100% { transform: scale(1); }
-}
-
-.role-toggle-btn {
-    background: rgba(52,152,219,0.1);
-    border: 1px solid rgba(52,152,219,0.25);
-    color: #3498db;
-    cursor: pointer;
-    font-size: 12px;
-    width: 28px; height: 28px;
-    min-width: 28px;
-    border-radius: 8px;
-    display: inline-flex; align-items: center; justify-content: center;
-    transition: all 0.18s;
-    flex-shrink: 0;
-    white-space: nowrap;
-}
-.role-toggle-btn:hover {
-    background: #3498db;
-    color: #fff;
-    border-color: #3498db;
-    transform: scale(1.08);
-    box-shadow: 0 3px 10px rgba(52,152,219,0.35);
-    animation: none !important;
-}
-
-.admin-ban-btn {
-    background: rgba(243,156,18,0.1);
-    border: 1px solid rgba(243,156,18,0.25);
-    cursor: pointer;
-    font-size: 12px;
-    width: 28px; height: 28px;
-    min-width: 28px;
-    border-radius: 8px;
-    display: inline-flex; align-items: center; justify-content: center;
-    transition: all 0.18s;
-    flex-shrink: 0;
-    white-space: nowrap;
-}
-.admin-ban-btn:hover {
-    background: #f39c12;
-    border-color: #f39c12;
-    transform: scale(1.08);
-    box-shadow: 0 3px 10px rgba(243,156,18,0.35);
-    animation: none !important;
-}
-.admin-ban-btn:hover i { color: #fff !important; }
-
-.admin-user-delete-btn {
-    background: rgba(231,76,60,0.1);
-    border: 1px solid rgba(231,76,60,0.25);
-    color: #e74c3c;
-    cursor: pointer;
-    font-size: 12px;
-    width: 28px; height: 28px;
-    min-width: 28px;
-    border-radius: 8px;
-    display: inline-flex; align-items: center; justify-content: center;
-    transition: all 0.18s;
-    flex-shrink: 0;
-    white-space: nowrap;
-}
-.admin-user-delete-btn:hover {
-    background: #e74c3c;
-    color: #fff;
-    border-color: #e74c3c;
-    transform: scale(1.08);
-    box-shadow: 0 3px 10px rgba(231,76,60,0.35);
-    animation: none !important;
-}
-
-.ignore-btn {
-    background: rgba(100,116,139,0.1);
-    border: 1px solid rgba(100,116,139,0.2);
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 12px;
-    width: 28px; height: 28px;
-    border-radius: 8px;
-    display: inline-flex; align-items: center; justify-content: center;
-    transition: all 0.18s;
-    flex-shrink: 0;
-}
-.ignore-btn:hover {
-    background: rgba(100,116,139,0.25);
-    border-color: rgba(100,116,139,0.4);
-    transform: scale(1.08);
-}
-.ignore-btn.active {
-    color: #f39c12;
-    background: rgba(243,156,18,0.1);
-    border-color: rgba(243,156,18,0.3);
-}
-
 /* ==========================================================================
-   8. ANIMASIYALAR VƏ MOBİL RESPONSIVE
+   9. ANIMASIYALAR VƏ MOBİL RESPONSIVE
    ========================================================================== */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes scaleUp { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pulse { from { opacity: 0.6; } to { opacity: 1; } }
 @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+@keyframes flixPulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
 
-/* Yalnız mobildə görünəcək elementlər */
+/* DƏYİŞİKLİK: rol ulduzları üçün neon hover effekti */
+.role-star {
+    transition: text-shadow 0.3s ease;
+    cursor: default;
+}
+.role-star:hover,
+.role-star:active {
+    text-shadow: 0 0 8px currentColor, 0 0 16px currentColor;
+}
+
 .mobile-only { display: none; }
 
 @media (max-width: 768px) {
@@ -742,52 +1023,40 @@ body {
     .chat-input-bar { padding: 12px 16px; }
     .emoji-picker-panel { width: 220px; grid-template-columns: repeat(6, 1fr); left: -10px; }
     
-    /* Mobil Sidebar Logic (Drawer) */
     .sidebar {
         position: absolute;
         left: -100%;
         top: 0;
         height: 100%;
         width: 280px;
-        z-index: 1100; /* Çat pəncərəsinin üzərinə çıxır */
+        z-index: 1100;
         transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 10px 0 30px rgba(0,0,0,0.5);
     }
-    
     .sidebar.mobile-open {
         left: 0;
     }
+
+    /* Qeydiyyatda Ad və Soyad mobil də yan-yana */
+    .name-row {
+        flex-direction: row;
+        gap: 12px;
+    }
+    .name-row .input-group {
+        flex: 1;
+        width: auto;
+    }
+
+    /* Auth kartının kiçik ekranlarda daha yaxşı görünməsi */
+    .auth-card {
+        padding: 20px;
+        margin: 10px auto;
+    }
 }
 
-/* Aktiv istifadəçilər və admin funksiyaları ikonlarında hover zamanı yanıb-sönmə effektini ləğv edir */
 .user-item:hover,
 .admin-btn:hover,
 .admin-icon:hover,
-.user-element:hover { /* Siyahı və ikonlar üçün istifadə etdiyiniz spesifik sinif adlarına uyğun olaraq */
+.user-element:hover {
     animation: none !important;
 }
-/* ==========================================================================
-   IP VƏ CİHAZ BANI DÜYMƏSİ (ŞƏBƏKƏ)
-   ========================================================================== */
-.admin-network-ban-btn {
-    background: rgba(142, 68, 173, 0.1);
-    border: 1px solid rgba(142, 68, 173, 0.25);
-    color: #8e44ad;
-    cursor: pointer;
-    font-size: 12px;
-    width: 28px; height: 28px;
-    min-width: 28px;
-    border-radius: 8px;
-    display: inline-flex; align-items: center; justify-content: center;
-    transition: all 0.18s;
-    flex-shrink: 0;
-    white-space: nowrap;
-}
-.admin-network-ban-btn:hover {
-    background: #8e44ad;
-    color: #fff;
-    border-color: #8e44ad;
-    transform: scale(1.08);
-    box-shadow: 0 3px 10px rgba(142, 68, 173, 0.35);
-}
-
