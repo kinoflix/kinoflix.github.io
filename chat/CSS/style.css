@@ -655,10 +655,13 @@ body {
 .private-chat-header:hover { background: var(--surface); }
 .private-chat-header i { font-size: 1.2rem; color: var(--text-muted); }
 .pm-info h3 { font-size: 1rem; color: var(--text); margin-bottom: 2px; }
-.pm-info p {
+
+/* DƏYİŞİKLİK: şəxsi başlıqdakı @username - aktiv siyahıdakı @username ilə eyni stil */
+.pm-info p,
+#privateRoomUsername {
     font-size: 0.75rem;
-    color: var(--accent);
-    font-weight: 600;
+    color: var(--accent) !important;      /* tema ilə dinamik */
+    font-weight: 600 !important;          /* bold */
 }
 
 .chat-messages-area { 
