@@ -43,6 +43,7 @@ let currentUserData = {
 let activeRoomId = 'global_room';
 let activeRoomIsDM = false;
 let currentIgnoreList = [];
+let lastPublicRoom = 'global'; // 'global' və ya 'admin' - şəxsi otaqdan qayıdanda hansı otağa getmək lazımdır
 
 let unsubscribeGeneralMessages = null;
 let unsubscribePrivateMessages = null;
@@ -50,6 +51,7 @@ let unsubscribeUsers = null;
 let unsubscribeRooms = null;
 let unsubscribeTyping = null;
 let unsubscribeSelfDestruct = null;
+let unsubscribeAdminMessages = null;
 let typingTimeout = null;
 let unsubscribePresenceConnected = null;
 let unsubscribePresenceList = null;
@@ -59,7 +61,6 @@ let currentUsersList = [];
 let currentStatuses = {};
 let currentRooms = {};
 let userRolesMap = {};
-/* DƏYİŞİKLİK: istifadəçi məlumatları üçün ayrıca map (username-ləri saxlamaq üçün) */
 let userDataMap = {};
 
 // DOM Elementləri
@@ -81,6 +82,7 @@ const mobileUsersToggleBtn = document.getElementById('mobileUsersToggleBtn');
 
 const usersList = document.getElementById('usersList');
 const btnGlobalRoom = document.getElementById('btnGlobalRoom');
+const btnAdminRoom = document.getElementById('btnAdminRoom');
 const themeToggle = document.getElementById('themeToggle');
 const siteLogo = document.getElementById('siteLogo');
 
@@ -92,6 +94,19 @@ const chatMessagesArea = document.getElementById('chatMessagesArea');
 const messageInputField = document.getElementById('messageInputField');
 const sendMessageBtn = document.getElementById('sendMessageBtn');
 const chatFileInput = document.getElementById('chatFileInput');
+
+// Admin otağı DOM-ları
+const adminChatArea = document.getElementById('adminChatArea');
+const adminMessagesArea = document.getElementById('adminMessagesArea');
+const adminInputField = document.getElementById('adminInputField');
+const sendAdminMessageBtn = document.getElementById('sendAdminMessageBtn');
+const adminFileInput = document.getElementById('adminFileInput');
+const adminFilePreviewBar = document.getElementById('adminFilePreviewBar');
+const adminFileNameDisplay = document.getElementById('adminFileNameDisplay');
+const adminFileClearBtn = document.getElementById('adminFileClearBtn');
+const adminEmojiBtn = document.getElementById('adminEmojiBtn');
+const adminEmojiPicker = document.getElementById('adminEmojiPicker');
+const adminTypingIndicator = document.getElementById('adminTypingIndicator');
 
 const privateChatArea = document.getElementById('privateChatArea');
 const privateChatHeader = document.getElementById('privateChatHeader');
@@ -590,6 +605,18 @@ document.getElementById('privateFileClearBtn').addEventListener('click', () => {
     document.getElementById('privateFilePreviewBar').classList.add('hidden');
 });
 
+// Admin fayl önizləmə
+document.getElementById('adminFileInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) { adminFileNameDisplay.textContent = file.name; adminFilePreviewBar.classList.remove('hidden'); }
+    else { adminFileNameDisplay.textContent = ''; adminFilePreviewBar.classList.add('hidden'); }
+});
+adminFileClearBtn.addEventListener('click', () => {
+    document.getElementById('adminFileInput').value = '';
+    adminFileNameDisplay.textContent = '';
+    adminFilePreviewBar.classList.add('hidden');
+});
+
 /* ==========================================================================
  8. CANLI STATUS SİSTEMİ
  ========================================================================== */
@@ -637,7 +664,7 @@ function listenUsersAndPresence() {
     unsubscribeUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
         currentUsersList = [];
         userRolesMap = {};
-        userDataMap = {}; // DƏYİŞİKLİK: hər dəfə təmizlə
+        userDataMap = {};
         if (currentUser && currentUserData) {
             userRolesMap[currentUser.uid] = currentUserData.role || 'user';
             userDataMap[currentUser.uid] = {
@@ -664,12 +691,7 @@ function listenUsersAndPresence() {
             if (uData.uid !== currentUser.uid) currentUsersList.push(uData);
         });
         renderUsersList();
-        // DƏYİŞİKLİK: mesajlar yenidən render olunmalıdır ki, @username görünsün
-        if (activeRoomId === 'global_room') {
-            // loadGeneralMessages artıq onSnapshot ilə işləyir, avtomatik yenilənəcək
-        } else if (activeRoomIsDM) {
-            // loadPrivateMessages də onSnapshot ilə işləyir
-        }
+        // Mesajlar artıq onSnapshot ilə yenilənir
     });
 
     unsubscribePresenceList = onValue(ref(rtdb, 'presence'), (snap) => {
@@ -866,30 +888,71 @@ function renderUsersList() {
 /* ==========================================================================
  11. OTAQLAR ARASI KEÇİD
  ========================================================================== */
-btnGlobalRoom.addEventListener('click', () => {
-    closePrivateRoom();
-    usersSidebar.classList.remove('mobile-open');
-});
-
-privateChatHeader.addEventListener('click', () => {
-    closePrivateRoom();
-});
-
-function closePrivateRoom() {
-    activeRoomIsDM = false;
+// Global otağa keçid
+function switchToGlobalRoom() {
     activeRoomId = 'global_room';
+    activeRoomIsDM = false;
+    lastPublicRoom = 'global';
     btnGlobalRoom.classList.add('active');
+    btnAdminRoom.classList.remove('active');
     if (activeRoomTitle) activeRoomTitle.innerText = "Ümumi Çat";
     if (activeRoomSub) activeRoomSub.innerText = "Son 50 mesaj göstərilir";
-    privateChatArea.classList.remove('active');
-    privateChatArea.classList.add('hidden');
     generalChatArea.classList.remove('hidden');
     generalChatArea.classList.add('active');
+    adminChatArea.classList.remove('active');
+    adminChatArea.classList.add('hidden');
+    privateChatArea.classList.remove('active');
+    privateChatArea.classList.add('hidden');
     if (unsubscribePrivateMessages) unsubscribePrivateMessages();
+    if (unsubscribeAdminMessages) { unsubscribeAdminMessages(); unsubscribeAdminMessages = null; }
+    loadGeneralMessages();
     renderUsersList();
 }
 
-/* DƏYİŞİKLİK: şəxsi otaq başlığında avatar, ad və @username göstər */
+// Admin otağına keçid
+function switchToAdminRoom() {
+    activeRoomId = 'admin_room';
+    activeRoomIsDM = false;
+    lastPublicRoom = 'admin';
+    btnAdminRoom.classList.add('active');
+    btnGlobalRoom.classList.remove('active');
+    if (activeRoomTitle) activeRoomTitle.innerText = "Rəhbərlik otağı";
+    if (activeRoomSub) activeRoomSub.innerText = "Yalnız moderator, admin və super admin";
+    adminChatArea.classList.remove('hidden');
+    adminChatArea.classList.add('active');
+    generalChatArea.classList.remove('active');
+    generalChatArea.classList.add('hidden');
+    privateChatArea.classList.remove('active');
+    privateChatArea.classList.add('hidden');
+    if (unsubscribePrivateMessages) unsubscribePrivateMessages();
+    if (unsubscribeGeneralMessages) { unsubscribeGeneralMessages(); unsubscribeGeneralMessages = null; }
+    loadAdminMessages();
+    renderUsersList();
+}
+
+btnGlobalRoom.addEventListener('click', () => {
+    switchToGlobalRoom();
+    usersSidebar.classList.remove('mobile-open');
+});
+
+btnAdminRoom.addEventListener('click', () => {
+    switchToAdminRoom();
+    usersSidebar.classList.remove('mobile-open');
+});
+
+// Şəxsi otağı bağla (geri qayıt)
+function closePrivateRoom() {
+    activeRoomIsDM = false;
+    if (lastPublicRoom === 'admin') {
+        switchToAdminRoom();
+    } else {
+        switchToGlobalRoom();
+    }
+}
+
+// Şəxsi otaq başlığına klik
+privateChatHeader.addEventListener('click', closePrivateRoom);
+
 function openPrivateRoom(targetUser) {
     activeRoomIsDM = true;
     activeRoomId = [currentUser.uid, targetUser.uid].sort().join('_');
@@ -899,16 +962,18 @@ function openPrivateRoom(targetUser) {
     const targetRole = targetUser.role || 'user';
     const roleStars = getRoleStarsHtml(targetRole);
 
-    // Başlıqda avatar, ad + ulduz, @username
     privateChatAvatar.src = avatar;
     privateRoomTitle.innerHTML = escapeHTML(displayName) + roleStars;
     privateRoomUsername.textContent = `@${escapeHTML(username)}`;
 
     btnGlobalRoom.classList.remove('active');
+    btnAdminRoom.classList.remove('active');
     if (activeRoomTitle) activeRoomTitle.innerText = "Şəxsi yazışma";
     if (activeRoomSub) activeRoomSub.innerText = displayName;
     generalChatArea.classList.remove('active');
     generalChatArea.classList.add('hidden');
+    adminChatArea.classList.remove('active');
+    adminChatArea.classList.add('hidden');
     privateChatArea.classList.remove('hidden');
     privateChatArea.classList.add('active');
     setDoc(doc(db, 'rooms', activeRoomId), {
@@ -939,6 +1004,22 @@ function loadGeneralMessages() {
     });
 }
 
+function loadAdminMessages() {
+    if (unsubscribeAdminMessages) unsubscribeAdminMessages();
+    const msgQuery = query(collection(db, 'rooms', 'admin_room', 'messages'), orderBy('createdAt', 'desc'), limit(50));
+    unsubscribeAdminMessages = onSnapshot(msgQuery, (snapshot) => {
+        let messages = [];
+        snapshot.forEach(doc => messages.push({ id: doc.id, ...doc.data() }));
+        messages.reverse();
+        adminMessagesArea.innerHTML = '';
+        messages.forEach(msg => {
+            if (currentIgnoreList.includes(msg.senderId)) return;
+            adminMessagesArea.appendChild(createMessageElement(msg, 'admin_room'));
+        });
+        adminMessagesArea.scrollTop = adminMessagesArea.scrollHeight;
+    });
+}
+
 function loadPrivateMessages() {
     if (unsubscribePrivateMessages) unsubscribePrivateMessages();
     privateMessagesArea.innerHTML = '';
@@ -959,7 +1040,6 @@ function loadPrivateMessages() {
     });
 }
 
-/* DƏYİŞİKLİK: mesaj elementində göndərən adı və @username göstər */
 function createMessageElement(msg, roomIdContext) {
     const isMe = msg.senderId === currentUser.uid;
     const wrapper = document.createElement('div');
@@ -976,12 +1056,10 @@ function createMessageElement(msg, roomIdContext) {
 
     const deleteBtnHtml = canDelete ? `<button class="delete-msg-btn" data-id="${msg.id}" title="Mesajı sil"><i class="fa-solid fa-trash"></i></button>` : '';
 
-    // Göndərənin username-ni tap
     let senderUsername = '';
     if (msg.senderUsername) {
         senderUsername = msg.senderUsername;
     } else {
-        // userDataMap-dan bax
         const userData = userDataMap[msg.senderId];
         if (userData && userData.username) {
             senderUsername = userData.username;
@@ -997,7 +1075,6 @@ function createMessageElement(msg, roomIdContext) {
     const roleStars = getRoleStarsHtml(senderRole);
     const senderNameHtml = escapeHTML(msg.senderName) + roleStars;
 
-    // DƏYİŞİKLİK: sender name altına @username əlavə et
     const usernameHtml = senderUsername ? `<span class="sender-username">@${escapeHTML(senderUsername)}</span>` : '';
 
     wrapper.innerHTML = `
@@ -1023,8 +1100,21 @@ function createMessageElement(msg, roomIdContext) {
 }
 
 async function submitMessage(isDMContext) {
-    const textInput = isDMContext ? privateInputField : messageInputField;
-    const fileInput = isDMContext ? privateFileInput : chatFileInput;
+    let textInput, fileInput, targetRoom;
+    if (isDMContext) {
+        textInput = privateInputField;
+        fileInput = privateFileInput;
+        targetRoom = activeRoomId;
+    } else if (activeRoomId === 'admin_room') {
+        textInput = adminInputField;
+        fileInput = adminFileInput;
+        targetRoom = 'admin_room';
+    } else {
+        textInput = messageInputField;
+        fileInput = chatFileInput;
+        targetRoom = 'global_room';
+    }
+
     const text = textInput.value.trim();
     const file = fileInput.files[0];
 
@@ -1047,10 +1137,16 @@ async function submitMessage(isDMContext) {
     }
 
     textInput.value = ''; fileInput.value = '';
-    const previewBar = isDMContext ? document.getElementById('privateFilePreviewBar') : document.getElementById('chatFilePreviewBar');
-    const nameSpan = isDMContext ? document.getElementById('privateFileNameDisplay') : document.getElementById('chatFileNameDisplay');
-    if (previewBar) previewBar.classList.add('hidden');
-    if (nameSpan) nameSpan.textContent = '';
+    if (activeRoomId === 'admin_room') {
+        adminFileNameDisplay.textContent = '';
+        adminFilePreviewBar.classList.add('hidden');
+    } else if (isDMContext) {
+        document.getElementById('privateFileNameDisplay').textContent = '';
+        document.getElementById('privateFilePreviewBar').classList.add('hidden');
+    } else {
+        document.getElementById('chatFileNameDisplay').textContent = '';
+        document.getElementById('chatFilePreviewBar').classList.add('hidden');
+    }
 
     let fileURL = null; let fileType = null;
     if (file) {
@@ -1058,11 +1154,10 @@ async function submitMessage(isDMContext) {
         catch (err) { showToast(err.message, "error"); return; }
     }
 
-    // DƏYİŞİKLİK: mesaja senderUsername əlavə et
     const senderUsername = currentUserData.username || '';
 
     try {
-        const docRef = await addDoc(collection(db, 'rooms', activeRoomId, 'messages'), {
+        const docRef = await addDoc(collection(db, 'rooms', targetRoom, 'messages'), {
             senderId: currentUser.uid,
             senderName: currentUserData.displayName || 'Anonim',
             senderAvatar: currentUserData.photoURL || DEFAULT_AVATAR,
@@ -1074,7 +1169,7 @@ async function submitMessage(isDMContext) {
         });
 
         try {
-            const rtdbPath = isDMContext ? `messages/private/${activeRoomId}/${docRef.id}` : `messages/global/${docRef.id}`;
+            const rtdbPath = isDMContext ? `messages/private/${activeRoomId}/${docRef.id}` : `messages/${targetRoom}/${docRef.id}`;
             await set(ref(rtdb, rtdbPath), {
                 senderId: currentUser.uid,
                 senderName: currentUserData.displayName || 'Anonim',
@@ -1094,7 +1189,7 @@ async function submitMessage(isDMContext) {
                 [`unread_${targetUserId}`]: increment(1)
             }, { merge: true });
         } else {
-            await setDoc(doc(db, 'rooms', 'global_room'), { lastMessageAt: serverTimestamp() }, { merge: true });
+            await setDoc(doc(db, 'rooms', targetRoom), { lastMessageAt: serverTimestamp() }, { merge: true });
         }
     } catch (err) {
         if (err.code === 'permission-denied') {
@@ -1109,6 +1204,8 @@ async function submitMessage(isDMContext) {
 
 sendMessageBtn.addEventListener('click', () => submitMessage(false));
 messageInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitMessage(false); });
+sendAdminMessageBtn.addEventListener('click', () => submitMessage(false));
+adminInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitMessage(false); });
 sendPrivateMessageBtn.addEventListener('click', () => submitMessage(true));
 privateInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitMessage(true); });
 
@@ -1122,7 +1219,9 @@ function checkActiveRoomTyping() {
                 someoneTyping = true; break;
             }
         }
-        const indicator = document.getElementById('typingIndicator');
+        // Ümumi və admin otaqları üçün ayrı indicatorlar
+        const indicator = activeRoomId === 'global_room' ? document.getElementById('typingIndicator') : 
+                          activeRoomId === 'admin_room' ? document.getElementById('adminTypingIndicator') : null;
         if (indicator) {
             if (someoneTyping && !activeRoomIsDM) indicator.classList.remove('hidden');
             else indicator.classList.add('hidden');
@@ -1130,13 +1229,14 @@ function checkActiveRoomTyping() {
     });
 }
 
-function handleTypingEvent(isTypingToDM) {
+function handleTypingEvent() {
     set(ref(rtdb, `presence/${currentUser.uid}/typingTo`), activeRoomId);
     clearTimeout(typingTimeout);
     typingTimeout = setTimeout(() => { set(ref(rtdb, `presence/${currentUser.uid}/typingTo`), null); }, 1800);
 }
-messageInputField.addEventListener('input', () => handleTypingEvent(false));
-privateInputField.addEventListener('input', () => handleTypingEvent(true));
+messageInputField.addEventListener('input', handleTypingEvent);
+adminInputField.addEventListener('input', handleTypingEvent);
+privateInputField.addEventListener('input', handleTypingEvent);
 
 /* ==========================================================================
  13. PROFİL MODALI
@@ -1294,7 +1394,6 @@ profileSettingsForm.addEventListener('submit', async (e) => {
         settingsUsernameCheckMsg.textContent = '';
         settingsUsernameCheckMsg.className = 'check-message';
 
-        // userDataMap-ı yenilə
         if (userDataMap[currentUser.uid]) {
             userDataMap[currentUser.uid].username = newUsername;
             userDataMap[currentUser.uid].displayName = displayName;
@@ -1440,6 +1539,7 @@ async function toggleIgnoreUser(targetUserId, targetName) {
     }
     renderUsersList();
     loadGeneralMessages();
+    loadAdminMessages();
     if (activeRoomIsDM) loadPrivateMessages();
 }
 
@@ -1565,6 +1665,14 @@ async function initializeChatSession(user) {
     else if (currentUserData.role === 'moderator') roleTitle = 'Moderator';
     document.getElementById('currentUserRole').innerText = roleTitle;
 
+    // Admin otağı düyməsini göstər/gizlət
+    const myLevel = getRoleLevel(currentUserData.role);
+    if (myLevel >= 2) { // moderator, admin, super_admin
+        btnAdminRoom.classList.remove('hidden');
+    } else {
+        btnAdminRoom.classList.add('hidden');
+    }
+
     logoutBtn.classList.remove('hidden'); openSettingsBtn.classList.remove('hidden');
     authScreen.classList.remove('active'); chatScreen.classList.add('active');
     document.getElementById('appLoader')?.classList.add('hidden');
@@ -1572,8 +1680,7 @@ async function initializeChatSession(user) {
     setupPresence(user);
     listenUsersAndPresence();
     checkActiveRoomTyping();
-    loadGeneralMessages();
-    closePrivateRoom();
+    switchToGlobalRoom(); // başlanğıcda ümumi çat açılır
 
     if (unsubscribeSelfDestruct) unsubscribeSelfDestruct();
     startSelfDestructListener(user);
@@ -1628,6 +1735,7 @@ onAuthStateChanged(auth, async (user) => {
         if (unsubscribeRooms) unsubscribeRooms();
         if (unsubscribeTyping) unsubscribeTyping();
         if (unsubscribeSelfDestruct) unsubscribeSelfDestruct();
+        if (unsubscribeAdminMessages) { unsubscribeAdminMessages(); unsubscribeAdminMessages = null; }
 
         if (unsubscribePresenceConnected) { unsubscribePresenceConnected(); unsubscribePresenceConnected = null; }
         window.onmousemove = null; window.onkeypress = null;
@@ -1681,6 +1789,7 @@ function setupEmojiButton(btnEl, panelEl, targetInput) {
 
 setupEmojiButton(document.getElementById('chatEmojiBtn'), document.getElementById('chatEmojiPicker'), messageInputField);
 setupEmojiButton(document.getElementById('privateEmojiBtn'), document.getElementById('privateEmojiPicker'), privateInputField);
+setupEmojiButton(document.getElementById('adminEmojiBtn'), document.getElementById('adminEmojiPicker'), adminInputField);
 
 document.addEventListener('click', () => {
     document.querySelectorAll('.emoji-picker-panel').forEach(p => p.classList.add('hidden'));
