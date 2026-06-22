@@ -409,6 +409,7 @@ body {
     align-items: center;
     gap: 10px;
     transition: all 0.2s;
+    margin-bottom: 6px;
 }
 .nav-tab.active, .nav-tab:hover {
     background: var(--accent);
@@ -654,7 +655,6 @@ body {
 .private-chat-header:hover { background: var(--surface); }
 .private-chat-header i { font-size: 1.2rem; color: var(--text-muted); }
 .pm-info h3 { font-size: 1rem; color: var(--text); margin-bottom: 2px; }
-/* DƏYİŞİKLİK: şəxsi başlıqdakı @username bold */
 .pm-info p {
     font-size: 0.75rem;
     color: var(--accent);
@@ -677,7 +677,6 @@ body {
 .message-wrapper.me .message-bubble { background: var(--me-bubble); color: white; border-top-right-radius: 0; box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 25%, transparent); }
 .message-wrapper.other .message-bubble { background: var(--other-bubble); color: var(--text); border-top-left-radius: 0; border: 1px solid var(--glass-border); }
 
-/* ===== DƏYİŞİKLİK: sender-name flex ilə ulduz solda, zibil sağda ===== */
 .sender-name {
     display: flex;
     justify-content: flex-start;
@@ -686,10 +685,9 @@ body {
     font-weight: bold;
     margin-bottom: 2px;
     opacity: 0.7;
-    gap: 4px; /* ad+ulduz ilə zibil arasında kiçik boşluq */
+    gap: 4px;
 }
 
-/* ===== DƏYİŞİKLİK: @username bold və accent rəng ===== */
 .sender-username {
     display: block;
     font-size: 0.7rem;
@@ -698,7 +696,6 @@ body {
     margin-bottom: 4px;
 }
 
-/* ===== DƏYİŞİKLİK: öz mesajında @username ağ ===== */
 .message-wrapper.me .sender-username {
     color: #ffffff;
 }
@@ -707,7 +704,6 @@ body {
 .message-bubble img.chat-shared-image { max-width: 100%; max-height: 240px; border-radius: var(--radius-sm); margin-top: 5px; display: block; cursor: pointer; }
 .timestamp { display: block; font-size: 0.7rem; text-align: right; opacity: 0.6; }
 
-/* ===== DƏYİŞİKLİK: zibil qutusunu sağa itələ ===== */
 .delete-msg-btn {
     background: none;
     border: none;
@@ -716,7 +712,7 @@ body {
     font-size: 0.9rem;
     padding: 0 4px;
     transition: color 0.2s;
-    margin-left: auto; /* sağa itələ */
+    margin-left: auto;
 }
 .message-wrapper.other .delete-msg-btn { color: var(--text-muted); }
 .delete-msg-btn:hover { color: var(--danger) !important; }
