@@ -671,22 +671,51 @@ body {
 .message-bubble { padding: 12px 16px; border-radius: 14px; font-size: 0.95rem; position: relative; word-break: break-word; }
 .message-wrapper.me .message-bubble { background: var(--me-bubble); color: white; border-top-right-radius: 0; box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 25%, transparent); }
 .message-wrapper.other .message-bubble { background: var(--other-bubble); color: var(--text); border-top-left-radius: 0; border: 1px solid var(--glass-border); }
-.sender-name { display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 2px; opacity: 0.7; }
-/* DƏYİŞİKLİK: mesajda @username üçün stil */
+
+/* DƏYİŞİKLİK: sender-name flex konteyner, sil düyməsi sağa */
+.sender-name {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-bottom: 2px;
+    opacity: 0.7;
+}
+
+/* DƏYİŞİKLİK: @username rəngi - istifadəçi siyahısı ilə eyni */
 .sender-username {
     display: block;
     font-size: 0.7rem;
-    color: var(--text-muted);
+    font-weight: 600;
+    color: var(--accent);
     margin-bottom: 4px;
-    font-weight: 400;
 }
 .message-bubble p { margin-bottom: 4px; }
 .message-bubble img.chat-shared-image { max-width: 100%; max-height: 240px; border-radius: var(--radius-sm); margin-top: 5px; display: block; cursor: pointer; }
 .timestamp { display: block; font-size: 0.7rem; text-align: right; opacity: 0.6; }
 
-.delete-msg-btn { background: none; border: none; color: rgba(255,255,255,0.4); cursor: pointer; font-size: 0.75rem; margin-left: 6px; transition: color 0.2s; }
+.delete-msg-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    font-size: 0.75rem;
+    margin-left: 6px;
+    transition: color 0.2s;
+    padding: 0 2px;
+    flex-shrink: 0;
+}
 .message-wrapper.other .delete-msg-btn { color: var(--text-muted); }
 .delete-msg-btn:hover { color: var(--danger) !important; }
+
+/* DƏYİŞİKLİK: şəxsi otaqdakı @username rəngi */
+.private-room-username {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0;
+}
 
 .typing-indicator { padding: 8px 24px; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--muted); flex-shrink: 0; }
 .typing-indicator .dots { display: flex; gap: 3px; }
