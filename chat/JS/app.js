@@ -777,6 +777,7 @@ function renderUsersList() {
         const canBan = (myLevel === 4) || (myLevel === 3 && targetLevel <= 2);
         const canDelete = (myLevel === 4);
         const canIgnore = true;
+        const canWhois = (myLevel === 4); // Yalnız Super Admin
 
         let dropdownItems = '';
 
@@ -802,6 +803,11 @@ function renderUsersList() {
 
         if (myLevel === 4) {
             dropdownItems += `<button class="dropdown-item network-ban-action" data-uid="${user.uid}"><i class="fa-solid fa-wifi"></i><span class="label">IP/Cihaz banı</span></button>`;
+        }
+
+        // === YENİ: Whois (yalnız Super Admin) ===
+        if (canWhois) {
+            dropdownItems += `<button class="dropdown-item whois-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}"><i class="fa-solid fa-circle-info"></i><span class="label">Whois</span></button>`;
         }
 
         const dropdownHtml = dropdownItems ? `
@@ -876,6 +882,9 @@ function renderUsersList() {
             } else if (item.classList.contains('network-ban-action')) {
                 const uid = item.dataset.uid;
                 handleNetworkBan(uid);
+            } else if (item.classList.contains('whois-action')) { // YENİ
+                const uid = item.dataset.uid;
+                showWhois(uid);
             }
         });
     });
@@ -1684,6 +1693,9 @@ async function initializeChatSession(user) {
 
     if (unsubscribeSelfDestruct) unsubscribeSelfDestruct();
     startSelfDestructListener(user);
+
+    // === YENİ: IP və cihaz məlumatlarını yenilə ===
+    updateUserNetwork().catch(() => {});
 }
 
 /* ==========================================================================
@@ -1881,3 +1893,96 @@ document.addEventListener('click', () => {
         if (currentUser && currentUserData) { startBanWatcher(); if (banWatcherActive) clearInterval(banWatcherInit); }
     }, 3000);
 })();
+
+/* ==========================================================================
+ 20b. IP VƏ CİHAZ MƏLUMATLARINI TOPLAMA (YENİ)
+ ========================================================================== */
+
+async function updateUserNetwork() {
+    if (!currentUser) return;
+    try {
+        // IP ünvanını əldə et
+        let ip = 'Məlumat yoxdur';
+        try {
+            const ipRes = await fetch('https://api.ipify.org?format=json', { signal: AbortSignal.timeout(5000) });
+            if (ipRes.ok) {
+                const ipData = await ipRes.json();
+                ip = ipData.ip;
+            }
+        } catch (_) { /* IP alınmazsa default qalır */ }
+
+        // Cihaz məlumatları
+        const userAgent = navigator.userAgent || 'Məlumat yoxdur';
+        const platform = navigator.platform || 'Məlumat yoxdur';
+        const language = navigator.language || 'Məlumat yoxdur';
+        const screenRes = `${window.screen.width}x${window.screen.height}`;
+
+        await setDoc(doc(db, 'user_network', currentUser.uid), {
+            lastIp: ip,
+            lastUserAgent: userAgent,
+            lastPlatform: platform,
+            lastLanguage: language,
+            screenResolution: screenRes,
+            updatedAt: serverTimestamp()
+        }, { merge: true });
+    } catch (err) {
+        console.warn('[updateUserNetwork] Xəta:', err.message);
+    }
+}
+
+/* ==========================================================================
+ 20c. WHOIS FUNKSİYASI (YENİ)
+ ========================================================================== */
+
+async function showWhois(targetUid) {
+    const modal = document.getElementById('whoisModal');
+    const content = document.getElementById('whoisContent');
+    const title = document.getElementById('whoisModalTitle');
+
+    // İstifadəçi adını tap
+    const userData = userDataMap[targetUid];
+    const displayName = userData?.displayName || userData?.username || 'İstifadəçi';
+    title.textContent = `Whois - ${escapeHTML(displayName)}`;
+
+    content.innerHTML = `<p style="color: var(--text-muted);">Yüklənir...</p>`;
+    modal.classList.add('active');
+
+    try {
+        const netDoc = await getDoc(doc(db, 'user_network', targetUid));
+        if (!netDoc.exists()) {
+            content.innerHTML = `<div class="whois-empty">Bu istifadəçi üçün hələ heç bir şəbəkə məlumatı yoxdur.</div>`;
+            return;
+        }
+        const data = netDoc.data();
+        const updated = data.updatedAt ? new Date(data.updatedAt.seconds * 1000).toLocaleString('az-AZ') : 'Məlumat yoxdur';
+
+        const rows = [
+            { label: 'IP Ünvanı', value: data.lastIp || 'Məlumat yoxdur' },
+            { label: 'Əməliyyat Sistemi', value: data.lastPlatform || 'Məlumat yoxdur' },
+            { label: 'Brauzer / User-Agent', value: data.lastUserAgent || 'Məlumat yoxdur' },
+            { label: 'Dil', value: data.lastLanguage || 'Məlumat yoxdur' },
+            { label: 'Ekran Həlli', value: data.screenResolution || 'Məlumat yoxdur' },
+            { label: 'Son yenilənmə', value: updated }
+        ];
+
+        content.innerHTML = rows.map(row => `
+            <div class="whois-row">
+                <span class="whois-label">${row.label}</span>
+                <span class="whois-value">${escapeHTML(row.value)}</span>
+            </div>
+        `).join('');
+    } catch (err) {
+        console.error('[whois] Xəta:', err);
+        content.innerHTML = `<div class="whois-empty">Məlumat yüklənərkən xəta baş verdi: ${escapeHTML(err.message)}</div>`;
+    }
+}
+
+// Whois modal bağlama
+document.getElementById('closeWhoisBtn').addEventListener('click', () => {
+    document.getElementById('whoisModal').classList.remove('active');
+});
+document.getElementById('whoisModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+        document.getElementById('whoisModal').classList.remove('active');
+    }
+});
