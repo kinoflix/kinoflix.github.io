@@ -1095,3 +1095,54 @@ body {
 .user-element:hover {
     animation: none !important;
 }
+
+/* ==========================================================================
+   10b. WHOIS MODAL (YENİ)
+   ========================================================================== */
+#whoisModal .modal-card {
+    max-width: 480px;
+}
+#whoisModal .modal-body {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+#whoisContent {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text);
+}
+#whoisContent .whois-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--glass-border);
+}
+#whoisContent .whois-row:last-child {
+    border-bottom: none;
+}
+#whoisContent .whois-label {
+    font-weight: 600;
+    color: var(--muted);
+}
+#whoisContent .whois-value {
+    text-align: right;
+    max-width: 60%;
+    word-break: break-all;
+}
+#whoisContent .whois-empty {
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+    padding: 20px 0;
+}
+
+/* Whois dropdown item */
+.dropdown-item.whois-action i {
+    color: #2ecc71;
+}
+.dropdown-item.whois-action:hover i {
+    color: #fff;
+    background: #2ecc71;
+}
