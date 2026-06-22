@@ -603,12 +603,17 @@ body {
     color: #fff;
     background: #8e44ad;
 }
+.dropdown-item.temp-ban-action:hover i {
+    color: #fff;
+    background: #e67e22;
+}
 
 .dropdown-item.role-action i { color: #3498db; }
 .dropdown-item.ban-action i { color: #f39c12; }
 .dropdown-item.delete-action i { color: #e74c3c; }
 .dropdown-item.ignore-action i { color: #94a3b8; }
 .dropdown-item.network-ban-action i { color: #8e44ad; }
+.dropdown-item.temp-ban-action i { color: #e67e22; }
 
 /* ==========================================================================
    7. ÇAT PƏNCƏRƏSİ VƏ MESAJLAR
