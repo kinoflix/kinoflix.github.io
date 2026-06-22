@@ -145,7 +145,7 @@ body {
    ========================================================================== */
 .auth-screen {
     display: none;
-    align-items: center;          /* DƏYİŞİKLİK: əvvəl flex-start idi, indi mərkəz */
+    align-items: center;
     justify-content: center;
     height: 100%;
     padding: 20px;
@@ -568,7 +568,6 @@ body {
     background: var(--surface-hover);
 }
 .user-actions-dropdown .dropdown-item.danger { color: var(--danger); }
-/* DƏYİŞİKLİK: dropdown ikonunun sabit ölçü və yerdəyişməməsi üçün */
 .user-actions-dropdown .dropdown-item i {
     width: 24px;
     height: 24px;
@@ -604,7 +603,6 @@ body {
     background: #8e44ad;
 }
 
-/* Admin ikon rəngləri (default) */
 .dropdown-item.role-action i { color: #3498db; }
 .dropdown-item.ban-action i { color: #f39c12; }
 .dropdown-item.delete-action i { color: #e74c3c; }
@@ -673,7 +671,15 @@ body {
 .message-bubble { padding: 12px 16px; border-radius: 14px; font-size: 0.95rem; position: relative; word-break: break-word; }
 .message-wrapper.me .message-bubble { background: var(--me-bubble); color: white; border-top-right-radius: 0; box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 25%, transparent); }
 .message-wrapper.other .message-bubble { background: var(--other-bubble); color: var(--text); border-top-left-radius: 0; border: 1px solid var(--glass-border); }
-.sender-name { display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 4px; opacity: 0.7; }
+.sender-name { display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 2px; opacity: 0.7; }
+/* DƏYİŞİKLİK: mesajda @username üçün stil */
+.sender-username {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    font-weight: 400;
+}
 .message-bubble p { margin-bottom: 4px; }
 .message-bubble img.chat-shared-image { max-width: 100%; max-height: 240px; border-radius: var(--radius-sm); margin-top: 5px; display: block; cursor: pointer; }
 .timestamp { display: block; font-size: 0.7rem; text-align: right; opacity: 0.6; }
@@ -1003,7 +1009,6 @@ body {
 @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
 @keyframes flixPulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
 
-/* DƏYİŞİKLİK: rol ulduzları üçün neon hover effekti */
 .role-star {
     transition: text-shadow 0.3s ease;
     cursor: default;
@@ -1037,7 +1042,6 @@ body {
         left: 0;
     }
 
-    /* Qeydiyyatda Ad və Soyad mobil də yan-yana */
     .name-row {
         flex-direction: row;
         gap: 12px;
@@ -1047,7 +1051,6 @@ body {
         width: auto;
     }
 
-    /* Auth kartının kiçik ekranlarda daha yaxşı görünməsi */
     .auth-card {
         padding: 20px;
         margin: 10px auto;
