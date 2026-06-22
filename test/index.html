@@ -133,7 +133,7 @@
                             <i class="fa-solid fa-earth-americas"></i> Ümumi Çat
                         </button>
                         <button id="btnAdminRoom" class="nav-tab hidden">
-                            <i class="fa-solid fa-shield-halved"></i> Rəhbərlik otağı
+                            <i class="fa-solid fa-crown"></i> Rəhbərlik otağı
                         </button>
                     </div>
 
@@ -257,6 +257,21 @@
         </section>
 
     </main>
+
+    <!-- Whois Modal (YENİ) -->
+    <div id="whoisModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3 id="whoisModalTitle">Whois Məlumatı</h3>
+                <button id="closeWhoisBtn" class="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 20px 24px; display: flex; flex-direction: column; gap: 10px;">
+                <div id="whoisContent" style="font-size: 0.95rem; line-height: 1.6; color: var(--text);">
+                    <p style="color: var(--text-muted);">Məlumat yüklənir...</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="settingsModal" class="modal-overlay">
         <div class="modal-card settings-modal-card">
