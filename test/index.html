@@ -258,7 +258,7 @@
 
     </main>
 
-    <!-- Whois Modal (YENİ) -->
+    <!-- Whois Modal -->
     <div id="whoisModal" class="modal-overlay">
         <div class="modal-card" style="max-width: 480px;">
             <div class="modal-header">
@@ -269,6 +269,31 @@
                 <div id="whoisContent" style="font-size: 0.95rem; line-height: 1.6; color: var(--text);">
                     <p style="color: var(--text-muted);">Məlumat yüklənir...</p>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vaxt ilə qov Modalı (YENİ) -->
+    <div id="tempBanModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 id="tempBanModalTitle">Vaxt ilə qov</h3>
+                <button id="closeTempBanBtn" class="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 20px 24px; display: flex; flex-direction: column; gap: 16px;">
+                <p id="tempBanTargetName" style="color: var(--muted); font-size: 0.95rem;"></p>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="font-weight: 600; color: var(--text);">Müddət seçin:</label>
+                    <div id="tempBanDurationGroup" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                        <label><input type="radio" name="tempBanDuration" value="1"> 1 dəq</label>
+                        <label><input type="radio" name="tempBanDuration" value="5"> 5 dəq</label>
+                        <label><input type="radio" name="tempBanDuration" value="10"> 10 dəq</label>
+                        <label><input type="radio" name="tempBanDuration" value="60"> 1 saat</label>
+                        <label><input type="radio" name="tempBanDuration" value="1440"> 1 gün</label>
+                        <label><input type="radio" name="tempBanDuration" value="10080"> 7 gün</label>
+                    </div>
+                </div>
+                <button id="confirmTempBanBtn" class="submit-btn" style="margin-top: 4px;">Təsdiqlə</button>
             </div>
         </div>
     </div>
