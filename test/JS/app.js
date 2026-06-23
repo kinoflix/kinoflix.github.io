@@ -1586,7 +1586,10 @@ async function toggleBanUser(targetUserId, isCurrentlyBanned) {
         }
         const actionLabel = isCurrentlyBanned ? "banını qaldırmaq" : "banlamaq";
         if (!confirm(`Bu istifadəçinin ${actionLabel} istədiyinizdən əminsiniz?`)) return;
-        await updateDoc(doc(db, 'users', targetUserId), { isBanned: !isCurrentlyBanned });
+        await updateDoc(doc(db, 'users', targetUserId), {
+        isBanned: !isCurrentlyBanned,
+        banExpires: null  // normal ban zamanı temp ban qalıqları silinir
+});
         showToast(`İstifadəçi uğurla ${isCurrentlyBanned ? 'banı qaldırıldı' : 'banlandı'}!`, "success");
     } catch (err) {
         console.error("Ban xətası:", err);
