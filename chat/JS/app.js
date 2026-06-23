@@ -725,7 +725,7 @@ function renderUsersList() {
 
     currentUsersList.forEach(user => {
         const userStatus = currentStatuses[user.uid]?.status || 'offline';
-        const isTargetBanned = user.isBanned === true;
+        const isTargetBanned = user.isBanned === true || user.networkBanned === true;
         const targetLevel = getRoleLevel(user.role);
 
         if (isTargetBanned) {
@@ -767,7 +767,7 @@ function renderUsersList() {
         const badgeHtml = unreadCount > 0 ? `<span class="unread-badge">${unreadCount}</span>` : '';
         const roleStarsHtml = getRoleStarsHtml(user.role);
         const targetLevel = getRoleLevel(user.role);
-        const isTargetBanned = user.isBanned === true;
+        const isTargetBanned = user.isBanned === true || user.networkBanned === true;
         const isIgnored = currentIgnoreList.includes(user.uid);
         const isNetworkBanned = user.networkBanned === true;
 
