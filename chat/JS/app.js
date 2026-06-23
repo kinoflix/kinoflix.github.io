@@ -1693,7 +1693,7 @@ async function handleNetworkBan(targetUid) {
             if (data.lastIp) await deleteDoc(doc(db, "blacklist", data.lastIp));
             if (data.lastDevice) await deleteDoc(doc(db, "blacklist", data.lastDevice));
             await deleteDoc(doc(db, "blacklist", targetUid));
-            await setDoc(doc(db, "users", targetUid), { isBanned: false, networkBanned: false }, { merge: true });
+            await setDoc(doc(db, "users", targetUid), { isBanned: false, networkBanned: false, banExpires: null }, { merge: true });
             showToast("Şəbəkə və hesab banı tamamilə ləğv edildi!", "success");
         } else {
             if (!confirm("DİQQƏT: Bu istifadəçini IP, Cihaz və Hesab olaraq tam bloklamaq istəyirsiniz?")) return;
@@ -1702,7 +1702,7 @@ async function handleNetworkBan(targetUid) {
             if (data.lastIp) await setDoc(doc(db, "blacklist", data.lastIp), banPayload);
             if (data.lastDevice) await setDoc(doc(db, "blacklist", data.lastDevice), banPayload);
             await setDoc(doc(db, "blacklist", targetUid), banPayload);
-            await setDoc(doc(db, "users", targetUid), { isBanned: true, networkBanned: true }, { merge: true });
+            await setDoc(doc(db, "users", targetUid), { isBanned: false, networkBanned: true, banExpires: null }, { merge: true });
             showToast("İstifadəçi şəbəkə səviyyəsində uğurla banlandı!", "success");
         }
         renderUsersList();
