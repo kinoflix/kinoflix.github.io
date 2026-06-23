@@ -1204,3 +1204,17 @@ body {
 #removeTempBanBtn:hover {
     background: #c0392b;
 }
+/* ===== TEMP BAN ACTIVE STYLES (ADDED) ===== */
+.dropdown-item.temp-ban-action.temp-ban-active i {
+    color: #2ecc71;
+}
+.dropdown-item.temp-ban-action.temp-ban-active .label {
+    color: #2ecc71;
+}
+.dropdown-item.temp-ban-action.temp-ban-active:hover i {
+    color: #fff;
+    background: #2ecc71;
+}
+.dropdown-item.temp-ban-action.temp-ban-active:hover .label {
+    color: #fff;
+}
