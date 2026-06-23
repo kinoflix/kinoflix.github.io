@@ -1,0 +1,101 @@
+/* ==========================================================================
+   ROL İERARXİYASI VƏ İCAZƏ QAYDALARI (TEXNİKİ TƏHLİL)
+   ========================================================================== */
+
+/*
+   ===== 1. ROL SƏVİYYƏLƏRİ (getRoleLevel) =====
+   Rəqəmsal dəyərlər (4 ən yüksək, 1 ən aşağı):
+   4 = super_admin (Super Admin)
+   3 = admin (Admin)
+   2 = moderator (Moderator)
+   1 = user (İstifadəçi - standart)
+
+   ===== 2. ROLLARIN TƏRİFİ =====
+   - super_admin (4): Sistemin tam sahibi. Bütün əməliyyatları icra edə bilər.
+   - admin (3): Gündəlik idarəetmə. Moderator və user-ləri idarə edə bilər, lakin super_admin səlahiyyətlərini dəyişə bilməz.
+   - moderator (2): Orta səviyyəli nəzarət. Yalnız user-lərə temp ban (vaxtlı qovma) tətbiq edə bilər.
+   - user (1): Əsas istifadəçi. Yalnız söhbət edə, şəkil göndərə və digər user-ləri ignor edə bilər.
+
+   ===== 3. TABEÇİLİK VƏ İCAZƏ MATRİSİ (Kim, Kimə Nə Edə Bilər?) =====
+
+   A) ROL DƏYİŞMƏ (canRole) - "Rolu dəyiş" düyməsi
+      - super_admin (4): İSTƏNİLƏN İSTİFADƏÇİNİN (4,3,2,1) rolunu dəyişə bilər.
+      - admin (3): YALNIZ moderator (2) və user (1) rollarını dəyişə bilər.
+      - moderator (2) və user (1): Heç kimin rolunu dəyişə BİLMƏZ.
+
+   B) NORMAL BAN (canBan) - "Ban et" / "Banı qaldır" düyməsi
+      - super_admin (4): İSTƏNİLƏN İSTİFADƏÇİNİ (4,3,2,1) ban edə/qaldıra bilər.
+      - admin (3): YALNIZ moderator (2) və user (1) ban edə/qaldıra bilər.
+      - moderator (2) və user (1): Heç kəsi ban edə BİLMƏZ.
+
+   C) VAXT İLƏ QOVMA / TEMP BAN (canTempBan) - "Vaxt ilə qov" düyməsi
+      - super_admin (4): İSTƏNİLƏN İSTİFADƏÇİNİ (4,3,2,1) temp ban edə/qaldıra bilər.
+      - admin (3): YALNIZ moderator (2) və user (1) temp ban edə/qaldıra bilər.
+      - moderator (2): YALNIZ user (1) temp ban edə/qaldıra bilər.
+      - user (1): Heç kəsi temp ban edə BİLMƏZ.
+
+   D) HESABI SİL (canDelete) - "Hesabı sil" düyməsi (tam silmə)
+      - super_admin (4): İSTƏNİLƏN İSTİFADƏÇİNİ (4,3,2,1) silə bilər.
+      - admin (3), moderator (2), user (1): Heç kəsi silə BİLMƏZ.
+      (Bu əməliyyat geri qaytarıla bilməz və yalnız ən yüksək səlahiyyətə verilmişdir.)
+
+   E) WHOIS MƏLUMATI (canWhois) - IP, cihaz və s. məlumatlar
+      - super_admin (4): Bütün istifadəçilərin şəbəkə məlumatlarını görə bilər.
+      - admin (3), moderator (2), user (1): Heç kimin Whois məlumatını görə BİLMƏZ.
+      (Məxfilik səbəbindən yalnız Super Admin-ə verilmişdir.)
+
+   F) İGNOR ET (canIgnore)
+      - BÜTÜN İSTİFADƏÇİLƏR (1,2,3,4) digər istifadəçiləri ignor edə/qaldıra bilər.
+      (İstisna: Super Admin-i ignor etmək olmaz - toggleIgnoreUser funksiyasında yoxlanılır.)
+
+   G) BANLI İSTİFADƏÇİLƏRİ SİYAHIDA GÖRMƏ (canSeeBanned)
+      - moderator (2), admin (3), super_admin (4): Banlı istifadəçiləri siyahıda görə bilər.
+      - user (1): Banlı istifadəçiləri siyahıda GÖRMƏZ (onlar gizlənir).
+
+   H) RƏHBƏRLİK OTAĞI (Admin Room) - "btnAdminRoom"
+      - moderator (2), admin (3), super_admin (4): Rəhbərlik otağına daxil ola bilər.
+      - user (1): Rəhbərlik otağına daxil ola BİLMƏZ (btnAdminRoom gizlənir).
+
+   ===== 4. BAN NÖVLƏRİNİN BİR-BİRİNƏ TƏSİRİ (renderUsersList məntiqi) =====
+   - Network ban (IP/Cihaz) aktivdirsə: Normal ban və temp ban düymələri GÖSTƏRİLMİR.
+     (Yalnız "IP/Cihaz banını qaldır" göstərilir. Rol dəyişmə və silmə göstərilir.)
+   
+   - Normal ban aktivdirsə: Temp ban düyməsi GÖSTƏRİLMİR.
+     (Yalnız "Banı qaldır" göstərilir. Network ban (əgər super admin varsa) göstərilə bilər.)
+     Normal ban tətbiq edilərkən aktiv temp ban avtomatik LƏĞV EDİLİR (banExpires null).
+
+   - Temp ban aktivdirsə: "Vaxt banını qaldır" göstərilir.
+     Normal ban (əgər admin/super admin varsa) və Network ban (əgər super admin varsa) göstərilə bilər.
+
+   ===== 5. XÜSUSİ QAYDALAR =====
+   - Admin (3) və Moderator (2) öz səviyyələrindən yuxarı olanlara (Super Admin və ya Admin)
+     heç bir ban/rol əməliyyatı tətbiq edə BİLMƏZ (targetLevel < myLevel şərti ilə).
+   - Normal ban tətbiq edilərkən, əgər istifadəçinin aktiv temp banı varsa,
+     həmin temp ban avtomatik olaraq ləğv edilir (banExpires = null).
+   - Network ban tətbiq edilərkən, istifadəçinin bütün aktiv banları (normal və temp) ləğv edilir
+     və yalnız network ban aktiv qalır.
+   - Rol dəyişmə və hesab silmə əməliyyatları BÜTÜN ban növlərində (network, normal, temp)
+     göstərilir, çünki bu əməliyyatlar istifadəçinin ban statusundan asılı deyil.
+*/
+
+Sistemdə rol ierarxiyası belə olmalıdır:
+
+Super Admin: (Adı qarşısında 3 ulduz)
+1. Mesajları sil
+2. Hesabları banla (Firebase-in disable account funksiyası)
+3. Hesabları sil
+4. Rol ver və al
+4. Bu funksiyaları bütün super admin, admin, moderator və user-lər üzərində isifadə edə bilər.
+
+Admin: (Adı qarşısında 2 ulduz)
+1. Mesajları sil
+2. Hesabları banla (Firebase-in disable account funksiyası)
+3. Bu funksiyaları yalnız moderator və user-lər üzərində isifadə edə bilər.
+
+Moderator: (Adı qarşısında 1 ulduz)
+1. Mesajları sil
+2. Bu funksiyaları yalnız user-lər üzərində isifadə edə bilər.
+
+
+
+
