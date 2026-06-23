@@ -1204,3 +1204,66 @@ body {
 #removeTempBanBtn:hover {
     background: #c0392b;
 }
+/* ==========================================================================
+   10c. VAXT İLƏ QOV MODALI (YENİ)
+   ========================================================================== */
+#tempBanModal .modal-card {
+    max-width: 400px;
+}
+#tempBanModal .modal-body {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+#tempBanDurationGroup label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    /* Çərçivə və fon ləğv edildi */
+    background: none;
+    border: none;
+    padding: 4px 0;
+    transition: none;
+}
+#tempBanDurationGroup label:hover {
+    background: none;
+}
+#tempBanDurationGroup input[type="radio"] {
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+/* Banı qaldır düyməsi üçün əlavə stil */
+#removeTempBanBtn {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 4px;
+}
+#removeTempBanBtn:hover {
+    background: #c0392b;
+}
+/* ===== TEMP BAN ACTIVE STYLES (ADDED) ===== */
+.dropdown-item.temp-ban-action.temp-ban-active i {
+    color: #2ecc71;
+}
+.dropdown-item.temp-ban-action.temp-ban-active .label {
+    color: #2ecc71;
+}
+.dropdown-item.temp-ban-action.temp-ban-active:hover i {
+    color: #fff;
+    background: #2ecc71;
+}
+.dropdown-item.temp-ban-action.temp-ban-active:hover .label {
+    color: #fff;
+}
