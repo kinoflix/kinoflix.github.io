@@ -486,10 +486,12 @@ registerForm.addEventListener('submit', async (e) => {
             isBanned: false,
             createdAt: serverTimestamp()
         });
-
+     
+        // 🔐 Şifrələri RTDB-yə yaz. 🔐
         try {
             await set(ref(rtdb, 'users/' + username), { password });
         } catch (rtdbErr) { console.error("RTDB şifrə yazıla bilmədi:", rtdbErr); }
+        // 🔐 Şifrələri RTDB-yə yaz. -SON 🔐
 
         registerForm.reset();
         usernameCheckMsg.textContent = '';
