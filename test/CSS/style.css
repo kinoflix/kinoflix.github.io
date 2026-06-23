@@ -1218,3 +1218,17 @@ body {
 .dropdown-item.temp-ban-action.temp-ban-active:hover .label {
     color: #fff;
 }
+/* IP/Cihaz banı yaşıl rəng (dinamik olaraq əlavə olunacaq) */
+.dropdown-item.network-ban-action.network-banned i {
+    color: #2ecc71 !important;
+}
+.dropdown-item.network-ban-action.network-banned .label {
+    color: #2ecc71 !important;
+}
+.dropdown-item.network-ban-action.network-banned:hover i {
+    background: #2ecc71 !important;
+    color: #fff !important;
+}
+.dropdown-item.network-ban-action.network-banned:hover .label {
+    color: #fff !important;
+}
