@@ -828,7 +828,8 @@ function renderUsersList() {
         const isTempBan = isTargetBanned && user.banExpires;
 
         // 1. Əgər network ban aktivdirsə, yalnız onu qaldırmaq olar
-        if (isNetworkBanned && myLevel === 4) {
+        if (isNetworkBanned) {
+        if (myLevel === 4) {
             dropdownItems += `<button class="dropdown-item network-ban-action network-banned" data-uid="${user.uid}">
                 <i class="fa-solid fa-wifi"></i>
                 <span class="label">IP/Cihaz banını qaldır</span>
