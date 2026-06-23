@@ -767,6 +767,10 @@ function renderUsersList() {
         const targetLevel = getRoleLevel(user.role);
         const isTargetBanned = user.isBanned === true;
         const isIgnored = currentIgnoreList.includes(user.uid);
+        const isNetworkBanned = user.networkBanned === true;
+
+        // ===== YENİ: həm normal/temp ban, həm də network ban üçün üstü xətt və solğunluq =====
+        const isBannedOrNetworkBanned = isTargetBanned || isNetworkBanned;
 
         const username = user.username || user.displayName || 'anonim';
         const firstName = user.firstName || user.displayName || '';
@@ -775,7 +779,7 @@ function renderUsersList() {
 
         const li = document.createElement('li');
         li.className = `user-item ${activeRoomId.includes(user.uid) ? 'active' : ''}`;
-        const nameStyle = isTargetBanned ? 'text-decoration: line-through; opacity: 0.5;' : (isIgnored ? 'opacity: 0.5;' : '');
+        const nameStyle = isBannedOrNetworkBanned ? 'text-decoration: line-through; opacity: 0.5;' : (isIgnored ? 'opacity: 0.5;' : '');
 
         const canRole = (myLevel === 4) || (myLevel === 3 && targetLevel <= 2);
         const canBan = (myLevel === 4) || (myLevel === 3 && targetLevel <= 2);
@@ -786,53 +790,108 @@ function renderUsersList() {
 
         let dropdownItems = '';
 
+        // ================================================================
+        // TƏKMİL BAN MƏNTİQİ (YENİ) – qaydalara uyğun dropdown düymələri
+        // ================================================================
+        const isNormalBan = isTargetBanned && !user.banExpires;
+        const isTempBan = isTargetBanned && user.banExpires;
+
+        // 1. Əgər network ban aktivdirsə, yalnız onu qaldırmaq olar
+        if (isNetworkBanned && myLevel === 4) {
+            dropdownItems += `<button class="dropdown-item network-ban-action network-banned" data-uid="${user.uid}">
+                <i class="fa-solid fa-wifi"></i>
+                <span class="label">IP/Cihaz banını qaldır</span>
+            </button>`;
+        }
+        // 2. Temp ban aktivdirsə
+        else if (isTempBan && canTempBan) {
+            dropdownItems += `<button class="dropdown-item temp-ban-action temp-ban-active" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
+                <i class="fa-solid fa-clock"></i>
+                <span class="label">Vaxt banını qaldır</span>
+            </button>`;
+            // Temp ban olan şəxsə admin "Ban et" edə bilər (normal ban tətbiq etmək üçün)
+            if (canBan) {
+                dropdownItems += `<button class="dropdown-item ban-action" data-uid="${user.uid}" data-banned="false">
+                    <i class="fa-solid fa-user-slash"></i>
+                    <span class="label">Ban et</span>
+                </button>`;
+            }
+            // Super admin "IP/Cihaz banı" tətbiq edə bilər
+            if (myLevel === 4) {
+                dropdownItems += `<button class="dropdown-item network-ban-action" data-uid="${user.uid}">
+                    <i class="fa-solid fa-wifi"></i>
+                    <span class="label">IP/Cihaz banı</span>
+                </button>`;
+            }
+        }
+        // 3. Normal ban aktivdirsə
+        else if (isNormalBan && canBan) {
+            dropdownItems += `<button class="dropdown-item ban-action ban-active" data-uid="${user.uid}" data-banned="true">
+                <i class="fa-solid fa-user-check"></i>
+                <span class="label">Banı qaldır</span>
+            </button>`;
+            // Super admin "IP/Cihaz banı" tətbiq edə bilər
+            if (myLevel === 4) {
+                dropdownItems += `<button class="dropdown-item network-ban-action" data-uid="${user.uid}">
+                    <i class="fa-solid fa-wifi"></i>
+                    <span class="label">IP/Cihaz banı</span>
+                </button>`;
+            }
+        }
+        // 4. Heç bir ban yoxdursa
+        else if (!isTargetBanned && !isNetworkBanned) {
+            if (canBan) {
+                dropdownItems += `<button class="dropdown-item ban-action" data-uid="${user.uid}" data-banned="false">
+                    <i class="fa-solid fa-user-slash"></i>
+                    <span class="label">Ban et</span>
+                </button>`;
+            }
+            if (canTempBan) {
+                dropdownItems += `<button class="dropdown-item temp-ban-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
+                    <i class="fa-solid fa-clock"></i>
+                    <span class="label">Vaxt ilə qov</span>
+                </button>`;
+            }
+            if (myLevel === 4) {
+                dropdownItems += `<button class="dropdown-item network-ban-action" data-uid="${user.uid}">
+                    <i class="fa-solid fa-wifi"></i>
+                    <span class="label">IP/Cihaz banı</span>
+                </button>`;
+            }
+        }
+
+        // 5. Rol dəyişmə – bütün hallarda (əgər icazə varsa)
+        if (canRole) {
+            dropdownItems += `<button class="dropdown-item role-action" data-uid="${user.uid}" data-role="${user.role || 'user'}">
+                <i class="fa-solid fa-user-gear"></i>
+                <span class="label">Rolu dəyiş</span>
+            </button>`;
+        }
+
+        // 6. Hesabı silmə – yalnız super admin üçün
+        if (canDelete) {
+            dropdownItems += `<button class="dropdown-item delete-action danger" data-uid="${user.uid}">
+                <i class="fa-solid fa-user-minus"></i>
+                <span class="label">Hesabı sil</span>
+            </button>`;
+        }
+
+        // 7. İgnor – hər kəs üçün
         if (canIgnore) {
             const ignoreLabel = isIgnored ? 'İgnoru qaldır' : 'İgnor et';
             const ignoreIcon = isIgnored ? 'fa-eye-slash' : 'fa-eye';
-            dropdownItems += `<button class="dropdown-item ignore-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}"><i class="fa-solid ${ignoreIcon}"></i><span class="label">${ignoreLabel}</span></button>`;
-        }
-     
-            // ===== UPDATED TEMP BAN LOGIC =====
-           // Vaxt ilə qov (temp ban) – yalnız normal ban deyilsə göstər
-           // Normal ban: isTargetBanned true və banExpires null (və ya yoxdur)
-           const isNormalBan = isTargetBanned && !user.banExpires;
-           const isTempBan = isTargetBanned && user.banExpires;
-           if (canTempBan) {
-               if (isTempBan) {
-               // Əgər istifadəçi artıq temp ban edilibsə, "Vaxt banını qaldır" butonu göstərilir
-               dropdownItems += `<button class="dropdown-item temp-ban-action temp-ban-active" data-uid="${user.uid}" data-name="${escapeHTML(username)}"><i class="fa-solid fa-clock"></i><span class="label">Vaxt banını qaldır</span></button>`;
-           } else if (!isNormalBan) {
-               // Heç bir ban yoxdursa, "Vaxt ilə qov" butonu
-               dropdownItems += `<button class="dropdown-item temp-ban-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}"><i class="fa-solid fa-clock"></i><span class="label">Vaxt ilə qov</span></button>`;
-    }
-    // Normal ban olduqda temp ban butonu ümumiyyətlə göstərilmir
-}
-
-        // Normal ban funksiyası (admin/superadmin)
-        if (canBan) {
-           const banLabel = isTargetBanned ? 'Banı qaldır' : 'Ban et';
-           const banIcon = isTargetBanned ? 'fa-user-check' : 'fa-user-slash';
-           const banClass = isTargetBanned ? 'ban-action ban-active' : 'ban-action';
-           dropdownItems += `<button class="dropdown-item ${banClass}" data-uid="${user.uid}" data-banned="${isTargetBanned}"><i class="fa-solid ${banIcon}"></i><span class="label">${banLabel}</span></button>`;
-}
-     
-        if (myLevel === 4) {
-            const isNetworkBanned = user.networkBanned === true;
-            const networkBanClass = isNetworkBanned ? 'network-banned' : '';
-            const networkLabel = isNetworkBanned ? 'IP/Cihaz banını qaldır' : 'IP/Cihaz banı';
-            dropdownItems += `<button class="dropdown-item network-ban-action ${networkBanClass}" data-uid="${user.uid}"><i class="fa-solid fa-wifi"></i><span class="label">${networkLabel}</span></button>`;
-       }
-
-        if (canDelete) {
-            dropdownItems += `<button class="dropdown-item delete-action danger" data-uid="${user.uid}"><i class="fa-solid fa-user-minus"></i><span class="label">Hesabı sil</span></button>`;
+            dropdownItems += `<button class="dropdown-item ignore-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
+                <i class="fa-solid ${ignoreIcon}"></i>
+                <span class="label">${ignoreLabel}</span>
+            </button>`;
         }
 
-        if (canRole) {
-            dropdownItems += `<button class="dropdown-item role-action" data-uid="${user.uid}" data-role="${user.role || 'user'}"><i class="fa-solid fa-user-gear"></i><span class="label">Rolu dəyiş</span></button>`;
-        }
-
+        // 8. Whois – yalnız super admin üçün
         if (canWhois) {
-            dropdownItems += `<button class="dropdown-item whois-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}"><i class="fa-solid fa-circle-info"></i><span class="label">Whois</span></button>`;
+            dropdownItems += `<button class="dropdown-item whois-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
+                <i class="fa-solid fa-circle-info"></i>
+                <span class="label">Whois</span>
+            </button>`;
         }
 
         const dropdownHtml = dropdownItems ? `
@@ -844,10 +903,11 @@ function renderUsersList() {
             </div>
         ` : '';
 
+        // ===== YENİ: status indicator da network ban üçün offline =====
         li.innerHTML = `
             <div class="avatar-wrapper">
                 <img src="${user.photoURL || DEFAULT_AVATAR}" class="avatar" alt="">
-                <span class="status-indicator ${isTargetBanned ? 'offline' : userStatus}"></span>
+                <span class="status-indicator ${isBannedOrNetworkBanned ? 'offline' : userStatus}"></span>
             </div>
             <div class="user-text" style="${nameStyle}">
                 <div class="username-line">@${escapeHTML(username)} ${roleStarsHtml}</div>
@@ -1526,7 +1586,10 @@ async function toggleBanUser(targetUserId, isCurrentlyBanned) {
         }
         const actionLabel = isCurrentlyBanned ? "banını qaldırmaq" : "banlamaq";
         if (!confirm(`Bu istifadəçinin ${actionLabel} istədiyinizdən əminsiniz?`)) return;
-        await updateDoc(doc(db, 'users', targetUserId), { isBanned: !isCurrentlyBanned });
+        await updateDoc(doc(db, 'users', targetUserId), {
+        isBanned: !isCurrentlyBanned,
+        banExpires: null  // normal ban zamanı temp ban qalıqları silinir
+});
         showToast(`İstifadəçi uğurla ${isCurrentlyBanned ? 'banı qaldırıldı' : 'banlandı'}!`, "success");
     } catch (err) {
         console.error("Ban xətası:", err);
