@@ -882,6 +882,7 @@ if (canIgnore) {
         <i class="fa-solid ${ignoreIcon}"></i>
         <span class="label">${ignoreLabel}</span>
     </button>`);
+}
 
 // Bütün düymələri birləşdir
 const dropdownItems = buttons.join('');
