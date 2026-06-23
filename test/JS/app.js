@@ -874,15 +874,15 @@ function renderUsersList() {
         // 4. Heç bir ban yoxdursa
         else if (!isTargetBanned && !isNetworkBanned) {
             if (canBan) {
-                dropdownItems += `<button class="dropdown-item ban-action" data-uid="${user.uid}" data-banned="false">
-                    <i class="fa-solid fa-user-slash"></i>
-                    <span class="label">Ban et</span>
-                </button>`;
-            }
-            if (canTempBan) {
+             if (canTempBan) {
                 dropdownItems += `<button class="dropdown-item temp-ban-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
                     <i class="fa-solid fa-clock"></i>
                     <span class="label">Vaxt ilə qov</span>
+                </button>`;
+             }
+                dropdownItems += `<button class="dropdown-item ban-action" data-uid="${user.uid}" data-banned="false">
+                    <i class="fa-solid fa-user-slash"></i>
+                    <span class="label">Ban et</span>
                 </button>`;
             }
             if (myLevel === 4) {
@@ -893,14 +893,6 @@ function renderUsersList() {
             }
         }
 
-        // 5. Rol dəyişmə – bütün hallarda (əgər icazə varsa)
-        if (canRole) {
-            dropdownItems += `<button class="dropdown-item role-action" data-uid="${user.uid}" data-role="${user.role || 'user'}">
-                <i class="fa-solid fa-user-gear"></i>
-                <span class="label">Rolu dəyiş</span>
-            </button>`;
-        }
-
         // 6. Hesabı silmə – yalnız super admin üçün
         if (canDelete) {
             dropdownItems += `<button class="dropdown-item delete-action danger" data-uid="${user.uid}">
@@ -909,13 +901,11 @@ function renderUsersList() {
             </button>`;
         }
 
-        // 7. İgnor – hər kəs üçün
-        if (canIgnore) {
-            const ignoreLabel = isIgnored ? 'İgnoru qaldır' : 'İgnor et';
-            const ignoreIcon = isIgnored ? 'fa-eye-slash' : 'fa-eye';
-            dropdownItems += `<button class="dropdown-item ignore-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
-                <i class="fa-solid ${ignoreIcon}"></i>
-                <span class="label">${ignoreLabel}</span>
+          // 5. Rol dəyişmə – bütün hallarda (əgər icazə varsa)
+        if (canRole) {
+            dropdownItems += `<button class="dropdown-item role-action" data-uid="${user.uid}" data-role="${user.role || 'user'}">
+                <i class="fa-solid fa-user-gear"></i>
+                <span class="label">Rolu dəyiş</span>
             </button>`;
         }
 
@@ -926,6 +916,16 @@ function renderUsersList() {
                 <span class="label">Whois</span>
             </button>`;
         }
+
+         // 7. İgnor – hər kəs üçün
+        if (canIgnore) {
+            const ignoreLabel = isIgnored ? 'İgnoru qaldır' : 'İgnor et';
+            const ignoreIcon = isIgnored ? 'fa-eye-slash' : 'fa-eye';
+            dropdownItems += `<button class="dropdown-item ignore-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
+                <i class="fa-solid ${ignoreIcon}"></i>
+                <span class="label">${ignoreLabel}</span>
+            </button>`;
+         }
 
         const dropdownHtml = dropdownItems ? `
             <div class="user-actions-wrapper">
