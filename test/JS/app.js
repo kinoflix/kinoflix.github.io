@@ -818,8 +818,9 @@ function renderUsersList() {
         if (myLevel === 4) {
             const isNetworkBanned = user.networkBanned === true;
             const networkBanClass = isNetworkBanned ? 'network-banned' : '';
-            dropdownItems += `<button class="dropdown-item network-ban-action ${networkBanClass}" data-uid="${user.uid}"><i class="fa-solid fa-wifi"></i><span class="label">IP/Cihaz banı</span></button>`;
-        }
+            const networkLabel = isNetworkBanned ? 'IP/Cihaz banını qaldır' : 'IP/Cihaz banı';
+            dropdownItems += `<button class="dropdown-item network-ban-action ${networkBanClass}" data-uid="${user.uid}"><i class="fa-solid fa-wifi"></i><span class="label">${networkLabel}</span></button>`;
+       }
 
         if (canDelete) {
             dropdownItems += `<button class="dropdown-item delete-action danger" data-uid="${user.uid}"><i class="fa-solid fa-user-minus"></i><span class="label">Hesabı sil</span></button>`;
