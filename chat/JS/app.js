@@ -835,6 +835,7 @@ function renderUsersList() {
                 <span class="label">IP/Cihaz banını qaldır</span>
             </button>`;
         }
+        }
         // 2. Temp ban aktivdirsə
         else if (isTempBan && canTempBan) {
             dropdownItems += `<button class="dropdown-item temp-ban-action temp-ban-active" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
