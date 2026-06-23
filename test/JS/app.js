@@ -810,10 +810,11 @@ function renderUsersList() {
 
         // Normal ban funksiyası (admin/superadmin)
         if (canBan) {
-            const banLabel = isTargetBanned ? 'Banı qaldır' : 'Ban et';
-            const banIcon = isTargetBanned ? 'fa-user-check' : 'fa-user-slash';
-            dropdownItems += `<button class="dropdown-item ban-action" data-uid="${user.uid}" data-banned="${isTargetBanned}"><i class="fa-solid ${banIcon}"></i><span class="label">${banLabel}</span></button>`;
-        }
+           const banLabel = isTargetBanned ? 'Banı qaldır' : 'Ban et';
+           const banIcon = isTargetBanned ? 'fa-user-check' : 'fa-user-slash';
+           const banClass = isTargetBanned ? 'ban-action ban-active' : 'ban-action';
+           dropdownItems += `<button class="dropdown-item ${banClass}" data-uid="${user.uid}" data-banned="${isTargetBanned}"><i class="fa-solid ${banIcon}"></i><span class="label">${banLabel}</span></button>`;
+}
      
         if (myLevel === 4) {
             const isNetworkBanned = user.networkBanned === true;
