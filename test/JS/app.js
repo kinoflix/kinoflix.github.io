@@ -791,101 +791,97 @@ function renderUsersList() {
         let dropdownItems = '';
 
         // ================================================================
-        // BAN DÜYMƏLƏRİ (TƏKMİL MƏNTİQ + SIRALAMA)
-        // ================================================================
+// DÜYMƏLƏR (SIRALAMA: temp ban → normal ban → IP ban → sil → rol → whois → ignor)
+// ================================================================
 const isNormalBan = isTargetBanned && !user.banExpires;
 const isTempBan = isTargetBanned && user.banExpires;
 const isNetworkBanned = user.networkBanned === true;
 
-// Bütün mümkün düymələri toplamaq üçün array
-const buttons = [];
+let dropdownItems = '';
 
 // 1. VAXT İLƏ QOV / VAXT BANINI QALDIR
 if (isNetworkBanned) {
     // Network ban aktivdirsə, temp ban düyməsi göstərilmir
 } else if (isTempBan && canTempBan) {
-    buttons.push(`<button class="dropdown-item temp-ban-action temp-ban-active" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
+    dropdownItems += `<button class="dropdown-item temp-ban-action temp-ban-active" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
         <i class="fa-solid fa-clock"></i>
         <span class="label">Vaxt banını qaldır</span>
-    </button>`);
+    </button>`;
 } else if (!isTargetBanned && !isNetworkBanned && canTempBan) {
-    buttons.push(`<button class="dropdown-item temp-ban-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
+    dropdownItems += `<button class="dropdown-item temp-ban-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
         <i class="fa-solid fa-clock"></i>
         <span class="label">Vaxt ilə qov</span>
-    </button>`);
+    </button>`;
 }
 
 // 2. BAN ET / BANI QALDIR
 if (isNetworkBanned) {
     // Network ban aktivdirsə, normal ban düyməsi göstərilmir
 } else if (isTempBan && canBan) {
-    // Temp ban olan şəxsə admin "Ban et" edə bilər
-    buttons.push(`<button class="dropdown-item ban-action" data-uid="${user.uid}" data-banned="false">
+    dropdownItems += `<button class="dropdown-item ban-action" data-uid="${user.uid}" data-banned="false">
         <i class="fa-solid fa-user-slash"></i>
         <span class="label">Ban et</span>
-    </button>`);
+    </button>`;
 } else if (isNormalBan && canBan) {
-    buttons.push(`<button class="dropdown-item ban-action ban-active" data-uid="${user.uid}" data-banned="true">
+    dropdownItems += `<button class="dropdown-item ban-action ban-active" data-uid="${user.uid}" data-banned="true">
         <i class="fa-solid fa-user-check"></i>
         <span class="label">Banı qaldır</span>
-    </button>`);
+    </button>`;
 } else if (!isTargetBanned && !isNetworkBanned && canBan) {
-    buttons.push(`<button class="dropdown-item ban-action" data-uid="${user.uid}" data-banned="false">
+    dropdownItems += `<button class="dropdown-item ban-action" data-uid="${user.uid}" data-banned="false">
         <i class="fa-solid fa-user-slash"></i>
         <span class="label">Ban et</span>
-    </button>`);
+    </button>`;
 }
 
 // 3. IP/CİHAZ BANI / BANINI QALDIR
 if (myLevel === 4) {
     if (isNetworkBanned) {
-        buttons.push(`<button class="dropdown-item network-ban-action network-banned" data-uid="${user.uid}">
+        dropdownItems += `<button class="dropdown-item network-ban-action network-banned" data-uid="${user.uid}">
             <i class="fa-solid fa-wifi"></i>
             <span class="label">IP/Cihaz banını qaldır</span>
-        </button>`);
+        </button>`;
     } else {
-        buttons.push(`<button class="dropdown-item network-ban-action" data-uid="${user.uid}">
+        dropdownItems += `<button class="dropdown-item network-ban-action" data-uid="${user.uid}">
             <i class="fa-solid fa-wifi"></i>
             <span class="label">IP/Cihaz banı</span>
-        </button>`);
+        </button>`;
     }
 }
 
 // 4. HESABI SIL – yalnız super admin üçün
 if (canDelete) {
-    buttons.push(`<button class="dropdown-item delete-action danger" data-uid="${user.uid}">
+    dropdownItems += `<button class="dropdown-item delete-action danger" data-uid="${user.uid}">
         <i class="fa-solid fa-user-minus"></i>
         <span class="label">Hesabı sil</span>
-    </button>`);
+    </button>`;
 }
 
 // 5. ROLU DƏYİŞ – bütün hallarda (əgər icazə varsa)
 if (canRole) {
-    buttons.push(`<button class="dropdown-item role-action" data-uid="${user.uid}" data-role="${user.role || 'user'}">
+    dropdownItems += `<button class="dropdown-item role-action" data-uid="${user.uid}" data-role="${user.role || 'user'}">
         <i class="fa-solid fa-user-gear"></i>
         <span class="label">Rolu dəyiş</span>
-    </button>`);
+    </button>`;
 }
 
 // 6. WHOIS – yalnız super admin üçün
 if (canWhois) {
-    buttons.push(`<button class="dropdown-item whois-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
+    dropdownItems += `<button class="dropdown-item whois-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
         <i class="fa-solid fa-circle-info"></i>
         <span class="label">Whois</span>
-    </button>`);
+    </button>`;
 }
-     // 7. İGNOR – hər kəs üçün
+
+// 7. İGNOR – hər kəs üçün (ƏN AŞAĞI)
 if (canIgnore) {
     const ignoreLabel = isIgnored ? 'İgnoru qaldır' : 'İgnor et';
     const ignoreIcon = isIgnored ? 'fa-eye-slash' : 'fa-eye';
-    buttons.push(`<button class="dropdown-item ignore-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
+    dropdownItems += `<button class="dropdown-item ignore-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
         <i class="fa-solid ${ignoreIcon}"></i>
         <span class="label">${ignoreLabel}</span>
-    </button>`);
+    </button>`;
 }
-
-// Bütün düymələri birləşdir
-const dropdownItems = buttons.join('');
 
 const dropdownHtml = dropdownItems ? `
     <div class="user-actions-wrapper">
