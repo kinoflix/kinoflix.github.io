@@ -873,13 +873,14 @@ function renderUsersList() {
         }
         // 4. Heç bir ban yoxdursa
         else if (!isTargetBanned && !isNetworkBanned) {
-            if (canBan) {
+            
              if (canTempBan) {
                 dropdownItems += `<button class="dropdown-item temp-ban-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
                     <i class="fa-solid fa-clock"></i>
                     <span class="label">Vaxt ilə qov</span>
                 </button>`;
              }
+         if (canBan) {
                 dropdownItems += `<button class="dropdown-item ban-action" data-uid="${user.uid}" data-banned="false">
                     <i class="fa-solid fa-user-slash"></i>
                     <span class="label">Ban et</span>
