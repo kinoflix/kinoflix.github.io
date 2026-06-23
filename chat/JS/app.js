@@ -790,9 +790,38 @@ function renderUsersList() {
 
         let dropdownItems = '';
 
-        // ================================================================
-        // TƏKMİL BAN MƏNTİQİ (YENİ) – qaydalara uyğun dropdown düymələri
-        // ================================================================
+        // ==========================================================================
+        // BAN QAYDALARI (TƏKMİL MƏNTİQ)
+        // ==========================================================================
+        //
+        // 1. NETWORK BAN (IP/Cihaz)
+        //    - Yalnız "IP/Cihaz banını qaldır" düyməsi ilə qaldırılır.
+        //    - Normal ban və temp ban düymələri GÖSTƏRİLMİR.
+        //    - Rol dəyişmə və hesab silmə düymələri GÖSTƏRİLİR.
+        //    - Network ban tətbiq edilərkən aktiv normal ban və ya temp ban varsa,
+        //      onlar avtomatik LƏĞV EDİLİR və yalnız network ban keçərli olur.
+        //
+        // 2. NORMAL BAN
+        //    - Yalnız "Banı qaldır" düyməsi ilə qaldırılır.
+        //    - Temp ban düyməsi GÖSTƏRİLMİR.
+        //    - Network ban (əgər super admin varsa) GÖSTƏRİLƏ BİLƏR.
+        //    - Normal ban tətbiq edilərkən aktiv temp ban varsa, o LƏĞV EDİLİR.
+        //    - Aktiv network ban varsa, normal ban düyməsi artıq görünmədiyi üçün
+        //      normal ban tətbiq edilə bilməz.
+        //    - Rol dəyişmə və hesab silmə GÖSTƏRİLİR.
+        //
+        // 3. TEMP BAN (Vaxt ilə qov)
+        //    - Yalnız "Vaxt banını qaldır" düyməsi ilə qaldırılır.
+        //    - Network ban və normal ban (icazə varsa) GÖSTƏRİLƏ BİLƏR.
+        //    - Aktiv network ban və ya normal ban varsa, temp ban düyməsi GÖSTƏRİLMİR
+        //      (çünki daha ağır ban növü aktivdir).
+        //    - Rol dəyişmə və hesab silmə GÖSTƏRİLİR.
+        //
+        // ==========================================================================
+        // QEYD: Bütün ban növlərində "Rol dəyişmə" və "Hesabı sil" düymələri
+        //       həmişə göstərilir (əgər icazə varsa), çünki bu əməliyyatlar
+        //       istifadəçinin ban statusundan asılı olmayaraq icra oluna bilər.
+        // ==========================================================================
         const isNormalBan = isTargetBanned && !user.banExpires;
         const isTempBan = isTargetBanned && user.banExpires;
 
