@@ -792,12 +792,21 @@ function renderUsersList() {
             dropdownItems += `<button class="dropdown-item ignore-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}"><i class="fa-solid ${ignoreIcon}"></i><span class="label">${ignoreLabel}</span></button>`;
         }
      
-        // Vaxt ilə qov (temp ban) – yalnız normal ban deyilsə göstər
-        // Normal ban: isTargetBanned true və banExpires null (və ya yoxdur)
-        const isNormalBan = isTargetBanned && !user.banExpires;
-        if (canTempBan && !isNormalBan) {
-            dropdownItems += `<button class="dropdown-item temp-ban-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}"><i class="fa-solid fa-clock"></i><span class="label">Vaxt ilə qov</span></button>`;
-        }
+            // ===== UPDATED TEMP BAN LOGIC =====
+           // Vaxt ilə qov (temp ban) – yalnız normal ban deyilsə göstər
+           // Normal ban: isTargetBanned true və banExpires null (və ya yoxdur)
+           const isNormalBan = isTargetBanned && !user.banExpires;
+           const isTempBan = isTargetBanned && user.banExpires;
+           if (canTempBan) {
+               if (isTempBan) {
+               // Əgər istifadəçi artıq temp ban edilibsə, "Vaxt banını qaldır" butonu göstərilir
+               dropdownItems += `<button class="dropdown-item temp-ban-action temp-ban-active" data-uid="${user.uid}" data-name="${escapeHTML(username)}"><i class="fa-solid fa-clock"></i><span class="label">Vaxt banını qaldır</span></button>`;
+           } else if (!isNormalBan) {
+               // Heç bir ban yoxdursa, "Vaxt ilə qov" butonu
+               dropdownItems += `<button class="dropdown-item temp-ban-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}"><i class="fa-solid fa-clock"></i><span class="label">Vaxt ilə qov</span></button>`;
+    }
+    // Normal ban olduqda temp ban butonu ümumiyyətlə göstərilmir
+}
 
         // Normal ban funksiyası (admin/superadmin)
         if (canBan) {
