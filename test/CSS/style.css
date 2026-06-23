@@ -1218,7 +1218,7 @@ body {
 .dropdown-item.temp-ban-action.temp-ban-active:hover .label {
     color: #fff;
 }
-/* IP/Cihaz banı yaşıl rəng (dinamik olaraq əlavə olunacaq) */
+/* IP/Cihaz banı yaşıl rəng (ADDED) */
 .dropdown-item.network-ban-action.network-banned i {
     color: #2ecc71 !important;
 }
@@ -1230,5 +1230,19 @@ body {
     color: #fff !important;
 }
 .dropdown-item.network-ban-action.network-banned:hover .label {
+    color: #fff !important;
+}
+/* ===== NORMAL BAN ACTIVE STYLES (ADDED) ===== */
+.dropdown-item.ban-action.ban-active i {
+    color: #2ecc71;
+}
+.dropdown-item.ban-action.ban-active .label {
+    color: #2ecc71;
+}
+.dropdown-item.ban-action.ban-active:hover i {
+    background: #2ecc71 !important;
+    color: #fff !important;
+}
+.dropdown-item.ban-action.ban-active:hover .label {
     color: #fff !important;
 }
