@@ -810,16 +810,18 @@ function renderUsersList() {
 
         // Normal ban funksiyası (admin/superadmin)
         if (canBan) {
-            const banLabel = isTargetBanned ? 'Banı qaldır' : 'Ban et';
-            const banIcon = isTargetBanned ? 'fa-user-check' : 'fa-user-slash';
-            dropdownItems += `<button class="dropdown-item ban-action" data-uid="${user.uid}" data-banned="${isTargetBanned}"><i class="fa-solid ${banIcon}"></i><span class="label">${banLabel}</span></button>`;
-        }
+           const banLabel = isTargetBanned ? 'Banı qaldır' : 'Ban et';
+           const banIcon = isTargetBanned ? 'fa-user-check' : 'fa-user-slash';
+           const banClass = isTargetBanned ? 'ban-action ban-active' : 'ban-action';
+           dropdownItems += `<button class="dropdown-item ${banClass}" data-uid="${user.uid}" data-banned="${isTargetBanned}"><i class="fa-solid ${banIcon}"></i><span class="label">${banLabel}</span></button>`;
+}
      
         if (myLevel === 4) {
             const isNetworkBanned = user.networkBanned === true;
             const networkBanClass = isNetworkBanned ? 'network-banned' : '';
-            dropdownItems += `<button class="dropdown-item network-ban-action ${networkBanClass}" data-uid="${user.uid}"><i class="fa-solid fa-wifi"></i><span class="label">IP/Cihaz banı</span></button>`;
-        }
+            const networkLabel = isNetworkBanned ? 'IP/Cihaz banını qaldır' : 'IP/Cihaz banı';
+            dropdownItems += `<button class="dropdown-item network-ban-action ${networkBanClass}" data-uid="${user.uid}"><i class="fa-solid fa-wifi"></i><span class="label">${networkLabel}</span></button>`;
+       }
 
         if (canDelete) {
             dropdownItems += `<button class="dropdown-item delete-action danger" data-uid="${user.uid}"><i class="fa-solid fa-user-minus"></i><span class="label">Hesabı sil</span></button>`;
