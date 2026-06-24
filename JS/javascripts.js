@@ -3243,3 +3243,42 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // CHATBOT-SON
+
+// ============================================================
+// AVTOMATİK LOGİN MODAL AÇILIŞI (yalnız login olmayanda)
+// ============================================================
+(function() {
+    // 2 saniyə gözlə
+    setTimeout(function() {
+        // Login düyməsini tap
+        var btn = document.getElementById('authMainBtn');
+        if (!btn) return;
+
+        // Əgər düymədə 'fa-user' ikonu varsa, deməli istifadəçi login deyil
+        var isLoggedOut = btn.innerHTML.indexOf('fa-user') !== -1;
+
+        if (isLoggedOut) {
+            // Əvvəlcə window-da openAuthModal funksiyasını yoxla
+            if (typeof window.openAuthModal === 'function') {
+                window.openAuthModal();
+            } else {
+                // Fallback: birbaşa modalı aç
+                var modal = document.getElementById('authModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    // Tabs-ı login vəziyyətinə gətir (default)
+                    var tabLogin = document.getElementById('tabLogin');
+                    var tabRegister = document.getElementById('tabRegister');
+                    var loginForm = document.getElementById('loginForm');
+                    var registerForm = document.getElementById('registerForm');
+                    if (tabLogin && tabRegister && loginForm && registerForm) {
+                        tabLogin.classList.add('active');
+                        tabRegister.classList.remove('active');
+                        loginForm.classList.add('active');
+                        registerForm.classList.remove('active');
+                    }
+                }
+            }
+        }
+    }, 2000); // 2 saniyə
+})();
