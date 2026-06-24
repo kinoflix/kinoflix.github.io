@@ -474,8 +474,8 @@ scrollBtn.addEventListener("click", () => {
   
 <!-- AI ÇATBOT-SONU -->
 
-  <!-- ========================================================= -->
-<!-- 🔐 AUTH MODAL (Login/Register) – chat.js ilə eyni görünüş -->
+<!-- ========================================================= -->
+<!-- 🔐 AUTH MODAL (Login/Register) – düzəldilmiş versiya     -->
 <!-- ========================================================= -->
 <div id="authModal" class="modal-overlay" style="display:none;">
   <div class="modal-card auth-modal-card">
@@ -484,13 +484,13 @@ scrollBtn.addEventListener("click", () => {
       <button id="closeAuthModal" class="close-modal-btn">&times;</button>
     </div>
     <div class="modal-body auth-modal-body">
-
+ 
       <!-- Tabs -->
       <div class="auth-tabs">
         <button id="tabLogin" class="auth-tab active">Daxil Ol</button>
         <button id="tabRegister" class="auth-tab">Qeydiyyat</button>
       </div>
-
+ 
       <!-- LOGIN FORM -->
       <form id="loginForm" class="auth-form active">
         <div class="input-group">
@@ -509,7 +509,7 @@ scrollBtn.addEventListener("click", () => {
         </div>
         <button type="submit" class="submit-btn">Daxil ol</button>
       </form>
-
+ 
       <!-- REGISTER FORM -->
       <form id="registerForm" class="auth-form">
         <div class="input-group">
@@ -517,7 +517,7 @@ scrollBtn.addEventListener("click", () => {
           <input type="text" id="regUsername" placeholder="İstifadəçi adı (3-10 simvol)" required autocomplete="off">
         </div>
         <div id="usernameCheckMsg" class="check-message"></div>
-
+ 
         <div class="name-row">
           <div class="input-group half">
             <i class="fa-solid fa-user"></i>
@@ -528,12 +528,12 @@ scrollBtn.addEventListener("click", () => {
             <input type="text" id="regLastName" placeholder="Soyadınız" required>
           </div>
         </div>
-
+ 
         <div class="input-group">
           <i class="fa-solid fa-envelope"></i>
           <input type="email" id="regEmail" placeholder="E-poçt ünvanı" required>
         </div>
-
+ 
         <div class="input-group">
           <i class="fa-solid fa-lock"></i>
           <input type="password" id="regPassword" placeholder="Şifrə (Min. 6 simvol)" required>
@@ -541,7 +541,7 @@ scrollBtn.addEventListener("click", () => {
             <i class="fa-solid fa-eye"></i>
           </button>
         </div>
-
+ 
         <div class="input-group">
           <i class="fa-solid fa-lock"></i>
           <input type="password" id="regPasswordConfirm" placeholder="Şifrəni təkrarlayın" required>
@@ -550,23 +550,23 @@ scrollBtn.addEventListener("click", () => {
           </button>
         </div>
         <div id="passwordCheckMsg" class="check-message"></div>
-
+ 
         <button type="submit" class="submit-btn">Qeydiyyatı tamamla</button>
       </form>
-
+ 
       <div class="auth-divider"><span>və ya</span></div>
-
+ 
       <button id="googleAuthBtn" class="google-btn">
         <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
         Google ilə davam et
       </button>
-
+ 
     </div><!-- /.auth-modal-body -->
   </div><!-- /.modal-card -->
 </div><!-- /#authModal -->
-
+ 
 <!-- ========================================================= -->
-<!-- FIREBASE MODUL SCRIPT (əsas səhifə üçün auth) -->
+<!-- FIREBASE MODUL SCRIPT (əsas səhifə üçün auth)            -->
 <!-- ========================================================= -->
 <script type="importmap">
 {
@@ -577,7 +577,7 @@ scrollBtn.addEventListener("click", () => {
   }
 }
 </script>
-
+ 
 <script type="module">
 // ============================================================
 // 1. FIREBASE IMPORTLARI VƏ KONFİQ
@@ -592,31 +592,31 @@ import {
   getFirestore, doc, setDoc, getDoc, serverTimestamp, 
   query, collection, where, getDocs
 } from "firebase/firestore";
-
+ 
 // Konfiqurasiya faylını import et
 import { firebaseConfig } from "https://kinoflix.github.io/chat/JS/config.js";
-
+ 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
-
+ 
 // ============================================================
 // 2. DOM REFERANSLARI
 // ============================================================
 const authModal = document.getElementById('authModal');
 const closeAuthModal = document.getElementById('closeAuthModal');
 const authMainBtn = document.getElementById('authMainBtn');
-
+ 
 const tabLogin = document.getElementById('tabLogin');
 const tabRegister = document.getElementById('tabRegister');
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
-
+ 
 const loginEmailOrUsername = document.getElementById('loginEmailOrUsername');
 const loginPassword = document.getElementById('loginPassword');
 const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
-
+ 
 const regUsername = document.getElementById('regUsername');
 const regFirstName = document.getElementById('regFirstName');
 const regLastName = document.getElementById('regLastName');
@@ -625,9 +625,9 @@ const regPassword = document.getElementById('regPassword');
 const regPasswordConfirm = document.getElementById('regPasswordConfirm');
 const usernameCheckMsg = document.getElementById('usernameCheckMsg');
 const passwordCheckMsg = document.getElementById('passwordCheckMsg');
-
+ 
 const googleBtn = document.getElementById('googleAuthBtn');
-
+ 
 // Toggle şifrə düymələri
 document.getElementById('toggleLoginPassword').addEventListener('click', () => {
   const inp = document.getElementById('loginPassword');
@@ -647,25 +647,69 @@ document.getElementById('toggleRegPasswordConfirm').addEventListener('click', ()
   if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
   else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
 });
-
+ 
 // ============================================================
 // 3. KÖMƏKÇİ FUNKSİYALAR
 // ============================================================
+ 
+// Toast — app.js-dəki showToast ilə eyni sistem (sağ yuxarı)
 function showToast(message, type = "info") {
-  const toastEl = document.getElementById('toast');
-  if (toastEl) {
-    toastEl.textContent = message;
-    toastEl.className = 'toast show';
-    clearTimeout(toastEl._timer);
-    toastEl._timer = setTimeout(() => {
-      toastEl.classList.remove('show');
-      toastEl.style.display = 'none';
-    }, 3000);
-  } else {
-    alert(message);
+  if (!document.getElementById("flix-toast-styles")) {
+    const style = document.createElement("style");
+    style.id = "flix-toast-styles";
+    style.innerHTML = `
+      .flix-toast-container {
+        position: fixed;
+        top: 20px; right: 20px; z-index: 99999;
+        display: flex; flex-direction: column; gap: 10px;
+        pointer-events: none;
+      }
+      .flix-toast {
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(12px);
+        color: #1a1a1a;
+        padding: 14px 20px;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.14);
+        font-size: 14px; font-weight: 500;
+        display: flex; align-items: center; gap: 12px;
+        transform: translateX(120%);
+        animation: flixSlideIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+        border-left: 5px solid #ccc;
+        max-width: 360px;
+        pointer-events: auto;
+      }
+      [data-theme="dark"] .flix-toast {
+        background: rgba(28,28,30,0.94);
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      }
+      .flix-toast.success { border-left-color: #2ecc71; }
+      .flix-toast.error   { border-left-color: #e74c3c; }
+      .flix-toast.warning { border-left-color: #f39c12; }
+      .flix-toast.info    { border-left-color: #3498db; }
+      @keyframes flixSlideIn { to { transform: translateX(0); } }
+      @keyframes flixFadeOut { to { opacity: 0; transform: translateY(-15px); } }
+    `;
+    document.head.appendChild(style);
   }
+  let container = document.querySelector(".flix-toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "flix-toast-container";
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement("div");
+  toast.className = `flix-toast ${type}`;
+  const icons = { success: "✅", error: "❌", warning: "⚠️", info: "💡" };
+  toast.innerHTML = `<span>${icons[type] || "💡"}</span><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = "flixFadeOut 0.4s forwards";
+    setTimeout(() => toast.remove(), 400);
+  }, 4000);
 }
-
+ 
 function localizeFirebaseError(err) {
   switch(err.code) {
     case "auth/email-already-in-use": return "Bu e-poçt ünvanı ilə artıq qeydiyyatdan keçilib.";
@@ -682,7 +726,7 @@ function localizeFirebaseError(err) {
     default: return err.message || "Gözlənilməz texniki xəta baş verdi.";
   }
 }
-
+ 
 function isValidUsername(str) {
   if (!str) return false;
   const regex = /^[A-Za-z0-9](?!.*\.\.)[A-Za-z0-9._]{1,8}[A-Za-z0-9]$/;
@@ -690,7 +734,7 @@ function isValidUsername(str) {
 }
 function normalizeUsername(str) { return str.toLowerCase().trim(); }
 function isValidName(str) { return /^[\p{L}]+(?:[\s][\p{L}]+)*$/u.test(str.trim()); }
-
+ 
 // ============================================================
 // 4. İSTİFADƏÇİ ADI YOXLAMA
 // ============================================================
@@ -705,7 +749,7 @@ async function checkUsernameAvailability(username) {
     return snap.empty;
   } catch { return null; }
 }
-
+ 
 regUsername.addEventListener('input', () => {
   clearTimeout(usernameCheckTimeout);
   const val = regUsername.value.trim();
@@ -732,7 +776,7 @@ regUsername.addEventListener('input', () => {
     }
   }, 400);
 });
-
+ 
 regPasswordConfirm.addEventListener('input', () => {
   const p1 = regPassword.value;
   const p2 = regPasswordConfirm.value;
@@ -745,7 +789,7 @@ regPasswordConfirm.addEventListener('input', () => {
     passwordCheckMsg.className = 'check-message error';
   }
 });
-
+ 
 // ============================================================
 // 5. LOGIN (EMAIL / USERNAME)
 // ============================================================
@@ -769,7 +813,7 @@ async function loginWithEmailOrUsername(identifier, password) {
     throw err;
   }
 }
-
+ 
 // ============================================================
 // 6. AUTH FORM SUBMITLƏR
 // ============================================================
@@ -786,7 +830,7 @@ loginForm.addEventListener('submit', async (e) => {
     showToast(localizeFirebaseError(err), "error");
   }
 });
-
+ 
 registerForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const usernameRaw = regUsername.value.trim();
@@ -796,7 +840,7 @@ registerForm.addEventListener('submit', async (e) => {
   const email = regEmail.value.trim();
   const password = regPassword.value;
   const passwordConfirm = regPasswordConfirm.value;
-
+ 
   if (!isValidUsername(username)) {
     showToast("İstifadəçi adı qaydalara uyğun deyil (3-10 simvol, yalnız A-Z, 0-9, . _, . başda/sonda olmaz, .. olmaz).", "error");
     return;
@@ -817,12 +861,12 @@ registerForm.addEventListener('submit', async (e) => {
     showToast("Şifrələr eyni deyil!", "error");
     return;
   }
-
+ 
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const displayName = `${firstName} ${lastName}`.trim();
     await updateProfile(userCredential.user, { displayName, photoURL: "https://kinoflix.github.io/chat/img/avatar.jpg" });
-
+ 
     await setDoc(doc(db, 'users', userCredential.user.uid), {
       uid: userCredential.user.uid,
       username,
@@ -835,7 +879,7 @@ registerForm.addEventListener('submit', async (e) => {
       isBanned: false,
       createdAt: serverTimestamp()
     });
-
+ 
     registerForm.reset();
     usernameCheckMsg.textContent = '';
     passwordCheckMsg.textContent = '';
@@ -845,7 +889,7 @@ registerForm.addEventListener('submit', async (e) => {
     showToast(localizeFirebaseError(err), "error");
   }
 });
-
+ 
 // ============================================================
 // 7. GOOGLE LOGIN
 // ============================================================
@@ -878,7 +922,7 @@ googleBtn.addEventListener('click', async () => {
     showToast(localizeFirebaseError(err), "error");
   }
 });
-
+ 
 // ============================================================
 // 8. ŞİFRƏ SIFIRLAMA
 // ============================================================
@@ -892,7 +936,7 @@ forgotPasswordBtn.addEventListener('click', async () => {
     showToast(localizeFirebaseError(err), "error");
   }
 });
-
+ 
 // ============================================================
 // 9. TABS (Login / Register)
 // ============================================================
@@ -904,7 +948,7 @@ tabRegister.addEventListener('click', () => {
   tabRegister.classList.add('active'); tabLogin.classList.remove('active');
   registerForm.classList.add('active'); loginForm.classList.remove('active');
 });
-
+ 
 // ============================================================
 // 10. MODAL AÇ / BAĞLA
 // ============================================================
@@ -922,7 +966,7 @@ authModal.addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && authModal.style.display === 'flex') closeAuthModalFunc();
 });
-
+ 
 // ============================================================
 // 11. AUTH STATE İZLƏMƏ VƏ UI YENİLƏMƏ
 // ============================================================
@@ -943,7 +987,7 @@ function updateAuthUI(user) {
     btn.onclick = openAuthModal;
   }
 }
-
+ 
 onAuthStateChanged(auth, (user) => {
   updateAuthUI(user);
   if (user && authModal.style.display === 'flex') {
