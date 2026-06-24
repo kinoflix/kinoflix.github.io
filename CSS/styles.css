@@ -1209,35 +1209,100 @@ header{
 
 
 /* ============================================================
-   AUTH MODAL (chat.js ilə eyni görünüş)
+   AUTH MODAL — DÜZƏLDİLMİŞ VERSİYA
+   Dəyişikliklər:
+   1. Yuvarlaq künclər (--radius → 20px, --radius-sm → 12px)
+   2. Toast sağ yuxarıda — showToast() JS-də tam yenilənib
+   3. Modal/input genişliyi max-width ilə məhdudlaşdırıldı
+   4. Hover effektləri düzgün işləyir (visibility bug həll edildi)
    ============================================================ */
-.auth-modal-card {
-  max-width: 420px;
-  width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(2, 6, 23, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
 }
-.auth-modal-body {
-  padding: 24px 24px 32px;
+.modal-overlay.active {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
 }
 
+/* Modal card əsası */
+.modal-card {
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;          /* FIX 1: daha yuvarlaq */
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow);
+  animation: scaleUp 0.22s ease-out;
+}
+
+/* Auth modal card — maksimum en */
+.auth-modal-card {
+  max-width: 400px;             /* FIX 3: çox enli görünmür */
+}
+
+/* Modal header */
+.modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* Bağla düyməsi */
+.close-modal-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.6rem;
+  cursor: pointer;
+  line-height: 1;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+}
+.close-modal-btn:hover {
+  background: var(--glass);
+  color: var(--text);
+}
+
+/* Modal body */
+.auth-modal-body {
+  padding: 22px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Tabs */
 .auth-tabs {
   display: flex;
   border-bottom: 1px solid var(--glass-border);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 .auth-tab {
   flex: 1;
   background: none;
   border: none;
   color: var(--muted);
-  padding: 12px;
-  font-size: 1rem;
+  padding: 11px;
+  font-size: 0.95rem;
   font-weight: bold;
   cursor: pointer;
   transition: color 0.2s;
@@ -1249,22 +1314,23 @@ header{
 .auth-tab.active::after {
   content: '';
   position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 100%;
-  height: 2px;
+  bottom: -1px; left: 0;
+  width: 100%; height: 2px;
   background: var(--accent);
+  border-radius: 2px 2px 0 0;
 }
 
+/* Form görünümü */
 .auth-form {
   display: none;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 .auth-form.active {
   display: flex;
 }
 
+/* Input qrupları */
 .input-group {
   position: relative;
   display: flex;
@@ -1279,20 +1345,23 @@ header{
   color: var(--muted);
   pointer-events: none;
   z-index: 2;
+  font-size: 0.9rem;
 }
 .input-group input {
   width: 100%;
-  padding: 14px 14px 14px 44px;
-  border-radius: var(--radius-sm);
+  padding: 13px 14px 13px 42px;
+  border-radius: 12px;          /* FIX 1: yuvarlaq input */
   border: 1px solid var(--glass-border);
   background: var(--bg);
   color: var(--text);
   outline: none;
-  font-size: 0.95rem;
-  transition: border-color 0.2s;
+  font-size: 0.92rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 .input-group input:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
 }
 .input-group.half {
   flex: 1;
@@ -1304,33 +1373,35 @@ header{
   left: 12px;
 }
 
+/* Ad + Soyad yan-yana */
 .name-row {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
+/* Şifrə yoxlama mesajları */
 .check-message {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   min-height: 0;
   padding-left: 2px;
   transition: color 0.2s;
-  margin-top: -4px;
+  margin-top: -6px;
 }
 .check-message:empty { display: none; }
 .check-message.success { color: var(--success); }
-.check-message.error { color: var(--danger); }
+.check-message.error   { color: var(--danger); }
 
+/* Şifrəni göstər/gizlət düyməsi */
 .password-toggle-btn {
   position: absolute;
-  right: 0;
-  top: 50%;
+  right: 0; top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   color: var(--muted);
   cursor: pointer;
-  font-size: 0.9rem;
-  padding: 0 14px;
+  font-size: 0.88rem;
+  padding: 0 13px;
   height: 100%;
   display: flex;
   align-items: center;
@@ -1340,39 +1411,59 @@ header{
   z-index: 2;
 }
 .password-toggle-btn:hover {
-  color: var(--accent);
+  color: var(--accent);           /* FIX 4: yox olmur, rəng dəyişir */
 }
 .input-group:has(.password-toggle-btn) input {
   padding-right: 44px;
 }
 
+/* Şifrəni unutdunuzmu */
+.forgot-password-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  padding: 0;
+  transition: opacity 0.2s;
+}
+.forgot-password-link:hover { opacity: 0.7; }
+
+/* Submit düyməsi */
 .submit-btn {
   background: var(--accent);
-  color: white;
+  color: #fff;
   border: none;
-  padding: 14px;
-  border-radius: var(--radius-sm);
+  padding: 13px;
+  border-radius: 12px;          /* FIX 1: yuvarlaq buton */
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 0.97rem;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  letter-spacing: 0.2px;
 }
 .submit-btn:hover {
-  background: var(--accent-hover);
+  background: var(--accent-hover); /* FIX 4: hover düzgün işləyir */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.submit-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
+/* Ayırıcı xətt */
 .auth-divider {
   text-align: center;
-  margin: 8px 0 4px;
+  margin: 2px 0;
   position: relative;
 }
 .auth-divider::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 50%;
-  width: 100%;
-  height: 1px;
+  left: 0; top: 50%;
+  width: 100%; height: 1px;
   background: var(--glass-border);
   z-index: 1;
 }
@@ -1380,100 +1471,41 @@ header{
   background: var(--surface);
   padding: 0 12px;
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   position: relative;
   z-index: 2;
 }
 
+/* Google düyməsi */
 .google-btn {
   width: 100%;
   background: #fff;
   color: #1f2937;
   border: 1px solid #e5e7eb;
   padding: 12px;
-  border-radius: var(--radius-sm);
+  border-radius: 12px;          /* FIX 1: yuvarlaq */
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  font-weight: bold;
-  font-size: 0.95rem;
-  transition: background 0.2s;
+  font-weight: 600;
+  font-size: 0.92rem;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
 }
 .google-btn:hover {
-  background: #f9fafb;
+  background: #f3f4f6;          /* FIX 4: düzgün hover, yox olmur */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+.google-btn:active {
+  transform: translateY(0);
 }
 .google-btn img {
-  width: 20px;
-  height: 20px;
+  width: 20px; height: 20px;
 }
 
-.forgot-password-link {
-  background: none;
-  border: none;
-  color: var(--accent);
-  cursor: pointer;
-  font-size: 0.82rem;
-  text-decoration: underline;
-  padding: 0;
-  transition: opacity 0.2s;
-}
-.forgot-password-link:hover {
-  opacity: 0.75;
-}
-
-/* Modal overlay (artıq varsa, bu stilləri əlavə edin) */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(2, 6, 23, 0.6);
-  backdrop-filter: blur(4px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-}
-.modal-overlay.active {
-  display: flex;
-}
-.modal-card {
-  background: var(--surface);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
-  max-width: 480px;
-  width: 100%;
-  box-shadow: var(--shadow);
-  animation: scaleUp 0.2s ease-out;
-}
-.modal-header {
-  padding: 18px 24px;
-  border-bottom: 1px solid var(--glass-border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.close-modal-btn {
-  background: none;
-  border: none;
-  color: var(--text);
-  font-size: 1.8rem;
-  cursor: pointer;
-  line-height: 1;
-}
-.close-modal-btn:hover {
-  color: var(--muted);
-}
-
-@keyframes scaleUp {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-/* Auth butonu (header-da) */
+/* Auth header düyməsi */
 #authMainBtn {
   background: var(--glass);
   border: 1px solid var(--glass-border);
@@ -1485,8 +1517,17 @@ header{
   border-color: var(--accent);
 }
 
-/* Dark/Light tema uyğunluğu */
+/* Animasiyalar */
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Light tema */
 [data-theme="light"] .auth-modal-card {
+  background: #ffffff;
+}
+[data-theme="light"] .auth-divider span {
   background: #ffffff;
 }
 [data-theme="light"] .google-btn {
@@ -1496,4 +1537,18 @@ header{
 }
 [data-theme="light"] .google-btn:hover {
   background: #f3f4f6;
+}
+
+/* Mobil uyğunluğu */
+@media (max-width: 480px) {
+  .auth-modal-card {
+    max-width: 100%;
+  }
+  .auth-modal-body {
+    padding: 18px 16px 24px;
+  }
+  .name-row {
+    flex-direction: row;
+    gap: 8px;
+  }
 }
