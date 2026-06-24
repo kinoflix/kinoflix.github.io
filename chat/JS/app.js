@@ -827,89 +827,94 @@ function renderUsersList() {
         const isNormalBan = isTargetBanned && !user.banExpires;
         const isTempBan = isTargetBanned && user.banExpires;
 
-        // 1. Əgər network ban aktivdirsə, yalnız onu qaldırmaq olar
+        
+        // BİRİNCİ HİSSƏ: SSENARİLƏRƏ GÖRƏ BAN BUTONLARI
+        // Ssenari 1: Əgər network ban aktivdirsə:
         if (isNetworkBanned) {
         if (myLevel === 4) {
             dropdownItems += `<button class="dropdown-item network-ban-action network-banned" data-uid="${user.uid}">
                 <i class="fa-solid fa-wifi"></i>
-                <span class="label">IP/Cihaz banını qaldır</span>
+                <span class="label">IP və Cihazının banını aç</span>
             </button>`;
         }
         }
-        // 2. Temp ban aktivdirsə
+        // Ssenari 2: Əgər Temp ban aktivdirsə:
         else if (isTempBan && canTempBan) {
             dropdownItems += `<button class="dropdown-item temp-ban-action temp-ban-active" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
                 <i class="fa-solid fa-clock"></i>
-                <span class="label">Vaxt banını qaldır</span>
+                <span class="label">Müddətli banını aç</span>
             </button>`;
             // Temp ban olan şəxsə admin "Ban et" edə bilər (normal ban tətbiq etmək üçün)
             if (canBan) {
                 dropdownItems += `<button class="dropdown-item ban-action" data-uid="${user.uid}" data-banned="false">
                     <i class="fa-solid fa-user-slash"></i>
-                    <span class="label">Ban et</span>
+                    <span class="label">Müddətsiz ban et</span>
                 </button>`;
             }
             // Super admin "IP/Cihaz banı" tətbiq edə bilər
             if (myLevel === 4) {
                 dropdownItems += `<button class="dropdown-item network-ban-action" data-uid="${user.uid}">
                     <i class="fa-solid fa-wifi"></i>
-                    <span class="label">IP/Cihaz banı</span>
+                    <span class="label">IP cə Cihazını ban et</span>
                 </button>`;
             }
         }
-        // 3. Normal ban aktivdirsə
+        // Ssenari 3: Əgər Normal ban aktivdirsə:
         else if (isNormalBan && canBan) {
             dropdownItems += `<button class="dropdown-item ban-action ban-active" data-uid="${user.uid}" data-banned="true">
                 <i class="fa-solid fa-user-check"></i>
-                <span class="label">Banı qaldır</span>
+                <span class="label">Müddətsiz banını aç</span>
             </button>`;
             // Super admin "IP/Cihaz banı" tətbiq edə bilər
             if (myLevel === 4) {
                 dropdownItems += `<button class="dropdown-item network-ban-action" data-uid="${user.uid}">
                     <i class="fa-solid fa-wifi"></i>
-                    <span class="label">IP/Cihaz banı</span>
+                    <span class="label">IP və Cihazını ban et</span>
                 </button>`;
             }
         }
-        // 4. Heç bir ban yoxdursa
+        // Ssenari 4: Heç bir ban yoxdursa:
         else if (!isTargetBanned && !isNetworkBanned) {
-            if (canBan) {
-                dropdownItems += `<button class="dropdown-item ban-action" data-uid="${user.uid}" data-banned="false">
-                    <i class="fa-solid fa-user-slash"></i>
-                    <span class="label">Ban et</span>
-                </button>`;
-            }
             if (canTempBan) {
                 dropdownItems += `<button class="dropdown-item temp-ban-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
                     <i class="fa-solid fa-clock"></i>
-                    <span class="label">Vaxt ilə qov</span>
+                    <span class="label">Müddətli ban et</span>
                 </button>`;
             }
+         
+            if (canBan) {
+                dropdownItems += `<button class="dropdown-item ban-action" data-uid="${user.uid}" data-banned="false">
+                    <i class="fa-solid fa-user-slash"></i>
+                    <span class="label">Müddətsiz ban et</span>
+                </button>`;
+            }
+            
             if (myLevel === 4) {
                 dropdownItems += `<button class="dropdown-item network-ban-action" data-uid="${user.uid}">
                     <i class="fa-solid fa-wifi"></i>
-                    <span class="label">IP/Cihaz banı</span>
+                    <span class="label">IP və Cihazını ban et</span>
                 </button>`;
             }
         }
+        // İKİNCİ HİSSƏ: MÜSTƏQİL-ŞƏRTSİZ BUTONLAR
+        // 1. Hesabı silmə – yalnız super admin üçün
 
-        // 5. Rol dəyişmə – bütün hallarda (əgər icazə varsa)
-        if (canRole) {
-            dropdownItems += `<button class="dropdown-item role-action" data-uid="${user.uid}" data-role="${user.role || 'user'}">
-                <i class="fa-solid fa-user-gear"></i>
-                <span class="label">Rolu dəyiş</span>
-            </button>`;
-        }
-
-        // 6. Hesabı silmə – yalnız super admin üçün
-        if (canDelete) {
+       if (canDelete) {
             dropdownItems += `<button class="dropdown-item delete-action danger" data-uid="${user.uid}">
                 <i class="fa-solid fa-user-minus"></i>
                 <span class="label">Hesabı sil</span>
             </button>`;
         }
 
-        // 7. İgnor – hər kəs üçün
+        // 2. Rol dəyişmə – bütün hallarda (əgər icazə varsa)
+       if (canRole) {
+            dropdownItems += `<button class="dropdown-item role-action" data-uid="${user.uid}" data-role="${user.role || 'user'}">
+                <i class="fa-solid fa-user-gear"></i>
+                <span class="label">Rolu dəyiş</span>
+            </button>`;
+        }
+
+        // 3. İgnor – hər kəs üçün
         if (canIgnore) {
             const ignoreLabel = isIgnored ? 'İgnoru qaldır' : 'İgnor et';
             const ignoreIcon = isIgnored ? 'fa-eye-slash' : 'fa-eye';
@@ -919,7 +924,7 @@ function renderUsersList() {
             </button>`;
         }
 
-        // 8. Whois – yalnız super admin üçün
+        // 4. Whois – yalnız super admin üçün
         if (canWhois) {
             dropdownItems += `<button class="dropdown-item whois-action" data-uid="${user.uid}" data-name="${escapeHTML(username)}">
                 <i class="fa-solid fa-circle-info"></i>
