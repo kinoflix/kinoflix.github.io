@@ -855,7 +855,7 @@ function renderUsersList() {
             if (myLevel === 4) {
                 dropdownItems += `<button class="dropdown-item network-ban-action" data-uid="${user.uid}">
                     <i class="fa-solid fa-wifi"></i>
-                    <span class="label">IP cə Cihazını ban et</span>
+                    <span class="label">IP və Cihazını ban et</span>
                 </button>`;
             }
         }
