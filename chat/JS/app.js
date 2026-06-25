@@ -1707,7 +1707,7 @@ async function handleNetworkBan(targetUid) {
             if (data.lastIp) await setDoc(doc(db, "blacklist", data.lastIp), banPayload);
             if (data.lastDevice) await setDoc(doc(db, "blacklist", data.lastDevice), banPayload);
             await setDoc(doc(db, "blacklist", targetUid), banPayload);
-            await setDoc(doc(db, "users", targetUid), { isBanned: false, networkBanned: true, banExpires: null }, { merge: true });
+            await setDoc(doc(db, "users", targetUid), { isBanned: true, networkBanned: true, banExpires: null }, { merge: true });
             showToast("İstifadəçi şəbəkə səviyyəsində uğurla banlandı!", "success");
         }
         renderUsersList();
@@ -1993,6 +1993,8 @@ setupEmojiButton(document.getElementById('adminEmojiBtn'), document.getElementBy
 document.addEventListener('click', () => {
     document.querySelectorAll('.emoji-picker-panel').forEach(p => p.classList.add('hidden'));
 });
+
+
 
 /* ==========================================================================
  20. GHOST HESAB TƏMİZLƏMƏ (Heartbeat sistemi)
