@@ -221,6 +221,10 @@ header{
 .icon-btn i {
   font-size: 20px; /* İkonun ölçüsü */
 }
+/* Account İkonun ölçüsü */
+.icon-btn .fa-circle-user {
+  font-size: 25px; 
+}
 
 /* --- TEMA DÜYMƏSİ ÜÇÜN ÖZƏL (Sənin istədiyin KINOFLIX+ stili) --- */
 #themeToggle {
