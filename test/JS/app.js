@@ -1802,12 +1802,13 @@ async function initializeChatSession(user) {
     const userDoc = await getDoc(doc(db, 'users', user.uid));
     if (userDoc.exists()) {
         currentUserData = userDoc.data();
-        if (currentUserData.isBanned === true) {
-            showToast("Sistemə daxil olmağa icazəniz yoxdur. Sizin hesabınız ban edilib!", "error");
-            await signOut(auth);
-            setTimeout(() => { window.location.reload(); }, 2000);
-            return;
-        }
+        
+if (currentUserData.isBanned === true) {
+    showToast("Sistemə daxil olmağa icazəniz yoxdur. Sizin hesabınız ban edilib!", "error");
+    await new Promise(r => setTimeout(r, 2000)); // toastın görünməsi üçün gözlə
+    await signOut(auth);
+    return;
+}
     } else {
         currentUserData = {
             role: 'user',
@@ -1832,14 +1833,14 @@ async function initializeChatSession(user) {
             showToast("Ban müddətiniz bitdi, artıq daxil ola bilərsiniz.", "success");
         } else {
             showToast(`Siz ${formatDuration(Math.round((expires - new Date()) / 60000))} müddətinə banlandınız!`, "error");
+            await new Promise(r => setTimeout(r, 2000));
             await signOut(auth);
-            setTimeout(() => { window.location.reload(); }, 2000);
             return;
         }
     } else if (currentUserData.isBanned) {
         showToast("Hesabınız ban edildi!", "error");
+        await new Promise(r => setTimeout(r, 2000));
         await signOut(auth);
-        setTimeout(() => { window.location.reload(); }, 2000);
         return;
     }
 
