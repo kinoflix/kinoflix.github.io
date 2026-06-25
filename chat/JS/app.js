@@ -1732,15 +1732,14 @@ function startSelfDestructListener(currentUserObj) {
                 showToast("Ban müddətiniz bitdi, artıq daxil ola bilərsiniz.", "success");
                 return;
             } else {
-                showToast(`Siz ${formatDuration(Math.round((expires - new Date()) / 60000))} müddətinə banlandınız!`, "error");
-                await signOut(auth);
-                setTimeout(() => { window.location.reload(); }, 2000);
+                const remaining = formatDuration(Math.round((expires - new Date()) / 60000));
+                document.body.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;height:100dvh;background:radial-gradient(circle at center,#1a0b12 0%,#08101a 100%);color:#e74c3c;font-family:'Varela Round',sans-serif;text-align:center;padding:20px;box-sizing:border-box;"><div style="background:rgba(231,76,60,0.05);border:1px solid rgba(231,76,60,0.2);padding:40px;border-radius:24px;box-shadow:0 20px 50px rgba(0,0,0,0.5);max-width:450px;width:100%;"><h2 style="margin:0 0 15px 0;font-size:24px;color:#fff;">MÜVƏQQƏTİ BAN</h2><p style="color:#94a3b8;margin:0;font-size:15px;line-height:1.6;">Siz <strong style="color:#e74c3c;">${remaining}</strong> müddətinə banlandınız.</p></div></div>`;
+                await signOut(auth).catch(() => {});
                 return;
             }
         } else if (data.isBanned) {
-            showToast("Hesabınız ban edildi!", "error");
-            await signOut(auth);
-            setTimeout(() => { window.location.reload(); }, 2000);
+            document.body.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;height:100dvh;background:radial-gradient(circle at center,#1a0b12 0%,#08101a 100%);color:#e74c3c;font-family:'Varela Round',sans-serif;text-align:center;padding:20px;box-sizing:border-box;"><div style="background:rgba(231,76,60,0.05);border:1px solid rgba(231,76,60,0.2);padding:40px;border-radius:24px;box-shadow:0 20px 50px rgba(0,0,0,0.5);max-width:450px;width:100%;"><h2 style="margin:0 0 15px 0;font-size:24px;color:#fff;">GİRİŞ QADAĞANDIR</h2><p style="color:#94a3b8;margin:0;font-size:15px;line-height:1.6;">Hesabınız ban edilib. Ətraflı məlumat üçün administrasiya ilə əlaqə saxlayın.</p></div></div>`;
+            await signOut(auth).catch(() => {});
             return;
         }
     });
@@ -1774,10 +1773,9 @@ async function initializeChatSession(user) {
     const userDoc = await getDoc(doc(db, 'users', user.uid));
     if (userDoc.exists()) {
         currentUserData = userDoc.data();
-        if (currentUserData.isBanned === true) {
-            showToast("Sistemə daxil olmağa icazəniz yoxdur. Sizin hesabınız ban edilib!", "error");
-            await signOut(auth);
-            setTimeout(() => { window.location.reload(); }, 2000);
+        if (currentUserData.isBanned === true && !currentUserData.banExpires) {
+            document.body.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;height:100dvh;background:radial-gradient(circle at center,#1a0b12 0%,#08101a 100%);color:#e74c3c;font-family:'Varela Round',sans-serif;text-align:center;padding:20px;box-sizing:border-box;"><div style="background:rgba(231,76,60,0.05);border:1px solid rgba(231,76,60,0.2);padding:40px;border-radius:24px;box-shadow:0 20px 50px rgba(0,0,0,0.5);max-width:450px;width:100%;"><h2 style="margin:0 0 15px 0;font-size:24px;color:#fff;">GİRİŞ QADAĞANDIR</h2><p style="color:#94a3b8;margin:0;font-size:15px;line-height:1.6;">Hesabınız ban edilib. Ətraflı məlumat üçün administrasiya ilə əlaqə saxlayın.</p></div></div>`;
+            await signOut(auth).catch(() => {});
             return;
         }
     } else {
@@ -1803,15 +1801,14 @@ async function initializeChatSession(user) {
             currentUserData.banExpires = null;
             showToast("Ban müddətiniz bitdi, artıq daxil ola bilərsiniz.", "success");
         } else {
-            showToast(`Siz ${formatDuration(Math.round((expires - new Date()) / 60000))} müddətinə banlandınız!`, "error");
-            await signOut(auth);
-            setTimeout(() => { window.location.reload(); }, 2000);
+            const remaining = formatDuration(Math.round((expires - new Date()) / 60000));
+            document.body.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;height:100dvh;background:radial-gradient(circle at center,#1a0b12 0%,#08101a 100%);color:#e74c3c;font-family:'Varela Round',sans-serif;text-align:center;padding:20px;box-sizing:border-box;"><div style="background:rgba(231,76,60,0.05);border:1px solid rgba(231,76,60,0.2);padding:40px;border-radius:24px;box-shadow:0 20px 50px rgba(0,0,0,0.5);max-width:450px;width:100%;"><h2 style="margin:0 0 15px 0;font-size:24px;color:#fff;">MÜVƏQQƏTİ BAN</h2><p style="color:#94a3b8;margin:0;font-size:15px;line-height:1.6;">Siz <strong style="color:#e74c3c;">${remaining}</strong> müddətinə banlandınız.</p></div></div>`;
+            await signOut(auth).catch(() => {});
             return;
         }
     } else if (currentUserData.isBanned) {
-        showToast("Hesabınız ban edildi!", "error");
-        await signOut(auth);
-        setTimeout(() => { window.location.reload(); }, 2000);
+        document.body.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;height:100dvh;background:radial-gradient(circle at center,#1a0b12 0%,#08101a 100%);color:#e74c3c;font-family:'Varela Round',sans-serif;text-align:center;padding:20px;box-sizing:border-box;"><div style="background:rgba(231,76,60,0.05);border:1px solid rgba(231,76,60,0.2);padding:40px;border-radius:24px;box-shadow:0 20px 50px rgba(0,0,0,0.5);max-width:450px;width:100%;"><h2 style="margin:0 0 15px 0;font-size:24px;color:#fff;">GİRİŞ QADAĞANDIR</h2><p style="color:#94a3b8;margin:0;font-size:15px;line-height:1.6;">Hesabınız ban edilib. Ətraflı məlumat üçün administrasiya ilə əlaqə saxlayın.</p></div></div>`;
+        await signOut(auth).catch(() => {});
         return;
     }
 
