@@ -2070,7 +2070,18 @@ document.addEventListener('click', () => {
 
 
 /* ==========================================================================
- 20. GHOST HESAB TƏMİZLƏMƏ (Heartbeat sistemi)
+ GHOST HESABLARIN AVTOMATİK TƏMİZLƏNMƏSİ (PATCH) — v4
+ --------------------------------------------------------------------------
+ 1) Hər istifadəçi öz heartbeat-ini yazır (presence-dən AYRI node-da)
+ 2) Admin/super_admin hər 5 dəqiqədə presence+heartbeat müqayisə edib
+    stale (heartbeat-i kəsilmiş) hesabları offline edir
+ 3) Ban olunma anında (Firestore isBanned: true) presence DƏRHAL offline
+    edilir — toggleBanUser() və ya network-ban koduna TOXUNMADAN, sadəcə
+    isBanned dəyişikliyini canlı dinləməklə
+ 4) __cleanLegacyGhosts() — patch-dən əvvəlki heartbeat-siz qeydlər üçün
+    bir dəfəlik əl ilə təmizləmə (konsoldan)
+ 5) "Toplu offlayn et" düyməsi — yalnız admin+ görür, sağ alt küncdə üzən
+    düymə, eyni təmizləməni saytın özündən, konsolsuz işə salır
  ========================================================================== */
 (function () {
     const HEARTBEAT_INTERVAL_MS = 2 * 60 * 1000;
@@ -2081,47 +2092,82 @@ document.addEventListener('click', () => {
 
     let sweepRunning = false;
 
+    // --- 1) HƏR İSTİFADƏÇİ: öz heartbeat-ini yazır ---
     function sendHeartbeat() {
-        if (!currentUser) return;
+        if (!currentUser) {
+            console.log('[heartbeat] currentUser yoxdur, yazılmadı');
+            return;
+        }
         set(ref(rtdb, `heartbeats/${currentUser.uid}`), rtdbTimestamp())
+            .then(() => console.log('[heartbeat] yazıldı:', currentUser.uid))
             .catch((err) => console.error('[heartbeat] XƏTA:', err.code || err.message));
     }
     setTimeout(sendHeartbeat, FIRST_HEARTBEAT_DELAY_MS);
     setInterval(sendHeartbeat, HEARTBEAT_INTERVAL_MS);
     window.__debugSendHeartbeat = sendHeartbeat;
 
+    // --- 2) ADMIN/SUPER_ADMIN: presence + heartbeats müqayisəsi ---
     function readOnce(path) {
         return new Promise((resolve, reject) => {
-            onValue(ref(rtdb, path), (snap) => resolve(snap.val() || {}), (err) => reject(err), { onlyOnce: true });
+            onValue(
+                ref(rtdb, path),
+                (snap) => resolve(snap.val() || {}),
+                (err) => reject(err),
+                { onlyOnce: true }
+            );
         });
     }
 
     async function sweepGhostAccounts() {
-        if (!currentUser || !currentUserData) return;
-        if (getRoleLevel(currentUserData.role) < 3) return;
-        if (sweepRunning) return;
+        console.log('--- [ghost-sweep] başladı ---');
+        console.log('[ghost-sweep] currentUser:', currentUser?.uid, '| role:', currentUserData?.role);
+
+        if (!currentUser || !currentUserData) { console.log('[ghost-sweep] dayandı: login yoxdur'); return; }
+        if (typeof getRoleLevel !== 'function') { console.log('[ghost-sweep] dayandı: getRoleLevel tapılmadı'); return; }
+        if (getRoleLevel(currentUserData.role) < 3) { console.log('[ghost-sweep] dayandı: admin+ deyil'); return; }
+        if (sweepRunning) { console.log('[ghost-sweep] dayandı: artıq işləyir'); return; }
         sweepRunning = true;
 
         try {
             const presenceData = await readOnce('presence');
+            console.log('[ghost-sweep] presence oxundu, uid sayı:', Object.keys(presenceData).length, presenceData);
+
             const heartbeatData = await readOnce('heartbeats');
+            console.log('[ghost-sweep] heartbeats oxundu, uid sayı:', Object.keys(heartbeatData).length, heartbeatData);
+
             const now = Date.now();
+            let ghostCount = 0;
 
             for (const uid of Object.keys(presenceData)) {
                 const p = presenceData[uid];
                 const lastBeat = heartbeatData[uid];
+                const ageSec = lastBeat ? Math.round((now - lastBeat) / 1000) : null;
+
+                console.log(
+                    `[ghost-sweep] uid=${uid} status=${p?.status} heartbeat=${lastBeat ? new Date(lastBeat).toLocaleTimeString() : 'YOXDUR'} yaş=${ageSec !== null ? ageSec + 's' : '-'}`
+                );
+
                 if (!p || (p.status !== 'online' && p.status !== 'away')) continue;
-                if (!lastBeat) continue;
+                if (!lastBeat) { console.log(`[ghost-sweep]   -> keçir: heartbeat yoxdur (köhnə klient ola bilər)`); continue; }
+
                 if (now - lastBeat > STALE_THRESHOLD_MS) {
+                    ghostCount++;
+                    console.log(`[ghost-sweep]   -> GHOST aşkarlandı, offline edilir: ${uid}`);
                     set(ref(rtdb, `presence/${uid}`), {
                         status: 'offline',
                         lastChanged: rtdbTimestamp(),
                         typingTo: null
-                    }).catch((err) => console.error('[ghost-sweep] yazış xətası:', uid, err.code || err.message));
+                    })
+                    .then(() => console.log(`[ghost-sweep]   -> YAZILDI (offline): ${uid}`))
+                    .catch((err) => console.error(`[ghost-sweep]   -> YAZIŞ XƏTASI: ${uid}`, err.code || err.message));
+                } else {
+                    console.log(`[ghost-sweep]   -> hələ stale deyil (threshold: ${STALE_THRESHOLD_MS/1000}s)`);
                 }
             }
+
+            console.log(`[ghost-sweep] bitdi. ghost sayı: ${ghostCount}`);
         } catch (e) {
-            console.error('[ghost-sweep] XƏTA:', e.code || e.message);
+            console.error('[ghost-sweep] ÜMUMİ XƏTA:', e.code || e.message);
         } finally {
             sweepRunning = false;
         }
@@ -2131,28 +2177,124 @@ document.addEventListener('click', () => {
     setInterval(sweepGhostAccounts, SWEEP_INTERVAL_MS);
     window.__debugGhostSweep = sweepGhostAccounts;
 
+    // --- 3) ANINDA REAKSİYA: ban olunan zaman presence-i DƏRHAL offline et ---
+    // toggleBanUser() və ya network-ban kodunu wrap/edit etmirik — sadəcə
+    // Firestore-da isBanned === true olan istifadəçiləri CANLI dinləyirik.
+    // Bir uid bu sorğuya YENİ daxil olduğu an (yəni indicə banlandığı an),
+    // onun RTDB presence-i paralel olaraq offline yazılır.
     let banWatcherActive = false;
     function startBanWatcher() {
         if (banWatcherActive) return;
         if (!currentUser || !currentUserData) return;
-        if (getRoleLevel(currentUserData.role) < 3) return;
+        if (typeof getRoleLevel !== 'function' || getRoleLevel(currentUserData.role) < 3) return;
         banWatcherActive = true;
 
-        onSnapshot(query(collection(db, 'users'), where('isBanned', '==', true)), (snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-                if (change.type !== 'added') return;
-                const uid = change.doc.id;
-                set(ref(rtdb, `presence/${uid}`), {
-                    status: 'offline',
-                    lastChanged: rtdbTimestamp(),
-                    typingTo: null
-                }).catch((err) => console.error('[ban-watcher] yazış xətası:', uid, err.code || err.message));
-            });
-        }, (err) => console.error('[ban-watcher] dinləmə xətası:', err.code || err.message));
+        onSnapshot(
+            query(collection(db, 'users'), where('isBanned', '==', true)),
+            (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type !== 'added') return; // yalnız TƏZƏ banlananlar
+                    const uid = change.doc.id;
+                    console.log('[ban-watcher] yeni ban aşkarlandı, presence offline edilir:', uid);
+                    set(ref(rtdb, `presence/${uid}`), {
+                        status: 'offline',
+                        lastChanged: rtdbTimestamp(),
+                        typingTo: null
+                    })
+                    .then(() => console.log('[ban-watcher] YAZILDI (offline):', uid))
+                    .catch((err) => console.error('[ban-watcher] yazış xətası:', uid, err.code || err.message));
+                });
+            },
+            (err) => console.error('[ban-watcher] dinləmə xətası:', err.code || err.message)
+        );
+        console.log('[ban-watcher] aktiv edildi');
     }
 
+    // currentUser/currentUserData asinxron yükləndiyi üçün hazır olana qədər yoxlayırıq
     const banWatcherInit = setInterval(() => {
-        if (currentUser && currentUserData) { startBanWatcher(); if (banWatcherActive) clearInterval(banWatcherInit); }
+        if (currentUser && currentUserData) {
+            startBanWatcher();
+            if (banWatcherActive) clearInterval(banWatcherInit);
+        }
+    }, 3000);
+
+    // --- 4) BİR DƏFƏLİK TƏMİZLƏMƏ: patch-dən ƏVVƏLKİ heartbeat-siz qeydlər ---
+    // Həm konsoldan (__cleanLegacyGhosts()), həm də aşağıdakı düymədən çağırılır
+    async function runCleanLegacyGhosts() {
+        if (!currentUser || !currentUserData || getRoleLevel(currentUserData.role) < 3) {
+            console.log('[clean-legacy] dayandı: admin+ deyil');
+            return 0;
+        }
+        const presenceData = await readOnce('presence');
+        const heartbeatData = await readOnce('heartbeats');
+        let count = 0;
+
+        for (const uid of Object.keys(presenceData)) {
+            const p = presenceData[uid];
+            if (!p || (p.status !== 'online' && p.status !== 'away')) continue;
+            if (heartbeatData[uid]) continue; // heartbeat varsa - normal sweep-ə həvalə olunub, toxunma
+
+            count++;
+            console.log('[clean-legacy] offline edilir:', uid);
+            await set(ref(rtdb, `presence/${uid}`), {
+                status: 'offline',
+                lastChanged: rtdbTimestamp(),
+                typingTo: null
+            }).catch((err) => console.error('[clean-legacy] xəta:', uid, err.code || err.message));
+        }
+        console.log(`[clean-legacy] bitdi. ${count} köhnə qeyd offline edildi.`);
+        return count;
+    }
+    window.__cleanLegacyGhosts = runCleanLegacyGhosts;
+
+    // --- 5) ADMİN ÜÇÜN "TOPLU OFFLAYN ET" DÜYMƏSİ (yalnız admin+ görür) ---
+    function createBulkOfflineButton() {
+        if (document.getElementById('bulkOfflineBtn')) return; // artıq yaradılıb
+        if (!currentUserData || getRoleLevel(currentUserData.role) < 3) return;
+
+        const btn = document.createElement('button');
+        btn.id = 'bulkOfflineBtn';
+        btn.innerHTML = '<i class="fa-solid fa-broom"></i> Toplu offlayn et';
+        btn.title = 'Heartbeat-i olmayan köhnə ghost hesabları toplu şəkildə offline edir';
+        btn.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            padding: 10px 16px;
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+        `;
+
+        btn.addEventListener('click', async () => {
+            if (!confirm('Heartbeat-i olmayan bütün köhnə "online/away" hesablar offline ediləcək. Davam edilsin?')) return;
+            btn.disabled = true;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = 'İşlənir...';
+
+            const count = await runCleanLegacyGhosts();
+
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+
+            const msg = `${count} köhnə hesab offline edildi.`;
+            if (typeof showToast === 'function') showToast(msg, 'success');
+            else alert(msg);
+        });
+
+        document.body.appendChild(btn);
+    }
+
+    const bulkBtnInit = setInterval(() => {
+        if (currentUser && currentUserData) {
+            createBulkOfflineButton();
+        }
     }, 3000);
 })();
 
