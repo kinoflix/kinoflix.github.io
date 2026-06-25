@@ -2257,6 +2257,7 @@ document.addEventListener('click', () => {
         btn.innerHTML = '<i class="fa-solid fa-broom"></i> Toplu offlayn et';
         btn.title = 'Heartbeat-i olmayan köhnə ghost hesabları toplu şəkildə offline edir';
         btn.style.cssText = `
+            display: none;
             position: fixed;
             bottom: 20px;
             right: 20px;
