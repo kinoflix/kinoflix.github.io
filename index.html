@@ -1,0 +1,1159 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>KINOFLIX</title>
+<meta name="description" content="Ən zövqlü filmlərin adresi" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%231db954' d='M27.5 162.2L9 187.1h90.5l6.9-130.7-78.9 105.8zM396.3 45.7L267.7 32l135.7 147.2-7.1-133.5zM112.2 218.3l-11.2-22H9.9L234.8 458zm2-31.2h284l-81.5-88.5L256.3 33zm297.3 9.1L277.6 458l224.8-261.7h-90.9zM415.4 69L406 56.4l.9 17.3 6.1 113.4h90.3zM113.5 93.5l-4.6 85.6L244.7 32 116.1 45.7zm287.7 102.7h-290l42.4 82.9L256.3 480l144.9-283.8z'/%3E%3C/svg%3E">
+
+<!-- Video.js CSS -->
+<link href="https://vjs.zencdn.net/8.9.0/video-js.css" rel="stylesheet" />
+<!-- FONT-AWESOME İKONLARI -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+<link rel="stylesheet" href="CSS/styles.css">
+  
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1960236427084639"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <a href="../index.html">
+  <img id="logoImg" src="FILES/IMG/logos/white.png" alt="aligoshgar.github.io" />
+    </a>
+  </div>
+
+  <div class="header-center"></div>
+
+  <div class="header-right">
+    <!-- Info -> Search -> Theme -->
+    <a href="https://apk.e-droid.net/apk/app3924928-qti16g.apk" class="apk-final-fix">
+    <i class="fa-brands fa-google-play"></i>
+</a>
+
+<style>
+    /* 1. Ümumi Görünüş */
+    .apk-final-fix {
+        display: inline-grid !important;
+        place-items: center !important;
+        width: 44px !important;
+        height: 44px !important;
+        text-decoration: none !important;
+        background: transparent !important;
+        -webkit-tap-highlight-color: transparent !important;
+        cursor: pointer !important;
+        border: none !important;
+        vertical-align: middle !important;
+    }
+
+    /* 2. İkon və 0.6s Keçid */
+    .apk-final-fix i {
+        font-size: 20px !important;
+        transition: color 0.6s ease-in-out !important; /* Sənin dediyin saniyə */
+        display: block !important;
+    }
+
+    /* --- GECƏ REJİMİ (Root/Default) --- */
+    /* İlkin: Ağ (#ffffff) | Hover/Toxunma: Yaşıl (#1db954) */
+    .apk-final-fix i {
+        color: #ffffff !important;
+    }
+    .apk-final-fix:hover i, 
+    .apk-final-fix:active i {
+        color: #1db954 !important;
+    }
+
+    /* --- GÜNDÜZ REJİMİ ([data-theme="light"]) --- */
+    /* İlkin: Qara (#000000) | Hover/Toxunma: Mavi (#0b74ff) */
+    [data-theme="light"] .apk-final-fix i {
+        color: #000000 !important;
+    }
+    [data-theme="light"] .apk-final-fix:hover i,
+    [data-theme="light"] .apk-final-fix:active i {
+        color: #0b74ff !important;
+    }
+
+    /* 3. Mobil Ölçü */
+    @media (max-width: 768px) {
+        .apk-final-fix {
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .apk-final-fix i {
+            font-size: 18px !important;
+        }
+    }
+</style>
+    
+    <button id="infoBtn" class="icon-btn" style="display: none;">©️</button>
+    <button id="themeToggle" class="icon-btn" title="Tema dəyişdir" aria-label="Tema dəyişdir">🌙</button>
+  <!-- 🔐 LOGIN / LOGOUT BUTONU (dinamik) -->
+    <button id="authMainBtn" class="icon-btn" title="Hesab" aria-label="Hesab">
+    <i class="fa-solid fa-circle-user"></i>
+    </button>
+    
+  </div>
+</header>
+
+<main class="container" id="main">
+  <nav>
+  <ul class="menu">
+    <li class="active"><a href="index.html">ƏSAS SƏHİFƏ</a></li>
+    <li><a href="kinoflixplus">KINOFLIX+</a></li>
+    <li><a href="PAGES/messages.html">YENİLİKLƏR</a></li>
+    <li><a href="chat">SÖHBƏT</a></li>
+    <li><a href="PAGES/about.html">HAQQIMIZDA</a></li>
+    <li><a href="PAGES/contact.html">ƏLAQƏ</a></li>
+
+
+  </ul>
+
+ <!-- Kolleksiya paneli -->
+    
+    <section class="spotlight-section">
+    <img src="" id="spotlightBgImage" class="spotlight-bg" alt="Kolleksiya Fonu">
+    <div class="spotlight-overlay"></div>
+
+    <div class="spotlight-content">
+        <div class="spotlight-info">
+            <span class="spotlight-badge">Xüsusi Kolleksiya</span>
+            <h2 class="spotlight-title" id="spotlightTitle">Yüklənir...</h2>
+            <span class="spotlight-count" id="spotlightCount">0 Film</span>
+            <button class="spotlight-btn" id="spotlightActionBtn">Kolleksiyaya bax</button>
+        </div>
+
+        <ul class="spotlight-tabs" id="spotlightTabsContainer">
+            </ul>
+    </div>
+</section>
+    
+ <!-- Kolleksiya paneli -->
+    
+</nav>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div class="search" role="search" aria-label="Film axtar">
+      <button id="searchBtn" class="search-btn" aria-label="Axtar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </button>
+      <input id="searchInput" class="search-input" type="search" placeholder="Film adı yazın..." aria-label="Film axtar" />
+    </div>
+   
+
+    <select id="genreFilter" aria-label="Janr üzrə filtr" class="filter-select">
+      <option value="">Bütün janrlar</option>
+    </select>
+  </div>
+
+  <section id="gallery">
+    <h2 style="margin:0">Filmlər</h2>
+        
+    <!-- SON ƏLAVƏ EDİLƏNLƏR CHECK BOX -->
+    <label class="flix-switch-container">
+  <input type="checkbox" id="sort-latest-trigger">
+  <span class="flix-slider"></span>
+  <span class="flix-switch-label">Son əlavə edilənlər</span>
+</label>
+    <!-- SON ƏLAVƏ EDİLƏNLƏR CHECK BOX-SON -->
+    
+    <div id="grid" class="grid" aria-live="polite"></div>
+
+    <div id="loader" class="loader" style="display:none">
+      <div class="spinner" aria-hidden="true"></div>
+      <div>Yüklənir...</div>
+
+    </div>
+
+    <div id="allLoaded" class="all-loaded">Səhifənin sonuna çatdınız!</div>
+  </section>
+</main>
+
+<!-- Modal with video.js player -->
+<div id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="modal-inner" role="document">
+    <div class="player-top">
+      <button id="closeModal" class="close-btn" title="Bağla" aria-label="Bağla">✕</button>
+
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;">
+        <div class="player-title" id="playerTitle">—</div>
+        <div class="player-sub" id="playerSub">—</div>
+      </div>
+
+      <div class="player-right-controls" aria-hidden="false">
+        <button class="share-btn" id="mainShareBtn" title="Paylaş" aria-label="Paylaş" onclick="sharePlayer()">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true" focusable="false" role="img">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="video-container responsive" style="width:100%;">
+      <video id="my-video" class="video-js vjs-default-skin" controls preload="auto" muted playsinline></video>
+    </div>
+
+    
+
+    <!-- GÖRÜNMƏZ, amma DOM-da qalır — JS bundan istifadə etməyə davam edə bilər -->
+<span id="playerSourceLabel" style="display:none" aria-hidden="true">—</span>
+    
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;width:100%;">
+      <div class="hint">   </div>
+      <div class="hint">   <span id="playerSourceLabel">   </span></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- Video.js + hls.js -->
+<script src="https://vjs.zencdn.net/8.9.0/video.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="JS/javascripts.js"></script>
+
+<!-- Default Statcounter code for kinoflix.github.io
+http://kinoflix.github.io -->
+<script type="text/javascript">
+var sc_project=12344518; 
+var sc_invisible=1; 
+var sc_security="ba6e028a"; 
+</script>
+<script type="text/javascript"
+src="https://www.statcounter.com/counter/counter.js"
+async></script>
+<noscript><div class="statcounter"><a title="Web Analytics"
+href="https://statcounter.com/" target="_blank"><img
+class="statcounter"
+src="https://c.statcounter.com/12344518/0/ba6e028a/1/"
+alt="Web Analytics"
+referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+<!-- End of Statcounter Code -->
+
+  <!-- Yuxarı Çıx Butonu -->
+<button id="scrollTopBtn">
+    <i class="fas fa-chevron-up"></i>
+</button>
+
+<style>
+#scrollTopBtn{
+    position: fixed;
+    right: 20px;
+    bottom: 24px;
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 9999;
+
+    font-size: 18px;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+
+    transition:
+        opacity .3s ease,
+        visibility .3s ease,
+        transform .3s ease,
+        background .3s ease,
+        color .3s ease,
+        box-shadow .3s ease;
+
+    /* Sənin tema sistemi */
+    background: var(--glass);
+    color: var(--text);
+
+    backdrop-filter: blur(10px);
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* Görünən vəziyyət */
+#scrollTopBtn.show{
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Hover */
+#scrollTopBtn:hover{
+    outline: none !important;
+
+    background: var(--accent) !important;
+    color: #fff !important;
+
+    transform: translateY(0) scale(1.1);
+
+    /* Sənin neon hover effekti */
+    box-shadow:
+        0 0 10px var(--accent),
+        0 0 20px var(--accent),
+        0 0 35px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+/* Mobil toxunuş effekti */
+@media (max-width: 768px){
+    #scrollTopBtn:active{
+        background: var(--accent) !important;
+        color: #fff !important;
+
+        transform: translateY(0) scale(1.1);
+
+        box-shadow:
+            0 0 10px var(--accent),
+            0 0 20px var(--accent),
+            0 0 35px color-mix(in srgb, var(--accent) 70%, transparent);
+    }
+}
+</style>
+
+<script>
+const scrollBtn = document.getElementById("scrollTopBtn");
+
+window.addEventListener("scroll", () => {
+    if(window.scrollY > 300){
+        scrollBtn.classList.add("show");
+    } else {
+        scrollBtn.classList.remove("show");
+    }
+});
+
+scrollBtn.addEventListener("click", () => {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+});
+</script>
+<!-- Yuxarı Çıx Butonunun sonu -->
+
+<!-- AI ÇATBOT -->
+
+<button id="chat-toggle-btn" title="KINOFLIX AI">
+    <svg width="400" height="400" viewBox="50 50 500 500" xmlns="http://www.w3.org/2000/svg" style="background-color: transparent; overflow: hidden;">
+  <defs>
+    <linearGradient id="cyan-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2bf5e6"/>
+      <stop offset="100%" stop-color="#0b757e" stop-opacity="0.3"/>
+    </linearGradient>
+    <linearGradient id="magenta-grad" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f127c5"/>
+      <stop offset="100%" stop-color="#6e0e64" stop-opacity="0.3"/>
+    </linearGradient>
+    <linearGradient id="purple-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8d34f0"/>
+      <stop offset="100%" stop-color="#341168" stop-opacity="0.3"/>
+    </linearGradient>
+    <linearGradient id="blue-grad" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#168cf8"/>
+      <stop offset="100%" stop-color="#0b4a8e" stop-opacity="0.3"/>
+    </linearGradient>
+    <linearGradient id="orb-stroke" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#216c7a"/>
+        <stop offset="35%" stop-color="#ffffff" stop-opacity="0"/>
+        <stop offset="65%" stop-color="#ffffff" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#7a349c"/>
+    </linearGradient>
+    <linearGradient id="glass-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="light-blur" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="8" />
+    </filter>
+    <filter id="heavy-blur" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="25" />
+    </filter>
+  </defs>
+
+  <circle cx="300" cy="300" r="220" fill="none" stroke="url(#orb-stroke)" stroke-width="3" opacity="0.9"/>
+  
+  <g style="mix-blend-mode: screen;">
+    <animateTransform attributeName="transform" type="rotate" values="0 300 300; 360 300 300" dur="25s" repeatCount="indefinite" />
+    <g id="siri-paths">
+        <path fill="url(#cyan-grad)" opacity="0.9">
+            <animate attributeName="d" values="M300,300 C150,120 80,250 160,380 C200,420 260,360 300,300;M300,300 C180,180 60,300 180,420 C240,460 280,330 300,300;M300,300 C120,200 100,200 130,350 C160,400 240,380 300,300;M300,300 C150,120 80,250 160,380 C200,420 260,360 300,300" dur="4.3s" repeatCount="indefinite" />
+        </path>
+        <path fill="url(#magenta-grad)" opacity="0.9">
+            <animate attributeName="d" values="M300,300 C450,480 520,350 440,220 C400,180 340,240 300,300;M300,300 C420,420 540,300 420,180 C360,140 320,270 300,300;M300,300 C480,400 500,400 470,250 C440,200 360,220 300,300;M300,300 C450,480 520,350 440,220 C400,180 340,240 300,300" dur="5.7s" repeatCount="indefinite" />
+        </path>
+        <path fill="url(#purple-grad)" opacity="0.8">
+            <animate attributeName="d" values="M300,300 C120,200 250,80 380,160 C420,200 360,260 300,300;M300,300 C180,180 300,60 420,180 C460,240 330,280 300,300;M300,300 C200,120 200,100 350,130 C400,160 380,240 300,300;M300,300 C120,200 250,80 380,160 C420,200 360,260 300,300" dur="6.1s" repeatCount="indefinite" />
+        </path>
+        <path fill="url(#blue-grad)" opacity="0.8">
+            <animate attributeName="d" values="M300,300 C480,400 350,520 220,440 C180,400 240,340 300,300;M300,300 C420,420 300,540 180,420 C140,360 270,320 300,300;M300,300 C400,480 400,500 250,470 C200,440 220,360 300,300;M300,300 C480,400 350,520 220,440 C180,400 240,340 300,300" dur="7.3s" repeatCount="indefinite" />
+        </path>
+    </g>
+    <use href="#siri-paths" filter="url(#light-blur)" opacity="0.7" transform="translate(45, 45) scale(0.85)"/>
+    <use href="#siri-paths" filter="url(#light-blur)" opacity="1" transform="translate(150, 150) scale(0.5)"/>
+  </g>
+  <circle cx="300" cy="300" r="15" fill="#ffffff" filter="url(#light-blur)" style="mix-blend-mode: screen;" opacity="0.8">
+     <animate attributeName="r" values="10; 25; 10" dur="3s" repeatCount="indefinite"/>
+     <animate attributeName="opacity" values="0.5; 1; 0.5" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <ellipse cx="300" cy="160" rx="150" ry="60" fill="url(#glass-gradient)" />
+</svg>
+</button>
+  
+
+<div id="chat-window" class="chat-hidden light-mode">
+    <div id="chat-header">
+        <div class="header-info">
+            <div class="avatar-container">
+                <div class="avatar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                    </svg>
+                </div>
+                <span class="online-dot"></span>
+            </div>
+            <div>
+                <span class="bot-title">KINOFLIX AI</span>
+                <span id="bot-status">Active System</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button id="chat-clear-btn" title="Çatı təmizlə">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+            </button>
+            <button id="chat-theme-btn" title="Temaną Dəyiş">
+                <svg id="chat-theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+            <button id="chat-close-btn" title="Bağla">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="chat-messages"></div>
+
+    <div id="chat-typing-indicator" class="indicator-hidden">
+        <div class="typing-dots">
+            <span class="typing-dot" style="animation-delay: 0s"></span>
+            <span class="typing-dot" style="animation-delay: 0.2s"></span>
+            <span class="typing-dot" style="animation-delay: 0.4s"></span>
+            <span class="indicator-text">KINOFLIX düşünür...</span>
+        </div>
+    </div>
+
+    <div id="chat-footer">
+        <div id="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Film və ya janr soruşun..." autocomplete="off">
+            <button id="chat-send-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </div>
+        <div class="quick-chips">
+            <button class="chip-btn" data-text="Hansı maraqlı fantastik filmlər var?">🚀 Fantastika</button>
+            <button class="chip-btn" data-text="Mənə gərgin bir detektiv film məsləhət gör">🔍 Detektiv</button>
+            <button class="chip-btn" data-text="Komediya janrında ən yaxşılar hansılardır?">😂 Komediya</button>
+        </div>
+    </div>
+</div>
+
+  
+<!-- AI ÇATBOT-SONU -->
+
+<!-- ========================================================= -->
+<!-- 🔐 AUTH MODAL (Login/Register) – düzəldilmiş versiya     -->
+<!-- ========================================================= -->
+<div id="authModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card auth-modal-card">
+    <div class="modal-header">
+      <h3 id="authModalTitle">Hesaba daxil ol</h3>
+      <button id="closeAuthModal" class="close-modal-btn">&times;</button>
+    </div>
+    <div class="modal-body auth-modal-body">
+ 
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab active">Daxil Ol</button>
+        <button id="tabRegister" class="auth-tab">Qeydiyyat</button>
+      </div>
+ 
+      <!-- LOGIN FORM -->
+      <form id="loginForm" class="auth-form active">
+        <div class="input-group">
+          <i class="fa-solid fa-envelope"></i>
+          <input type="text" id="loginEmailOrUsername" placeholder="E-poçt və ya istifadəçi adı" required>
+        </div>
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="loginPassword" placeholder="Şifrə" required>
+          <button type="button" id="toggleLoginPassword" class="password-toggle-btn" tabindex="-1">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <div style="text-align:right; margin-top:-8px;">
+          <button type="button" id="forgotPasswordBtn" class="forgot-password-link">Şifrəni unutdunuzmu?</button>
+        </div>
+        <button type="submit" class="submit-btn">Daxil ol</button>
+      </form>
+ 
+      <!-- REGISTER FORM -->
+      <form id="registerForm" class="auth-form">
+        <div class="input-group">
+          <i class="fa-solid fa-at"></i>
+          <input type="text" id="regUsername" placeholder="İstifadəçi adı (3-10 simvol)" required autocomplete="off">
+        </div>
+        <div id="usernameCheckMsg" class="check-message"></div>
+ 
+        <div class="name-row">
+          <div class="input-group half">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="regFirstName" placeholder="Adınız" required>
+          </div>
+          <div class="input-group half">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="regLastName" placeholder="Soyadınız" required>
+          </div>
+        </div>
+ 
+        <div class="input-group">
+          <i class="fa-solid fa-envelope"></i>
+          <input type="email" id="regEmail" placeholder="E-poçt ünvanı" required>
+        </div>
+ 
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="regPassword" placeholder="Şifrə (Min. 6 simvol)" required>
+          <button type="button" id="toggleRegPassword" class="password-toggle-btn" tabindex="-1">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+ 
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="regPasswordConfirm" placeholder="Şifrəni təkrarlayın" required>
+          <button type="button" id="toggleRegPasswordConfirm" class="password-toggle-btn" tabindex="-1">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <div id="passwordCheckMsg" class="check-message"></div>
+ 
+        <button type="submit" class="submit-btn">Qeydiyyatı tamamla</button>
+      </form>
+ 
+      <div class="auth-divider"><span>və ya</span></div>
+ 
+      <button id="googleAuthBtn" class="google-btn">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
+        Google ilə davam et
+      </button>
+ 
+    </div><!-- /.auth-modal-body -->
+  </div><!-- /.modal-card -->
+</div><!-- /#authModal -->
+ 
+<!-- ========================================================= -->
+<!-- FIREBASE MODUL SCRIPT (əsas səhifə üçün auth)            -->
+<!-- ========================================================= -->
+<script type="importmap">
+{
+  "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js",
+    "firebase/database": "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
+  }
+}
+</script>
+ 
+<script type="module">
+// ============================================================
+// 1. FIREBASE IMPORTLARI VƏ KONFİQ
+// ============================================================
+import { initializeApp } from "firebase/app";
+import { 
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
+  sendPasswordResetEmail, updateProfile
+} from "firebase/auth";
+import { 
+  getFirestore, doc, setDoc, getDoc, serverTimestamp, 
+  query, collection, where, getDocs, onSnapshot
+} from "firebase/firestore";
+import {
+  getDatabase, ref, set, onValue, onDisconnect,
+  serverTimestamp as rtdbTimestamp
+} from "firebase/database";
+ 
+// Konfiqurasiya faylını import et
+import { firebaseConfig } from "https://kinoflix.github.io/chat/JS/config.js";
+ 
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const rtdb = getDatabase(app);
+const provider = new GoogleAuthProvider();
+ 
+// ============================================================
+// 2. DOM REFERANSLARI
+// ============================================================
+const authModal = document.getElementById('authModal');
+const closeAuthModal = document.getElementById('closeAuthModal');
+const authMainBtn = document.getElementById('authMainBtn');
+ 
+const tabLogin = document.getElementById('tabLogin');
+const tabRegister = document.getElementById('tabRegister');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+ 
+const loginEmailOrUsername = document.getElementById('loginEmailOrUsername');
+const loginPassword = document.getElementById('loginPassword');
+const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+ 
+const regUsername = document.getElementById('regUsername');
+const regFirstName = document.getElementById('regFirstName');
+const regLastName = document.getElementById('regLastName');
+const regEmail = document.getElementById('regEmail');
+const regPassword = document.getElementById('regPassword');
+const regPasswordConfirm = document.getElementById('regPasswordConfirm');
+const usernameCheckMsg = document.getElementById('usernameCheckMsg');
+const passwordCheckMsg = document.getElementById('passwordCheckMsg');
+ 
+const googleBtn = document.getElementById('googleAuthBtn');
+ 
+// Toggle şifrə düymələri
+document.getElementById('toggleLoginPassword').addEventListener('click', () => {
+  const inp = document.getElementById('loginPassword');
+  const icon = document.querySelector('#toggleLoginPassword i');
+  if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+  else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+});
+document.getElementById('toggleRegPassword').addEventListener('click', () => {
+  const inp = document.getElementById('regPassword');
+  const icon = document.querySelector('#toggleRegPassword i');
+  if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+  else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+});
+document.getElementById('toggleRegPasswordConfirm').addEventListener('click', () => {
+  const inp = document.getElementById('regPasswordConfirm');
+  const icon = document.querySelector('#toggleRegPasswordConfirm i');
+  if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+  else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+});
+ 
+// ============================================================
+// 3. KÖMƏKÇİ FUNKSİYALAR
+// ============================================================
+ 
+// Toast — app.js-dəki showToast ilə eyni sistem (sağ yuxarı)
+function showToast(message, type = "info") {
+  if (!document.getElementById("flix-toast-styles")) {
+    const style = document.createElement("style");
+    style.id = "flix-toast-styles";
+    style.innerHTML = `
+      .flix-toast-container {
+        position: fixed;
+        top: 20px; right: 20px; z-index: 99999;
+        display: flex; flex-direction: column; gap: 10px;
+        pointer-events: none;
+      }
+      .flix-toast {
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(12px);
+        color: #1a1a1a;
+        padding: 14px 20px;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.14);
+        font-size: 14px; font-weight: 500;
+        display: flex; align-items: center; gap: 12px;
+        transform: translateX(120%);
+        animation: flixSlideIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+        border-left: 5px solid #ccc;
+        max-width: 360px;
+        pointer-events: auto;
+      }
+      [data-theme="dark"] .flix-toast {
+        background: rgba(28,28,30,0.94);
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      }
+      .flix-toast.success { border-left-color: #2ecc71; }
+      .flix-toast.error   { border-left-color: #e74c3c; }
+      .flix-toast.warning { border-left-color: #f39c12; }
+      .flix-toast.info    { border-left-color: #3498db; }
+      @keyframes flixSlideIn { to { transform: translateX(0); } }
+      @keyframes flixFadeOut { to { opacity: 0; transform: translateY(-15px); } }
+    `;
+    document.head.appendChild(style);
+  }
+  let container = document.querySelector(".flix-toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "flix-toast-container";
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement("div");
+  toast.className = `flix-toast ${type}`;
+  const icons = { success: "✅", error: "❌", warning: "⚠️", info: "💡" };
+  toast.innerHTML = `<span>${icons[type] || "💡"}</span><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = "flixFadeOut 0.4s forwards";
+    setTimeout(() => toast.remove(), 400);
+  }, 4000);
+}
+ 
+function localizeFirebaseError(err) {
+  switch(err.code) {
+    case "auth/email-already-in-use": return "Bu e-poçt ünvanı ilə artıq qeydiyyatdan keçilib.";
+    case "auth/invalid-credential": return "İstifadəçi adı, e-poçt və ya şifrə yanlışdır.";
+    case "auth/weak-password": return "Şifrə çox zəifdir. Ən azı 6 simvoldan ibarət olmalıdır.";
+    case "auth/invalid-email": return "Daxil etdiyiniz e-poçt strukturu düzgün deyil.";
+    case "auth/user-disabled": return "Hesabınız rəhbərlik tərəfindən deaktiv edilib!";
+    case "auth/wrong-password": return "Şifrəniz yanlışdır. Zəhmət olmasa yenidən cəhd edin.";
+    case "auth/too-many-requests": return "Çox sayda uğursuz cəhd. Bir qədər gözləyin.";
+    case "auth/requires-recent-login": return "Bu əməliyyat üçün yenidən giriş etməlisiniz.";
+    case "auth/user-not-found": return "Daxil etdiyiniz e-poçt mövcud deyil.";
+    case "auth/cancelled-popup-request": return "Google ilə giriş əməliyyatı dayandırıldı.";
+    case "auth/popup-closed-by-user": return "Google ilə giriş əməliyyatı dayandırıldı.";
+    default: return err.message || "Gözlənilməz texniki xəta baş verdi.";
+  }
+}
+ 
+function isValidUsername(str) {
+  if (!str) return false;
+  const regex = /^[A-Za-z0-9](?!.*\.\.)[A-Za-z0-9._]{1,8}[A-Za-z0-9]$/;
+  return regex.test(str);
+}
+function normalizeUsername(str) { return str.toLowerCase().trim(); }
+function isValidName(str) { return /^[\p{L}]+(?:[\s][\p{L}]+)*$/u.test(str.trim()); }
+ 
+// ============================================================
+// 4. İSTİFADƏÇİ ADI YOXLAMA
+// ============================================================
+let usernameCheckTimeout = null;
+async function checkUsernameAvailability(username) {
+  if (!username) return null;
+  const normalized = normalizeUsername(username);
+  if (!isValidUsername(normalized)) return false;
+  try {
+    const q = query(collection(db, 'users'), where('username', '==', normalized));
+    const snap = await getDocs(q);
+    return snap.empty;
+  } catch { return null; }
+}
+ 
+regUsername.addEventListener('input', () => {
+  clearTimeout(usernameCheckTimeout);
+  const val = regUsername.value.trim();
+  const normalized = normalizeUsername(val);
+  if (!val) { usernameCheckMsg.textContent = ''; usernameCheckMsg.className = 'check-message'; return; }
+  if (!isValidUsername(normalized)) {
+    usernameCheckMsg.textContent = 'uyğun deyil';
+    usernameCheckMsg.className = 'check-message error';
+    return;
+  }
+  usernameCheckMsg.textContent = 'yoxlanılır...';
+  usernameCheckMsg.className = 'check-message';
+  usernameCheckTimeout = setTimeout(async () => {
+    const available = await checkUsernameAvailability(normalized);
+    if (available === null) {
+      usernameCheckMsg.textContent = 'xəta baş verdi';
+      usernameCheckMsg.className = 'check-message error';
+    } else if (available) {
+      usernameCheckMsg.textContent = 'uyğundur';
+      usernameCheckMsg.className = 'check-message success';
+    } else {
+      usernameCheckMsg.textContent = 'bu istifadəçi adı artıq alınıb';
+      usernameCheckMsg.className = 'check-message error';
+    }
+  }, 400);
+});
+ 
+regPasswordConfirm.addEventListener('input', () => {
+  const p1 = regPassword.value;
+  const p2 = regPasswordConfirm.value;
+  if (!p2) { passwordCheckMsg.textContent = ''; passwordCheckMsg.className = 'check-message'; return; }
+  if (p1 === p2) {
+    passwordCheckMsg.textContent = 'Şifrələr eynidir!';
+    passwordCheckMsg.className = 'check-message success';
+  } else {
+    passwordCheckMsg.textContent = 'Şifrələr eyni deyil!';
+    passwordCheckMsg.className = 'check-message error';
+  }
+});
+ 
+// ============================================================
+// 5. LOGIN (EMAIL / USERNAME)
+// ============================================================
+async function loginWithEmailOrUsername(identifier, password) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (emailRegex.test(identifier)) {
+    await signInWithEmailAndPassword(auth, identifier, password);
+    return;
+  }
+  const normalized = normalizeUsername(identifier);
+  try {
+    const q = query(collection(db, 'users'), where('username', '==', normalized));
+    const snap = await getDocs(q);
+    if (snap.empty) throw { code: 'auth/user-not-found', message: 'İstifadəçi tapılmadı.' };
+    const userData = snap.docs[0].data();
+    await signInWithEmailAndPassword(auth, userData.email, password);
+  } catch (err) {
+    if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+      throw { code: 'auth/invalid-credential', message: 'İstifadəçi adı və ya şifrə yanlışdır.' };
+    }
+    throw err;
+  }
+}
+ 
+// ============================================================
+// 6. AUTH FORM SUBMITLƏR
+// ============================================================
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const identifier = loginEmailOrUsername.value.trim();
+  const password = loginPassword.value;
+  try {
+    await loginWithEmailOrUsername(identifier, password);
+    loginForm.reset();
+    showToast("Uğurla giriş edildi. Xoş gəldiniz!", "success");
+    closeAuthModal.click();
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+ 
+registerForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const usernameRaw = regUsername.value.trim();
+  const username = normalizeUsername(usernameRaw);
+  const firstName = regFirstName.value.trim();
+  const lastName = regLastName.value.trim();
+  const email = regEmail.value.trim();
+  const password = regPassword.value;
+  const passwordConfirm = regPasswordConfirm.value;
+ 
+  if (!isValidUsername(username)) {
+    showToast("İstifadəçi adı qaydalara uyğun deyil (3-10 simvol, yalnız A-Z, 0-9, . _, . başda/sonda olmaz, .. olmaz).", "error");
+    return;
+  }
+  const available = await checkUsernameAvailability(username);
+  if (available === false) {
+    showToast("Bu istifadəçi adı artıq alınıb.", "error");
+    return;
+  } else if (available === null) {
+    showToast("İstifadəçi adı yoxlanılarkən xəta baş verdi.", "error");
+    return;
+  }
+  if (!isValidName(firstName) || !isValidName(lastName)) {
+    showToast("Ad və Soyad yalnız hərflər və boşluqdan ibarət ola bilər.", "error");
+    return;
+  }
+  if (password !== passwordConfirm) {
+    showToast("Şifrələr eyni deyil!", "error");
+    return;
+  }
+ 
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const displayName = `${firstName} ${lastName}`.trim();
+    await updateProfile(userCredential.user, { displayName, photoURL: "https://kinoflix.github.io/chat/img/avatar.jpg" });
+ 
+    await setDoc(doc(db, 'users', userCredential.user.uid), {
+      uid: userCredential.user.uid,
+      username,
+      firstName,
+      lastName,
+      displayName,
+      email,
+      photoURL: "https://kinoflix.github.io/chat/img/avatar.jpg",
+      role: 'user',
+      isBanned: false,
+      createdAt: serverTimestamp()
+    });
+ 
+    registerForm.reset();
+    usernameCheckMsg.textContent = '';
+    passwordCheckMsg.textContent = '';
+    showToast("Qeydiyyat uğurla tamamlandı!", "success");
+    closeAuthModal.click();
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+ 
+// ============================================================
+// 7. GOOGLE LOGIN
+// ============================================================
+googleBtn.addEventListener('click', async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+    if (!userDoc.exists()) {
+      const username = result.user.email.split('@')[0].replace(/[^A-Za-z0-9._]/g, '').slice(0, 10).toLowerCase();
+      const displayName = result.user.displayName || username;
+      const nameParts = displayName.split(' ');
+      const firstName = nameParts[0] || username;
+      const lastName = nameParts.slice(1).join(' ') || '';
+      await setDoc(doc(db, 'users', result.user.uid), {
+        uid: result.user.uid,
+        username,
+        firstName,
+        lastName,
+        displayName,
+        email: result.user.email,
+        photoURL: result.user.photoURL || "https://kinoflix.github.io/chat/img/avatar.jpg",
+        role: 'user',
+        isBanned: false,
+        createdAt: serverTimestamp()
+      });
+    }
+    showToast("Google ilə uğurla giriş edildi!", "success");
+    closeAuthModal.click();
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+ 
+// ============================================================
+// 8. ŞİFRƏ SIFIRLAMA
+// ============================================================
+forgotPasswordBtn.addEventListener('click', async () => {
+  const email = loginEmailOrUsername.value.trim();
+  if (!email) { showToast("Zəhmət olmasa əvvəlcə e-poçt ünvanınızı daxil edin.", "warning"); return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    showToast("Şifrə sıfırlama linki e-poçt ünvanınıza göndərildi.", "success");
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+ 
+// ============================================================
+// 9. TABS (Login / Register)
+// ============================================================
+tabLogin.addEventListener('click', () => {
+  tabLogin.classList.add('active'); tabRegister.classList.remove('active');
+  loginForm.classList.add('active'); registerForm.classList.remove('active');
+});
+tabRegister.addEventListener('click', () => {
+  tabRegister.classList.add('active'); tabLogin.classList.remove('active');
+  registerForm.classList.add('active'); loginForm.classList.remove('active');
+});
+ 
+// ============================================================
+// 10. MODAL AÇ / BAĞLA
+// ============================================================
+function openAuthModal() {
+  authModal.style.display = 'flex';
+  tabLogin.click(); // default login tab
+}
+function closeAuthModalFunc() {
+  authModal.style.display = 'none';
+}
+  
+//closeAuthModal.addEventListener('click', closeAuthModalFunc);
+//authModal.addEventListener('click', (e) => {
+  //if (e.target === authModal) closeAuthModalFunc();
+//});
+//document.addEventListener('keydown', (e) => {
+  //if (e.key === 'Escape' && authModal.style.display === 'flex') closeAuthModalFunc();
+//});
+
+  closeAuthModal.addEventListener('click', () => {
+  if (auth.currentUser) closeAuthModalFunc();
+});
+authModal.addEventListener('click', (e) => {
+  if (e.target === authModal && auth.currentUser) closeAuthModalFunc();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && authModal.style.display === 'flex' && auth.currentUser) closeAuthModalFunc();
+});
+ 
+// ============================================================
+// 11. AUTH STATE İZLƏMƏ VƏ UI YENİLƏMƏ
+// ============================================================
+
+// Presence və ban izləmə dəyişənləri
+let presenceUnsubscribeConnected = null;
+let banWatcherUnsubscribe = null;
+
+// Presence qur — istifadəçi chat açmadan belə onlayn görünsün
+function setupPresence(user) {
+  // Əvvəlki listener-ləri təmizlə
+  if (presenceUnsubscribeConnected) {
+    presenceUnsubscribeConnected();
+    presenceUnsubscribeConnected = null;
+  }
+
+  const statusRef = ref(rtdb, `presence/${user.uid}`);
+
+  // RTDB bağlantı statusunu izlə
+  const connectedRef = ref(rtdb, '.info/connected');
+  const unsubConn = onValue(connectedRef, (snap) => {
+    if (snap.val() === true) {
+      // Bağlantı kəsildikdə offline yaz
+      onDisconnect(statusRef).set({
+        status: 'offline',
+        lastChanged: rtdbTimestamp()
+      }).then(() => {
+        // Onlayn olduğunu qeyd et
+        set(statusRef, {
+          status: 'online',
+          lastChanged: rtdbTimestamp()
+        });
+      });
+    }
+  });
+
+  // Away timer — 5 dəqiqə aktivlik olmasa "away" göstər
+  let isAway = false;
+  let idleTimer;
+  const resetIdle = () => {
+    clearTimeout(idleTimer);
+    if (isAway) {
+      isAway = false;
+      set(statusRef, { status: 'online', lastChanged: rtdbTimestamp() });
+    }
+    idleTimer = setTimeout(() => {
+      isAway = true;
+      set(statusRef, { status: 'away', lastChanged: rtdbTimestamp() });
+    }, 5 * 60 * 1000);
+  };
+  resetIdle();
+  window.addEventListener('mousemove', resetIdle);
+  window.addEventListener('keypress', resetIdle);
+  window.addEventListener('touchstart', resetIdle);
+
+  // Unsubscribe saxla
+  presenceUnsubscribeConnected = () => {
+    unsubConn();
+    clearTimeout(idleTimer);
+    window.removeEventListener('mousemove', resetIdle);
+    window.removeEventListener('keypress', resetIdle);
+    window.removeEventListener('touchstart', resetIdle);
+  };
+}
+
+// Ban izləyicisi — ban gəldikdə əsas səhifədən çıxış et
+function setupBanWatcher(user) {
+  // Əvvəlki listener-i təmizlə
+  if (banWatcherUnsubscribe) {
+    banWatcherUnsubscribe();
+    banWatcherUnsubscribe = null;
+  }
+
+  let isInitialLoad = true;
+  banWatcherUnsubscribe = onSnapshot(doc(db, 'users', user.uid), async (snapshot) => {
+    // İlk yükləmədə keç (initializasiya zamanı yanlış trigger olmasın)
+    if (isInitialLoad) {
+      isInitialLoad = false;
+      return;
+    }
+
+    if (!snapshot.exists()) {
+      // Hesab silindi
+      showToast("Hesabınız sistemdən silindi!", "error");
+      await signOut(auth).catch(() => {});
+      setTimeout(() => window.location.reload(), 2000);
+      return;
+    }
+
+    const data = snapshot.data();
+
+    if (data.isBanned && data.banExpires) {
+      // Müvəqqəti ban
+      const expires = data.banExpires.toDate ? data.banExpires.toDate() : new Date(data.banExpires);
+      if (expires <= new Date()) {
+        // Ban bitib — heç nə etmə
+        return;
+      }
+      const minsLeft = Math.ceil((expires - new Date()) / 60000);
+      const dStr = minsLeft < 60
+        ? `${minsLeft} dəqiqə`
+        : minsLeft < 1440
+          ? `${Math.floor(minsLeft / 60)} saat`
+          : `${Math.floor(minsLeft / 1440)} gün`;
+      showToast(`Hesabınız ${dStr} müddətinə banlandı! Sistemdən çıxarılırsınız.`, "error");
+      // Presence offline et
+      set(ref(rtdb, `presence/${user.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+      await signOut(auth).catch(() => {});
+      setTimeout(() => window.location.reload(), 2500);
+    } else if (data.isBanned || data.networkBanned) {
+      // Daimi ban
+      showToast("Hesabınız ban edildi! Sistemdən çıxarılırsınız.", "error");
+      set(ref(rtdb, `presence/${user.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+      await signOut(auth).catch(() => {});
+      setTimeout(() => window.location.reload(), 2500);
+    }
+  });
+}
+
+// Presence-i təmizlə (logout zamanı)
+function cleanupPresence(uid) {
+  if (uid) {
+    set(ref(rtdb, `presence/${uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+  }
+  if (presenceUnsubscribeConnected) {
+    presenceUnsubscribeConnected();
+    presenceUnsubscribeConnected = null;
+  }
+  if (banWatcherUnsubscribe) {
+    banWatcherUnsubscribe();
+    banWatcherUnsubscribe = null;
+  }
+}
+
+function updateAuthUI(user) {
+  const btn = authMainBtn;
+  if (user) {
+    btn.innerHTML = `<i class="fa-solid fa-right-from-bracket"></i>`;
+    btn.title = 'Çıxış';
+    btn.onclick = () => {
+      if (confirm("Hesabdan çıxmaq istədiyinizə əminsiniz?")) {
+        cleanupPresence(user.uid);
+        signOut(auth);
+        showToast("Hesabdan çıxış edildi.", "info");
+      }
+    };
+  } else {
+    btn.innerHTML = `<i class="fa-solid fa-circle-user"></i>`;
+    btn.title = 'Hesaba daxil ol';
+    btn.onclick = openAuthModal;
+  }
+}
+
+onAuthStateChanged(auth, (user) => {
+  updateAuthUI(user);
+  if (user) {
+    // Modal açıqdırsa bağla
+    if (authModal.style.display === 'flex') {
+      closeAuthModalFunc();
+    }
+    // Presence qur — chat açmadan onlayn görünsün
+    setupPresence(user);
+    // Ban izləyicisini qur — ban gəldikdə logout et
+    setupBanWatcher(user);
+  } else {
+    // Çıxış — presence və ban listener-ləri təmizlə
+    cleanupPresence(null);
+  }
+});
+</script>
+  
+</body>
+</html>
