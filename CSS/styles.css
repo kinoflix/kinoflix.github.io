@@ -217,6 +217,11 @@ header{
   outline: 2px solid var(--accent);
 }
 
+/* Buton içərisindəki ikonun öz ölçüsü */
+.icon-btn i {
+  font-size: 20px; /* İkonun ölçüsü */
+}
+
 /* --- TEMA DÜYMƏSİ ÜÇÜN ÖZƏL (Sənin istədiyin KINOFLIX+ stili) --- */
 #themeToggle {
   border-radius: 50% !important; /* Dairəvi forma */
