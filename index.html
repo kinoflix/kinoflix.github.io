@@ -959,12 +959,23 @@ function openAuthModal() {
 function closeAuthModalFunc() {
   authModal.style.display = 'none';
 }
-closeAuthModal.addEventListener('click', closeAuthModalFunc);
+  
+//closeAuthModal.addEventListener('click', closeAuthModalFunc);
+//authModal.addEventListener('click', (e) => {
+  //if (e.target === authModal) closeAuthModalFunc();
+//});
+//document.addEventListener('keydown', (e) => {
+  //if (e.key === 'Escape' && authModal.style.display === 'flex') closeAuthModalFunc();
+//});
+
+  closeAuthModal.addEventListener('click', () => {
+  if (auth.currentUser) closeAuthModalFunc();
+});
 authModal.addEventListener('click', (e) => {
-  if (e.target === authModal) closeAuthModalFunc();
+  if (e.target === authModal && auth.currentUser) closeAuthModalFunc();
 });
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && authModal.style.display === 'flex') closeAuthModalFunc();
+  if (e.key === 'Escape' && authModal.style.display === 'flex' && auth.currentUser) closeAuthModalFunc();
 });
  
 // ============================================================
