@@ -1560,3 +1560,7 @@ header{
     gap: 8px;
   }
 }
+
+#closeAuthModal {
+  display: none;
+}
