@@ -3258,7 +3258,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!btn) return;
 
         // Əgər düymədə 'fa-user' ikonu varsa, deməli istifadəçi login deyil
-        var isLoggedOut = btn.innerHTML.indexOf('fa-user') !== -1;
+        var isLoggedOut = btn.innerHTML.indexOf('fa-circle-user') !== -1;
 
         if (isLoggedOut) {
             // Əvvəlcə window-da openAuthModal funksiyasını yoxla
