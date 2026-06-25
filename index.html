@@ -587,7 +587,7 @@ import { initializeApp } from "firebase/app";
 import { 
   getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
   GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
-  sendPasswordResetEmail, updateProfile
+  sendPasswordResetEmail, updateProfile, deleteUser
 } from "firebase/auth";
 import { 
   getFirestore, doc, setDoc, getDoc, serverTimestamp, 
@@ -1063,12 +1063,16 @@ function setupBanWatcher(user) {
     isFirstSnapshot = false;
 
     if (!snapshot.exists()) {
-      // Hesab silindi
-      showToast("Hesabınız sistemdən silindi!", "error");
-      await signOut(auth).catch(() => {});
-      setTimeout(() => window.location.reload(), 2000);
-      return;
-    }
+  set(ref(rtdb, `presence/${user.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+  showToast("Hesabınız sistemdən silindi!", "error");
+  try {
+    await deleteUser(user);
+  } catch (err) {
+    await signOut(auth).catch(() => {});
+  }
+  setTimeout(() => window.location.reload(), 2000);
+  return;
+                                     }
 
     const data = snapshot.data();
 
