@@ -1704,7 +1704,6 @@ window.adminDeleteUser = adminDeleteUser;
 window.changeUserRole = changeUserRole;
 window.toggleBanUser = toggleBanUser;
 window.toggleIgnoreUser = toggleIgnoreUser;
-window.handleNetworkBan = handleNetworkBan;
 window.removeTempBan = removeTempBan;
 
 /* ==========================================================================
