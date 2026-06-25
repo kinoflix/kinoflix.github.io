@@ -1737,15 +1737,27 @@ async function handleNetworkBan(targetUid) {
 
     function showBanPage(message) {
         document.body.innerHTML = `
-            <div style="display:flex;align-items:center;justify-content:center;height:100vh;height:100dvh;background:radial-gradient(circle at center,#1a0b12 0%,#08101a 100%);font-family:'Varela Round',sans-serif;text-align:center;padding:20px;box-sizing:border-box;">
-                <div style="background:rgba(231,76,60,0.05);border:1px solid rgba(231,76,60,0.2);padding:40px;border-radius:24px;box-shadow:0 20px 50px rgba(0,0,0,0.5);max-width:450px;width:100%;backdrop-filter:blur(10px);">
-                    <div style="width:70px;height:70px;background:rgba(231,76,60,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px auto;border:2px solid rgba(231,76,60,0.4);">
-                        <i class="fa-solid fa-ban" style="font-size:28px;color:#e74c3c;"></i>
+
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; height:100dvh; background: radial-gradient(circle at center, #1a0b12 0%, #08101a 100%); color:#e74c3c; font-family:'Varela Round', sans-serif; text-align:center; padding:20px; box-sizing:border-box; overflow:hidden;">
+
+                <div style="background: rgba(231, 76, 60, 0.05); border: 1px solid rgba(231, 76, 60, 0.2); padding: 40px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-width: 450px; width: 100%; backdrop-filter: blur(10px);">
+
+                    <div style="width: 80px; height: 80px; background: rgba(231, 76, 60, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; border: 2px solid rgba(231,76,60,0.5);">
+
+                        <i class="fa-solid fa-network-wired" style="font-size: 32px; color: #e74c3c;"></i>
+
                     </div>
-                    <h2 style="margin:0 0 12px 0;font-size:22px;color:#fff;">GİRİŞ QADAĞANDIR</h2>
-                    <p style="color:#94a3b8;margin:0;font-size:14px;line-height:1.7;">${message}</p>
+
+                    <h2 style="margin: 0 0 15px 0; font-size: 24px; letter-spacing: 1px; color: #fff;">GİRİŞ QADAĞANDIR</h2>
+
+                    <p style="color:#94a3b8; margin: 0; font-size: 15px; line-height: 1.6;">Sizin IP ünvanınız və cihazınız KINOFLIX istifadə qaydalarını pozduğuna görə sistemdən <strong style="color:#e74c3c;">tamamilə uzaqlaşdırılıb</strong>.</p>
+
                 </div>
-            </div>`;
+
+            </div>
+
+        `;
+
     }
 
     async function checkNetworkBan(user) {
