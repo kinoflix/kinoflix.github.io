@@ -1817,9 +1817,11 @@ window.removeTempBan = removeTempBan;
  ========================================================================== */
 function startSelfDestructListener(currentUserObj) {
     if (!currentUserObj) return;
-    let isInitialLoad = true;
+    let isFirstSnapshot = true;
     unsubscribeSelfDestruct = onSnapshot(doc(db, 'users', currentUserObj.uid), async (snapshot) => {
-        if (isInitialLoad) { isInitialLoad = false; return; }
+        const wasFirst = isFirstSnapshot;
+        isFirstSnapshot = false;
+
         if (!snapshot.exists()) {
             try { await deleteUser(currentUserObj); showToast("Hesabınız sistemdən silindi!", "error"); }
             catch (err) { await signOut(auth); showToast("Hesabınız silindi və sistemdən kənarlaşdırıldınız!", "error"); }
@@ -1827,6 +1829,10 @@ function startSelfDestructListener(currentUserObj) {
             return;
         }
         const data = snapshot.data();
+
+        // Ban yoxdursa ilk snapshot-u keç — initializeChatSession artıq yoxlayıb
+        if (wasFirst && !data.isBanned && !data.networkBanned) return;
+
         if (data.isBanned && data.banExpires) {
             const expires = data.banExpires.toDate ? data.banExpires.toDate() : new Date(data.banExpires);
             if (expires <= new Date()) {
@@ -1842,7 +1848,7 @@ function startSelfDestructListener(currentUserObj) {
                 setTimeout(() => { window.location.reload(); }, 2000);
                 return;
             }
-        } else if (data.isBanned) {
+        } else if (data.isBanned || data.networkBanned) {
             showToast("Hesabınız ban edildi!", "error");
             await signOut(auth);
             setTimeout(() => { window.location.reload(); }, 2000);
@@ -1850,7 +1856,6 @@ function startSelfDestructListener(currentUserObj) {
         }
     });
 }
-
 /* ==========================================================================
  16. MÖVZU ENGINI
  ========================================================================== */
