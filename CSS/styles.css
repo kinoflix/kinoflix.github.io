@@ -1444,7 +1444,7 @@ header{
   letter-spacing: 0.2px;
 }
 .submit-btn:hover {
-  background: var(--accent-hover); /* FIX 4: hover düzgün işləyir */
+  background: var(--accent); /* FIX 4: hover düzgün işləyir */
   transform: translateY(-1px);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent);
 }
