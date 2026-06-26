@@ -467,7 +467,33 @@ registerForm.addEventListener('submit', async (e) => {
         showToast("Şifrələr eyni deyil!", "error");
         return;
     }
+// 👮 === POLİS KOD 4: QEYDIYYAT ANINDA ŞƏBƏKƏ YOXLAMASI === 👮
+// Ban edilmiş IP/cihazın yeni hesab yaratmasını bloklayır.
+try {
+    let regIp = null;
+    try {
+        const ipRes = await fetch('https://api.ipify.org?format=json', { signal: AbortSignal.timeout(5000) });
+        if (ipRes.ok) { const ipData = await ipRes.json(); regIp = ipData.ip; }
+    } catch (_) {}
 
+    const regInfo = navigator.userAgent + navigator.language + screen.width + screen.height;
+    let regHash = 0;
+    for (let i = 0; i < regInfo.length; i++) { regHash = ((regHash << 5) - regHash) + regInfo.charCodeAt(i); regHash |= 0; }
+    const regDeviceId = 'dev_' + Math.abs(regHash);
+
+    const checks = [];
+    if (regIp) checks.push(getDoc(doc(db, 'blacklist', regIp)));
+    checks.push(getDoc(doc(db, 'blacklist', regDeviceId)));
+    const results = await Promise.all(checks);
+
+    if (results.some(r => r.exists())) {
+        showToast("Bu cihaz və ya şəbəkədən qeydiyyat qadağandır!", "error");
+        return;
+    }
+} catch (_) {}
+// =========================================================
+
+isRegistering = true;
     isRegistering = true;
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
