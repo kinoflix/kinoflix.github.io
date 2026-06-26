@@ -492,8 +492,6 @@ try {
     }
 } catch (_) {}
 // =========================================================
-
-isRegistering = true;
     isRegistering = true;
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
