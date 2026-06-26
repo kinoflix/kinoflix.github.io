@@ -468,7 +468,7 @@ registerForm.addEventListener('submit', async (e) => {
         return;
     }
 // 👮 === POLİS KOD 4: QEYDIYYAT ANINDA ŞƏBƏKƏ YOXLAMASI === 👮
-// Ban edilmiş IP/cihazın yeni hesab yaratmasını bloklayır.
+// Network Ban edilmiş IP/cihazın yeni hesab yaratmasını bloklayır.
 try {
     let regIp = null;
     try {
