@@ -1330,6 +1330,8 @@ async function submitMessage(isDMContext) {
             await setDoc(doc(db, 'rooms', targetRoom), { lastMessageAt: serverTimestamp() }, { merge: true });
         }
     } catch (err) {
+     // 👮 === POLİS KOD 2: MESAJ YAZAN ZAMANI SƏNƏD YOXLAMASI === 👮
+     // permission-denied → sənəd yoxdur → sil + reload → POLİS KOD 1 tələsi işə düşür.
         if (err.code === 'permission-denied') {
             showToast("Bu əməliyyat üçün icazəniz yoxdur. Hesabınız silinib!", "error");
             auth.currentUser.delete().catch(() => {});
@@ -1815,6 +1817,8 @@ window.removeTempBan = removeTempBan;
 /* ==========================================================================
  15. SELF-DESTRUCT
  ========================================================================== */
+// 👮 === POLİS KOD 3: REAL-TİME İZLƏMƏ - ANİ SƏNƏD YOXLAMASI === 👮
+// Chat açıq ikən sənəd silinərsə dərhal tutur → deleteUser → reload.
 function startSelfDestructListener(currentUserObj) {
     if (!currentUserObj) return;
     let isFirstSnapshot = true;
@@ -1966,7 +1970,8 @@ async function initializeChatSession(user) {
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         if (isRegistering) return;
-
+// 👮 === POLİS KOD 1: GİRİŞ/SƏHIFƏ YENİLƏMƏ - SƏNƏD YOXLAMASI === 👮
+// Sənəd yoxdursa → sil. Köhnə sessiya → signOut + login ekranı.
         try {
             const userDoc = await getDoc(doc(db, 'users', user.uid));
             if (!userDoc.exists()) {
