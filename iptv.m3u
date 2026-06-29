@@ -9,7 +9,7 @@ https://str.yodacdn.net/medeniyyet/index.m3u8
 #EXTINF:1 tvg-copyright="@aligoshgartv" tvg-id="IdmanTV.az" tvg-logo="https://vipotv.com/wp-content/uploads/2020/07/idmantv.png" tvg-language="Azerbaijani" group-title="🇦🇿 AZERBAIJAN",İdman TV
 https://str.yodacdn.net/idman/tracks-v1a1/mono.m3u8
 #EXTINF:1 tvg-copyright="@aligoshgartv" tvg-id="itv.az" tvg-logo="https://itv.az/assets/images/itv-logo.png" tvg-language="Azerbaijani" group-title="🇦🇿 AZERBAIJAN",İctimai TV HD
-http://flussonic.izone.az/ictimaitv/index.m3u8
+https://live.itv.az/itv.m3u8
 #EXTINF:1 tvg-copyright="@aligoshgartv" tvg-id="ATV.az" tvg-logo="https://vipotv.com/wp-content/uploads/2020/04/atv-azerbaycan.png" tvg-language="Azerbaijani" group-title="🇦🇿 AZERBAIJAN",Azad Azərbaycan HD
 https://stream.atv.az/WebRTCAppEE/streams/780339739845112514894920.m3u8
 #EXTINF:1 tvg-copyright="@aligoshgartv" tvg-id="ATV.az" tvg-logo="https://i.postimg.cc/ZRGrMLbg/In-Shot-20250213-182731296.png" tvg-language="Azerbaijani" group-title="🇦🇿 AZERBAIJAN",ATV CINEMA
