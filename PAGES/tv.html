@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="az">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KINOFLIX — Canlı TV</title>
+  <meta name="description" content="Müasir İPTV və Canlı Yayım Platforması" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%231db954' d='M27.5 162.2L9 187.1h90.5l6.9-130.7-78.9 105.8zM396.3 45.7L267.7 32l135.7 147.2-7.1-133.5zM112.2 218.3l-11.2-22H9.9L234.8 458zm2-31.2h284l-81.5-88.5L256.3 33zm297.3 9.1L277.6 458l224.8-261.7h-90.9zM415.4 69L406 56.4l.9 17.3 6.1 113.4h90.3zM113.5 93.5l-4.6 85.6L244.7 32 116.1 45.7zm287.7 102.7h-290l42.4 82.9L256.3 480l144.9-283.8z'/%3E%3C/svg%3E">
+
+  <!-- Video.js CSS -->
+  <link href="https://vjs.zencdn.net/8.9.0/video-js.css" rel="stylesheet" />
+  <!-- Font Awesome İkonları -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <!-- Saytın Mövcud CSS Faylı -->
+  <link rel="stylesheet" href="../CSS/styles.css">
+
+  <style>
+    /* TV Səhifəsi üçün əlavə xüsusi dizayn tənzimləmələri */
+    .grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+    /* Loqoların kart daxilində tam və səliqəli oturması üçün */
+    .tv-poster {
+      width: 100%;
+      height: 0;
+      padding-bottom: 75%; /* TV loqoları üçün 4:3 və ya kvadrat nisbəti daha idealdır */
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: var(--glass);
+      transition: transform 0.2s ease;
+    }
+    .card:hover .tv-poster {
+      transform: scale(1.05);
+    }
+    /* Kateqoriya nişanları üçün */
+    .tv-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 11px;
+      background: var(--glass);
+      color: var(--accent);
+      border-radius: 6px;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <a href="index.html">
+      <img id="logoImg" src="FILES/IMG/logos/white.png" alt="KINOFLIX" />
+    </a>
+  </div>
+
+  <div class="header-center"></div>
+
+  <div class="header-right">
+    <a href="https://apk.e-droid.net/apk/app3924928-qti16g.apk" class="apk-final-fix">
+      <i class="fa-brands fa-google-play"></i>
+    </a>
+    <button id="themeToggle" class="icon-btn" title="Tema dəyişdir" aria-label="Tema dəyişdir">🌙</button>
+    <button id="authMainBtn" class="icon-btn" title="Hesab" aria-label="Hesab">
+      <i class="fa-solid fa-circle-user"></i>
+    </button>
+  </div>
+</header>
+
+<main class="container" id="main">
+  <nav>
+    <ul class="menu">
+      <li><a href="index.html">ƏSAS SƏHİFƏ</a></li>
+      <li><a href="kinoflixplus">KINOFLIX+</a></li>
+      <li class="active"><a href="tv.html">CANLI TV</a></li>
+      <li><a href="PAGES/messages.html">YENİLİKLƏR</a></li>
+      <li><a href="chat">SÖHBƏT</a></li>
+      <li><a href="PAGES/about.html">HAQQIMIZDA</a></li>
+    </ul>
+  </nav>
+
+  <!-- Axtarış və Filtr Paneli -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;gap: 15px;flex-wrap: wrap;">
+    <div class="search" role="search" aria-label="Kanal axtar">
+      <button id="searchBtn" class="search-btn" aria-label="Axtar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+      <input id="searchInput" class="search-input" type="search" placeholder="Kanal adı yazın..." aria-label="Kanal axtar" />
+    </div>
+
+    <select id="genreFilter" aria-label="Kateqoriya üzrə filtr" class="filter-select">
+      <option value="">Bütün Kateqoriyalar</option>
+    </select>
+  </div>
+
+  <!-- TV Kanallar Qalereyası -->
+  <section id="gallery">
+    <div id="loader" class="loader">
+      <div class="spinner" aria-hidden="true"></div>
+      <div>Kanallar yüklənir və tənzimlənir...</div>
+    </div>
+
+    <div id="grid" class="grid" aria-live="polite"></div>
+    <div id="allLoaded" class="all-loaded">Bütün aktiv kanallar siyahıya alındı!</div>
+  </section>
+</main>
+
+<!-- Video Modalı -->
+<div id="modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="modal-inner" role="document">
+    <div class="player-top">
+      <button id="closeModal" class="close-btn" title="Bağla" aria-label="Bağla">✕</button>
+
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;">
+        <div class="player-title" id="playerTitle">—</div>
+        <div class="player-sub" id="playerSub">—</div>
+      </div>
+
+      <div class="player-right-controls">
+        <button class="share-btn" id="mainShareBtn" title="Paylaş" aria-label="Paylaş">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="video-container responsive">
+      <!-- Dinamik yüklənəcək Video.js elementi -->
+      <video id="my-video" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" playsinline></video>
+    </div>
+  </div>
+</div>
+
+<!-- Video.js Kitabxanaları -->
+<script src="https://vjs.zencdn.net/8.9.0/video.min.js"></script>
+
+<script>
+  // M3U Mənbəyi
+  const m3uUrl = 'https://kinoflix.github.io/iptv.m3u';
+  let allChannels = [];
+
+  // DOM Elementləri
+  const grid = document.getElementById('grid');
+  const loader = document.getElementById('loader');
+  const allLoaded = document.getElementById('allLoaded');
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+  const genreFilter = document.getElementById('genreFilter');
+  const modal = document.getElementById('modal');
+  const closeModal = document.getElementById('closeModal');
+  const playerTitle = document.getElementById('playerTitle');
+  const playerSub = document.getElementById('playerSub');
+
+  // Video.js Oynadıcısının Yaradılması
+  const player = videojs('my-video', {
+    fluid: true,
+    liveui: true
+  });
+
+  // 1. M3U Faylını oxuyan və analiz edən funksiya (Parser)
+  async function loadM3U() {
+    try {
+      const response = await fetch(m3uUrl);
+      if (!response.ok) throw new Error('M3U faylı yüklənə bilmədi.');
+      const data = await response.text();
+      
+      const lines = data.split('\n');
+      let currentChannel = null;
+      const categories = new Set();
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+
+        if (line.startsWith('#EXTINF:')) {
+          currentChannel = {};
+          
+          // Kanal adını tapmaq (Sonuncu vergüldən sonrakı mətn)
+          const commaIndex = line.lastIndexOf(',');
+          currentChannel.name = commaIndex !== -1 ? line.substring(commaIndex + 1).trim() : 'Naməlum Kanal';
+
+          // tvg-logo və ya logo tənzimləməsini tutmaq
+          const logoMatch = line.match(/tvg-logo="([^"]+)"/i) || line.match(/logo="([^"]+)"/i);
+          currentChannel.logo = logoMatch ? logoMatch[1] : 'FILES/IMG/logos/placeholder.png'; // tapılmasa standart loqo
+
+          // group-title (Kateqoriya) tapmaq
+          const groupMatch = line.match(/group-title="([^"]+)"/i);
+          currentChannel.category = groupMatch ? groupMatch[1].trim() : 'Digər';
+          
+          categories.add(currentChannel.category);
+        } else if (line && !line.startsWith('#') && currentChannel) {
+          // Əgər sətir boş deyilsə və şərh sətri deyilsə, bu yayım linkidir (m3u8 və ya digər)
+          currentChannel.url = line;
+          allChannels.push(currentChannel);
+          currentChannel = null;
+        }
+      }
+
+      // Filtr dropdown-u doldurmaq
+      categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        genreFilter.appendChild(option);
+      });
+
+      renderChannels(allChannels);
+
+    } catch (error) {
+      console.error(error);
+      loader.innerHTML = `<div style="color:red;">Xəta baş verdi: Kanalları yükləmək mümkün olmadı.</div>`;
+    }
+  }
+
+  // 2. Kanalları DOM-da göstərən funksiya
+  function renderChannels(channels) {
+    grid.innerHTML = '';
+    loader.style.display = 'none';
+
+    if (channels.length === 0) {
+      grid.innerHTML = '<p style="padding:20px; color:var(--muted)">Uyğun kanal tapılmadı.</p>';
+      allLoaded.style.display = 'none';
+      return;
+    }
+
+    channels.forEach(channel => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="tv-poster" style="background-image: url('${channel.logo}')"></div>
+        <div class="meta">
+          <h3 class="title" title="${channel.name}">${channel.name}</h3>
+          <span class="tv-badge">${channel.category}</span>
+        </div>
+      `;
+
+      // Kliklənəndə Video.js Modalını açsın
+      card.addEventListener('click', () => {
+        openPlayer(channel);
+      });
+
+      grid.appendChild(card);
+    });
+
+    allLoaded.style.display = 'block';
+  }
+
+  // 3. Kanalı pleyerdə açan funksiya
+  function openPlayer(channel) {
+    playerTitle.textContent = channel.name;
+    playerSub.textContent = channel.category;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+
+    // M3U8 və ya fərqli format dəstəyi üçün tip təyini
+    let type = 'application/x-mpegURL'; // Standart hls/m3u8
+    if (channel.url.includes('.mp4')) type = 'video/mp4';
+
+    player.src({
+      src: channel.url,
+      type: type
+    });
+
+    player.play().catch(error => {
+      console.log("Avtomatik oynatma bloklandı, istifadəçi klikləməlidir:", error);
+    });
+  }
+
+  // 4. Pleyeri və modalı bağlayan funksiya
+  function closePlayer() {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    player.pause();
+    player.reset(); // Arxa planda şəbəkə data israfının qarşısını almaq üçün mütləqdir
+  }
+
+  closeModal.addEventListener('click', closePlayer);
+  
+  // Modaldan kənara klikləyəndə bağlanma təhlükəsizliyi
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closePlayer();
+  });
+
+  // 5. Canlı Axtarış və Filtrasiya Mexanizmi
+  function filterChannels() {
+    const searchText = searchInput.value.toLowerCase().trim();
+    const selectedCategory = genreFilter.value;
+
+    const filtered = allChannels.filter(channel => {
+      const matchesSearch = channel.name.toLowerCase().includes(searchText);
+      const matchesCategory = selectedCategory === '' || channel.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+
+    renderChannels(filtered);
+  }
+
+  searchInput.addEventListener('input', filterChannels);
+  genreFilter.addEventListener('change', filterChannels);
+
+  // Göndərdiyiniz axtarış düyməsi açılıb/bağlanma animasiya skripti ilə inteqrasiya
+  searchBtn.addEventListener('click', () => {
+    searchInput.classList.toggle('open');
+    if (searchInput.classList.contains('open')) {
+      searchInput.focus();
+    }
+  });
+
+  // Tema tənzimləməsinə (Light/Dark mode) dəstək
+  const themeToggle = document.getElementById('themeToggle');
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    themeToggle.textContent = newTheme === 'light' ? '☀️' : '🌙';
+  });
+
+  // Səhifə yüklənəndə işə sal
+  document.addEventListener('DOMContentLoaded', loadM3U);
+</script>
+<script src="../JS/javascripts.js"></script>
+</body>
+</html>
