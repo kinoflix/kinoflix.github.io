@@ -1564,3 +1564,10 @@ header{
 #closeAuthModal {
   display: none;
 }
+
+#authModalTitle {
+    display: block;        /* Elementin bütün sətri tutmasını təmin edir */
+    width: 100%;           /* Enini 100% edir ki, mərkəzləmə tam işləsin */
+    text-align: center;    /* Həm tək, həm çox sətirli mətni ortalayır */
+    box-sizing: border-box;/* Padding varsa enin pozulmasının qarşısını alır */
+}
