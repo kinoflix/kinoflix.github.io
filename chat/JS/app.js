@@ -1919,19 +1919,27 @@ updateThemeUI(savedTheme);
 /* ==========================================================================
  17. SESSİYA BAŞLATMA
  ========================================================================== */
+/* ==========================================================================
+ 17. SESSİYA BAŞLATMA (TAM YENİLƏNİB)
+ ========================================================================== */
 async function initializeChatSession(user) {
     currentUser = user;
 
-    // Loader-i göstər ki, ban yoxlaması zamanı UI flash olmasın
+    // Loader-i göstər (UI flashının qarşısını alır)
     document.getElementById('appLoader')?.classList.remove('hidden');
 
-    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    // 1. İstifadəçi sənədini oxu
+    let userDoc = await getDoc(doc(db, 'users', user.uid));
+
     if (userDoc.exists()) {
+        // ── Sənəd mövcuddur ──
         currentUserData = userDoc.data();
 
+        // Ban yoxlaması
         if (currentUserData.isBanned && currentUserData.banExpires) {
             const expires = currentUserData.banExpires.toDate ? currentUserData.banExpires.toDate() : new Date(currentUserData.banExpires);
             if (expires <= new Date()) {
+                // Ban müddəti bitib – avtomatik aç
                 await updateDoc(doc(db, 'users', user.uid), {
                     isBanned: false,
                     banExpires: null
@@ -1940,44 +1948,77 @@ async function initializeChatSession(user) {
                 currentUserData.banExpires = null;
                 showToast("Ban müddətiniz bitdi, artıq daxil ola bilərsiniz.", "success");
             } else {
+                // Hələ ban aktivdir
                 showToast(`Siz ${formatDuration(Math.round((expires - new Date()) / 60000))} müddətinə banlandınız!`, "error");
                 await signOut(auth);
                 document.getElementById('appLoader')?.classList.add('hidden');
                 return;
             }
         } else if (currentUserData.isBanned || currentUserData.networkBanned) {
-            showToast("Sistemə daxil olmağa icazəniz yoxdur. Sizin hesabınız ban edilib!", "error");
+            showToast("Sistemə daxil olmağa icazəniz yoxdur. Hesabınız ban edilib!", "error");
             await signOut(auth);
             document.getElementById('appLoader')?.classList.add('hidden');
             return;
         }
     } else {
-        currentUserData = {
-            role: 'user',
-            displayName: user.displayName || 'Anonim',
+        // ── Sənəd YOXDUR – avtomatik yarat (Google və ya başqa üsulla gələn istifadəçi üçün) ──
+        const username = user.email
+            ? user.email.split('@')[0].replace(/[^A-Za-z0-9._]/g, '').slice(0, 30).toLowerCase()
+            : 'user';
+        const displayName = user.displayName || username;
+        const nameParts = displayName.split(' ');
+        const firstName = nameParts[0] || username;
+        const lastName = nameParts.slice(1).join(' ') || '';
+
+        await setDoc(doc(db, 'users', user.uid), {
+            uid: user.uid,
+            username,
+            firstName,
+            lastName,
+            displayName,
+            email: user.email || '',
             photoURL: user.photoURL || DEFAULT_AVATAR,
+            role: 'user',
             isBanned: false,
-            username: user.displayName || 'anonim',
-            firstName: user.displayName || 'Anonim',
-            lastName: ''
+            createdAt: serverTimestamp()
+        });
+
+        currentUserData = {
+            uid: user.uid,
+            username,
+            firstName,
+            lastName,
+            displayName,
+            email: user.email || '',
+            photoURL: user.photoURL || DEFAULT_AVATAR,
+            role: 'user',
+            isBanned: false
         };
     }
 
-    const displayName = currentUserData.displayName || `${currentUserData.firstName || ''} ${currentUserData.lastName || ''}`.trim() || 'Anonim';
-    document.getElementById('currentUserName').innerHTML = escapeHTML(displayName) + getRoleStarsHtml(currentUserData.role);
+    // ── UI yeniləmə ──
+    const displayName = currentUserData.displayName ||
+        `${currentUserData.firstName || ''} ${currentUserData.lastName || ''}`.trim() || 'Anonim';
+    document.getElementById('currentUserName').innerHTML =
+        escapeHTML(displayName) + getRoleStarsHtml(currentUserData.role);
     document.getElementById('currentUserAvatar').src = currentUserData.photoURL || DEFAULT_AVATAR;
 
+    // ── İgnor siyahısını yüklə ──
     try {
         const ignoreDoc = await getDoc(doc(db, 'ignore_lists', user.uid));
         currentIgnoreList = ignoreDoc.exists() ? (ignoreDoc.data().ignored || []) : [];
-    } catch (err) { currentIgnoreList = []; }
+    } catch (err) {
+        currentIgnoreList = [];
+    }
 
+    // ── Rol başlığı ──
     let roleTitle = 'İstifadəçi';
     if (currentUserData.role === 'super_admin') roleTitle = 'Super Admin';
     else if (currentUserData.role === 'admin') roleTitle = 'Admin';
     else if (currentUserData.role === 'moderator') roleTitle = 'Moderator';
     document.getElementById('currentUserRole').innerText = roleTitle;
 
+    // ── Admin otağını göstər/gizlət ──
     const myLevel = getRoleLevel(currentUserData.role);
     if (myLevel >= 2) {
         btnAdminRoom.classList.remove('hidden');
@@ -1985,10 +2026,14 @@ async function initializeChatSession(user) {
         btnAdminRoom.classList.add('hidden');
     }
 
-    logoutBtn.classList.remove('hidden'); openSettingsBtn.classList.remove('hidden');
-    authScreen.classList.remove('active'); chatScreen.classList.add('active');
+    // ── Ekranları dəyiş ──
+    logoutBtn.classList.remove('hidden');
+    openSettingsBtn.classList.remove('hidden');
+    authScreen.classList.remove('active');
+    chatScreen.classList.add('active');
     document.getElementById('appLoader')?.classList.add('hidden');
 
+    // ── Əsas funksiyaları işə sal ──
     setupPresence(user);
     listenUsersAndPresence();
     checkActiveRoomTyping();
@@ -2001,47 +2046,67 @@ async function initializeChatSession(user) {
     startBanCleanup();
 }
 /* ==========================================================================
- 18. AUTH OBSERVER
+ 18. AUTH OBSERVER (GÖZLƏMƏ MEXANİZMİ ƏLAVƏ EDİLDİ)
  ========================================================================== */
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         if (isRegistering) return;
-// 👮 === POLİS KOD 1: GİRİŞ/SƏHIFƏ YENİLƏMƏ - SƏNƏD YOXLAMASI === 👮
-// Sənəd yoxdursa → sil. Köhnə sessiya → signOut + login ekranı.
+
         try {
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            let userDoc = await getDoc(doc(db, 'users', user.uid));
+
+            // Sənəd yoxdursa, 2 saniyə gözlə (Firestore yazması tamamlansın)
             if (!userDoc.exists()) {
-                try { await user.delete(); showToast("Hesabınız sistemdən tamamilə silindi.", "success"); window.location.reload(); return; }
-                catch (authError) {
-                    if (authError.code === 'auth/requires-recent-login') {
-                        showToast("Təhlükəsizlik doğrulaması tələb olunur. Yenidən daxil olun.", "info");
-                        await signOut(auth).catch(() => {});
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                userDoc = await getDoc(doc(db, 'users', user.uid));
+
+                // Hələ də yoxdursa, deməli həqiqətən silinib
+                if (!userDoc.exists()) {
+                    try {
+                        await user.delete();
+                        showToast("Hesabınız sistemdən tamamilə silindi.", "success");
                         window.location.reload();
                         return;
+                    } catch (authError) {
+                        if (authError.code === 'auth/requires-recent-login') {
+                            showToast("Təhlükəsizlik doğrulaması tələb olunur. Yenidən daxil olun.", "info");
+                            await signOut(auth).catch(() => {});
+                            window.location.reload();
+                            return;
+                        }
+                        throw authError;
                     }
-                    throw authError;
                 }
             }
+
+            // Sənəd mövcuddur – sessiyanı başlat
+            await initializeChatSession(user);
+
         } catch (error) {
+            // Permission denied halında da sənədi təkrar yoxla
             if (error.code === 'permission-denied') {
-                try { await user.delete(); window.location.reload(); return; }
-                catch (authError) {
-                    if (authError.code === 'auth/requires-recent-login') {
-                        showToast("Sessiya müddəti bitib. Yenidən giriş edin.", "info");
-                        await signOut(auth).catch(() => {});
+                try {
+                    const userDocRetry = await getDoc(doc(db, 'users', user.uid));
+                    if (!userDocRetry.exists()) {
+                        await user.delete();
                         window.location.reload();
                         return;
                     }
+                } catch (_) {
+                    await user.delete();
+                    window.location.reload();
+                    return;
                 }
             }
             console.error("Giriş yoxlanışı zamanı gözlənilməz xəta:", error);
         }
-
-        await initializeChatSession(user);
     } else {
+        // ── İstifadəçi çıxıb ──
         currentUser = null;
-        logoutBtn.classList.add('hidden'); openSettingsBtn.classList.add('hidden');
-        chatScreen.classList.remove('active'); authScreen.classList.add('active');
+        logoutBtn.classList.add('hidden');
+        openSettingsBtn.classList.add('hidden');
+        chatScreen.classList.remove('active');
+        authScreen.classList.add('active');
         document.getElementById('appLoader')?.classList.add('hidden');
 
         if (unsubscribeGeneralMessages) unsubscribeGeneralMessages();
@@ -2052,11 +2117,14 @@ onAuthStateChanged(auth, async (user) => {
         if (unsubscribeSelfDestruct) unsubscribeSelfDestruct();
         if (unsubscribeAdminMessages) { unsubscribeAdminMessages(); unsubscribeAdminMessages = null; }
 
-        if (unsubscribePresenceConnected) { unsubscribePresenceConnected(); unsubscribePresenceConnected = null; }
-        window.onmousemove = null; window.onkeypress = null;
+        if (unsubscribePresenceConnected) {
+            unsubscribePresenceConnected();
+            unsubscribePresenceConnected = null;
+        }
+        window.onmousemove = null;
+        window.onkeypress = null;
     }
 });
-
 /* ==========================================================================
  19. SMOYLIK (EMOJI) PANELİ
  ========================================================================== */
