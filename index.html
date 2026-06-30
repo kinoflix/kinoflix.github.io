@@ -951,10 +951,17 @@ forgotPasswordBtn.addEventListener('click', async () => {
 tabLogin.addEventListener('click', () => {
   tabLogin.classList.add('active'); tabRegister.classList.remove('active');
   loginForm.classList.add('active'); registerForm.classList.remove('active');
+  
+  // LOGIN başlığını buraya əlavə etdik:
+  document.getElementById('authModalTitle').textContent = "Hesaba daxil ol və ödənişsiz izləməyə başla!";
 });
+
 tabRegister.addEventListener('click', () => {
   tabRegister.classList.add('active'); tabLogin.classList.remove('active');
   registerForm.classList.add('active'); loginForm.classList.remove('active');
+  
+  // REGISTER başlığını buraya əlavə etdik:
+  document.getElementById('authModalTitle').textContent = "Yeni hesab yarat və üstünlüklərdən yararlan!";
 });
  
 // ============================================================
