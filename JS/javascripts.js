@@ -3262,13 +3262,13 @@ document.addEventListener("DOMContentLoaded", () => {
 // AVTOMATİK LOGİN MODAL AÇILIŞI (yalnız login olmayanda)
 // ============================================================
 (function() {
-    // 2 saniyə gözlə
-    setTimeout(function() {
+    // Modalı açan əsas funksiya
+    function checkAndShowLoginModal() {
         // Login düyməsini tap
         var btn = document.getElementById('authMainBtn');
         if (!btn) return;
 
-        // Əgər düymədə 'fa-user' ikonu varsa, deməli istifadəçi login deyil
+        // Əgər düymədə 'fa-circle-user' ikonu varsa, deməli istifadəçi login deyil (Logout olub)
         var isLoggedOut = btn.innerHTML.indexOf('fa-circle-user') !== -1;
 
         if (isLoggedOut) {
@@ -3285,6 +3285,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     var tabRegister = document.getElementById('tabRegister');
                     var loginForm = document.getElementById('loginForm');
                     var registerForm = document.getElementById('registerForm');
+                    
                     if (tabLogin && tabRegister && loginForm && registerForm) {
                         tabLogin.classList.add('active');
                         tabRegister.classList.remove('active');
@@ -3294,5 +3295,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         }
-    }, 2000); // 2 saniyə
+    }
+
+    // 1. SƏHİFƏ YÜKLƏNƏNDƏ: 2 saniyə gözlə və yoxla (Sizin köhnə məntiq)
+    setTimeout(function() {
+        checkAndShowLoginModal();
+    }, 2000);
+
+    // 2. LOGOUT EDİLƏNDƏ: Əgər səhifə yenilənmirsə, logout düyməsinə kliklənməni dinlə
+    // Qeyd: 'logoutBtn' hissəsini öz real logout düymənizin ID-si ilə əvəzləyin (əgər varsa)
+    var logoutBtn = document.getElementById('logoutBtn') || document.querySelector('.logout-link');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            // Logout prosesinin bitməsi və ikonun dəyişməsi üçün qısa fasilə veririk
+            setTimeout(checkAndShowLoginModal, 500);
+        });
+    }
 })();
