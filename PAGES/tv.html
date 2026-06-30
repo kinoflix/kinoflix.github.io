@@ -159,6 +159,7 @@
   const closeModal = document.getElementById('closeModal');
   const playerTitle = document.getElementById('playerTitle');
   const playerSub = document.getElementById('playerSub');
+  const themeToggle = document.getElementById('themeToggle');
 
   // Video.js Oynadıcısının Yaradılması
   const player = videojs('my-video', {
@@ -314,18 +315,46 @@
     }
   });
 
-  // Tema tənzimləməsinə (Light/Dark mode) dəstək
-  const themeToggle = document.getElementById('themeToggle');
+  // Tema tənzimləməsi (Light/Dark mode) — əsas səhifədəki (javascripts.js) məntiqlə BİRƏBİR eynidir:
+  // FontAwesome ikon, localStorage ('flix-theme') və loqo rəng dəyişimi.
+  // QEYD: Tam javascripts.js faylı bilərəkdən bura bağlanmır, çünki o fayl film grid-i/janr filtri
+  // üçün nəzərdə tutulub və tv.html-də olmayan elementlərə (infoBtn, toast) müraciət edərək xəta verir,
+  // həmçinin bu səhifədə artıq elan olunmuş eyni adlı (grid, modal və s.) dəyişənləri təkrar elan edib
+  // SyntaxError yaradır. Ona görə yalnız tema hissəsi birbaşa bura köçürülüb.
+  const logoImg = document.getElementById('logoImg');
+  let theme = localStorage.getItem('flix-theme') || 'dark';
+
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('flix-theme', t);
+
+    const isDark = t === 'dark';
+
+    if (typeof logoImg !== 'undefined' && logoImg) {
+      const color = isDark ? 'white' : 'black';
+      logoImg.src = `../FILES/IMG/logos/${color}.png`;
+      logoImg.onerror = function() {
+        this.src = `FILES/IMG/logos/${color}.png`;
+        this.onerror = null;
+      };
+    }
+
+    if (typeof themeToggle !== 'undefined' && themeToggle) {
+      themeToggle.innerHTML = isDark
+        ? '<i class="fa-solid fa-sun"></i>'
+        : '<i class="fa-solid fa-moon"></i>';
+    }
+  }
+
   themeToggle.addEventListener('click', () => {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    themeToggle.textContent = newTheme === 'light' ? '☀️' : '🌙';
+    theme = theme === 'dark' ? 'light' : 'dark';
+    applyTheme(theme);
   });
+
+  applyTheme(theme);
 
   // Səhifə yüklənəndə işə sal
   document.addEventListener('DOMContentLoaded', loadM3U);
 </script>
-<script src="../JS/javascripts.js"></script>
-</body>
+<!-- QEYD: ../JS/javascripts.js burada bilərəkdən bağlanmır — səbəb yuxarıdakı skript daxilindəki izahatdır (film grid-i üçün yazılıb, tv.html elementləri ilə uyğun deyil və konflikt yaradırdı). --></body>
 </html>
