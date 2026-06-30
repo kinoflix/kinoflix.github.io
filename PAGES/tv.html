@@ -356,5 +356,59 @@
   // Səhifə yüklənəndə işə sal
   document.addEventListener('DOMContentLoaded', loadM3U);
 </script>
-<!-- QEYD: ../JS/javascripts.js burada bilərəkdən bağlanmır — səbəb yuxarıdakı skript daxilindəki izahatdır (film grid-i üçün yazılıb, tv.html elementləri ilə uyğun deyil və konflikt yaradırdı). --></body>
+
+  <style>
+    /* 1. Ümumi Görünüş */
+    .apk-final-fix {
+        display: inline-grid !important;
+        place-items: center !important;
+        width: 44px !important;
+        height: 44px !important;
+        text-decoration: none !important;
+        background: transparent !important;
+        -webkit-tap-highlight-color: transparent !important;
+        cursor: pointer !important;
+        border: none !important;
+        vertical-align: middle !important;
+    }
+
+    /* 2. İkon və 0.6s Keçid */
+    .apk-final-fix i {
+        font-size: 20px !important;
+        transition: color 0.6s ease-in-out !important; /* Sənin dediyin saniyə */
+        display: block !important;
+    }
+
+    /* --- GECƏ REJİMİ (Root/Default) --- */
+    /* İlkin: Ağ (#ffffff) | Hover/Toxunma: Yaşıl (#1db954) */
+    .apk-final-fix i {
+        color: #ffffff !important;
+    }
+    .apk-final-fix:hover i, 
+    .apk-final-fix:active i {
+        color: #1db954 !important;
+    }
+
+    /* --- GÜNDÜZ REJİMİ ([data-theme="light"]) --- */
+    /* İlkin: Qara (#000000) | Hover/Toxunma: Mavi (#0b74ff) */
+    [data-theme="light"] .apk-final-fix i {
+        color: #000000 !important;
+    }
+    [data-theme="light"] .apk-final-fix:hover i,
+    [data-theme="light"] .apk-final-fix:active i {
+        color: #0b74ff !important;
+    }
+
+    /* 3. Mobil Ölçü */
+    @media (max-width: 768px) {
+        .apk-final-fix {
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .apk-final-fix i {
+            font-size: 18px !important;
+        }
+    }
+</style>
+</body>
 </html>
