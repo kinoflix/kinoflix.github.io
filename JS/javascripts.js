@@ -3259,16 +3259,15 @@ document.addEventListener("DOMContentLoaded", () => {
 // CHATBOT-SON
 
 // ============================================================
-// AVTOMATİK LOGİN MODAL AÇILIŞI (yalnız login olmayanda)
+// AVTOMATİK LOGİN MODAL AÇILIŞI (yalnız login olmayanda və logoutda)
 // ============================================================
 (function() {
-    // Modalı açan əsas funksiya
-    function checkAndShowLoginModal() {
-        // Login düyməsini tap
+    // Modalı açan əsas funksiyanı ayırırıq
+    function triggerModalIfLoggedOut() {
         var btn = document.getElementById('authMainBtn');
         if (!btn) return;
 
-        // Əgər düymədə 'fa-circle-user' ikonu varsa, deməli istifadəçi login deyil (Logout olub)
+        // Əgər düymədə 'fa-circle-user' ikonu varsa, deməli istifadəçi login deyil
         var isLoggedOut = btn.innerHTML.indexOf('fa-circle-user') !== -1;
 
         if (isLoggedOut) {
@@ -3285,7 +3284,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     var tabRegister = document.getElementById('tabRegister');
                     var loginForm = document.getElementById('loginForm');
                     var registerForm = document.getElementById('registerForm');
-                    
                     if (tabLogin && tabRegister && loginForm && registerForm) {
                         tabLogin.classList.add('active');
                         tabRegister.classList.remove('active');
@@ -3297,18 +3295,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 1. SƏHİFƏ YÜKLƏNƏNDƏ: 2 saniyə gözlə və yoxla (Sizin köhnə məntiq)
+    // 1. İLKİN AÇILIŞ: 2 saniyə gözlə və əgər login olmayıbsa aç
     setTimeout(function() {
-        checkAndShowLoginModal();
+        triggerModalIfLoggedOut();
     }, 2000);
 
-    // 2. LOGOUT EDİLƏNDƏ: Əgər səhifə yenilənmirsə, logout düyməsinə kliklənməni dinlə
-    // Qeyd: 'logoutBtn' hissəsini öz real logout düymənizin ID-si ilə əvəzləyin (əgər varsa)
-    var logoutBtn = document.getElementById('logoutBtn') || document.querySelector('.logout-link');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-            // Logout prosesinin bitməsi və ikonun dəyişməsi üçün qısa fasilə veririk
-            setTimeout(checkAndShowLoginModal, 500);
+    // 2. LOGOUT İZLƏYİCİSİ: Düymənin içinin dəyişməsini (DOM dəyişikliyini) anlıq izləyirik
+    var targetBtn = document.getElementById('authMainBtn');
+    if (targetBtn) {
+        var observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                // Əgər düymənin daxili strukturu (ikonu) dəyişibsə və daxilində 'fa-circle-user' varsa
+                if (targetBtn.innerHTML.indexOf('fa-circle-user') !== -1) {
+                    // 300ms fasilə veririk ki, Firebase-in öz UI yeniləməsi tam bitsin, sonra modal açılsın
+                    setTimeout(triggerModalIfLoggedOut, 300);
+                }
+            });
         });
+
+        // Düymənin daxilindəki mətn və ya ikon dəyişikliklərini dinləyirik
+        observer.observe(targetBtn, { childList: true, characterData: true, subtree: true });
     }
 })();
