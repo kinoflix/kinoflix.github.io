@@ -3259,27 +3259,29 @@ document.addEventListener("DOMContentLoaded", () => {
 // CHATBOT-SON
 
 // ============================================================
-// AVTOMATİK LOGİN MODAL AÇILIŞI (yalnız login olmayanda və logoutda)
+// AVTOMATİK LOGİN MODAL AÇILIŞI (Tam Təhlükəsiz Versiya)
 // ============================================================
 (function() {
-    // Modalı açan əsas funksiyanı ayırırıq
+    var isInitialPhase = true; // Səhifənin ilk yüklənmə fazası (Kilid)
+
+    // İlk 3 saniyə ərzində MutationObserver-in çaşmasının qarşısını alırıq
+    setTimeout(function() {
+        isInitialPhase = false;
+    }, 3000);
+
     function triggerModalIfLoggedOut() {
         var btn = document.getElementById('authMainBtn');
         if (!btn) return;
 
-        // Əgər düymədə 'fa-circle-user' ikonu varsa, deməli istifadəçi login deyil
         var isLoggedOut = btn.innerHTML.indexOf('fa-circle-user') !== -1;
 
         if (isLoggedOut) {
-            // Əvvəlcə window-da openAuthModal funksiyasını yoxla
             if (typeof window.openAuthModal === 'function') {
                 window.openAuthModal();
             } else {
-                // Fallback: birbaşa modalı aç
                 var modal = document.getElementById('authModal');
                 if (modal) {
                     modal.style.display = 'flex';
-                    // Tabs-ı login vəziyyətinə gətir (default)
                     var tabLogin = document.getElementById('tabLogin');
                     var tabRegister = document.getElementById('tabRegister');
                     var loginForm = document.getElementById('loginForm');
@@ -3295,25 +3297,30 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 1. İLKİN AÇILIŞ: 2 saniyə gözlə və əgər login olmayıbsa aç
+    // 1. İLKİN AÇILIŞ: 2 saniyə gözlə və aç
     setTimeout(function() {
         triggerModalIfLoggedOut();
     }, 2000);
 
-    // 2. LOGOUT İZLƏYİCİSİ: Düymənin içinin dəyişməsini (DOM dəyişikliyini) anlıq izləyirik
+    // 2. LOGOUT İZLƏYİCİSİ (Ağıllı Kilid ilə)
     var targetBtn = document.getElementById('authMainBtn');
     if (targetBtn) {
         var observer = new MutationObserver(function(mutations) {
+            // Əgər hələ ilk yüklənmə fazasındadısa (Firebase yoxlanışı gedirsə), heç nə etmə
+            if (isInitialPhase) return;
+
             mutations.forEach(function(mutation) {
-                // Əgər düymənin daxili strukturu (ikonu) dəyişibsə və daxilində 'fa-circle-user' varsa
                 if (targetBtn.innerHTML.indexOf('fa-circle-user') !== -1) {
-                    // 300ms fasilə veririk ki, Firebase-in öz UI yeniləməsi tam bitsin, sonra modal açılsın
+                    // Mövcud açıq modal varsa və istifadəçi qeydiyyatdadırsa, müdaxilə etmə
+                    var registerForm = document.getElementById('registerForm');
+                    if (registerForm && registerForm.classList.contains('active')) {
+                        return; 
+                    }
+                    
                     setTimeout(triggerModalIfLoggedOut, 300);
                 }
             });
         });
-
-        // Düymənin daxilindəki mətn və ya ikon dəyişikliklərini dinləyirik
         observer.observe(targetBtn, { childList: true, characterData: true, subtree: true });
     }
 })();
