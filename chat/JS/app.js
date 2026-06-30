@@ -273,7 +273,7 @@ async function uploadImageToImgBB(file) {
  ========================================================================== */
 function isValidUsername(str) {
     if (!str) return false;
-    const regex = /^[A-Za-z0-9](?!.*\.\.)[A-Za-z0-9._]{1,8}[A-Za-z0-9]$/;
+    const regex = /^[A-Za-z0-9](?!.*\.\.)[A-Za-z0-9._]{1,28}[A-Za-z0-9]$/;
     return regex.test(str);
 }
 
@@ -446,7 +446,7 @@ registerForm.addEventListener('submit', async (e) => {
     const passwordConfirm = regPasswordConfirm.value;
 
     if (!isValidUsername(username)) {
-        showToast("İstifadəçi adı qaydalara uyğun deyil (3-10 simvol, yalnız A-Z, 0-9, . _, . başda/sonda olmaz, .. olmaz).", "error");
+        showToast("İstifadəçi adı qaydalara uyğun deyil (3-30 simvol, yalnız A-Z, 0-9, . _, . başda/sonda olmaz, .. olmaz).", "error");
         return;
     }
     const available = await checkUsernameAvailability(username);
@@ -547,7 +547,7 @@ document.getElementById('googleAuthBtn').addEventListener('click', async () => {
         const result = await signInWithPopup(auth, new GoogleAuthProvider());
         const userDoc = await getDoc(doc(db, 'users', result.user.uid));
         if (!userDoc.exists()) {
-            const username = result.user.email.split('@')[0].replace(/[^A-Za-z0-9._]/g, '').slice(0, 10).toLowerCase();
+            const username = result.user.email.split('@')[0].replace(/[^A-Za-z0-9._]/g, '').slice(0, 30).toLowerCase();
             const displayName = result.user.displayName || username;
             const nameParts = displayName.split(' ');
             const firstName = nameParts[0] || username;
