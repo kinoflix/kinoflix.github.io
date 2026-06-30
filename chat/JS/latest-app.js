@@ -1908,7 +1908,7 @@ document.body.setAttribute('data-theme', savedTheme);
 updateThemeUI(savedTheme);
 
 /* ==========================================================================
- 17. SESSİYA BAŞLATMA
+ 17. SESSİYA BAŞLATMA (YENİLƏNİB - Sənəd yoxdursa avtomatik yaradılır)
  ========================================================================== */
 async function initializeChatSession(user) {
     currentUser = user;
@@ -1943,14 +1943,38 @@ async function initializeChatSession(user) {
             return;
         }
     } else {
-        currentUserData = {
-            role: 'user',
-            displayName: user.displayName || 'Anonim',
+        // ✅ Sənəd yoxdursa – avtomatik yarat (Google və ya başqa üsulla gələn istifadəçi üçün)
+        const username = user.email
+            ? user.email.split('@')[0].replace(/[^A-Za-z0-9._]/g, '').slice(0, 30).toLowerCase()
+            : 'user';
+        const displayName = user.displayName || username;
+        const nameParts = displayName.split(' ');
+        const firstName = nameParts[0] || username;
+        const lastName = nameParts.slice(1).join(' ') || '';
+
+        await setDoc(doc(db, 'users', user.uid), {
+            uid: user.uid,
+            username,
+            firstName,
+            lastName,
+            displayName,
+            email: user.email || '',
             photoURL: user.photoURL || DEFAULT_AVATAR,
+            role: 'user',
             isBanned: false,
-            username: user.displayName || 'anonim',
-            firstName: user.displayName || 'Anonim',
-            lastName: ''
+            createdAt: serverTimestamp()
+        });
+
+        currentUserData = {
+            uid: user.uid,
+            username,
+            firstName,
+            lastName,
+            displayName,
+            email: user.email || '',
+            photoURL: user.photoURL || DEFAULT_AVATAR,
+            role: 'user',
+            isBanned: false
         };
     }
 
@@ -1991,8 +2015,9 @@ async function initializeChatSession(user) {
     updateUserNetwork().catch(() => {});
     startBanCleanup();
 }
+
 /* ==========================================================================
- 18. AUTH OBSERVER
+ 18. AUTH OBSERVER (YENİLƏNİB - Gözləmə mexanizmi əlavə edildi)
  ========================================================================== */
 onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -2000,29 +2025,38 @@ onAuthStateChanged(auth, async (user) => {
 // 👮 === POLİS KOD 1: GİRİŞ/SƏHIFƏ YENİLƏMƏ - SƏNƏD YOXLAMASI === 👮
 // Sənəd yoxdursa → sil. Köhnə sessiya → signOut + login ekranı.
         try {
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            let userDoc = await getDoc(doc(db, 'users', user.uid));
+            // ✅ Sənəd yoxdursa, 2 saniyə gözlə (Firestore yazması tamamlansın)
             if (!userDoc.exists()) {
-                try { await user.delete(); showToast("Hesabınız sistemdən tamamilə silindi.", "success"); window.location.reload(); return; }
-                catch (authError) {
-                    if (authError.code === 'auth/requires-recent-login') {
-                        showToast("Təhlükəsizlik doğrulaması tələb olunur. Yenidən daxil olun.", "info");
-                        await signOut(auth).catch(() => {});
-                        window.location.reload();
-                        return;
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (!userDoc.exists()) {
+                    try { await user.delete(); showToast("Hesabınız sistemdən tamamilə silindi.", "success"); window.location.reload(); return; }
+                    catch (authError) {
+                        if (authError.code === 'auth/requires-recent-login') {
+                            showToast("Təhlükəsizlik doğrulaması tələb olunur. Yenidən daxil olun.", "info");
+                            await signOut(auth).catch(() => {});
+                            window.location.reload();
+                            return;
+                        }
+                        throw authError;
                     }
-                    throw authError;
                 }
             }
         } catch (error) {
             if (error.code === 'permission-denied') {
-                try { await user.delete(); window.location.reload(); return; }
-                catch (authError) {
-                    if (authError.code === 'auth/requires-recent-login') {
-                        showToast("Sessiya müddəti bitib. Yenidən giriş edin.", "info");
-                        await signOut(auth).catch(() => {});
+                // Permission denied halında da sənədi təkrar yoxla
+                try {
+                    const userDocRetry = await getDoc(doc(db, 'users', user.uid));
+                    if (!userDocRetry.exists()) {
+                        await user.delete();
                         window.location.reload();
                         return;
                     }
+                } catch (_) {
+                    await user.delete();
+                    window.location.reload();
+                    return;
                 }
             }
             console.error("Giriş yoxlanışı zamanı gözlənilməz xəta:", error);
