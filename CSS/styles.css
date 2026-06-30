@@ -1571,3 +1571,6 @@ header{
     text-align: center;    /* Həm tək, həm çox sətirli mətni ortalayır */
     box-sizing: border-box;/* Padding varsa enin pozulmasının qarşısını alır */
 }
+body, input, button, select, textarea {
+    font-family: 'Varela Round', sans-serif;
+}
