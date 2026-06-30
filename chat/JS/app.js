@@ -1854,6 +1854,15 @@ function startSelfDestructListener(currentUserObj) {
         isFirstSnapshot = false;
 
         if (!snapshot.exists()) {
+            // İlk snapshot-da sənəd görünmürsə, bu Firestore-un hələ
+            // yeni yaradılan sənədi sync etmədiyi vaxt pəncərəsi ola bilər
+            // (məsələn Google qeydiyyatından dərhal sonra). Bir daha yoxla.
+            if (wasFirst) {
+                try {
+                    const recheck = await getDoc(doc(db, 'users', currentUserObj.uid));
+                    if (recheck.exists()) return; // sənəd var imiş, sadəcə gecikmə idi
+                } catch (e) { /* davam et, aşağıdakı silmə bloku işləsin */ }
+            }
             try { await deleteUser(currentUserObj); showToast("Hesabınız sistemdən silindi!", "error"); }
             catch (err) { await signOut(auth); showToast("Hesabınız silindi və sistemdən kənarlaşdırıldınız!", "error"); }
             setTimeout(() => { window.location.reload(); }, 2000);
