@@ -543,6 +543,7 @@ loginForm.addEventListener('submit', async (e) => {
 });
 
 document.getElementById('googleAuthBtn').addEventListener('click', async () => {
+ isRegistering = true;
     try {
         const result = await signInWithPopup(auth, new GoogleAuthProvider());
         const userDoc = await getDoc(doc(db, 'users', result.user.uid));
@@ -565,8 +566,10 @@ document.getElementById('googleAuthBtn').addEventListener('click', async () => {
                 createdAt: serverTimestamp()
             });
         }
+     isRegistering = false;
         showToast("Google ilə uğurla giriş edildi!", "success");
-    } catch (err) { showToast(localizeFirebaseError(err), "error"); }
+     await initializeChatSession(result.user);
+    } catch (err) {isRegistering = false; showToast(localizeFirebaseError(err), "error"); }
 });
 
 logoutBtn.addEventListener('click', () => {
