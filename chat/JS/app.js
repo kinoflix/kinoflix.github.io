@@ -1471,7 +1471,7 @@ profileSettingsForm.addEventListener('submit', async (e) => {
 
     if (usernameChanged) {
         if (!isValidUsername(newUsername)) {
-            showToast("İstifadəçi adı qaydalara uyğun deyil (3-10 simvol, yalnız A-Z, 0-9, . _, . başda/sonda olmaz, .. olmaz).", "error");
+            showToast("İstifadəçi adı qaydalara uyğun deyil (3-30 simvol, yalnız A-Z, 0-9, . _, . başda/sonda olmaz, .. olmaz).", "error");
             return;
         }
         const available = await checkUsernameAvailability(newUsername);
