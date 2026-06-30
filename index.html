@@ -833,7 +833,7 @@ loginForm.addEventListener('submit', async (e) => {
     await loginWithEmailOrUsername(identifier, password);
     loginForm.reset();
     showToast("Uğurla giriş edildi. Xoş gəldiniz!", "success");
-    closeAuthModalFunc();
+    closeAuthModal.click();
   } catch (err) {
     showToast(localizeFirebaseError(err), "error");
   }
@@ -892,7 +892,7 @@ registerForm.addEventListener('submit', async (e) => {
     usernameCheckMsg.textContent = '';
     passwordCheckMsg.textContent = '';
     showToast("Qeydiyyat uğurla tamamlandı!", "success");
-    closeAuthModalFunc();
+    closeAuthModal.click();
   } catch (err) {
     showToast(localizeFirebaseError(err), "error");
   }
@@ -925,7 +925,7 @@ googleBtn.addEventListener('click', async () => {
       });
     }
     showToast("Google ilə uğurla giriş edildi!", "success");
-    closeAuthModalFunc();
+    closeAuthModal.click();
   } catch (err) {
     showToast(localizeFirebaseError(err), "error");
   }
@@ -951,16 +951,21 @@ forgotPasswordBtn.addEventListener('click', async () => {
 tabLogin.addEventListener('click', () => {
   tabLogin.classList.add('active'); tabRegister.classList.remove('active');
   loginForm.classList.add('active'); registerForm.classList.remove('active');
+  
+  // LOGIN başlığını buraya əlavə etdik:
   document.getElementById('authModalTitle').textContent = "Hesaba daxil ol və ödənişsiz izləməyə başla!";
 });
+
 tabRegister.addEventListener('click', () => {
   tabRegister.classList.add('active'); tabLogin.classList.remove('active');
   registerForm.classList.add('active'); loginForm.classList.remove('active');
+  
+  // REGISTER başlığını buraya əlavə etdik:
   document.getElementById('authModalTitle').textContent = "Yeni hesab yarat və üstünlüklərdən yararlan!";
 });
  
 // ============================================================
-// 10. MODAL AÇ / BAĞLA (DÜZƏLDİ)
+// 10. MODAL AÇ / BAĞLA
 // ============================================================
 function openAuthModal() {
   authModal.style.display = 'flex';
@@ -969,18 +974,27 @@ function openAuthModal() {
 function closeAuthModalFunc() {
   authModal.style.display = 'none';
 }
- 
-// Düzgün bağlanma – heç bir şərt yoxdur
-closeAuthModal.addEventListener('click', closeAuthModalFunc);
+  
+//closeAuthModal.addEventListener('click', closeAuthModalFunc);
+//authModal.addEventListener('click', (e) => {
+  //if (e.target === authModal) closeAuthModalFunc();
+//});
+//document.addEventListener('keydown', (e) => {
+  //if (e.key === 'Escape' && authModal.style.display === 'flex') closeAuthModalFunc();
+//});
+
+  closeAuthModal.addEventListener('click', () => {
+  if (auth.currentUser) closeAuthModalFunc();
+});
 authModal.addEventListener('click', (e) => {
-  if (e.target === authModal) closeAuthModalFunc();
+  if (e.target === authModal && auth.currentUser) closeAuthModalFunc();
 });
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && authModal.style.display === 'flex') closeAuthModalFunc();
+  if (e.key === 'Escape' && authModal.style.display === 'flex' && auth.currentUser) closeAuthModalFunc();
 });
  
 // ============================================================
-// 11. AUTH STATE İZLƏMƏ VƏ UI YENİLƏMƏ (YENİLƏNİB)
+// 11. AUTH STATE İZLƏMƏ VƏ UI YENİLƏMƏ
 // ============================================================
 
 // Presence və ban izləmə dəyişənləri
@@ -989,18 +1003,24 @@ let banWatcherUnsubscribe = null;
 
 // Presence qur — istifadəçi chat açmadan belə onlayn görünsün
 function setupPresence(user) {
+  // Əvvəlki listener-ləri təmizlə
   if (presenceUnsubscribeConnected) {
     presenceUnsubscribeConnected();
     presenceUnsubscribeConnected = null;
   }
+
   const statusRef = ref(rtdb, `presence/${user.uid}`);
+
+  // RTDB bağlantı statusunu izlə
   const connectedRef = ref(rtdb, '.info/connected');
   const unsubConn = onValue(connectedRef, (snap) => {
     if (snap.val() === true) {
+      // Bağlantı kəsildikdə offline yaz
       onDisconnect(statusRef).set({
         status: 'offline',
         lastChanged: rtdbTimestamp()
       }).then(() => {
+        // Onlayn olduğunu qeyd et
         set(statusRef, {
           status: 'online',
           lastChanged: rtdbTimestamp()
@@ -1008,6 +1028,8 @@ function setupPresence(user) {
       });
     }
   });
+
+  // Away timer — 5 dəqiqə aktivlik olmasa "away" göstər
   let isAway = false;
   let idleTimer;
   const resetIdle = () => {
@@ -1025,6 +1047,8 @@ function setupPresence(user) {
   window.addEventListener('mousemove', resetIdle);
   window.addEventListener('keypress', resetIdle);
   window.addEventListener('touchstart', resetIdle);
+
+  // Unsubscribe saxla
   presenceUnsubscribeConnected = () => {
     unsubConn();
     clearTimeout(idleTimer);
@@ -1036,30 +1060,41 @@ function setupPresence(user) {
 
 // Ban izləyicisi — ban gəldikdə əsas səhifədən çıxış et
 function setupBanWatcher(user) {
+  // Əvvəlki listener-i təmizlə
   if (banWatcherUnsubscribe) {
     banWatcherUnsubscribe();
     banWatcherUnsubscribe = null;
   }
+
   let isFirstSnapshot = true;
   banWatcherUnsubscribe = onSnapshot(doc(db, 'users', user.uid), async (snapshot) => {
     const wasFirst = isFirstSnapshot;
     isFirstSnapshot = false;
+
     if (!snapshot.exists()) {
-      set(ref(rtdb, `presence/${user.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
-      showToast("Hesabınız sistemdən silindi!", "error");
-      try {
-        await deleteUser(user);
-      } catch (err) {
-        await signOut(auth).catch(() => {});
-      }
-      setTimeout(() => window.location.reload(), 2000);
-      return;
-    }
+  set(ref(rtdb, `presence/${user.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+  showToast("Hesabınız sistemdən silindi!", "error");
+  try {
+    await deleteUser(user);
+  } catch (err) {
+    await signOut(auth).catch(() => {});
+  }
+  setTimeout(() => window.location.reload(), 2000);
+  return;
+                                     }
+
     const data = snapshot.data();
+
+    // Ban yoxdursa ilk snapshot-u keç — normal login, yanlış trigger olmasın
     if (wasFirst && !data.isBanned && !data.networkBanned) return;
+
     if (data.isBanned && data.banExpires) {
+      // Müvəqqəti ban
       const expires = data.banExpires.toDate ? data.banExpires.toDate() : new Date(data.banExpires);
-      if (expires <= new Date()) return;
+      if (expires <= new Date()) {
+        // Ban bitib — heç nə etmə
+        return;
+      }
       const minsLeft = Math.ceil((expires - new Date()) / 60000);
       const dStr = minsLeft < 60
         ? `${minsLeft} dəqiqə`
@@ -1071,6 +1106,7 @@ function setupBanWatcher(user) {
       await signOut(auth).catch(() => {});
       setTimeout(() => window.location.reload(), 2500);
     } else if (data.isBanned || data.networkBanned) {
+      // Daimi ban
       showToast("Hesabınız ban edildi! Sistemdən çıxarılırsınız.", "error");
       set(ref(rtdb, `presence/${user.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
       await signOut(auth).catch(() => {});
@@ -1079,6 +1115,7 @@ function setupBanWatcher(user) {
   });
 }
 
+// Presence-i təmizlə (logout zamanı)
 function cleanupPresence(uid) {
   if (uid) {
     set(ref(rtdb, `presence/${uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
@@ -1112,58 +1149,61 @@ function updateAuthUI(user) {
   }
 }
 
-// ✅ AUTH OBSERVER – Gözləmə mexanizmi əlavə edildi
 onAuthStateChanged(auth, async (user) => {
   updateAuthUI(user);
   if (user) {
-    if (authModal.style.display === 'flex') {
-      closeAuthModalFunc();
-    }
-    // 👇 Sənəd yoxlanışı + 2 saniyə gözləmə
-    try {
-      let userDoc = await getDoc(doc(db, 'users', user.uid));
+  // Modal açıqdırsa bağla
+  if (authModal.style.display === 'flex') {
+    closeAuthModalFunc();
+  }
+
+  // 👇 Sənəd yoxlanışı + 2 saniyə gözləmə (Google qeydiyyatı üçün)
+  try {
+    let userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (!userDoc.exists()) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      userDoc = await getDoc(doc(db, 'users', user.uid));
       if (!userDoc.exists()) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (!userDoc.exists()) {
-          try {
-            await deleteUser(user);
-            showToast("Hesabınız sistemdən silindi.", "error");
+        try {
+          await deleteUser(user);
+          showToast("Hesabınız sistemdən silindi.", "error");
+          window.location.reload();
+          return;
+        } catch (authError) {
+          if (authError.code === 'auth/requires-recent-login') {
+            showToast("Təhlükəsizlik doğrulaması tələb olunur. Yenidən daxil olun.", "info");
+            await signOut(auth);
             window.location.reload();
             return;
-          } catch (err) {
-            if (err.code === 'auth/requires-recent-login') {
-              showToast("Təhlükəsizlik doğrulaması tələb olunur. Yenidən daxil olun.", "info");
-              await signOut(auth);
-              window.location.reload();
-              return;
-            }
-            throw err;
           }
+          throw authError;
         }
       }
-    } catch (error) {
-      if (error.code === 'permission-denied') {
-        try {
-          const retryDoc = await getDoc(doc(db, 'users', user.uid));
-          if (!retryDoc.exists()) {
-            await deleteUser(user);
-            window.location.reload();
-            return;
-          }
-        } catch (_) {
+    }
+  } catch (error) {
+    if (error.code === 'permission-denied') {
+      try {
+        const retryDoc = await getDoc(doc(db, 'users', user.uid));
+        if (!retryDoc.exists()) {
           await deleteUser(user);
           window.location.reload();
           return;
         }
+      } catch (_) {
+        await deleteUser(user);
+        window.location.reload();
+        return;
       }
-      console.error("Auth yoxlanışı xətası:", error);
     }
-    setupPresence(user);
-    setupBanWatcher(user);
-  } else {
-    cleanupPresence(null);
+    console.error("Auth yoxlanışı xətası:", error);
   }
+
+  setupPresence(user);
+  setupBanWatcher(user);
+} else {
+  // Çıxış — presence və ban listener-ləri təmizlə
+  cleanupPresence(null);
+}
 });
 </script>
   
