@@ -1140,6 +1140,74 @@ onAuthStateChanged(auth, async (user) => {
   cleanupPresence(null);
 }
 });
-</script>
+
+
+  // ============================================================
+// AVTOMATİK LOGİN MODAL AÇILIŞI (Tam Təhlükəsiz Versiya)
+// ============================================================
+(function() {
+    var isInitialPhase = true; // Səhifənin ilk yüklənmə fazası (Kilid)
+
+    // İlk 3 saniyə ərzində MutationObserver-in çaşmasının qarşısını alırıq
+    setTimeout(function() {
+        isInitialPhase = false;
+    }, 3000);
+
+    function triggerModalIfLoggedOut() {
+        var btn = document.getElementById('authMainBtn');
+        if (!btn) return;
+
+        var isLoggedOut = btn.innerHTML.indexOf('fa-circle-user') !== -1;
+
+        if (isLoggedOut) {
+            if (typeof window.openAuthModal === 'function') {
+                window.openAuthModal();
+            } else {
+                var modal = document.getElementById('authModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    var tabLogin = document.getElementById('tabLogin');
+                    var tabRegister = document.getElementById('tabRegister');
+                    var loginForm = document.getElementById('loginForm');
+                    var registerForm = document.getElementById('registerForm');
+                    if (tabLogin && tabRegister && loginForm && registerForm) {
+                        tabLogin.classList.add('active');
+                        tabRegister.classList.remove('active');
+                        loginForm.classList.add('active');
+                        registerForm.classList.remove('active');
+                    }
+                }
+            }
+        }
+    }
+
+    // 1. İLKİN AÇILIŞ: 2 saniyə gözlə və aç
+    setTimeout(function() {
+        triggerModalIfLoggedOut();
+    }, 2000);
+
+    // 2. LOGOUT İZLƏYİCİSİ (Ağıllı Kilid ilə)
+    var targetBtn = document.getElementById('authMainBtn');
+    if (targetBtn) {
+        var observer = new MutationObserver(function(mutations) {
+            // Əgər hələ ilk yüklənmə fazasındadısa (Firebase yoxlanışı gedirsə), heç nə etmə
+            if (isInitialPhase) return;
+
+            mutations.forEach(function(mutation) {
+                if (targetBtn.innerHTML.indexOf('fa-circle-user') !== -1) {
+                    // Mövcud açıq modal varsa və istifadəçi qeydiyyatdadırsa, müdaxilə etmə
+                    var registerForm = document.getElementById('registerForm');
+                    if (registerForm && registerForm.classList.contains('active')) {
+                        return; 
+                    }
+                    
+                    setTimeout(triggerModalIfLoggedOut, 300);
+                }
+            });
+        });
+        observer.observe(targetBtn, { childList: true, characterData: true, subtree: true });
+    }
+})();
+  </script>
 </body>
 </html>
