@@ -3,7 +3,7 @@
 https://aligoshgar.github.io/video/tv.mp4
 
 #EXTINF:1 tvg-copyright="@aligoshgartv" tvg-id="AzTV.az" tvg-logo="https://i.imgur.com/vvRXNTp.png" tvg-language="Azerbaijani" group-title="🇦🇿 AZERBAIJAN",AzTV
-http://str.yodacdn.net/aztv/index.m3u8
+http://185.32.44.154/aztv/index.m3u8
 #EXTINF:1 tvg-copyright="@aligoshgartv" tvg-id="MedeniyyetTV.az" tvg-logo="https://i.imgur.com/gt8Fhjj.png" tvg-language="Azerbaijani" group-title="🇦🇿 AZERBAIJAN",MƏdƏniyyƏt TV
 https://str.yodacdn.net/medeniyyet/index.m3u8
 #EXTINF:1 tvg-copyright="@aligoshgartv" tvg-id="IdmanTV.az" tvg-logo="https://vipotv.com/wp-content/uploads/2020/07/idmantv.png" tvg-language="Azerbaijani" group-title="🇦🇿 AZERBAIJAN",İdman TV
