@@ -558,6 +558,21 @@ body, input, button, select, textarea {
 .icon-btn .fa-circle-user {
   font-size: 25px; 
 }
+   /* --- GECƏ REJİMİ ÜÇÜN KONTRAST KORREKSİYALARI --- */
+
+/* 1. Hesab ikonunun (Auth düyməsinin) hover vəziyyətində ikonun qara/tünd olması */
+body[data-theme="dark"] #authMainBtn:hover {
+    color: #05070a !important;
+}
+
+/* 2. Giriş və Qeydiyyat (Submit) düymələrində yazının qara/tünd olması */
+body[data-theme="dark"] .submit-btn {
+    color: #05070a !important;
+}
+
+body[data-theme="dark"] .submit-btn:hover {
+    color: #05070a !important;
+}
   </style>
 </head>
 <body data-theme="dark">
