@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multiplayer Şahmat - Firestore</title>
+    <!-- Chessboard.js -->
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css" />
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <!-- Chess.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/1.0.0-beta.6/chess.min.js"></script>
+    <!-- Firebase SDK (Firestore) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #1e1e2f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #eee;
+            flex-direction: column;
+        }
+        .container {
+            background: #2a2a3c;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #f0d9b5;
+        }
+        .status {
+            background: #3a3a4e;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            margin: 10px 0;
+            display: inline-block;
+        }
+        #board {
+            width: 100%;
+            max-width: 460px;
+            margin: 10px auto;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        input,
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #3f3f57;
+            color: #fff;
+        }
+        input {
+            flex: 1;
+            min-width: 120px;
+            background: #1e1e2f;
+            border: 1px solid #555;
+        }
+        button {
+            cursor: pointer;
+            background: #6c5b7b;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #8a7a9a;
+            transform: scale(1.02);
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .btn-primary {
+            background: #4a6fa5;
+        }
+        .btn-primary:hover {
+            background: #5f8bc9;
+        }
+        .btn-danger {
+            background: #a54a4a;
+        }
+        .btn-danger:hover {
+            background: #c95f5f;
+        }
+        #roomIdDisplay {
+            background: #1e1e2f;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 18px;
+            letter-spacing: 2px;
+            margin: 5px 0;
+        }
+        .players {
+            font-size: 13px;
+            opacity: 0.8;
+            margin: 5px 0;
+        }
+        .footer {
+            margin-top: 15px;
+            font-size: 12px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>♟️ Online Şahmat</h1>
+        <div class="status" id="status">Hazır deyil</div>
+        <div id="board"></div>
+
+        <div id="roomInfo">
+            <div id="roomIdDisplay">-</div>
+            <div class="players" id="playerInfo">Ağ: Gözlənilir | Qara: Gözlənilir</div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-primary" id="createBtn">✨ Otaq Yarat</button>
+            <input type="text" id="joinInput" placeholder="Otaq ID daxil et" />
+            <button class="btn-primary" id="joinBtn">🔗 Qoşul</button>
+            <button class="btn-danger" id="leaveBtn">🚪 Çıx</button>
+        </div>
+        <div class="footer">Bütün hərəkətlər real-time sinxronlaşır (Firestore)</div>
+    </div>
+
+    <script>
+        // ============================================================
+        // 1. FIREBASE KONFİQURASİYASI (ÖZ MƏLUMATLARINIZI YAZIN)
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyB45Kfc8_0DvEUGWlbKIqxYrRmM_HM5ZjE",
+            authDomain: "kinoflixchess.firebaseapp.com",
+            projectId: "kinoflixchess",
+            storageBucket: "kinoflixchess.firebasestorage.app",
+            messagingSenderId: "34532322738",
+            appId: "1:34532322738:web:07d5f11799c4fdb0e908ab"
+            // databaseURL artıq tələb olunmur
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // ============================================================
+        // 2. OYUN VƏZİYYƏTİ
+        // ============================================================
+        let game = new Chess();
+        let board = null;
+        let currentRoomId = null;
+        const playerId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substr(2, 9);
+        let myColor = null; // 'white' və ya 'black'
+        let isGameOver = false;
+        let isSyncing = false;
+        let unsubscribe = null; // Firestore real-time listener
+
+        // ============================================================
+        // 3. DOM REFERANSLARI
+        // ============================================================
+        const statusEl = document.getElementById('status');
+        const roomIdDisplay = document.getElementById('roomIdDisplay');
+        const playerInfoEl = document.getElementById('playerInfo');
+        const createBtn = document.getElementById('createBtn');
+        const joinBtn = document.getElementById('joinBtn');
+        const joinInput = document.getElementById('joinInput');
+        const leaveBtn = document.getElementById('leaveBtn');
+
+        // ============================================================
+        // 4. BOARDUN QURULMASI
+        // ============================================================
+        board = Chessboard('board', {
+            draggable: true,
+            position: 'start',
+            onDragStart: onDragStart,
+            onDrop: onDrop,
+            onSnapEnd: onSnapEnd
+        });
+
+        // ============================================================
+        // 5. GEDİŞ MƏNTİQİ
+        // ============================================================
+        function onDragStart(source, piece, position, orientation) {
+            if (isGameOver) return false;
+            if (myColor === null) return false;
+            const pieceColor = piece.charAt(0);
+            if ((myColor === 'white' && pieceColor !== 'w') ||
+                (myColor === 'black' && pieceColor !== 'b')) {
+                return false;
+            }
+            if (isSyncing) return false;
+            return true;
+        }
+
+        function onDrop(source, target) {
+            const move = game.move({
+                from: source,
+                to: target,
+                promotion: 'q'
+            });
+            if (move === null) return 'snapback';
+
+            saveGameStateToFirestore();
+            updateUI();
+        }
+
+        function onSnapEnd() {
+            board.position(game.fen());
+        }
+
+        // ============================================================
+        // 6. FIRESTORE ƏMƏLİYYATLARI
+        // ============================================================
+        function saveGameStateToFirestore() {
+            if (!currentRoomId) return;
+            const gameRef = db.collection('games').doc(currentRoomId);
+            gameRef.update({
+                fen: game.fen(),
+                turn: game.turn(),
+                lastMoveBy: playerId,
+                players: {
+                    white: (myColor === 'white') ? playerId : null,
+                    black: (myColor === 'black') ? playerId : null
+                },
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(err => console.error('Yeniləmə xətası:', err));
+        }
+
+        function listenToRoom(roomId) {
+            // Əvvəlki listeneri təmizlə
+            if (unsubscribe) {
+                unsubscribe();
+                unsubscribe = null;
+            }
+
+            const gameRef = db.collection('games').doc(roomId);
+            unsubscribe = gameRef.onSnapshot((docSnapshot) => {
+                if (!docSnapshot.exists) {
+                    statusEl.textContent = '❌ Otaq tapılmadı və ya silindi';
+                    return;
+                }
+                const data = docSnapshot.data();
+                isSyncing = true;
+
+                // 1. Oyunçu təyinatı
+                const whiteId = data.players?.white || null;
+                const blackId = data.players?.black || null;
+
+                if (whiteId === playerId) myColor = 'white';
+                else if (blackId === playerId) myColor = 'black';
+                else {
+                    if (whiteId === null) {
+                        myColor = 'white';
+                        gameRef.update({ 'players.white': playerId });
+                    } else if (blackId === null) {
+                        myColor = 'black';
+                        gameRef.update({ 'players.black': playerId });
+                    } else {
+                        myColor = null;
+                        statusEl.textContent = '👀 Oyun tamdır, tamaşa edirsiniz';
+                    }
+                }
+
+                // 2. FEN-i yüklə
+                if (data.fen) {
+                    try {
+                        game.load(data.fen);
+                        board.position(data.fen);
+                    } catch (e) {
+                        console.warn('FEN yüklənmədi, start vəziyyətinə qayıdılır');
+                        game = new Chess();
+                        board.position('start');
+                    }
+                }
+
+                // 3. Oyun vəziyyəti
+                isGameOver = game.game_over();
+                if (isGameOver) {
+                    if (game.in_checkmate()) {
+                        statusEl.textContent = '🏆 Şahmat! ' + (game.turn() === 'w' ? 'Qara' : 'Ağ') + ' qazandı!';
+                    } else if (game.in_draw()) {
+                        statusEl.textContent = '🤝 Heç-heçə (pat/ repetition)';
+                    } else {
+                        statusEl.textContent = '⏹️ Oyun bitdi';
+                    }
+                } else {
+                    const turnText = game.turn() === 'w' ? 'Ağ' : 'Qara';
+                    statusEl.textContent = `🎯 Növbə: ${turnText}`;
+                }
+
+                updateUI();
+                isSyncing = false;
+            }, (error) => {
+                console.error('Firestore listener xətası:', error);
+                statusEl.textContent = '⚠️ Bağlantı xətası';
+            });
+        }
+
+        // ============================================================
+        // 7. İNTERFEYSİ YENİLƏ
+        // ============================================================
+        function updateUI() {
+            roomIdDisplay.textContent = currentRoomId || '-';
+            if (myColor) {
+                playerInfoEl.textContent = `Siz: ${myColor === 'white' ? '♔ Ağ' : '♚ Qara'}`;
+            } else {
+                playerInfoEl.textContent = currentRoomId ? '👤 Tamaşaçı' : 'Otaq seçin';
+            }
+
+            if (currentRoomId) {
+                createBtn.disabled = true;
+                joinBtn.disabled = true;
+                joinInput.disabled = true;
+            } else {
+                createBtn.disabled = false;
+                joinBtn.disabled = false;
+                joinInput.disabled = false;
+            }
+        }
+
+        // ============================================================
+        // 8. OTAQ ƏMƏLİYYATLARI
+        // ============================================================
+        function createRoom() {
+            const newRoomRef = db.collection('games').doc(); // avtomatik ID
+            const roomId = newRoomRef.id;
+            currentRoomId = roomId;
+
+            game = new Chess();
+            board.position('start');
+            myColor = 'white';
+
+            newRoomRef.set({
+                fen: game.fen(),
+                turn: 'w',
+                players: {
+                    white: playerId,
+                    black: null
+                },
+                lastMoveBy: null,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                listenToRoom(roomId);
+                statusEl.textContent = '⏳ Rəqib gözlənilir... (Qara)';
+                updateUI();
+            }).catch(err => {
+                console.error('Otaq yaradılmadı:', err);
+                statusEl.textContent = '❌ Otaq yaradılmadı';
+            });
+        }
+
+        function joinRoom(roomId) {
+            if (!roomId) return;
+            currentRoomId = roomId;
+            game = new Chess();
+            board.position('start');
+            myColor = null;
+
+            // Əvvəlcə otağın mövcudluğunu yoxlayaq
+            db.collection('games').doc(roomId).get().then((doc) => {
+                if (!doc.exists) {
+                    statusEl.textContent = '❌ Otaq tapılmadı';
+                    currentRoomId = null;
+                    updateUI();
+                    return;
+                }
+                listenToRoom(roomId);
+                statusEl.textContent = '⏳ Otağa qoşulur...';
+                updateUI();
+            }).catch(err => {
+                console.error('Otaq yoxlanılmadı:', err);
+                statusEl.textContent = '❌ Xəta baş verdi';
+            });
+        }
+
+        function leaveRoom() {
+            if (currentRoomId) {
+                if (unsubscribe) {
+                    unsubscribe();
+                    unsubscribe = null;
+                }
+                // İstəyə görə otağı silə bilərik (yalnız təkdirsə)
+                // db.collection('games').doc(currentRoomId).delete();
+                currentRoomId = null;
+                myColor = null;
+                game = new Chess();
+                board.position('start');
+                statusEl.textContent = '👋 Otaqdan çıxdınız';
+                updateUI();
+            }
+        }
+
+        // ============================================================
+        // 9. EVENT LİSTENERLƏR
+        // ============================================================
+        createBtn.addEventListener('click', createRoom);
+        joinBtn.addEventListener('click', () => {
+            const roomId = joinInput.value.trim();
+            if (roomId) joinRoom(roomId);
+        });
+        joinInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') joinBtn.click();
+        });
+        leaveBtn.addEventListener('click', leaveRoom);
+
+        // İlkin vəziyyət
+        updateUI();
+        statusEl.textContent = '🟢 Otaq yaradın və ya qoşulun';
+        console.log('Oyunçu ID:', playerId);
+    </script>
+</body>
+</html>
