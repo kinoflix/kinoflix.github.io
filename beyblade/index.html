@@ -1066,7 +1066,7 @@ function localizeFirebaseError(err) {
  
 function isValidUsername(str) {
   if (!str) return false;
-  const regex = /^[A-Za-z0-9](?!.*\.\.)[A-Za-z0-9._]{1,8}[A-Za-z0-9]$/;
+  const regex = /^[A-Za-z0-9](?!.*\.\.)[A-Za-z0-9._]{1,28}[A-Za-z0-9]$/;
   return regex.test(str);
 }
 function normalizeUsername(str) { return str.toLowerCase().trim(); }
@@ -1235,7 +1235,7 @@ googleBtn.addEventListener('click', async () => {
     const result = await signInWithPopup(auth, provider);
     const userDoc = await getDoc(doc(db, 'users', result.user.uid));
     if (!userDoc.exists()) {
-      const username = result.user.email.split('@')[0].replace(/[^A-Za-z0-9._]/g, '').slice(0, 10).toLowerCase();
+      const username = result.user.email.split('@')[0].replace(/[^A-Za-z0-9._]/g, '').slice(0, 30).toLowerCase();
       const displayName = result.user.displayName || username;
       const nameParts = displayName.split(' ');
       const firstName = nameParts[0] || username;
