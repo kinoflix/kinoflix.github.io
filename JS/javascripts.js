@@ -3326,3 +3326,94 @@ document.addEventListener("DOMContentLoaded", () => {
         observer.observe(targetBtn, { childList: true, characterData: true, subtree: true });
     }
 })();
+
+/* ============================================================
+   AUTH GUARD PATCH — Videonu login olmadan başlatmağın qarşısını alır
+   Bunu javascripts.js faylının ƏN SONUNA əlavə et.
+   (openPlayer, MOVIES, authMainBtn, authModal artıq mövcud olmalıdır)
+   ============================================================ */
+(function () {
+  const originalOpenPlayer = window.openPlayer;
+
+  if (typeof originalOpenPlayer !== 'function') {
+    console.warn('[auth-guard] openPlayer tapılmadı — patch tətbiq olunmadı.');
+    return;
+  }
+
+  // Login olub-olmadığını authMainBtn-in ikonuna görə yoxlayırıq
+  // (fa-circle-user = çıxış edilib, fa-right-from-bracket = daxil olunub)
+  function isLoggedIn() {
+    const btn = document.getElementById('authMainBtn');
+    return !!btn && btn.innerHTML.indexOf('fa-right-from-bracket') !== -1;
+  }
+
+  // Auth modalını hər şeyin, o cümlədən video handlerin, ÜSTÜNDƏ göstər
+  function forceAuthModalOnTop() {
+    const authModal = document.getElementById('authModal');
+    if (!authModal) return;
+
+    // !important ilə təyin edirik ki, styles.css-dəki z-index nə olursa olsun üstələsin
+    authModal.style.setProperty('display', 'flex', 'important');
+    authModal.style.setProperty('z-index', '2147483647', 'important');
+
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    if (tabLogin && tabRegister && loginForm && registerForm) {
+      tabLogin.classList.add('active');
+      tabRegister.classList.remove('active');
+      loginForm.classList.add('active');
+      registerForm.classList.remove('active');
+    }
+  }
+
+  // Video handlerin arxada belə olsa fəal qalmamasını təmin edən əlavə təhlükəsizlik
+  function hardStopVideo() {
+    try {
+      const modal = document.getElementById('modal');
+      if (modal) {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+      }
+      const videoEl = document.getElementById('my-video');
+      if (videoEl) {
+        videoEl.pause();
+        videoEl.removeAttribute('src');
+        videoEl.load();
+      }
+    } catch (e) {}
+  }
+
+  // Login olunana qədər açılmaq istənilən filmi yadda saxlayırıq ki,
+  // login olan kimi avtomatik açılsın (birbaşa linkin təcrübəsi pozulmasın)
+  let pendingMovie = null;
+
+  window.openPlayer = function (movie) {
+    if (!isLoggedIn()) {
+      pendingMovie = movie;
+      hardStopVideo();
+      forceAuthModalOnTop();
+      return; // <-- orijinal openPlayer çağırılmır, video HEÇ başlamır
+    }
+    pendingMovie = null;
+    return originalOpenPlayer.apply(this, arguments);
+  };
+
+  // İstifadəçi daxil olan kimi gözləyən filmi avtomatik başlat
+  const authBtn = document.getElementById('authMainBtn');
+  if (authBtn) {
+    const observer = new MutationObserver(function () {
+      if (pendingMovie && isLoggedIn()) {
+        const movie = pendingMovie;
+        pendingMovie = null;
+
+        const authModal = document.getElementById('authModal');
+        if (authModal) authModal.style.setProperty('display', 'none', 'important');
+
+        originalOpenPlayer(movie);
+      }
+    });
+    observer.observe(authBtn, { childList: true, characterData: true, subtree: true });
+  }
+})();
