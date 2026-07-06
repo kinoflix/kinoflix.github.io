@@ -4,6 +4,7 @@
 const MOVIES = [
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "Delibal", cover: "https://m.media-amazon.com/images/M/MV5BMTU4MDk5NzcxMV5BMl5BanBnXkFtZTgwMTYyNTc1NzE@._V1_.jpg", src: "https://ok.ru/video/1951962302977", year: 2015, genre: "Dram", id: "delibal" },
   { title: "Ormanın kitabı / The Jungle Book", cover: "https://m.media-amazon.com/images/M/MV5BNTk3M2NmNTItNDYwNy00MzRlLWI5M2UtZmYwODA2NTExZDRlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vWEUn7fUkQ3U?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 1994, genre: "Macəra", id: "thejunglebook" },
   { title: "Truva / Troy", cover: "https://m.media-amazon.com/images/M/MV5BMTk5MzU1MDMwMF5BMl5BanBnXkFtZTcwNjczODMzMw@@._V1_.jpg", src: "https://vidmoly.me/dl/1jekl83xhmkk", year: 2004, genre: "Dram", id: "troy" },
   { title: "Bir koyun polisiyesi / The Sheep Dedectives", cover: "https://m.media-amazon.com/images/M/MV5BNTFmZWI4YmMtNmQ0ZC00ZGQwLTk1OWEtZjAyZmIzOGY0MGFiXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/14947931589225", year: 2026, genre: "Komediya", id: "thesheepdedectives" },
