@@ -762,6 +762,10 @@ body, input, button, select, textarea {
       const episode = videoIds[currentSeason][currentEpisode];
       const videoId = typeof episode === 'object' ? episode.id : episode;
       videoPlayer.src = `https://drive.google.com/file/d/${videoId}/preview`;
+
+  // Deep link-i adres çubuğunda göstər (?sezon=X&bolum=Y)
+  const newUrl = window.location.pathname + `?sezon=${currentSeason}&bolum=${currentEpisode + 1}`;
+  window.history.pushState({ sezon: currentSeason, bolum: currentEpisode + 1 }, '', newUrl);
     }
 
     function changeToPrevious() {
