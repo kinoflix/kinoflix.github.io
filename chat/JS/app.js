@@ -273,7 +273,7 @@ async function uploadImageToImgBB(file) {
  ========================================================================== */
 function isValidUsername(str) {
     if (!str) return false;
-    const regex = /^[A-Za-z0-9](?!.*\.\.)[A-Za-z0-9._]{1,28}[A-Za-z0-9]$/;
+    const regex = /^(?!\d+$)[A-Za-z0-9](?!.*\.\.)[A-Za-z0-9._]{1,28}[A-Za-z0-9]$/;
     return regex.test(str);
 }
 
