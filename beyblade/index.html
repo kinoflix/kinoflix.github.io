@@ -1604,5 +1604,117 @@ onAuthStateChanged(auth, async (user) => {
 })();
   </script>
 
+<script>
+  /* ============================================================
+   AUTH GUARD PATCH — Tək fayllı səhifələr üçün 
+
+   Bu patch iki fərqli video-yükləmə üsulunu da tanıyır və ötürür:
+   A) window.openPlayer(movie)  → spidernoir.html-də mərkəzi hook
+   B) loadSelectedEpisode()     → beyblade.html-də birbaşa videoPlayer.src təyin edən funksiya
+   Hansı funksiya mövcuddursa, avtomatik onu tutur; ikisi də yoxdursa, təsir etmir.
+   ============================================================ */
+(function () {
+  // Login olub-olmadığını authMainBtn-in ikonuna görə yoxlayırıq
+  // (fa-circle-user = çıxış edilib, fa-right-from-bracket = daxil olunub)
+  function isLoggedIn() {
+    const btn = document.getElementById('authMainBtn');
+    return !!btn && btn.innerHTML.indexOf('fa-right-from-bracket') !== -1;
+  }
+
+  // Auth modalını hər şeyin, o cümlədən video handlerin, ÜSTÜNDƏ göstər
+  function forceAuthModalOnTop() {
+    const authModal = document.getElementById('authModal');
+    if (!authModal) return;
+
+    // !important ilə təyin edirik ki, stildəki z-index nə olursa olsun üstələsin
+    authModal.style.setProperty('display', 'flex', 'important');
+    authModal.style.setProperty('z-index', '2147483647', 'important');
+
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    if (tabLogin && tabRegister && loginForm && registerForm) {
+      tabLogin.classList.add('active');
+      tabRegister.classList.remove('active');
+      loginForm.classList.add('active');
+      registerForm.classList.remove('active');
+    }
+  }
+
+  // Video handleri dərhal boşaldırıq (mövcud/başlanmış yüklənməni kəsmək üçün)
+  function killVideo() {
+    const vp = document.getElementById('videoPlayer');
+    if (vp) {
+      try { vp.src = 'about:blank'; } catch (e) {}
+    }
+  }
+
+  // Login olunana qədər açılmaq istənilən bölümü yadda saxlayırıq ki,
+  // login olan kimi avtomatik açılsın (birbaşa linkin/naviqasiyanın təcrübəsi pozulmasın)
+  let pendingKind = null; // 'openPlayer' | 'loadSelectedEpisode'
+  let pendingArgs = null;
+
+  // A) window.openPlayer(movie) mərkəzi hook variantı
+  const originalOpenPlayer = window.openPlayer;
+  if (typeof originalOpenPlayer === 'function') {
+    window.openPlayer = function (movie) {
+      if (!isLoggedIn()) {
+        pendingKind = 'openPlayer';
+        pendingArgs = [movie];
+        killVideo();
+        forceAuthModalOnTop();
+        return; // orijinal funksiya çağırılmır -> video HEÇ başlamır
+      }
+      pendingKind = null; pendingArgs = null;
+      return originalOpenPlayer.apply(this, arguments);
+    };
+  }
+
+  // B) loadSelectedEpisode() birbaşa videoPlayer.src təyin edən variant
+  const originalLoadSelectedEpisode = window.loadSelectedEpisode;
+  if (typeof originalLoadSelectedEpisode === 'function') {
+    window.loadSelectedEpisode = function () {
+      if (!isLoggedIn()) {
+        pendingKind = 'loadSelectedEpisode';
+        pendingArgs = [];
+        killVideo();
+        forceAuthModalOnTop();
+        return; // orijinal funksiya çağırılmır -> video HEÇ başlamır
+      }
+      pendingKind = null; pendingArgs = null;
+      return originalLoadSelectedEpisode.apply(this, arguments);
+    };
+  }
+
+  // Səhifə açılan andaca (hardcoded src ola biləcəyi ehtimalına qarşı) dərhal yoxla
+  if (!isLoggedIn()) {
+    killVideo();
+    forceAuthModalOnTop();
+  }
+
+  // İstifadəçi daxil olan kimi gözləyən bölümü avtomatik başlat
+  const authBtn = document.getElementById('authMainBtn');
+  if (authBtn) {
+    const observer = new MutationObserver(function () {
+      if (isLoggedIn()) {
+        const authModal = document.getElementById('authModal');
+        if (authModal) authModal.style.setProperty('display', 'none', 'important');
+
+        if (pendingKind === 'openPlayer' && typeof originalOpenPlayer === 'function') {
+          const args = pendingArgs;
+          pendingKind = null; pendingArgs = null;
+          originalOpenPlayer.apply(null, args);
+        } else if (pendingKind === 'loadSelectedEpisode' && typeof originalLoadSelectedEpisode === 'function') {
+          pendingKind = null; pendingArgs = null;
+          originalLoadSelectedEpisode();
+        }
+      }
+    });
+    observer.observe(authBtn, { childList: true, characterData: true, subtree: true });
+  }
+})();
+  </script>
+
 </body>
 </html>
