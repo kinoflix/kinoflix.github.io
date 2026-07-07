@@ -3074,10 +3074,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 iframe.src = src;
             } 
             // Digər standart playerlər üçün qorunma
-            else if (['vidmoly', 'dailymotion', 'player', 'embed'].some(k => src.toLowerCase().includes(k))) {
-                iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
-                iframe.setAttribute('data-player-fixed', 'true');
-                iframe.src = src;
+            else if (['vidmoly', 'dailymotion', 'player', 'embed'].some(k => src.toLowerCase().includes(k)) && !src.toLowerCase().includes('ok.ru')) {
+               iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
+               iframe.setAttribute('data-player-fixed', 'true');
+               iframe.src = src;
             }
         }
     }
