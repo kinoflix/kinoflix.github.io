@@ -842,18 +842,18 @@ searchInput.setAttribute('aria-label','Film axtar');
     else if(subEl){ subEl.textContent = ''; subEl.style.display = 'none'; }
 
     try{
-      iframe.removeAttribute('srcdoc');
-      // 🔥 YENİ: autoplay parametri əlavə edilir
-      let finalUrl = embedUrl;
-      if (!finalUrl.includes('?')) {
-        finalUrl += '?autoplay=1&hd=1';
-      } else {
-        finalUrl += '&autoplay=1&hd=1';
-      }
-      iframe.src = finalUrl;
+    iframe.removeAttribute('srcdoc');
+    // 🔥 YENİ: yalnız hd=1 (autoplay YOXDUR)
+    let finalUrl = embedUrl;
+    if (!finalUrl.includes('?')) {
+    finalUrl += '?hd=1';
+    } else {
+    finalUrl += '&hd=1';
+    }
+    iframe.src = finalUrl;
     }catch(e){
-      window.open(originalUrl, '_blank', 'noopener');
-      return;
+    window.open(originalUrl, '_blank', 'noopener');
+    return;
     }
 
     try{ if(typeof lockBodyScroll === 'function') lockBodyScroll(); else { document.documentElement.style.overflow='hidden'; } }catch(e){}
