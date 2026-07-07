@@ -4,6 +4,7 @@
 const MOVIES = [
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "Yolcu / Passenger", cover: "https://m.media-amazon.com/images/M/MV5BMThhNTE5NGQtMWFmNC00ODlmLTk1YTUtNzVmMGVhZjliNDU2XkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/15101586639465", year: 2026, genre: "Qorxu", id: "passenger" },
   { title: "7. koğuştaki mucize", cover: "https://m.media-amazon.com/images/M/MV5BY2UyZThlZjMtMGQyYS00NGYxLThjMDMtMzg2NGM2MjIzZGZkXkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/11998852287081", year: 2019, genre: "Dram", id: "7kogustakimucize" },
   { title: "Delibal", cover: "https://m.media-amazon.com/images/M/MV5BMTU4MDk5NzcxMV5BMl5BanBnXkFtZTgwMTYyNTc1NzE@._V1_.jpg", src: "https://ok.ru/video/1951962302977", year: 2015, genre: "Dram", id: "delibal" },
   { title: "Ormanın kitabı / The Jungle Book", cover: "https://m.media-amazon.com/images/M/MV5BNTk3M2NmNTItNDYwNy00MzRlLWI5M2UtZmYwODA2NTExZDRlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vWEUn7fUkQ3U?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 1994, genre: "Macəra", id: "thejunglebook" },
