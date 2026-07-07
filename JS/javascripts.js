@@ -893,19 +893,17 @@ searchInput.setAttribute('aria-label','Film axtar');
         }
 
         if(id){
-  // 🔥 videoembed əvəzinə video istifadə edirik
-  const embed = `https://ok.ru/video/${encodeURIComponent(id)}`;
-  showOkModal(embed, src, movie && movie.title ? movie.title : 'Odnoklassniki video', subtitle);
-  return;
-} else {
-  try {
-    // Bu halda src artıq video/ formatındadırsa, dəyişməyə ehtiyac yoxdur
-    showOkModal(src, src, movie && movie.title ? movie.title : 'Odnoklassniki video', subtitle);
-    return;
-  } catch(e){
-    window.open(src, '_blank', 'noopener');
-    return;
-  }
+          const embed = `https://ok.ru/videoembed/${encodeURIComponent(id)}`;
+          showOkModal(embed, src, movie && movie.title ? movie.title : 'Odnoklassniki video', subtitle);
+          return;
+        } else {
+          try {
+            showOkModal(src, src, movie && movie.title ? movie.title : 'Odnoklassniki video', subtitle);
+            return;
+          } catch(e){
+            window.open(src, '_blank', 'noopener');
+            return;
+          }
         }
       }catch(err){
         if(original) return original(movie);
