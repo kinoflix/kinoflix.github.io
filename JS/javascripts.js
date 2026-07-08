@@ -1,3 +1,58 @@
+// ============================================================
+// PLEYER AKTİV İKƏN DOM MÜŞAHİDƏSİNİ DONDURAN GLOBAL PATCH
+// ============================================================
+(function() {
+  // Səhifədə hər hansı bir video pleyerin aktiv olub-olmadığını təyin edən funksiya
+  function isAnyVideoModalOpen() {
+    // 1. Standart/Vidmody pleyer modalı
+    const mainModal = document.getElementById('modal');
+    if (mainModal && (mainModal.style.display === 'flex' || mainModal.style.display === 'block' || mainModal.classList.contains('open'))) {
+      return true;
+    }
+    
+    // 2. OK (Odnoklassniki) pleyer modalı
+    const okModal = document.getElementById('okModal');
+    if (okModal && okModal.style.display !== 'none' && window.getComputedStyle(okModal).display !== 'none') {
+      return true;
+    }
+
+    // 3. VK pleyer modalı
+    const vkModal = document.getElementById('vkModal');
+    if (vkModal && vkModal.style.display !== 'none') {
+      return true;
+    }
+
+    // 4. ST (Digər xarici) pleyer modalı
+    const stModal = document.getElementById('stModal');
+    if (stModal && stModal.style.display !== 'none') {
+      return true;
+    }
+
+    return false;
+  }
+
+  // Orijinal MutationObserver-i yadda saxlayırıq
+  const OriginalMutationObserver = window.MutationObserver;
+
+  // MutationObserver konstruktorunu yenidən təyin edirik
+  window.MutationObserver = function(callback) {
+    // Callback funksiyasını təhlükəsiz filtr daxilinə alırıq
+    const securedCallback = function(mutationsList, observer) {
+      // Əgər hər hansı bir film/video modalı açıqdırsa, DOM dəyişikliklərinə REAKSİYA VERMƏ, funksiyadan çıx!
+      if (isAnyVideoModalOpen()) {
+        return; 
+      }
+      // Əks halda normal qaydada işini davam etdir
+      return callback.call(this, mutationsList, observer);
+    };
+
+    return new OriginalMutationObserver(securedCallback);
+  };
+
+  // Prototip zəncirini qoruyuruq
+  window.MutationObserver.prototype = OriginalMutationObserver.prototype;
+})();
+
 /* ===========================
    MOVIES data
    =========================== */
