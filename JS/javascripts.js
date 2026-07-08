@@ -3030,62 +3030,6 @@ document.addEventListener("DOMContentLoaded", () => {
    KOLLEKSİYA PANELİ-SON
    ========================================================= */
 
-/* Adblocker script */
-
-(function() {
-    // Səhifə səviyyəsində window.open funksiyasını sığortalayırıq
-    const bypassWindowOpen = () => {
-        try {
-            const originalOpen = window.open;
-            window.open = function(url, name, specs) {
-                // Əgər çağırış streamtape-dən gəlirsə, tamamilə rədd et
-                if (url && (url.includes('streamtape') || url.includes('ad') || url.includes('pop'))) {
-                    return null; 
-                }
-                return originalOpen.apply(this, arguments);
-            };
-        } catch (e) { }
-    };
-    bypassWindowOpen();
-
-    function patchStreamtape() {
-        const iframes = document.getElementsByTagName('iframe');
-        
-        for (let i = 0; i < iframes.length; i++) {
-            let iframe = iframes[i];
-            let src = iframe.src || '';
-
-            if (iframe.getAttribute('data-player-fixed') === 'true') continue;
-
-            if (src.toLowerCase().includes('streamtape')) {
-                // FORUM TRICK: 'allow-popups' YOXDUR, amma 'allow-popups-to-escape-sandbox' var.
-                // Bu kombinasiya Streamtape-in anti-adblock skriptini tamamilə kor edir.
-                iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock allow-modals allow-popups-to-escape-sandbox');
-                iframe.setAttribute('data-player-fixed', 'true');
-                
-                // İframe-i yeni qaydalarla yenidən yükləyirik
-                iframe.src = src;
-            } 
-            // Digər standart playerlər üçün qorunma
-            else if (['vidmoly', 'dailymotion', 'player', 'embed'].some(k => src.toLowerCase().includes(k)) && !src.toLowerCase().includes('ok.ru')) {
-               iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
-               iframe.setAttribute('data-player-fixed', 'true');
-               iframe.src = src;
-            }
-        }
-    }
-
-    // DOM dəyişikliklərini izləmək və dinamik yüklənən playerləri yaxalamaq üçün
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', patchStreamtape);
-    } else {
-        patchStreamtape();
-    }
-
-    const observer = new MutationObserver(() => { patchStreamtape(); });
-    observer.observe(document.documentElement, { childList: true, subtree: true });
-})();
-
 
 // CHATBOT
 
