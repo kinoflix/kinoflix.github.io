@@ -2337,6 +2337,258 @@ searchInput.setAttribute('aria-label','Film axtar');
   });
 })();
 
+/* Sibnet / video.sibnet.ru video handler —  */
+(function(){
+  // Wait until original openPlayer exists, but don't block forever
+  function whenOpenPlayerReady(cb){
+    if(typeof window.openPlayer === 'function'){ cb(); return; }
+    let tries=0;
+    const id = setInterval(()=>{
+      if(typeof window.openPlayer === 'function' || ++tries > 40){ clearInterval(id); cb(); }
+    }, 100);
+  }
+
+  // Try extract token like:
+  // - video.sibnet.ru/video6180737
+  // - video.sibnet.ru/shell.php?videoid=428234
+  // - any url containing "video" + digits
+  function extractSibnetToken(url){
+    try{
+      const u = String(url || '');
+      if(!/video\.sibnet\.ru/i.test(u)) return null;
+
+      // DÜZƏLİŞ: (-?\d+) istifadə edərək mənfi işarəsini owner ID daxilinə alırıq
+      let m = u.match(/video(\d+)/i);
+      if(m && m[1]) return { id: m[1], raw: `video${m[1]}` };
+
+      // Alternativ format üçün eyni düzəliş
+      m = u.match(/videoid=(\d+)/i);
+      if(m && m[1]) return { id: m[1], raw: `video${m[1]}` };
+
+      try{
+        const parsed = new URL(u);
+        const vid = parsed.searchParams.get('videoid') || parsed.searchParams.get('id') || parsed.searchParams.get('v');
+        
+        if(vid) {
+          // DÜZƏLİŞ: replace(/\D/g,'') mənfini silirdi, [^-0-9] isə mənfi və rəqəmdən başqa hər şeyi silir
+          const cleanVid = vid.replace(/\D/g, '');
+          return { id: cleanVid, raw: `video${cleanVid}` };
+        }
+      }catch(e){}
+      return null;
+    }catch(e){ return null; }
+  }
+
+  // build likely embed candidates for Sibnet given id
+  function buildSibnetEmbeds(id){
+    const embeds = [];
+    // common embed endpoint
+    embeds.push(`https://video.sibnet.ru/shell.php?videoid=${encodeURIComponent(id)}`);
+    // direct video page forms
+    embeds.push(`https://video.sibnet.ru/video${encodeURIComponent(id)}`);
+    // raw token form
+    embeds.push(`https://video.sibnet.ru/shell.php?videoid=${id}`);
+    return embeds;
+  }
+
+  // Create modal only once
+  let sibnetModal = null;
+  const showHeaderFSForSibnet = false; // keep header FS hidden to avoid duplicate icon
+
+  function createSibnetModal(){
+    if(sibnetModal) return sibnetModal;
+
+    const css = `
+      .sibnetmodal-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(2,6,23,0.8), rgba(2,6,23,0.95));z-index:9999;padding:20px}
+      .sibnetmodal-sheet{width:52%;max-width:1100px;border-radius:12px;overflow:hidden;background:var(--surface,#0f1720);box-shadow:0 20px 60px rgba(2,6,23,0.7);display:flex;flex-direction:column}
+      .sibnetmodal-top{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.03)}
+      .sibnetmodal-left{display:flex;align-items:center;gap:8px}
+      .sibnetmodal-title{font-weight:700;color:var(--text,#e6eef6);flex:1;text-align:center;line-height:1.05}
+      .sibnetmodal-sub{font-size:13px;color:var(--muted,#94a3b8);text-align:center;margin-top:4px}
+      .sibnetmodal-close,.sibnetmodal-fs{background:transparent;border:0;color:var(--text,#e6eef6);font-size:18px;cursor:pointer;padding:6px 10px;border-radius:8px}
+      .sibnetmodal-close:hover,.sibnetmodal-fs:hover{background:rgba(255,255,255,0.02)}
+      .sibnetmodal-iframe-wrap{width:100%;height:60vh;min-height:320px;background:#000}
+      .sibnetmodal-iframe{width:100%;height:100%;border:0}
+      @media (max-width:520px){ .sibnetmodal-iframe-wrap{height:48vh} .sibnetmodal-title{text-align:center;font-size:14px} .sibnetmodal-sub{font-size:12px} .sibnetmodal-sheet{width:100%}
+      }
+      @media (min-width:768px){ .sibnetmodal-overlay {transform: translateX(-6px);}
+      }
+    `;
+    const st = document.createElement('style'); st.appendChild(document.createTextNode(css)); document.head.appendChild(st);
+
+    sibnetModal = document.createElement('div');
+    sibnetModal.className = 'sibnetmodal-overlay';
+    sibnetModal.style.display = 'none';
+
+    const sheet = document.createElement('div'); sheet.className = 'sibnetmodal-sheet'; sheet.setAttribute('role','dialog'); sheet.setAttribute('aria-modal','true');
+
+    const top = document.createElement('div'); top.className = 'sibnetmodal-top';
+    const left = document.createElement('div'); left.className = 'sibnetmodal-left';
+    const closeBtn = document.createElement('button'); closeBtn.className = 'sibnetmodal-close'; closeBtn.setAttribute('aria-label','Bağla'); closeBtn.innerHTML = '✕';
+    left.appendChild(closeBtn);
+
+    let fsBtn = null;
+    if(showHeaderFSForSibnet){
+      fsBtn = document.createElement('button'); fsBtn.className = 'sibnetmodal-fs'; fsBtn.setAttribute('aria-label','Tam ekran'); fsBtn.title='Tam ekran';
+      fsBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><path d="M7 14H5v4h4v-2H7v-2zM17 10h2V6h-4v2h2v2zM7 6h4V4H5v4h2V6zM17 18v-4h2v4h-4v-2h2v-2z" fill="currentColor"/></svg>';
+      left.appendChild(fsBtn);
+    }
+
+    const center = document.createElement('div'); center.style.flex = '1'; center.style.display = 'flex'; center.style.flexDirection = 'column'; center.style.alignItems = 'center'; center.style.justifyContent = 'center';
+    const title = document.createElement('div'); title.className = 'sibnetmodal-title'; title.textContent = 'Sibnet video';
+    const sub = document.createElement('div'); sub.className = 'sibnetmodal-sub'; sub.textContent = '';
+    center.appendChild(title); center.appendChild(sub);
+
+    top.appendChild(left);
+    top.appendChild(center);
+    // DƏYİŞİKLİK: Paylaşma düyməsi
+    const rightControls = document.createElement('div');
+    rightControls.className = 'player-right-controls';
+    rightControls.innerHTML = `
+      <button class="share-btn" title="Paylaş" aria-label="Paylaş" onclick="sharePlayer()">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true" focusable="false" role="img">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+      </button>
+    `;
+    top.appendChild(rightControls);
+    // DƏYİŞİKLİK SONU
+
+    const wrap = document.createElement('div'); wrap.className = 'sibnetmodal-iframe-wrap';
+    const iframe = document.createElement('iframe'); iframe.className = 'sibnetmodal-iframe';
+
+    // fullscreen permissions and sandbox
+    iframe.setAttribute('allowfullscreen','');
+    iframe.setAttribute('webkitallowfullscreen','');
+    iframe.setAttribute('mozallowfullscreen','');
+    iframe.setAttribute('allow','fullscreen; autoplay; encrypted-media; picture-in-picture; geolocation; microphone; camera');
+    // include allow-same-origin & allow-scripts to increase chance embeds run (but may be restricted by server)
+    iframe.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-popups allow-modals');
+
+    iframe.src = 'about:blank';
+    wrap.appendChild(iframe);
+
+    sheet.appendChild(top);
+    sheet.appendChild(wrap);
+    sibnetModal.appendChild(sheet);
+    document.body.appendChild(sibnetModal);
+
+    // events: close should also show toast same as MP4/HLS
+    closeBtn.addEventListener('click', ()=>{ hideSibnetModal(); try{ if(typeof showToast==='function') showToast('Film dayandırıldı!',900); }catch(e){} });
+    sibnetModal.addEventListener('click', (e)=>{ if(e.target === sibnetModal){ hideSibnetModal(); try{ if(typeof showToast==='function') showToast('Film dayandırıldı!',900); }catch(e){} } });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && sibnetModal.style.display==='flex'){ hideSibnetModal(); try{ if(typeof showToast==='function') showToast('Film dayandırıldı!',900); }catch(e){} } });
+
+    // header FS wiring if present
+    if(fsBtn){
+      fsBtn.addEventListener('click', async (ev)=>{
+        ev.preventDefault();
+        try{
+          if(iframe.requestFullscreen) await iframe.requestFullscreen();
+          else if(iframe.webkitRequestFullscreen) await iframe.webkitRequestFullscreen();
+          else if(iframe.mozRequestFullScreen) await iframe.mozRequestFullScreen();
+          else if(wrap.requestFullscreen) await wrap.requestFullscreen();
+        }catch(err){
+          // fallback: open currently set src externally
+          const src = iframe.src || '';
+          if(src && src !== 'about:blank') window.open(src, '_blank', 'noopener');
+        }
+      });
+    }
+
+    return sibnetModal;
+  }
+
+  function showSibnetModal(embedUrl, originalUrl, titleText, subtitleText){
+    const m = createSibnetModal();
+    const iframe = m.querySelector('.sibnetmodal-iframe');
+    const titleEl = m.querySelector('.sibnetmodal-title');
+    const subEl = m.querySelector('.sibnetmodal-sub');
+
+    if(titleText && titleEl) titleEl.textContent = titleText;
+    if(subtitleText && subEl){ subEl.textContent = subtitleText; subEl.style.display = 'block'; }
+    else if(subEl){ subEl.textContent = ''; subEl.style.display = 'none'; }
+
+    try{
+      iframe.removeAttribute('srcdoc');
+      iframe.src = embedUrl;
+    }catch(e){
+      // if assignment throws for some reason, fallback open original in new tab
+      window.open(originalUrl, '_blank', 'noopener');
+      return;
+    }
+
+    try{ if(typeof lockBodyScroll === 'function') lockBodyScroll(); else { document.documentElement.style.overflow='hidden'; } }catch(e){}
+    m.style.display = 'flex';
+
+    // toast same text as MP4/HLS player
+    try{ if(typeof showToast === 'function') showToast(`${titleText} başladılır!`, 1000); }catch(e){}
+  }
+
+  function hideSibnetModal(){
+    // === URL TƏMİZLƏMƏ ===
+    window.history.pushState({ movieId: null }, document.title, window.location.pathname);
+    // === SON ===
+    const m = createSibnetModal();
+    const iframe = m.querySelector('.sibnetmodal-iframe');
+    try{ iframe.src = 'about:blank'; }catch(e){}
+    m.style.display = 'none';
+    try{ if(typeof unlockBodyScroll === 'function') unlockBodyScroll(); else { document.documentElement.style.overflow=''; } }catch(e){}
+    try{
+      if(document.fullscreenElement){ if(document.exitFullscreen) document.exitFullscreen(); }
+      else if(document.webkitFullscreenElement){ if(document.webkitExitFullscreen) document.webkitExitFullscreen(); }
+    }catch(e){}
+  }
+
+  // When openPlayer exists, wrap it
+  whenOpenPlayerReady(function(){
+    const original = (typeof window.openPlayer === 'function') ? window.openPlayer.bind(window) : null;
+
+    window.openPlayer = function(movie){
+      try{
+        const src = (movie && (movie.src || movie.url)) ? (movie.src || movie.url) : String(movie||'');
+        // quick host detection for vk variants
+        const isSibnetHost = /video\.sibnet\.ru/i.test(src);
+
+        if(!isSibnetHost){
+          if(original) return original(movie);
+          return;
+        }
+
+        // try extract token
+        const t = extractSibnetToken(src);
+        let subtitle = '';
+        if(movie && (movie.year || movie.genre)){
+          const parts = [];
+          if(movie.year) parts.push(String(movie.year));
+          if(movie.genre) parts.push(String(movie.genre));
+          if(parts.length) subtitle = parts.join(' · ');
+        }
+
+        if(t && t.id){
+          const candidates = buildSibnetEmbeds(t.id);
+          // try candidates in order — use the first candidate as iframe src
+          // (we can't reliably detect cross-origin frame rejection from JS, so we set the first and hope)
+          const embedUrl = candidates[0];
+          showSibnetModal(embedUrl, src, movie && movie.title ? movie.title : 'Sibnet video', subtitle);
+          return;
+        } else {
+          // fallback: try embedding original URL
+          showSibnetModal(src, src, movie && movie.title ? movie.title : 'Sibnet video', subtitle);
+          return;
+        }
+      }catch(err){
+        if(original) return original(movie);
+        try{ window.open((movie && movie.src) || movie || '', '_blank'); }catch(e){}
+      }
+    };
+  });
+
+})();
+
   // Bütün adi və xüsusi handler-lərdə (HLS/MP3, OK.RU, DZEN.RU və s.) adres çubuğunda linkin göstərilməsi
 
 if (typeof window.openPlayer === 'function') {
@@ -2371,8 +2623,9 @@ function getActivePlayerTitle() {
     '.drivemodal-title',  // 6. Google Drive pəncərəsi
     '.vidmolyModal-title',  // 7. Vidmoly pəncərəsi
     '.dmmodal-title',      // 8. DM pəncərəsi
-    '.stmodal-title'       // 9. ST pəncərəsi
-    // Gələcəkdə yeni pəncərə əlavə etsəniz, onun başlıq class-ını bura əlavə edin
+    '.stmodal-title',       // 9. ST pəncərəsi
+    '.sibnetmodal-title'       // 10. Sibnet pəncərəsi
+    // Yeni handler əlavə etdikdə, onun başlıq class-ını bura əlavə etmək lazımdır.
   ];
 
   for (const selector of titleSelectors) {
