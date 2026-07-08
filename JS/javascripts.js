@@ -3363,3 +3363,67 @@ document.addEventListener("DOMContentLoaded", () => {
     observer.observe(authBtn, { childList: true, characterData: true, subtree: true });
   }
 })();
+
+/* ==========================================================
+     DÜZƏLİŞ: Video oynadılarkən ok.ru (və digər) player-lərində
+     hər ~5 saniyədən bir baş verən "tutulma / bufer sıfırlanması"
+     problemi.
+
+     Səbəb: Ana səhifədəki "Spotlight" karuseli (startSpotlightAutoplay,
+     AUTOPLAY_DELAY = 5000ms) video modalı açıq olsa belə arxa planda
+     işləməyə davam edir. Onun hər dövrədə etdiyi şəkil yükləməsi +
+     offsetTop/offsetWidth oxunuşları (məcburi reflow) + smooth scroll
+     əsas thread-i qısa müddətə bloklayır və bu, iframe daxilindəki
+     ok.ru player-inin bufer göstəricisinin sıçramasına səbəb olur.
+
+     Bu patch: hər hansı video modalı (bütün handler-lər: ok.ru, vk,
+     dzen, vidmoly, drive, mail, generic) açıq olduğu müddətdə
+     spotlightInterval-ı dayandırır, modal bağlanan kimi yenidən
+     başladır. Heç bir mövcud handler koduna toxunmur.
+     ========================================================== */
+  (function () {
+    const OVERLAY_SELECTOR = [
+      '.okmodal-overlay',
+      '.vkmodal-overlay',
+      '.stmodal-overlay',
+      '.mailmodal-overlay',
+      '.dzenmodal-overlay',
+      '.dmmodal-overlay',
+      '.vidmolymodal-overlay',
+      '.drivemodal-overlay',
+      '.vm-overlay'
+    ].join(',');
+
+    function isAnyVideoModalOpen() {
+      // Native #modal (əsas video handler)
+      const nativeModal = document.getElementById('modal');
+      if (nativeModal && nativeModal.classList.contains('open')) return true;
+
+      const overlays = document.querySelectorAll(OVERLAY_SELECTOR);
+      for (const el of overlays) {
+        if (window.getComputedStyle(el).display !== 'none') return true;
+      }
+      return false;
+    }
+
+    let wasOpen = false;
+    setInterval(function () {
+      const open = isAnyVideoModalOpen();
+      if (open === wasOpen) return;
+      wasOpen = open;
+
+      if (open) {
+        // Video başladı — karuseli dayandır ki, reflow/şəkil yükləməsi
+        // player-in resurslarını bölüşməsin
+        if (typeof spotlightInterval !== 'undefined' && spotlightInterval) {
+          clearInterval(spotlightInterval);
+          spotlightInterval = null;
+        }
+      } else {
+        // Video bağlandı — karuseli normal işinə qaytar
+        if (typeof startSpotlightAutoplay === 'function') {
+          startSpotlightAutoplay();
+        }
+      }
+    }, 400);
+  })();
