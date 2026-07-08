@@ -4,6 +4,8 @@
 const MOVIES = [
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "Zaferin rengi", cover: "https://m.media-amazon.com/images/M/MV5BYTBiYzdlZjUtNmZiMy00Yjc3LTkzNjAtZTRmMDkxZTA0YjA1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/9845559986796", year: 2024, genre: "Dram", id: "zaferinrengi" },
+  { title: "Aşkın saati: 1903", cover: "https://m.media-amazon.com/images/M/MV5BNDIxZjlmN2UtZTYyMi00NWM0LTk3N2MtZTY1NGYxYTI5MGQ5XkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/8663144466945", year: 2019, genre: "Komediya", id: "askinsaati1903" },
   { title: "Yolcu / Passenger", cover: "https://m.media-amazon.com/images/M/MV5BMThhNTE5NGQtMWFmNC00ODlmLTk1YTUtNzVmMGVhZjliNDU2XkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/15101586639465", year: 2026, genre: "Qorxu", id: "passenger" },
   { title: "7. koğuştaki mucize", cover: "https://m.media-amazon.com/images/M/MV5BY2UyZThlZjMtMGQyYS00NGYxLThjMDMtMzg2NGM2MjIzZGZkXkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/11998852287081", year: 2019, genre: "Dram", id: "7kogustakimucize" },
   { title: "Delibal", cover: "https://m.media-amazon.com/images/M/MV5BMTU4MDk5NzcxMV5BMl5BanBnXkFtZTgwMTYyNTc1NzE@._V1_.jpg", src: "https://ok.ru/video/1951962302977", year: 2015, genre: "Dram", id: "delibal" },
