@@ -3420,3 +3420,97 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 })();
 
+/* ========================================================
+   UNIVERSAL KINOFLIX PATCH: Sandbox, Bufer Qorunması & Auto-Landscape
+   ======================================================== */
+(function() {
+    // 1. Element.setAttribute üzərində qlobal nəzarət (Sandbox ləğvi və Src qorunması)
+    const originalSetAttribute = Element.prototype.setAttribute;
+    Element.prototype.setAttribute = function(name, value) {
+        // A) Bütün skriptlərdə 'sandbox' atributunun iframelərə yazılmasını bloklayır
+        if (this.tagName === 'IFRAME' && name.toLowerCase() === 'sandbox') {
+            return; // Sandbox atributunu rədd et
+        }
+        
+        // B) Bufer qorunması: Eyni linkin setAttribute ilə təkrar yazılmasını blokla
+        if ((this.tagName === 'IFRAME' || this.tagName === 'VIDEO') && name.toLowerCase() === 'src') {
+            const currentSrc = this.getAttribute('src') || this.src;
+            // Əgər yeni link köhnə ilə eynidirsə (və təmizlənmirsə), icra etmə
+            if (currentSrc === value && value !== 'about:blank' && value !== '') {
+                return;
+            }
+        }
+        return originalSetAttribute.apply(this, arguments);
+    };
+
+    // 2. Birbaşa obyekt xüsusiyyəti kimi (iframe.src = '...') yazılmaların bloklanması
+    const iframeSrcDescriptor = Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'src');
+    if (iframeSrcDescriptor && iframeSrcDescriptor.set) {
+        Object.defineProperty(HTMLIFrameElement.prototype, 'src', {
+            set: function(value) {
+                if (this.src === value && value !== 'about:blank' && value !== '') {
+                    return; // Eyni linkin təkrar renderini blokla və buferi qoru
+                }
+                iframeSrcDescriptor.set.call(this, value);
+            },
+            get: iframeSrcDescriptor.get,
+            configurable: true
+        });
+    }
+
+    // 3. innerHTML ilə gələn gizli sandbox-ları təmizləyən arxa plan məhdudlaşdırıcısı
+    // (Arxa planda baş verən DOM dəyişikliklərini izləyir və sandbox-u dərhal silir)
+    const removeSandbox = () => {
+        document.querySelectorAll('iframe[sandbox]').forEach(iframe => {
+            iframe.removeAttribute('sandbox');
+        });
+    };
+    removeSandbox(); // İlk yüklənmədə təmizlə
+    
+    const observer = new MutationObserver((mutations) => {
+        let needsCleaning = false;
+        for (let m of mutations) {
+            if (m.addedNodes.length > 0 || m.attributeName === 'sandbox') {
+                needsCleaning = true; break;
+            }
+        }
+        if (needsCleaning) removeSandbox();
+    });
+    // Bütün DOM-u dinləyir, kənar skriptlərin müdaxiləsini sıfırlayır
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['sandbox'] });
+
+    // 4. Mobildə Tam Ekran (Fullscreen) olanda avtomatik eninə (landscape) çevirmək
+    const handleFullscreenChange = async () => {
+        const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+        
+        if (isFullscreen) {
+            // Tam ekrana keçdikdə ekranı eninə kilidlə (Landscape)
+            if (screen.orientation && screen.orientation.lock) {
+                try {
+                    await screen.orientation.lock('landscape');
+                } catch (err) {
+                    // Cihaz dəstəkləmirsə və ya masaüstüdürsə səssizcə keç
+                }
+            } else if (screen.lockOrientation) {
+                screen.lockOrientation('landscape');
+            }
+        } else {
+            // Tam ekrandan çıxdıqda ekran kilidini aç (Portrait-ə qayıda bilsin)
+            if (screen.orientation && screen.orientation.unlock) {
+                try {
+                    screen.orientation.unlock();
+                } catch (err) {}
+            } else if (screen.unlockOrientation) {
+                screen.unlockOrientation();
+            }
+        }
+    };
+
+    // Bütün növ brauzerlər (Chrome, Safari, Firefox) üçün tam ekran hadisələrini dinlə
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+})();
+
