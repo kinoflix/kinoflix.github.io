@@ -4,6 +4,8 @@
 const MOVIES = [
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "Aaahh Belinda", cover: "https://m.media-amazon.com/images/M/MV5BMDI3NmU0MTAtMWVkYS00OWYxLWIyOTItM2FhNmE4OThiMzE0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vXAyyniyxdSA?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2023, genre: "Romantik", id: "aaahhbelinda" },
+  { title: "Evet, hayır, belki", cover: "https://m.media-amazon.com/images/M/MV5BZWI3OWFjMTctZDJlZi00ZDM0LTgxYTUtN2VhZDBjYjExMzI0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vidmoly.me/dl/zpw64k1c458m", year: 2025, genre: "Romantik", id: "evetbelkihayir" },
   { title: "Aşk tesadüfleri sever", cover: "https://m.media-amazon.com/images/M/MV5BMjAwMjMyMzQzMV5BMl5BanBnXkFtZTcwNDE4MTc1NQ@@._V1_.jpg", src: "https://ok.ru/video/15125742094953", year: 2011, genre: "Romantik", id: "asktesaduflerisever" },
   { title: "Fetih: 1453", cover: "https://m.media-amazon.com/images/M/MV5BMTM2MDk3MDkwMF5BMl5BanBnXkFtZTcwMjMxODYyNw@@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/15154596022889", year: 2012, genre: "Bioqrafiya", id: "fetih1453" },
   { title: "Zaferin rengi", cover: "https://m.media-amazon.com/images/M/MV5BYTBiYzdlZjUtNmZiMy00Yjc3LTkzNjAtZTRmMDkxZTA0YjA1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/9845559986796", year: 2024, genre: "Dram", id: "zaferinrengi" },
