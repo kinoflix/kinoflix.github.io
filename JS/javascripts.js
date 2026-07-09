@@ -4,6 +4,7 @@
 const MOVIES = [
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "Aşk tesadüfleri sever", cover: "https://m.media-amazon.com/images/M/MV5BMjAwMjMyMzQzMV5BMl5BanBnXkFtZTcwNDE4MTc1NQ@@._V1_.jpg", src: "https://ok.ru/video/15125742094953", year: 2011, genre: "Romantik", id: "asktesaduflerisever" },
   { title: "Fetih: 1453", cover: "https://m.media-amazon.com/images/M/MV5BMTM2MDk3MDkwMF5BMl5BanBnXkFtZTcwMjMxODYyNw@@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/15154596022889", year: 2012, genre: "Bioqrafiya", id: "fetih1453" },
   { title: "Zaferin rengi", cover: "https://m.media-amazon.com/images/M/MV5BYTBiYzdlZjUtNmZiMy00Yjc3LTkzNjAtZTRmMDkxZTA0YjA1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/9845559986796", year: 2024, genre: "Dram", id: "zaferinrengi" },
   { title: "Aşkın saati: 1903", cover: "https://m.media-amazon.com/images/M/MV5BNDIxZjlmN2UtZTYyMi00NWM0LTk3N2MtZTY1NGYxYTI5MGQ5XkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/8663144466945", year: 2019, genre: "Komediya", id: "askinsaati1903" },
