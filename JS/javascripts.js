@@ -4,6 +4,7 @@
 const MOVIES = [
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "Boulevard", cover: "https://m.media-amazon.com/images/M/MV5BY2M5NTJmNGUtNmQyYS00NWEwLTlhNzktNWM5ZDgyY2JmMDI1XkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/15165466020457", year: 2026, genre: "Romantik", id: "boulevard" },
   { title: "Sihirli yollarda / Upon the Magic Roads", cover: "https://m.media-amazon.com/images/M/MV5BNmM1MDg2ZjktYjM1MC00MDg2LTg0NGMtMzQxZDg1OTU2NDhhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vfQI_Cb2bpxg?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2021, genre: "Macəra", id: "uponthemagicroads" },
   { title: "Pek yakında", cover: "https://m.media-amazon.com/images/M/MV5BMTg0ODQ4OTE0OF5BMl5BanBnXkFtZTgwNzQwMTk3MjE@._V1_.jpg", src: "https://ok.ru/video/14307018476137", year: 2014, genre: "Komediya", id: "pekyakinda" },
   { title: "Aaahh Belinda", cover: "https://m.media-amazon.com/images/M/MV5BMDI3NmU0MTAtMWVkYS00OWYxLWIyOTItM2FhNmE4OThiMzE0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vXAyyniyxdSA?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2023, genre: "Romantik", id: "aaahhbelinda" },
