@@ -296,6 +296,17 @@ const MOVIES = [
   { title: "Sihirbazlar çetesi / Now You See Me", cover: "https://m.media-amazon.com/images/M/MV5BMTY0NDY3MDMxN15BMl5BanBnXkFtZTcwOTM5NzMzOQ@@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vfXt5DGIcmAc?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2013, genre: "Macəra", id: "nowyouseeme" },
   { title: "Karateci çocuk: Efsane dövüşçüler / Karate Kid: Legends", cover: "https://m.media-amazon.com/images/M/MV5BM2MwYTlkY2MtNmUzNy00MTljLThjNDAtZGUzNzMxMzcxNzM5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/9885577644649", year: 2025, genre: "Aksiyon", id: "thekaratekid2" },
   { title: "Karateci çocuk / The Karate kid", cover: "https://m.media-amazon.com/images/M/MV5BODQ2MDJiMDItN2QwMS00Yzg1LWJlZDEtN2Y3M2UyYWEzZDk3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://m.ok.ru/video/581747149537", year: 2010, genre: "Aksiyon", id: "thekaratekid" },
+  { title: "Hızlı ve öfkeli 10 / Fast X", cover: "https://m.media-amazon.com/images/M/MV5BYzEwZjczOTktYzU1OS00YjJlLTgyY2UtNWEzODBlN2RjZDEwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/11792629959356", year: 2023, genre: "Aksiyon", id: "fastx" },
+  { title: "Hızlı ve öfkeli 9 / F9: The Fast Saga", cover: "https://m.media-amazon.com/images/M/MV5BODJkMTQ5ZmQtNzQxYy00ZWNlLWI0ZGYtYjU1NzdiMjcyNDRmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vgsbQ-E4Tzlw?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2021, genre: "Aksiyon", id: "f9thefastsaga" },
+  { title: "Hızlı ve öfkeli: Hobbs ve Shaw / Fast and Furious Presents: Hobbs and Shaw", cover: "https://m.media-amazon.com/images/M/MV5BNmU4OTA5NGYtMTFjMS00MzgxLWFjNTMtYjdlMThlYzc4M2M4XkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vGVXP2su1RmA?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2019, genre: "Aksiyon", id: "fastandfuriouspresentshobbsandshaw" },
+  { title: "Hızlı ve öfkeli 8 / The Fate of the Furious", cover: "https://m.media-amazon.com/images/M/MV5BMjMxODI2NDM5Nl5BMl5BanBnXkFtZTgwNjgzOTk1MTI@._V1_.jpg", src: "https://dzen.ru/embed/vrH10eEPvFXQ?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2017, genre: "Aksiyon", id: "thefateofthefurious" },
+  { title: "Hızlı ve öfkeli 7 / Furious 7", cover: "https://m.media-amazon.com/images/M/MV5BODZhNDA1NGItNTVmMC00MzU2LTg4ZGMtYTE1YjQzMGI4NWUyXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/v8k3_25PO2W4?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2015, genre: "Aksiyon", id: "furious7" },
+  { title: "Hızlı ve öfkeli 6 / Fast and Furious 6", cover: "https://m.media-amazon.com/images/M/MV5BMTM3NTg2NDQzOF5BMl5BanBnXkFtZTcwNjc2NzQzOQ@@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vn_hYh80VrjY?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2013, genre: "Aksiyon", id: "fastandfurious6" },
+  { title: "Hızlı ve öfkeli 5 / Fast Five", cover: "https://m.media-amazon.com/images/M/MV5BMTUxNTk5MTE0OF5BMl5BanBnXkFtZTcwMjA2NzY3NA@@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vehtnFAV3qgE?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2011, genre: "Aksiyon", id: "fastfive" },
+  { title: "Hızlı ve öfkeli 4 / Fast and Furious", cover: "https://m.media-amazon.com/images/M/MV5BM2Y1YzhkNzUtMzhmZC00OTFkLWJjZDktMWYzZmQ0Y2Y5ODcwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/v6BrTl-JSIUw?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2009, genre: "Aksiyon", id: "fastandfurious" },
+  { title: "Hızlı ve öfkeli: Tokyo yarışı / The Fast and the Furious: Tokyo Drift", cover: "https://m.media-amazon.com/images/M/MV5BMTQ2NTMxODEyNV5BMl5BanBnXkFtZTcwMDgxMjA0MQ@@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vtHqfrsohlAQ?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2006, genre: "Aksiyon", id: "thefastandthefurioustokyodrift" },
+  { title: "Daha hızlı daha öfkeli / 2 Fast 2 Furious", cover: "https://m.media-amazon.com/images/M/MV5BOTQzYzEwNWMtOTAwYy00YWYwLWE1NTEtZTkxOGQxZTM0M2VhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/v6LDlOCAZjQc?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2003, genre: "Aksiyon", id: "2fast2furious" },
+  { title: "Hızlı ve öfkeli / The Fast and the Furious", cover: "https://m.media-amazon.com/images/M/MV5BMzFiZTY2OGUtNzZmMC00MTk2LTgyNzMtZmM5YzMzNjIyYTljXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vrH10eEPvFXQ?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2001, genre: "Aksiyon", id: "thefastandthefurious" },
   { title: "Taksi 5 / Taxi 5", cover: "https://m.media-amazon.com/images/M/MV5BYmVmYzBiMWMtZWM1NC00NWI0LWEyNDQtOGQ0NmQxNDE1NGYzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vkvideo.ru/video777288366_456239066", year: 2018, genre: "Aksiyon", id: "taxi5" },
   { title: "Taksi 4 / Taxi 4", cover: "https://m.media-amazon.com/images/M/MV5BYTJhY2RmNzUtMDk3ZS00ZDI4LWI3M2YtOTVmOGE5MDg5YjIxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/3340728404561", year: 2007, genre: "Aksiyon", id: "taxi4" },
   { title: "Taksi 3 / Taxi 3", cover: "https://m.media-amazon.com/images/M/MV5BNzdjODU5ODQtZjkzOC00MTNiLWFhZjQtNDcyZmI1MmM2Yzg2XkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/3340728339025", year: 2003, genre: "Aksiyon", id: "taxi3" },
@@ -3089,6 +3100,12 @@ const COLLECTIONS = [
     title: "Demir adam / Iron Man",
     cover: "https://m.media-amazon.com/images/M/MV5BMjIzMzAzMjQyM15BMl5BanBnXkFtZTcwNzM2NjcyOQ@@._V1_.jpg",
     movies: ["ironman", "ironman2", "ironman3"]
+  },
+   {
+    id: "thefastandthefurious",
+    title: "Hızlı ve öfkeli / The Fast and the Furious",
+    cover: "https://m.media-amazon.com/images/M/MV5BMzFiZTY2OGUtNzZmMC00MTk2LTgyNzMtZmM5YzMzNjIyYTljXkEyXkFqcGc@._V1_.jpg",
+    movies: ["thefastandthefurious", "2fast2furious", "thefastandthefurioustokyodrift", "fastandfurious", "fastfive", "fastandfurious6", "furious7", "thefateofthefurious", "fastandfuriouspresentshobbsandshaw", "f9thefastsaga", "fastx"]
   },
    {
     id: "avengers",
