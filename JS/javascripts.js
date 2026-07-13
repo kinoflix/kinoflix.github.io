@@ -4,6 +4,7 @@
 const MOVIES = [
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "İçindeki yabancı / The Brave One", cover: "https://m.media-amazon.com/images/M/MV5BMTA4OTA4Njk4MDdeQTJeQWpwZ15BbWU3MDc0NDY1MzM@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/3210678831697", year: 2007, genre: "Triller", id: "thebraveone" },
   { title: "Ceset / The Body", cover: "https://m.media-amazon.com/images/M/MV5BZTdlOTRmYWYtZjE4NS00NmFhLWJkZmMtNGZhNmY4NmQ0ZWEwXkEyXkFqcGc@._V1_.jpg", src: "https://vkvideo.ru/video-230451560_456239839", year: 2024, genre: "Triller", id: "thebody" },
   { title: "Aşk mı para mı?", cover: "https://cdn.sinemalar.com/images/movie/299419/poster/ask-mi-para-mi-1783347261.jpg", src: "https://vkvideo.ru/video-230451560_456239864", year: 2025, genre: "Romantik", id: "askmiparami" },
   { title: "The Protector", cover: "https://m.media-amazon.com/images/M/MV5BYmFjYjcyZjktNzdkNi00YjQ5LWEzODctZmYwZWUwNzc0Y2Y5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vkvideo.ru/video-230451560_456239866", year: 2025, genre: "Aksiyon", id: "theprotector" },
