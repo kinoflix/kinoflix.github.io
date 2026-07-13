@@ -4,6 +4,7 @@
 const MOVIES = [
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "The Protector", cover: "https://m.media-amazon.com/images/M/MV5BYmFjYjcyZjktNzdkNi00YjQ5LWEzODctZmYwZWUwNzc0Y2Y5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vkvideo.ru/video-230451560_456239866", year: 2025, genre: "Aksiyon", id: "theprotector" },
   { title: "Trans / Trance", cover: "https://m.media-amazon.com/images/S/pv-target-images/dd3759b67ada1290e121c0782c86d9fcc6ce02fc88880ca4dcf183b456fc7627.jpg", src: "https://ok.ru/video/4317372549713", year: 2013, genre: "Triller", id: "trance" },
   { title: "Gran Turismo", cover: "https://m.media-amazon.com/images/M/MV5BMjA0N2YyNmYtZDk4Ny00ODE2LThmZWQtNGJiMDk0YzhiNzE5XkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/v5w3t2IODkDM?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2023, genre: "Aksiyon", id: "granturismo" },
   { title: "Boulevard", cover: "https://m.media-amazon.com/images/M/MV5BY2M5NTJmNGUtNmQyYS00NWEwLTlhNzktNWM5ZDgyY2JmMDI1XkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/15165466020457", year: 2026, genre: "Romantik", id: "boulevard" },
