@@ -4,6 +4,8 @@
 const MOVIES = [
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "23 000 hayat / 23 000 Lives", cover: "https://m.media-amazon.com/images/M/MV5BYTEwNDFmMGQtYTdkYS00NWQ4LWExODAtYWYyZThkNjM4NDZhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/15255780264553", year: 2026, genre: "Dram", id: "23000lives" },
+  { title: "Arzular / Desire", cover: "https://m.media-amazon.com/images/M/MV5BN2UwYjQ5NTQtZjdjOC00ZDA1LWIxY2EtNDQ4M2FjZDE5YjJiXkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/15254914337385", year: 2026, genre: "Dram", id: "desire" },
   { title: "Gelin! / Bride!", cover: "https://m.media-amazon.com/images/M/MV5BM2VmMDVlNzgtNThhZC00ZGMwLTg4MmEtZTUzNmRiYTkxYzUyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vidmoly.me/dl/3f81ct9q9m4n", year: 2026, genre: "Fantastik", id: "bride" },
   { title: "One Mile: Chapter One", cover: "https://m.media-amazon.com/images/M/MV5BNWU3MjE5MDItNjFlYi00NGY4LWFkM2UtMTcxNWE3M2U3MGM1XkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/15182696352361", year: 2026, genre: "Aksiyon", id: "onemilechapterone" },
   { title: "Of pof balık / The Pout-Pout Fish", cover: "https://m.media-amazon.com/images/M/MV5BN2FmNDE3ZmItNDE0MC00NTFhLWIxN2QtOTY3MTc3Yjk0YzM5XkEyXkFqcGc@._V1_.jpg", src: "https://vkvideo.ru/video-230451560_456239935", year: 2026, genre: "Animasiya", id: "thepoutpoutfish" },
