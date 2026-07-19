@@ -336,6 +336,7 @@ const MOVIES = [
   { title: "Savaşçı 3 / Ong Bak 3", cover: "https://m.media-amazon.com/images/M/MV5BMTc3MjkyMzk4N15BMl5BanBnXkFtZTcwODQxMDg5Mw@@._V1_FMjpg_UX1000_.jpg", src: "https://vidmoly.me/dl/tjvzyo1ok7n5", year: 2010, genre: "Aksiyon", id: "ongbak3" },
   { title: "Savaşçı 2 / Ong Bak 2", cover: "https://m.media-amazon.com/images/M/MV5BODUzMjVkMDItNmQ3OS00ZjNlLWE1ZjMtNGI5YTY1NmI1M2MyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vidmoly.me/dl/4uqkinxe11iq", year: 2008, genre: "Aksiyon", id: "ongbak2" },
   { title: "Savaşçı / Ong Bak", cover: "https://m.media-amazon.com/images/M/MV5BOTcwMTAzNDItODg2MC00MjE0LWEyNzYtYzZjNjZmNjdhODE2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vidmoly.me/dl/97jqak09ashr", year: 2003, genre: "Aksiyon", id: "ongbak" },
+  { title: "Ip Man: Kung Fu efsanesi / Ip Man: Kung Fu Legend", cover: "https://m.media-amazon.com/images/M/MV5BOTg3ZWY4NWEtNzBhNS00MjRlLTgzNjItM2Q0Njc3ODc5NzZlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://m.vkvideo.ru/video-230451560_456239915", year: 2026, genre: "Aksiyon", id: "ipmankungfulegend" },
   { title: "Ip Man: Kung Fu ustası / Ip Man: Kung Fu Master", cover: "https://m.media-amazon.com/images/M/MV5BMmFkYjRhOGItNGNmYy00OTQyLThhYjctNWVkNmRhZTNiNDgzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/5419892083370", year: 2019, genre: "Aksiyon", id: "ipmankungfumaster" },
   { title: "Ip Man: Son dövüş / Ip Man: The Final Fight", cover: "https://m.media-amazon.com/images/M/MV5BMTQwMTY0NDQxMV5BMl5BanBnXkFtZTgwMjEwMTEwMDE@._V1_.jpg", src: "https://ok.ru/video/1979158432390", year: 2013, genre: "Aksiyon", id: "ipmanthefinalfight" },
   { title: "Efsane doğuyor: Ip Man / The Legend is Born: Ip Man", cover: "https://m.media-amazon.com/images/M/MV5BMjA2ODgyMjE1MF5BMl5BanBnXkFtZTcwMzE3MDU3Ng@@._V1_.jpg", src: "https://ok.ru/video/1979158235782", year: 2010, genre: "Aksiyon", id: "ipmanthelegendisborn" },
@@ -3016,7 +3017,13 @@ const COLLECTIONS = [
     id: "ipman2",
     title: "Ip Man (Herman Yau)",
     cover: "https://m.media-amazon.com/images/M/MV5BMmFkYjRhOGItNGNmYy00OTQyLThhYjctNWVkNmRhZTNiNDgzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["ipmanthelegendisborn", "ipmanthefinalfight", "ipmankungfumaster"]
+    movies: ["ipmanthelegendisborn", "ipmanthefinalfight"]
+  },
+   {
+    id: "ipman3",
+    title: "Ip Man (Liming Li)",
+    cover: "https://m.media-amazon.com/images/M/MV5BMmFkYjRhOGItNGNmYy00OTQyLThhYjctNWVkNmRhZTNiNDgzXkEyXkFqcGc@._V1_.jpg",
+    movies: ["ipmankungfumaster", "ipmankunglegend"]
   },
    {
     id: "ongbak",
