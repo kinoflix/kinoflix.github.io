@@ -4,6 +4,7 @@
 const MOVIES = [
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "Kusursuz arkadaş / Companion", cover: "https://m.media-amazon.com/images/M/MV5BYjkyZTA5NzAtYWU3Zi00MWM4LTgxNzAtNDQxY2JmNjMwYjk4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vidmoly.me/dl/x9i3q58bakpb", year: 2025, genre: "Triller", id: "companion" },
   { title: "Ölümsüzlük 2 / The Old Guard 2", cover: "https://m.media-amazon.com/images/M/MV5BOTVjMGQ0ZjgtM2RiNi00YTM2LTgzODgtNDEzMjUxNmQ1ZWZhXkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/9441783712361", year: 2025, genre: "Aksiyon", id: "theoldguard2" },
   { title: "Ölümsüzlük / The Old Guard", cover: "https://m.media-amazon.com/images/M/MV5BNjcwN2Y0MGEtMjkyYy00YTYxLWFjMWItZTEyZjA1MTJhMjE2XkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/2524567898705", year: 2020, genre: "Aksiyon", id: "theoldguard" },
   { title: "23 000 hayat / 23 000 Lives", cover: "https://m.media-amazon.com/images/M/MV5BYTEwNDFmMGQtYTdkYS00NWQ4LWExODAtYWYyZThkNjM4NDZhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/15255780264553", year: 2026, genre: "Dram", id: "23000lives" },
