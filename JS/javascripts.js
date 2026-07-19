@@ -3023,7 +3023,7 @@ const COLLECTIONS = [
     id: "ipman3",
     title: "Ip Man (Liming Li)",
     cover: "https://m.media-amazon.com/images/M/MV5BMmFkYjRhOGItNGNmYy00OTQyLThhYjctNWVkNmRhZTNiNDgzXkEyXkFqcGc@._V1_.jpg",
-    movies: ["ipmankungfumaster", "ipmankunglegend"]
+    movies: ["ipmankungfumaster", "ipmankungfulegend"]
   },
    {
     id: "ongbak",
