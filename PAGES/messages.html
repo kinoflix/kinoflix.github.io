@@ -1412,6 +1412,52 @@ onAuthStateChanged(auth, async (user) => {
     }
 })();
   </script>
+    <!-- İlkin Yüklənmə Ekranı (Loader) - Başlanğıc -->
+<div id="appLoader" class="app-loader">
+    <div class="app-loader-spinner"></div>
+    <style>
+        .app-loader {
+            position: fixed;
+            inset: 0;
+            /* Əsas CSS yüklənənə qədər ehtiyat olaraq tünd fon təyin edilir, sonra var(--bg) aktiv olur */
+            background: var(--bg, #11141a); 
+            z-index: 99999; /* Səhifədəki hər şeyin önündə görünməsi üçün artırıldı */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .app-loader-spinner {
+            width: 42px;
+            height: 42px;
+            border: 3px solid var(--glass-border, rgba(255, 255, 255, 0.08));
+            border-top-color: var(--accent, #3b82f6); /* Sizin rəng məntiqiniz */
+            border-radius: 50%;
+            animation: appLoaderSpin 0.8s linear infinite;
+        }
+        @keyframes appLoaderSpin { to { transform: rotate(360deg); } }
+        
+        /* Ekrandan yumşaq silinmə klassı */
+        .app-loader-hidden {
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+    </style>
+    <script>
+        window.addEventListener('load', function() {
+            var loader = document.getElementById('appLoader');
+            if (loader) {
+                /* Səhifə anında yüklənsə belə, loaderin görünməsi üçün 600ms gözlədir */
+                setTimeout(function() {
+                    loader.classList.add('app-loader-hidden');
+                    // Animasiya bitdikdən sonra elementi DOM-dan silir
+                    setTimeout(function() { loader.remove(); }, 400);
+                }, 600); 
+            }
+        });
+    </script>
+</div>
+<!-- İlkin Yüklənmə Ekranı (Loader) - Son -->
 
 </body>
 </html>
