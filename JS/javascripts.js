@@ -3017,7 +3017,7 @@ const COLLECTIONS = [
    {
     id: "ipman2",
     title: "Ip Man (Herman Yau)",
-    cover: "https://m.media-amazon.com/images/M/MV5BMmFkYjRhOGItNGNmYy00OTQyLThhYjctNWVkNmRhZTNiNDgzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    cover: "https://m.media-amazon.com/images/M/MV5BMTQwMTY0NDQxMV5BMl5BanBnXkFtZTgwMjEwMTEwMDE@._V1_.jpg",
     movies: ["ipmanthelegendisborn", "ipmanthefinalfight"]
   },
    {
