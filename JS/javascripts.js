@@ -2108,7 +2108,7 @@ searchInput.setAttribute('aria-label','Film axtar');
           </div>
         </div>
         <div class="vidmolymodal-iframe-wrap">
-          <iframe class="vidmolymodal-iframe" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>
+           <iframe class="vidmolymodal-iframe" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" referrerpolicy="no-referrer"></iframe>
         </div>
       </div>
     `;
