@@ -4,6 +4,8 @@
 const MOVIES = [
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "Benden önceki ben / Me Before Me", cover: "https://m.media-amazon.com/images/M/MV5BYjYyYWQ4ZmItMDY4MS00Njc2LWFhNGQtN2QzNTliY2IwMmVhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/15243602233961", year: 2026, genre: "Dram", id: "mebeforeme" },
+  { title: "Shelter", cover: "https://m.media-amazon.com/images/M/MV5BMzI2ODY3MzQtYzllNy00YWM1LWExZTgtOGIwNjk2MmE2MmY2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vidmoly.me/dl/qxdqwuaqtkyr", year: 2026, genre: "Aksiyon", id: "shelter" },
   { title: "Saplantı / Obsession", cover: "https://m.media-amazon.com/images/M/MV5BYzc1NWUwMDgtNGZlMS00ZmYzLWIzMzktNmMxMmY1MTUzNWExXkEyXkFqcGc@._V1_.jpg", src: "https://vidmoly.me/dl/7wmn5f0lpv7s", year: 2025, genre: "Triller", id: "obsession" },
   { title: "Is God Is", cover: "https://m.media-amazon.com/images/M/MV5BOTExYjBlMjUtYTAxMS00ZTU2LWJlYzgtMjIxNzUwODMwMDdkXkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/15270205065833", year: 2026, genre: "Dram", id: "isgodis" },
   { title: "Kusursuz arkadaş / Companion", cover: "https://m.media-amazon.com/images/M/MV5BYjkyZTA5NzAtYWU3Zi00MWM4LTgxNzAtNDQxY2JmNjMwYjk4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vidmoly.me/dl/x9i3q58bakpb", year: 2025, genre: "Elmi fantastik", id: "companion" },
