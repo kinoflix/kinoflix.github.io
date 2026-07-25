@@ -4,6 +4,7 @@
 const MOVIES = [
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "Whiplash", cover: "https://m.media-amazon.com/images/S/pv-target-images/3a0929de733358622b61c874142900f22158f217026b8e86b858a23713accef0.jpg", src: "https://dzen.ru/embed/veseUjkqphGE?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2014, genre: "Dram", id: "whiplash" },
   { title: "Şüphe sarmalı / The Truthers", cover: "https://m.media-amazon.com/images/M/MV5BZDc3ODE0NTUtNTFlZS00NGJiLTg1MmEtN2NmOWU4ZmY5OWQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/15343129397865", year: 2026, genre: "Triller", id: "thetruthers" },
   { title: "72 saat / 72 Hours", cover: "https://m.media-amazon.com/images/M/MV5BODQ1YWVlOTctMzNjMy00YzlmLTgxNjItNzVhOGYwMDVhZDllXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/15341682494057", year: 2026, genre: "Komediya", id: "72hours" },
   { title: "Kâinatın hâkimleri / Masters Of The Universe", cover: "https://m.media-amazon.com/images/M/MV5BMTJjYTFkM2EtZjBmNy00OTk2LTg0NTAtNzYxYzlmNjhkMzQ5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/15318657141353", year: 2026, genre: "Fantastik", id: "mastersoftheuniverse" },
