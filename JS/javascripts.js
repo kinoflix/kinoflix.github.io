@@ -366,6 +366,10 @@ const MOVIES = [
   { title: "Demir adam 3 / Iron Man 3", cover: "https://m.media-amazon.com/images/M/MV5BMjIzMzAzMjQyM15BMl5BanBnXkFtZTcwNzM2NjcyOQ@@._V1_.jpg", src: "https://dzen.ru/embed/vDBsSF-YKOXE?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2013, genre: "Fantastik", id: "ironman3" },
   { title: "Demir adam 2 / Iron Man 2", cover: "https://m.media-amazon.com/images/M/MV5BYWYyOGQzOGYtMGQ1My00ZWYxLTgzZjktZWYzN2IwYjkxYzM0XkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vZFXW4wMebjE?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2010, genre: "Fantastik", id: "ironman2" },
   { title: "Demir adam / Iron Man", cover: "https://m.media-amazon.com/images/M/MV5BMTczNTI2ODUwOF5BMl5BanBnXkFtZTcwMTU0NTIzMw@@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vIGzkdQpfFF8?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2008, genre: "Fantastik", id: "ironman" },
+  { title: "Kaptan Amerika: Cesur yeni dünya / Captain America: Brave New World", cover: "https://m.media-amazon.com/images/M/MV5BNDRjY2E0ZmEtN2QwNi00NTEwLWI3MWItODNkMGYwYWFjNGE0XkEyXkFqcGc@._V1_.jpg", src: "https://vidmoly.me/dl/m8cm6bo0yykf", year: 2025, genre: "Fantastik", id: "captainamericabravenewworld" },
+  { title: "Kaptan Amerika: Kahramanların savaşı / Captain America: Civil War", cover: "https://m.media-amazon.com/images/M/MV5BMjQ0MTgyNjAxMV5BMl5BanBnXkFtZTgwNjUzMDkyODE@._V1_.jpg", src: "https://vidmoly.me/dl/9c3lat8szmo2", year: 2016, genre: "Fantastik", id: "captainamericacivilwar" },
+  { title: "Kaptan Amerika: Kış askeri / Captain America: The Winter Soldier", cover: "https://m.media-amazon.com/images/M/MV5BNWY1NjFmNDItZDhmOC00NjI1LWE0ZDItMTM0MjBjZThiOTQ2XkEyXkFqcGc@._V1_.jpg", src: "https://vidmoly.me/dl/qnwftwtslw02", year: 2014, genre: "Fantastik", id: "captainamericathewintersoldier" },
+  { title: "Kaptan Amerika: İlk yenilmez / Captain America: First Avenger", cover: "https://m.media-amazon.com/images/M/MV5BNzUyM2YyY2MtNzNlMS00MWU5LTgxNjAtNzZlNmI2NjU2NDZlXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vGMyO9P5eMRc?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2011, genre: "Fantastik", id: "captainamericafirstavenger" }, 
   { title: "Yenilmezler: Son oyun / The Avengers: Endgame", cover: "https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg", src: "https://vidmoly.me/dl/opulhizp255c", year: 2019, genre: "Fantastik", id: "theavengers4" },
   { title: "Yenilmezler: Sonsuzluk savaşı / The Avengers: Infinity War", cover: "https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_.jpg", src: "https://dzen.ru/embed/v19pPfuEckQ8?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2018, genre: "Fantastik", id: "theavengers3" },
   { title: "Yenilmezler: Ultron çağı / The Avengers: Age of Ultron", cover: "https://m.media-amazon.com/images/M/MV5BY2I5M2M0ZDctMjEwYS00MmM3LTgzZTctOWFkZjY1Y2I5OTJlXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/v764uOr-vdh8?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2015, genre: "Fantastik", id: "theavengers2" },
@@ -3145,6 +3149,12 @@ const COLLECTIONS = [
     title: "Hızlı ve öfkeli / The Fast and the Furious",
     cover: "https://m.media-amazon.com/images/M/MV5BMzFiZTY2OGUtNzZmMC00MTk2LTgyNzMtZmM5YzMzNjIyYTljXkEyXkFqcGc@._V1_.jpg",
     movies: ["thefastandthefurious", "2fast2furious", "thefastandthefurioustokyodrift", "fastandfurious", "fastfive", "fastandfurious6", "furious7", "thefateofthefurious", "fastandfuriouspresentshobbsandshaw", "f9thefastsaga", "fastx"]
+  },
+   {
+    id: "captainamerica",
+    title: "Kaptan Amerika / Captain America",
+    cover: "https://m.media-amazon.com/images/M/MV5BMjQ0MTgyNjAxMV5BMl5BanBnXkFtZTgwNjUzMDkyODE@._V1_.jpg",
+    movies: ["captainamericafirstavenger", "captainamericathewintersoldier", "captainamericacivilwar", "captainamericabravenewworld"]
   },
    {
     id: "avengers",
