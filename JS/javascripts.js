@@ -4,6 +4,7 @@
 const MOVIES = [
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "Şeytanın ağzı / The Devil's Mouth ", cover: "https://m.media-amazon.com/images/M/MV5BYjZkY2M1NmEtMjdkMS00NDliLTlmZWQtNjM0ODMyYmU3MTg4XkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/15404121328233", year: 2026, genre: "Triller", id: "thedevilsmouth" },
   { title: "Kurtuluş Projesi / Project Hail Mary", cover: "https://m.media-amazon.com/images/M/MV5BNTkwNzJiYTctNzI3NC00NjE1LTlhYjktY2Q5MTdmMWFmNzcxXkEyXkFqcGc@._V1_.jpg", src: "https://vidmoly.me/dl/uadm0gh73s57", year: 2026, genre: "Elmi fantastik", id: "projecthailmary" },
   { title: "Whiplash", cover: "https://m.media-amazon.com/images/S/pv-target-images/3a0929de733358622b61c874142900f22158f217026b8e86b858a23713accef0.jpg", src: "https://dzen.ru/embed/veseUjkqphGE?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2014, genre: "Dram", id: "whiplash" },
   { title: "Şüphe sarmalı / The Truthers", cover: "https://m.media-amazon.com/images/M/MV5BZDc3ODE0NTUtNTFlZS00NGJiLTg1MmEtN2NmOWU4ZmY5OWQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/15343129397865", year: 2026, genre: "Triller", id: "thetruthers" },
