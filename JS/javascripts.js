@@ -296,6 +296,11 @@ const MOVIES = [
   { title: "Moana", cover: "https://m.media-amazon.com/images/M/MV5BMjI4MzU5NTExNF5BMl5BanBnXkFtZTgwNzY1MTEwMDI@._V1_.jpg", src: "https://vidmoly.me/dl/e5opgug0zy4k", year: 2016, genre: "Animasiya", id: "moana" },
   { title: "Megan 2 / M3GAN 2.0", cover: "https://montroseplayhouse.co.uk/wp-content/uploads/2025/07/lHChxm7sv3gWR2qz5PwjdxcXQf7-scaled.webp", src: "https://vidmoly.me/d/jbj3ukxizln2", year: 2025, genre: "Elmi fantastik", id: "megan2" },
   { title: "Megan / M3GAN", cover: "https://m.media-amazon.com/images/M/MV5BYjU1ZWMxYTUtNzQ1ZC00ZTcxLTg0NTMtMzY1ZmQyZjhmYjMyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/6398582196817", year: 2022, genre: "Elmi fantastik", id: "megan" },
+  { title: "Alacakaranlık Efsanesi: Şafak Vakti - Bölüm 2 / The Twilight Saga: Breaking Dawn - Part 2", cover: "https://m.media-amazon.com/images/M/MV5BMTcyMzUyMzY1OF5BMl5BanBnXkFtZTcwNDQ4ODk1OA@@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vhbYkB65xs3k?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2012, genre: "Fantastik", id: "twilight5" },
+  { title: "Alacakaranlık Efsanesi: Şafak Vakti - Bölüm 1 / The Twilight Saga: Breaking Dawn - Part 1", cover: "https://m.media-amazon.com/images/M/MV5BNjBlY2M2MTctMzU3Yi00MTY3LTlkMTAtMzhlMzY1YjZlYTA2XkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vJpUvXPbyCS8?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2011, genre: "Fantastik", id: "twilight4" },
+  { title: "Alacakaranlık Efsanesi: Tutulma / The Twilight Saga: Eclipse", cover: "https://m.media-amazon.com/images/M/MV5BNDMwNjAzNzYwOF5BMl5BanBnXkFtZTcwMDY5NzcyMw@@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vftAAuopicRk?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2010, genre: "Fantastik", id: "twilight3" },
+  { title: "Alacakaranlık Efsanesi: Yeni Ay / The Twilight Saga: New Moon", cover: "https://m.media-amazon.com/images/M/MV5BMTI3MjE3NDIxNF5BMl5BanBnXkFtZTcwODM3NTY5Mg@@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vAjCH3eYxtBs?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2009, genre: "Fantastik", id: "twilight2" },
+  { title: "Alacakaranlık / Twilight", cover: "https://m.media-amazon.com/images/M/MV5BMTQ2NzUxMTAxN15BMl5BanBnXkFtZTcwMzEyMTIwMg@@._V1_FMjpg_UX1000_.jpg", src: "https://vidmoly.me/dl/mjg5zd72tc5c", year: 2008, genre: "Fantastik", id: "twilight" },
   { title: "Recep İvedik 7", cover: "https://m.media-amazon.com/images/M/MV5BYjg2NzkyYjgtZWJjOS00NDdkLWE1NWQtMTY4ZDc3MTkxYWVhXkEyXkFqcGc@._V1_.jpg", src: "https://m.vkvideo.ru/video-229916382_456239109", year: 2022, genre: "Komediya", id: "recepivedik7" },
   { title: "Recep İvedik 6", cover: "https://mir-s3-cdn-cf.behance.net/project_modules/fs/94b7c287820105.5dc38dcdecd39.jpg", src: "https://m.ok.ru/video/3138861271683", year: 2019, genre: "Komediya", id: "recepivedik6" },
   { title: "Recep İvedik 5", cover: "https://images.kinorium.com/movie/poster/1607084/w1500_2553330.jpg", src: "https://vkvideo.ru/video-229916382_456239078", year: 2017, genre: "Komediya", id: "recepivedik5" },
@@ -3010,162 +3015,168 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 1. KOLLEKSİYALAR MASSİVİ
 const COLLECTIONS = [
-  {
+   {
     id: "spiderman",
     title: "Örümcek adam / Spider Man",
     cover: "https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg",
     movies: ["spiderman", "spiderman2", "spiderman3", "theamazingspiderman", "theamazingspiderman2", "spidermanhomecoming", "spidermanintothespiderverse", "spidermanfarfromhome", "spidermannowayhome", "spidermanacrossthespiderverse", "spider-noir"]
-  },
+   },
    {
     id: "venom",
     title: "Venom",
     cover: "https://m.media-amazon.com/images/M/MV5BZDMyYWU4NzItZDY0MC00ODE2LTkyYTMtMzNkNDdmYmFhZDg0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
     movies: ["venom", "venom2", "venom3"]
-  },
-  {
+   },
+   {
     id: "avatar",
     title: "Avatar",
     cover: "https://m.media-amazon.com/images/M/MV5BZDYxY2I1OGMtN2Y4MS00ZmU1LTgyNDAtODA0MzAyYjI0N2Y2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
     movies: ["avatar", "avatar2", "avatar3"]
-  },
+   },
    {
-    id: "ipman1",
-    title: "Ip Man (Wilson Yip)",
-    cover: "https://m.media-amazon.com/images/M/MV5BOGVjMDEzNjMtMWJmMy00NDdjLWFkMzItOTBhZTE3OWU0YmM4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["ipman", "ipman2", "ipman3", "ipmanlegacy", "ipman4"]
-  },
-   {
-    id: "ipman2",
-    title: "Ip Man (Herman Yau)",
-    cover: "https://m.media-amazon.com/images/M/MV5BMTQwMTY0NDQxMV5BMl5BanBnXkFtZTgwMjEwMTEwMDE@._V1_.jpg",
-    movies: ["ipmanthelegendisborn", "ipmanthefinalfight"]
-  },
-   {
-    id: "ipman3",
-    title: "Ip Man (Liming Li)",
-    cover: "https://m.media-amazon.com/images/M/MV5BMmFkYjRhOGItNGNmYy00OTQyLThhYjctNWVkNmRhZTNiNDgzXkEyXkFqcGc@._V1_.jpg",
-    movies: ["ipmankungfumaster", "ipmankungfulegend"]
-  },
-   {
-    id: "ongbak",
-    title: "Savaşçı / Ong Bak",
-    cover: "https://m.media-amazon.com/images/M/MV5BMTc3MjkyMzk4N15BMl5BanBnXkFtZTcwODQxMDg5Mw@@._V1_FMjpg_UX1000_.jpg",
-    movies: ["ongbak", "ongbak2", "ongbak3"]
-  },
-   {
-    id: "karatekid",
-    title: "Karateci çocuk / Karate Kid",
-    cover: "https://m.media-amazon.com/images/M/MV5BM2MwYTlkY2MtNmUzNy00MTljLThjNDAtZGUzNzMxMzcxNzM5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["thekaratekid", "thekaratekid2"]
-  },
-   {
-    id: "malefisent",
-    title: "Malefiz / Malefisent",
-    cover: "https://m.media-amazon.com/images/M/MV5BNTY4YjYwYzMtYTg1NC00ZmJiLTk0OTYtMWMzM2Y4Yzc5MDc2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["malefisent", "malefisent2"]
-  },
-   {
-    id: "rio",
-    title: "Rio",
-    cover: "https://m.media-amazon.com/images/M/MV5BMTgzMDczMDYzNl5BMl5BanBnXkFtZTgwMzk2MDIwMTE@._V1_.jpg",
-    movies: ["rio", "rio2"]
-  },
-   {
-    id: "moana",
-    title: "Moana",
-    cover: "https://m.media-amazon.com/images/M/MV5BZDUxNThhYTUtYjgxNy00MGQ4LTgzOTEtZjg1YTU5NTcwNThlXkEyXkFqcGc@._V1_.jpg",
-    movies: ["moana", "moana2"]
-  },
-   {
-    id: "thelionking",
-    title: "Aslan kral / The Lion King",
-    cover: "https://m.media-amazon.com/images/M/MV5BNjg1YzI5ZmQtZjZkOC00ZDMzLWI4YjYtMmY5MzZjYWE3YzhjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["thelionking", "mufasa"]
-  },
-   {
-    id: "taxi",
-    title: "Taksi / Taxi",
-    cover: "https://m.media-amazon.com/images/M/MV5BYmVmYzBiMWMtZWM1NC00NWI0LWEyNDQtOGQ0NmQxNDE1NGYzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["taxi", "taxi2", "taxi3", "taxi4", "taxi5"]
-  },
-   {
-    id: "theoldguard",
-    title: "Ölümsüzlük / The Old Guard",
-    cover: "https://m.media-amazon.com/images/M/MV5BNjcwN2Y0MGEtMjkyYy00YTYxLWFjMWItZTEyZjA1MTJhMjE2XkEyXkFqcGc@._V1_.jpg",
-    movies: ["theoldguard", "theoldguard2"]
-  },
-   {
-    id: "diehard",
-    title: "Zor ölüm / Die Hard",
-    cover: "https://m.media-amazon.com/images/M/MV5BMTcwNzgyNzUzOV5BMl5BanBnXkFtZTcwMzAwOTA5OA@@._V1_FMjpg_UX1000_.jpg",
-    movies: ["diehard", "diehard2", "diehard3", "diehard4", "diehard5"]
-  },
-   {
-    id: "theblackphone",
-    title: "Siyah telefon / The Black Phone",
-    cover: "https://m.media-amazon.com/images/M/MV5BMWIyYmM5OWYtZWE4Ni00YjYzLTkzMDItYzY2MGVkODk3ZjA2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-    movies: ["theblackphone", "theblackphone2"]
-  },
-   {
-    id: "dag",
-    title: "Dağ",
-    cover: "https://m.media-amazon.com/images/M/MV5BMWE3ODFkZjEtMGI3OS00MTdmLWE0YTAtNjIzMWJjZDc2MTRkXkEyXkFqcGc@._V1_.jpg",
-    movies: ["dag", "dag2"]
-  },
-   {
-    id: "recepivedik",
-    title: "Recep İvedik",
-    cover: "https://m.media-amazon.com/images/M/MV5BYjg2NzkyYjgtZWJjOS00NDdkLWE1NWQtMTY4ZDc3MTkxYWVhXkEyXkFqcGc@._V1_.jpg",
-    movies: ["recepivedik", "recepivedik2", "recepivedik3", "recepivedik4", "recepivedik5", "recepivedik6", "recepivedik7"]
-  },
-   {
-    id: "homealone",
-    title: "Evde tek başına / The Home Alone",
-    cover: "https://m.media-amazon.com/images/I/91tXzecvy-L._AC_UF1000,1000_QL80_.jpg",
-    movies: ["homealone", "homealoneaz", "homealoneaz2", "homealone2", "homealone2az", "homealone2az2"]
-  },
-   {
-    id: "themummy",
-    title: "Mumya / The Mummy",
-    cover: "https://m.media-amazon.com/images/M/MV5BMTU4NDIzMDY1OV5BMl5BanBnXkFtZTcwNjQxMzk3MQ@@._V1_FMjpg_UX1000_.jpg",
-    movies: ["themummy1", "themummy2", "themummy3"]
-  },
-{
-    id: "megan",
-    title: "Megan / M3GAN",
-    cover: "https://montroseplayhouse.co.uk/wp-content/uploads/2025/07/lHChxm7sv3gWR2qz5PwjdxcXQf7-scaled.webp",
-    movies: ["megan", "megan2"]
-  },
-   {
-    id: "hulk",
-    title: "Yeşil dev / Hulk",
-    cover: "https://m.media-amazon.com/images/M/MV5BNzI4YjkyZTQtMjk1NS00MzhkLWEwYzgtZjZiODUyNWViNDdlXkEyXkFqcGc@._V1_.jpg",
-    movies: ["hulk", "theincrediblehulk"]
-  },
-   {
-    id: "ironman",
-    title: "Demir adam / Iron Man",
-    cover: "https://m.media-amazon.com/images/M/MV5BMjIzMzAzMjQyM15BMl5BanBnXkFtZTcwNzM2NjcyOQ@@._V1_.jpg",
-    movies: ["ironman", "ironman2", "ironman3"]
-  },
+    id: "twilight",
+    title: "Alacakaranlık / Twilight",
+    cover: "https://m.media-amazon.com/images/M/MV5BMTQ2NzUxMTAxN15BMl5BanBnXkFtZTcwMzEyMTIwMg@@._V1_FMjpg_UX1000_.jpg",
+    movies: ["twilight", "twilight2", "twilight3", "twilight4", "twilight5"]
+   },
    {
     id: "thefastandthefurious",
     title: "Hızlı ve öfkeli / The Fast and the Furious",
     cover: "https://m.media-amazon.com/images/M/MV5BMzFiZTY2OGUtNzZmMC00MTk2LTgyNzMtZmM5YzMzNjIyYTljXkEyXkFqcGc@._V1_.jpg",
     movies: ["thefastandthefurious", "2fast2furious", "thefastandthefurioustokyodrift", "fastandfurious", "fastfive", "fastandfurious6", "furious7", "thefateofthefurious", "fastandfuriouspresentshobbsandshaw", "f9thefastsaga", "fastx"]
-  },
+   },
+   {
+    id: "ipman1",
+    title: "Ip Man (Wilson Yip)",
+    cover: "https://m.media-amazon.com/images/M/MV5BOGVjMDEzNjMtMWJmMy00NDdjLWFkMzItOTBhZTE3OWU0YmM4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["ipman", "ipman2", "ipman3", "ipmanlegacy", "ipman4"]
+   },
+   {
+    id: "ipman2",
+    title: "Ip Man (Herman Yau)",
+    cover: "https://m.media-amazon.com/images/M/MV5BMTQwMTY0NDQxMV5BMl5BanBnXkFtZTgwMjEwMTEwMDE@._V1_.jpg",
+    movies: ["ipmanthelegendisborn", "ipmanthefinalfight"]
+   },
+   {
+    id: "ipman3",
+    title: "Ip Man (Liming Li)",
+    cover: "https://m.media-amazon.com/images/M/MV5BMmFkYjRhOGItNGNmYy00OTQyLThhYjctNWVkNmRhZTNiNDgzXkEyXkFqcGc@._V1_.jpg",
+    movies: ["ipmankungfumaster", "ipmankungfulegend"]
+   },
+   {
+    id: "ongbak",
+    title: "Savaşçı / Ong Bak",
+    cover: "https://m.media-amazon.com/images/M/MV5BMTc3MjkyMzk4N15BMl5BanBnXkFtZTcwODQxMDg5Mw@@._V1_FMjpg_UX1000_.jpg",
+    movies: ["ongbak", "ongbak2", "ongbak3"]
+   },
+   {
+    id: "karatekid",
+    title: "Karateci çocuk / Karate Kid",
+    cover: "https://m.media-amazon.com/images/M/MV5BM2MwYTlkY2MtNmUzNy00MTljLThjNDAtZGUzNzMxMzcxNzM5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["thekaratekid", "thekaratekid2"]
+   },
+   {
+    id: "malefisent",
+    title: "Malefiz / Malefisent",
+    cover: "https://m.media-amazon.com/images/M/MV5BNTY4YjYwYzMtYTg1NC00ZmJiLTk0OTYtMWMzM2Y4Yzc5MDc2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["malefisent", "malefisent2"]
+   },
+   {
+    id: "rio",
+    title: "Rio",
+    cover: "https://m.media-amazon.com/images/M/MV5BMTgzMDczMDYzNl5BMl5BanBnXkFtZTgwMzk2MDIwMTE@._V1_.jpg",
+    movies: ["rio", "rio2"]
+   },
+   {
+    id: "moana",
+    title: "Moana",
+    cover: "https://m.media-amazon.com/images/M/MV5BZDUxNThhYTUtYjgxNy00MGQ4LTgzOTEtZjg1YTU5NTcwNThlXkEyXkFqcGc@._V1_.jpg",
+    movies: ["moana", "moana2"]
+   },
+   {
+    id: "thelionking",
+    title: "Aslan kral / The Lion King",
+    cover: "https://m.media-amazon.com/images/M/MV5BNjg1YzI5ZmQtZjZkOC00ZDMzLWI4YjYtMmY5MzZjYWE3YzhjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["thelionking", "mufasa"]
+   },
+   {
+    id: "taxi",
+    title: "Taksi / Taxi",
+    cover: "https://m.media-amazon.com/images/M/MV5BYmVmYzBiMWMtZWM1NC00NWI0LWEyNDQtOGQ0NmQxNDE1NGYzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["taxi", "taxi2", "taxi3", "taxi4", "taxi5"]
+   },
+   {
+    id: "theoldguard",
+    title: "Ölümsüzlük / The Old Guard",
+    cover: "https://m.media-amazon.com/images/M/MV5BNjcwN2Y0MGEtMjkyYy00YTYxLWFjMWItZTEyZjA1MTJhMjE2XkEyXkFqcGc@._V1_.jpg",
+    movies: ["theoldguard", "theoldguard2"]
+   },
+   {
+    id: "diehard",
+    title: "Zor ölüm / Die Hard",
+    cover: "https://m.media-amazon.com/images/M/MV5BMTcwNzgyNzUzOV5BMl5BanBnXkFtZTcwMzAwOTA5OA@@._V1_FMjpg_UX1000_.jpg",
+    movies: ["diehard", "diehard2", "diehard3", "diehard4", "diehard5"]
+   },
+   {
+    id: "theblackphone",
+    title: "Siyah telefon / The Black Phone",
+    cover: "https://m.media-amazon.com/images/M/MV5BMWIyYmM5OWYtZWE4Ni00YjYzLTkzMDItYzY2MGVkODk3ZjA2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["theblackphone", "theblackphone2"]
+   },
+   {
+    id: "dag",
+    title: "Dağ",
+    cover: "https://m.media-amazon.com/images/M/MV5BMWE3ODFkZjEtMGI3OS00MTdmLWE0YTAtNjIzMWJjZDc2MTRkXkEyXkFqcGc@._V1_.jpg",
+    movies: ["dag", "dag2"]
+   },
+   {
+    id: "recepivedik",
+    title: "Recep İvedik",
+    cover: "https://m.media-amazon.com/images/M/MV5BYjg2NzkyYjgtZWJjOS00NDdkLWE1NWQtMTY4ZDc3MTkxYWVhXkEyXkFqcGc@._V1_.jpg",
+    movies: ["recepivedik", "recepivedik2", "recepivedik3", "recepivedik4", "recepivedik5", "recepivedik6", "recepivedik7"]
+   },
+   {
+    id: "homealone",
+    title: "Evde tek başına / The Home Alone",
+    cover: "https://m.media-amazon.com/images/I/91tXzecvy-L._AC_UF1000,1000_QL80_.jpg",
+    movies: ["homealone", "homealoneaz", "homealoneaz2", "homealone2", "homealone2az", "homealone2az2"]
+   },
+   {
+    id: "themummy",
+    title: "Mumya / The Mummy",
+    cover: "https://m.media-amazon.com/images/M/MV5BMTU4NDIzMDY1OV5BMl5BanBnXkFtZTcwNjQxMzk3MQ@@._V1_FMjpg_UX1000_.jpg",
+    movies: ["themummy1", "themummy2", "themummy3"]
+   },
+   {
+    id: "megan",
+    title: "Megan / M3GAN",
+    cover: "https://montroseplayhouse.co.uk/wp-content/uploads/2025/07/lHChxm7sv3gWR2qz5PwjdxcXQf7-scaled.webp",
+    movies: ["megan", "megan2"]
+   },
+   {
+    id: "hulk",
+    title: "Yeşil dev / Hulk",
+    cover: "https://m.media-amazon.com/images/M/MV5BNzI4YjkyZTQtMjk1NS00MzhkLWEwYzgtZjZiODUyNWViNDdlXkEyXkFqcGc@._V1_.jpg",
+    movies: ["hulk", "theincrediblehulk"]
+   },
+   {
+    id: "ironman",
+    title: "Demir adam / Iron Man",
+    cover: "https://m.media-amazon.com/images/M/MV5BMjIzMzAzMjQyM15BMl5BanBnXkFtZTcwNzM2NjcyOQ@@._V1_.jpg",
+    movies: ["ironman", "ironman2", "ironman3"]
+   },
    {
     id: "captainamerica",
     title: "Kaptan Amerika / Captain America",
     cover: "https://m.media-amazon.com/images/M/MV5BMjQ0MTgyNjAxMV5BMl5BanBnXkFtZTgwNjUzMDkyODE@._V1_.jpg",
     movies: ["captainamericafirstavenger", "captainamericathewintersoldier", "captainamericacivilwar", "captainamericabravenewworld"]
-  },
+   },
    {
     id: "avengers",
     title: "Yenilmezler / The Avengers",
     cover: "https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg",
     movies: ["theavengers", "theavengers2", "theavengers3", "theavengers4"]
-  }
+   }
 ];
 
 // --- 🌟 SLIDESHOW DEYİŞƏNLƏRİ ---
