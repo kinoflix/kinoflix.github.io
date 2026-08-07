@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homoqlif Detektoru v2</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 850px;
+        }
+        h2, h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            height: 140px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            resize: vertical;
+            box-sizing: border-box;
+            font-family: monospace;
+        }
+        textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result-section {
+            margin-top: 25px;
+        }
+        /* Vizual qırmızı vurğulanmış mətn sahəsi */
+        .text-preview {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 17px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-top: 10px;
+            border: 1px solid #333;
+        }
+        /* Qırmızı vurğulanan hərf */
+        .bad-char {
+            background-color: #e74c3c;
+            color: #ffffff;
+            font-weight: bold;
+            padding: 2px 5px;
+            border-radius: 4px;
+            box-shadow: 0 0 6px rgba(231, 76, 60, 0.8);
+            border: 1px solid #ff6b6b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+        }
+        tr:hover {
+            background-color: #f1f2f6;
+        }
+        .badge {
+            background: #e74c3c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-family: monospace;
+        }
+        .no-issue {
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 17px;
+        }
+        .pos-tag {
+            background: #e1b12c;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 13px;
+            margin-right: 4px;
+            display: inline-block;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🕵️‍♂️ Homoqlif Detektoru v2</h2>
+    <p>Mətni yapışdırın: xarici simvollar aşağıda **qırmızı** ilə vurğulanacaq və mətndəki dəqiq yerləri göstəriləcək.</p>
+    
+    <textarea id="textInput" placeholder="Mətni bura daxil edin... Məsələn: </ѕcript>"></textarea>
+    <button onclick="analyzeText()">Mətni Analiz Et</button>
+
+    <div class="result-section" id="resultContainer"></div>
+</div>
+
+<script>
+    const unicodeBlocks = [
+        { name: "Kiril (Cyrillic)", min: 0x0400, max: 0x052F },
+        { name: "Yunan (Greek)", min: 0x0370, max: 0x03FF },
+        { name: "Erməni (Armenian)", min: 0x0530, max: 0x058F },
+        { name: "Çeroki (Cherokee)", min: 0x13A0, max: 0x13FF },
+        { name: "Roma Rəqəmləri / Simvollar", min: 0x2150, max: 0x218F },
+        { name: "Tam Genişlikli (Fullwidth)", min: 0xFF00, max: 0xFFEF },
+        { name: "Lisu", min: 0xA4D0, max: 0xA4FF },
+        { name: "Kanada Hecaları", min: 0x1400, max: 0x167F }
+    ];
+
+    function escapeHtml(str) {
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function analyzeText() {
+        const text = document.getElementById("textInput").value;
+        const resultContainer = document.getElementById("resultContainer");
+        resultContainer.innerHTML = "";
+
+        if (!text.trim()) {
+            resultContainer.innerHTML = "<p>Zəhmət olmasa yoxlamaq üçün mətn daxil edin.</p>";
+            return;
+        }
+
+        let highlightedTextHTML = "";
+        let homoglyphMap = new Map(); // Eyni simvolların mövqelərini qruplaşdırmaq üçün
+        let hasHomoglyph = false;
+
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            const charCode = text.charCodeAt(i);
+            const position = i + 1; // 1-dən başlayan sira nömrəsi
+
+            let detectedBlock = null;
+
+            for (const block of unicodeBlocks) {
+                if (charCode >= block.min && charCode <= block.max) {
+                    detectedBlock = block.name;
+                    break;
+                }
+            }
+
+            if (detectedBlock) {
+                hasHomoglyph = true;
+                // HTML-də qırmızı vurğulama
+                highlightedTextHTML += `<span class="bad-char" title="Mövqe: ${position} | ${detectedBlock}">${escapeHtml(char)}</span>`;
+
+                // Cədvəl üçün məlumat toplama
+                const unicodeHex = 'U+' + charCode.toString(16).toUpperCase().padStart(4, '0');
+                const key = char + "_" + unicodeHex;
+
+                if (homoglyphMap.has(key)) {
+                    homoglyphMap.get(key).positions.push(position);
+                } else {
+                    homoglyphMap.set(key, {
+                        char: char,
+                        unicode: unicodeHex,
+                        blockName: detectedBlock,
+                        positions: [position]
+                    });
+                }
+            } else {
+                highlightedTextHTML += escapeHtml(char);
+            }
+        }
+
+        renderResults(hasHomoglyph, Array.from(homoglyphMap.values()), highlightedTextHTML, resultContainer);
+    }
+
+    function renderResults(hasHomoglyph, homoglyphs, highlightedHTML, container) {
+        if (!hasHomoglyph) {
+            container.innerHTML = "<p class='no-issue'>✅ Mətndə heç bir şübhəli homoqlif tapılmadı. Bütün hərflər standartdır.</p>";
+            return;
+        }
+
+        let html = `<h3>1. Vizual Baxış (Homoqliflər qırmızı ilə göstərilib):</h3>`;
+        html += `<div class="text-preview">${highlightedHTML}</div>`;
+
+        html += `<h3 style="margin-top: 25px;">2. Xətalı Simvolların Siyahısı və Dəqiq Yerləri:</h3>`;
+        html += `<table>
+                    <thead>
+                        <tr>
+                            <th>Simvol</th>
+                            <th>Unicode</th>
+                            <th>Mənbə / Blok</th>
+                            <th>Mətndəki Yerləri (Simvol №)</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+        homoglyphs.forEach(item => {
+            const posTags = item.positions.map(p => `<span class="pos-tag">${p}</span>`).join(" ");
+            html += `<tr>
+                        <td><span class="badge">${escapeHtml(item.char)}</span></td>
+                        <td><code>${item.unicode}</code></td>
+                        <td>${item.blockName}</td>
+                        <td>${posTags}</td>
+                     </tr>`;
+        });
+
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
+</script>
+
+</body>
+</html>
