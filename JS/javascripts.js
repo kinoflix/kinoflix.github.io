@@ -4,6 +4,7 @@
 const MOVIES = [
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "51. Bölge / Area 51", cover:"https://kinoflix.github.io/FILES/IMG/movies/51.jpeg", src:"https://dzen.ru/embed/vxf0WgkQ2zlk?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2015, genre:"Elmi fantastik", id: "area51" },
   { title: "Paralel evren / Coherence", cover:"https://m.media-amazon.com/images/M/MV5BNzQ3ODUzNDY2M15BMl5BanBnXkFtZTgwNzg0ODY2MTE@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/vpbKEujXjY3E?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2013, genre:"Elmi fantastik", id: "coherence" },
   { title: "Ters yüz 2 / Inside Out 2", cover:"https://m.media-amazon.com/images/M/MV5BYWY3MDE2Y2UtOTE3Zi00MGUzLTg2MTItZjE1ZWVkMGVlODRmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/vgDFE5TQ7BT0?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2024, genre:"Animasiya", id: "insideout2" },
   { title: "Ters yüz / Inside Out", cover:"https://m.media-amazon.com/images/M/MV5BOTgxMDQwMDk0OF5BMl5BanBnXkFtZTgwNjU5OTg2NDE@._V1_.jpg", src:"https://vidmoly.me/dl/w3b6s99vshnr", year:2015, genre:"Animasiya", id: "insideout" },
