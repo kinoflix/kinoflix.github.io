@@ -3,249 +3,497 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homoqlif Detektoru v2</title>
+    <title>Homoqlif Alətləri (Detector & Generator)</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            padding: 2rem 1rem;
             display: flex;
             justify-content: center;
         }
+
         .container {
-            background: #fff;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 850px;
+            max-width: 900px;
         }
-        h2, h3 {
-            color: #2c3e50;
-            margin-top: 0;
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
         }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Tabs (Mərkəzə düzləndirilib) */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Cards and Sections */
+        .tab-content {
+            display: none;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         textarea {
             width: 100%;
-            height: 140px;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
+            height: 120px;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
             resize: vertical;
-            box-sizing: border-box;
-            font-family: monospace;
+            font-family: 'Fira Code', monospace;
+            transition: border-color 0.2s;
         }
+
         textarea:focus {
-            border-color: #3498db;
             outline: none;
+            border-color: var(--primary);
         }
-        button {
-            background-color: #3498db;
+
+        button.action-btn {
+            background-color: var(--primary);
             color: white;
             border: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            border-radius: 6px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 8px;
             cursor: pointer;
-            margin-top: 15px;
-            transition: background 0.3s;
+            margin-top: 1rem;
+            transition: background 0.2s, transform 0.1s;
         }
-        button:hover {
-            background-color: #2980b9;
+
+        button.action-btn:hover {
+            background-color: var(--primary-hover);
         }
-        .result-section {
-            margin-top: 25px;
+
+        button.action-btn:active {
+            transform: translateY(2px);
         }
-        /* Vizual qırmızı vurğulanmış mətn sahəsi */
-        .text-preview {
+
+        /* Text Preview Area */
+        .preview-box {
             background-color: #1e1e1e;
             color: #d4d4d4;
-            padding: 15px;
-            border-radius: 6px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 17px;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
             line-height: 1.6;
             white-space: pre-wrap;
             word-break: break-all;
-            margin-top: 10px;
-            border: 1px solid #333;
+            margin-top: 1.5rem;
         }
-        /* Qırmızı vurğulanan hərf */
-        .bad-char {
-            background-color: #e74c3c;
-            color: #ffffff;
-            font-weight: bold;
-            padding: 2px 5px;
+
+        .highlight-danger {
+            background-color: var(--danger);
+            color: white;
+            padding: 0 4px;
             border-radius: 4px;
-            box-shadow: 0 0 6px rgba(231, 76, 60, 0.8);
-            border: 1px solid #ff6b6b;
+            font-weight: bold;
         }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
-        }
-        th, td {
-            padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
         }
+
+        th, td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
         th {
-            background-color: #f8f9fa;
-            color: #2c3e50;
+            background-color: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 600;
         }
-        tr:hover {
-            background-color: #f1f2f6;
+
+        tr:last-child td {
+            border-bottom: none;
         }
-        .badge {
-            background: #e74c3c;
+
+        .char-badge {
+            background: var(--primary);
             color: white;
-            padding: 3px 8px;
-            border-radius: 4px;
+            padding: 4px 10px;
+            border-radius: 6px;
             font-weight: bold;
             font-family: monospace;
-        }
-        .no-issue {
-            color: #27ae60;
-            font-weight: bold;
-            font-size: 17px;
-        }
-        .pos-tag {
-            background: #e1b12c;
-            color: #fff;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 13px;
-            margin-right: 4px;
             display: inline-block;
-            margin-bottom: 2px;
         }
+
+        .char-badge.danger {
+            background: var(--danger);
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: var(--text-main);
+            font-size: 0.9em;
+        }
+
+        .pos-badge {
+            background: var(--warning);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-right: 4px;
+            font-weight: 600;
+        }
+
+        .status-msg {
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+
+        .success-text { color: var(--success); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🕵️‍♂️ Homoqlif Detektoru v2</h2>
-    <p>Mətni yapışdırın: xarici simvollar aşağıda **qırmızı** ilə vurğulanacaq və mətndəki dəqiq yerləri göstəriləcək.</p>
-    
-    <textarea id="textInput" placeholder="Mətni bura daxil edin... Məsələn: </ѕcript>"></textarea>
-    <button onclick="analyzeText()">Mətni Analiz Et</button>
+    <header>
+        <h1>Homoqlif Alətləri</h1>
+        <p>Gizli simvolları tapın, təmiz mətni oxşarları ilə əvəz edin</p>
+    </header>
 
-    <div class="result-section" id="resultContainer"></div>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('detector', this)">🔍 Detektor</button>
+        <button class="tab-btn" onclick="switchTab('generator', this)">✨ Generator</button>
+        <button class="tab-btn" onclick="switchTab('reference', this)">📚 Cədvəl (A-Z)</button>
+    </div>
+
+    <!-- TAB 1: DETECTOR -->
+    <div id="detector" class="tab-content active">
+        <h3>Mətni Analiz Et</h3>
+        <p style="margin-bottom: 1rem; color: var(--text-muted);">Mətni bura yapışdırın. Standart Latın əlifbasından fərqli olan simvollar tapılacaq.</p>
+        <textarea id="detectorInput" placeholder="Məsələn: </ѕcript>"></textarea>
+        <button class="action-btn" onclick="runDetector()">Analiz Et</button>
+        <div id="detectorResults"></div>
+    </div>
+
+    <!-- TAB 2: GENERATOR -->
+    <div id="generator" class="tab-content">
+        <h3>Homoqlif Mətn Yarat</h3>
+        <p style="margin-bottom: 1rem; color: var(--text-muted);">Təmiz mətn yazın. Sistem mümkün olan bütün hərfləri vizual bənzərləri ilə (Kiril, Yunan və s.) dəyişdirəcək.</p>
+        <textarea id="generatorInput" placeholder="Bura normal mətn yazın... Məsələn: admin"></textarea>
+        <div style="display: flex; gap: 10px;">
+            <button class="action-btn" onclick="runGenerator()">Mətni Çevir</button>
+            <button class="action-btn" id="copyBtn" style="background-color: var(--success); display: none;" onclick="copyGenerated()">📋 Kopyala</button>
+        </div>
+        
+        <div id="generatorResultContainer" style="display: none;">
+            <h4 style="margin-top: 1.5rem;">Nəticə (Dəyişdirilmiş Mətn):</h4>
+            <div class="preview-box" id="generatorOutput" style="color: #4ade80;"></div>
+        </div>
+    </div>
+
+    <!-- TAB 3: REFERENCE TABLES -->
+    <div id="reference" class="tab-content">
+        <h3>Homoqlif Xəritəsi</h3>
+        <p style="margin-bottom: 1rem; color: var(--text-muted);">Sistemin istifadə etdiyi A-Z və a-z çevrilmə cədvəli və Unicode blokları.</p>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Standart (Latın)</th>
+                        <th>Homoqlif (Yeni)</th>
+                        <th>Unicode ID</th>
+                        <th>Unicode Bloku / Mənbə</th>
+                    </tr>
+                </thead>
+                <tbody id="referenceTableBody">
+                    <!-- Javascript tərəfindən doldurulacaq -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    const unicodeBlocks = [
+    // Xəritə (Dictionary) - Blok adları ilə birgə
+    const homoglyphMap = {
+        // Böyük Hərflər
+        'A': { char: 'А', code: 'U+0410', block: 'Kiril (Cyrillic)' },
+        'B': { char: 'В', code: 'U+0412', block: 'Kiril (Cyrillic)' },
+        'C': { char: 'С', code: 'U+0421', block: 'Kiril (Cyrillic)' },
+        'D': { char: 'Ⅾ', code: 'U+216E', block: 'Roma Rəqəmləri' },
+        'E': { char: 'Е', code: 'U+0415', block: 'Kiril (Cyrillic)' },
+        'F': { char: 'Ϝ', code: 'U+03DC', block: 'Yunan (Greek)' },
+        'G': { char: 'Ԍ', code: 'U+050C', block: 'Kiril (Cyrillic)' },
+        'H': { char: 'Н', code: 'U+041D', block: 'Kiril (Cyrillic)' },
+        'I': { char: 'І', code: 'U+0406', block: 'Kiril (Cyrillic)' },
+        'J': { char: 'Ј', code: 'U+0408', block: 'Kiril (Cyrillic)' },
+        'K': { char: 'Κ', code: 'U+039A', block: 'Yunan (Greek)' },
+        'L': { char: 'Ⅼ', code: 'U+216C', block: 'Roma Rəqəmləri' },
+        'M': { char: 'М', code: 'U+041C', block: 'Kiril (Cyrillic)' },
+        'N': { char: 'Ν', code: 'U+039D', block: 'Yunan (Greek)' },
+        'O': { char: 'О', code: 'U+041E', block: 'Kiril (Cyrillic)' },
+        'P': { char: 'Р', code: 'U+0420', block: 'Kiril (Cyrillic)' },
+        'Q': { char: 'Ԛ', code: 'U+051A', block: 'Kiril (Cyrillic)' },
+        'R': { char: 'Ꭱ', code: 'U+13A5', block: 'Çeroki (Cherokee)' },
+        'S': { char: 'Ѕ', code: 'U+0405', block: 'Kiril (Cyrillic)' },
+        'T': { char: 'Т', code: 'U+0422', block: 'Kiril (Cyrillic)' },
+        'U': { char: 'ꓴ', code: 'U+A4F4', block: 'Lisu' },
+        'V': { char: 'Ѵ', code: 'U+0474', block: 'Kiril (Cyrillic)' },
+        'W': { char: 'Ԝ', code: 'U+051C', block: 'Kiril (Cyrillic)' },
+        'X': { char: 'Х', code: 'U+0425', block: 'Kiril (Cyrillic)' },
+        'Y': { char: 'Ү', code: 'U+04AE', block: 'Kiril (Cyrillic)' },
+        'Z': { char: 'Ζ', code: 'U+0396', block: 'Yunan (Greek)' },
+        
+        // Kiçik Hərflər
+        'a': { char: 'а', code: 'U+0430', block: 'Kiril (Cyrillic)' },
+        'b': { char: 'ᖯ', code: 'U+15AF', block: 'Kanada Hecaları' },
+        'c': { char: 'с', code: 'U+0441', block: 'Kiril (Cyrillic)' },
+        'd': { char: 'ԁ', code: 'U+0501', block: 'Kiril (Cyrillic)' },
+        'e': { char: 'е', code: 'U+0435', block: 'Kiril (Cyrillic)' },
+        'f': { char: 'ｆ', code: 'U+FF46', block: 'Tam Genişlikli (Fullwidth)' },
+        'g': { char: 'ɡ', code: 'U+0261', block: 'Latın Alternativ (IPA)' },
+        'h': { char: 'һ', code: 'U+04BB', block: 'Kiril (Cyrillic)' },
+        'i': { char: 'і', code: 'U+0456', block: 'Kiril (Cyrillic)' },
+        'j': { char: 'ј', code: 'U+0458', block: 'Kiril (Cyrillic)' },
+        'k': { char: 'ｋ', code: 'U+FF4B', block: 'Tam Genişlikli (Fullwidth)' },
+        'l': { char: 'ӏ', code: 'U+04CF', block: 'Kiril (Cyrillic)' },
+        'm': { char: 'ⅿ', code: 'U+217F', block: 'Roma Rəqəmləri' },
+        'n': { char: 'ո', code: 'U+0578', block: 'Erməni (Armenian)' },
+        'o': { char: 'о', code: 'U+043E', block: 'Kiril (Cyrillic)' },
+        'p': { char: 'р', code: 'U+0440', block: 'Kiril (Cyrillic)' },
+        'q': { char: 'ԛ', code: 'U+051B', block: 'Kiril (Cyrillic)' },
+        'r': { char: 'ｒ', code: 'U+FF52', block: 'Tam Genişlikli (Fullwidth)' },
+        's': { char: 'ѕ', code: 'U+0455', block: 'Kiril (Cyrillic)' },
+        't': { char: 'ｔ', code: 'U+FF54', block: 'Tam Genişlikli (Fullwidth)' },
+        'u': { char: 'ս', code: 'U+057D', block: 'Erməni (Armenian)' },
+        'v': { char: 'ѵ', code: 'U+0475', block: 'Kiril (Cyrillic)' },
+        'w': { char: 'ԝ', code: 'U+051D', block: 'Kiril (Cyrillic)' },
+        'x': { char: 'х', code: 'U+0445', block: 'Kiril (Cyrillic)' },
+        'y': { char: 'у', code: 'U+0443', block: 'Kiril (Cyrillic)' },
+        'z': { char: 'ｚ', code: 'U+FF5A', block: 'Tam Genişlikli (Fullwidth)' }
+    };
+
+    // Detektor üçün Unicode Blokları
+    const detectBlocks = [
         { name: "Kiril (Cyrillic)", min: 0x0400, max: 0x052F },
         { name: "Yunan (Greek)", min: 0x0370, max: 0x03FF },
         { name: "Erməni (Armenian)", min: 0x0530, max: 0x058F },
         { name: "Çeroki (Cherokee)", min: 0x13A0, max: 0x13FF },
-        { name: "Roma Rəqəmləri / Simvollar", min: 0x2150, max: 0x218F },
+        { name: "Roma Rəqəmləri", min: 0x2150, max: 0x218F },
         { name: "Tam Genişlikli (Fullwidth)", min: 0xFF00, max: 0xFFEF },
         { name: "Lisu", min: 0xA4D0, max: 0xA4FF },
-        { name: "Kanada Hecaları", min: 0x1400, max: 0x167F }
+        { name: "Kanada Hecaları", min: 0x1400, max: 0x167F },
+        { name: "Latın Alternativ (IPA)", min: 0x0250, max: 0x02AF }
     ];
 
     function escapeHtml(str) {
-        return str
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
-    function analyzeText() {
-        const text = document.getElementById("textInput").value;
-        const resultContainer = document.getElementById("resultContainer");
-        resultContainer.innerHTML = "";
+    // TAB SİSTEMİ
+    function switchTab(tabId, btnElement) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        btnElement.classList.add('active');
+    }
 
-        if (!text.trim()) {
-            resultContainer.innerHTML = "<p>Zəhmət olmasa yoxlamaq üçün mətn daxil edin.</p>";
+    // DETEKTOR FUNKSİYASI
+    function runDetector() {
+        const text = document.getElementById("detectorInput").value;
+        const resDiv = document.getElementById("detectorResults");
+        resDiv.innerHTML = "";
+
+        if (!text) {
+            resDiv.innerHTML = "<p class='status-msg'>Zəhmət olmasa mətn daxil edin.</p>";
             return;
         }
 
-        let highlightedTextHTML = "";
-        let homoglyphMap = new Map(); // Eyni simvolların mövqelərini qruplaşdırmaq üçün
-        let hasHomoglyph = false;
+        let previewHTML = "";
+        let findingsMap = new Map();
+        let hasIssue = false;
 
         for (let i = 0; i < text.length; i++) {
             const char = text[i];
             const charCode = text.charCodeAt(i);
-            const position = i + 1; // 1-dən başlayan sira nömrəsi
+            const pos = i + 1;
+            let blockName = null;
 
-            let detectedBlock = null;
-
-            for (const block of unicodeBlocks) {
+            for (const block of detectBlocks) {
                 if (charCode >= block.min && charCode <= block.max) {
-                    detectedBlock = block.name;
-                    break;
+                    blockName = block.name; break;
                 }
             }
 
-            if (detectedBlock) {
-                hasHomoglyph = true;
-                // HTML-də qırmızı vurğulama
-                highlightedTextHTML += `<span class="bad-char" title="Mövqe: ${position} | ${detectedBlock}">${escapeHtml(char)}</span>`;
+            if (blockName) {
+                hasIssue = true;
+                previewHTML += `<span class="highlight-danger" title="Simvol: ${pos}">${escapeHtml(char)}</span>`;
+                
+                const hex = 'U+' + charCode.toString(16).toUpperCase().padStart(4, '0');
+                const key = hex;
 
-                // Cədvəl üçün məlumat toplama
-                const unicodeHex = 'U+' + charCode.toString(16).toUpperCase().padStart(4, '0');
-                const key = char + "_" + unicodeHex;
-
-                if (homoglyphMap.has(key)) {
-                    homoglyphMap.get(key).positions.push(position);
+                if (findingsMap.has(key)) {
+                    findingsMap.get(key).positions.push(pos);
                 } else {
-                    homoglyphMap.set(key, {
-                        char: char,
-                        unicode: unicodeHex,
-                        blockName: detectedBlock,
-                        positions: [position]
-                    });
+                    findingsMap.set(key, { char, hex, blockName, positions: [pos] });
                 }
             } else {
-                highlightedTextHTML += escapeHtml(char);
+                previewHTML += escapeHtml(char);
             }
         }
 
-        renderResults(hasHomoglyph, Array.from(homoglyphMap.values()), highlightedTextHTML, resultContainer);
-    }
-
-    function renderResults(hasHomoglyph, homoglyphs, highlightedHTML, container) {
-        if (!hasHomoglyph) {
-            container.innerHTML = "<p class='no-issue'>✅ Mətndə heç bir şübhəli homoqlif tapılmadı. Bütün hərflər standartdır.</p>";
+        if (!hasIssue) {
+            resDiv.innerHTML = "<p class='status-msg success-text'>✅ Hər şey təmizdir. Mətndə təhlükəli simvol tapılmadı.</p>";
             return;
         }
 
-        let html = `<h3>1. Vizual Baxış (Homoqliflər qırmızı ilə göstərilib):</h3>`;
-        html += `<div class="text-preview">${highlightedHTML}</div>`;
+        let html = `<h4 style="margin-top:1.5rem;">Vizual Mətn:</h4>
+                    <div class="preview-box">${previewHTML}</div>
+                    <div class="table-container">
+                    <table style="margin-top:1rem;">
+                        <thead><tr><th>Simvol</th><th>Kodu</th><th>Mənbə</th><th>Mövqe</th></tr></thead><tbody>`;
 
-        html += `<h3 style="margin-top: 25px;">2. Xətalı Simvolların Siyahısı və Dəqiq Yerləri:</h3>`;
-        html += `<table>
-                    <thead>
-                        <tr>
-                            <th>Simvol</th>
-                            <th>Unicode</th>
-                            <th>Mənbə / Blok</th>
-                            <th>Mətndəki Yerləri (Simvol №)</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
-
-        homoglyphs.forEach(item => {
-            const posTags = item.positions.map(p => `<span class="pos-tag">${p}</span>`).join(" ");
+        findingsMap.forEach(item => {
+            const positionsHTML = item.positions.map(p => `<span class="pos-badge">${p}</span>`).join(" ");
             html += `<tr>
-                        <td><span class="badge">${escapeHtml(item.char)}</span></td>
-                        <td><code>${item.unicode}</code></td>
+                        <td><span class="char-badge danger">${escapeHtml(item.char)}</span></td>
+                        <td><code>${item.hex}</code></td>
                         <td>${item.blockName}</td>
-                        <td>${posTags}</td>
+                        <td>${positionsHTML}</td>
                      </tr>`;
         });
-
-        html += `</tbody></table>`;
-        container.innerHTML = html;
+        html += `</tbody></table></div>`;
+        resDiv.innerHTML = html;
     }
+
+    // GENERATOR FUNKSİYASI
+    let currentGeneratedText = "";
+    function runGenerator() {
+        const input = document.getElementById("generatorInput").value;
+        if (!input) return;
+
+        let output = "";
+        for (let i = 0; i < input.length; i++) {
+            const char = input[i];
+            output += homoglyphMap[char] ? homoglyphMap[char].char : char;
+        }
+
+        currentGeneratedText = output;
+        document.getElementById("generatorOutput").textContent = output;
+        document.getElementById("generatorResultContainer").style.display = "block";
+        document.getElementById("copyBtn").style.display = "inline-block";
+        document.getElementById("copyBtn").textContent = "📋 Kopyala";
+    }
+
+    function copyGenerated() {
+        navigator.clipboard.writeText(currentGeneratedText).then(() => {
+            document.getElementById("copyBtn").textContent = "✅ Kopyalandı!";
+            setTimeout(() => { document.getElementById("copyBtn").textContent = "📋 Kopyala"; }, 2000);
+        });
+    }
+
+    // CƏDVƏLİ DOLDURMA (Səhifə yüklənəndə)
+    window.onload = function() {
+        const tbody = document.getElementById("referenceTableBody");
+        let html = "";
+        
+        for (const [standardChar, data] of Object.entries(homoglyphMap)) {
+            html += `<tr>
+                        <td><span class="char-badge" style="background:#64748b;">${standardChar}</span></td>
+                        <td><span class="char-badge">${data.char}</span></td>
+                        <td><code>${data.code}</code></td>
+                        <td>${data.block}</td>
+                     </tr>`;
+        }
+        tbody.innerHTML = html;
+    };
 </script>
 
 </body>
