@@ -4,6 +4,7 @@
 const MOVIES = [
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "Zaman makinesi / The Time Machine", cover:"https://m.media-amazon.com/images/M/MV5BZjRiMTdjNmEtOGJjNy00ZjA1LTlkNzktNzc0NzMxNTY0OGE5XkEyXkFqcGc@._V1_.jpg", src:"https://dzen.ru/embed/vTh3T0qQ86Vk?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2002, genre:"Elmi fantastik", id: "thetimemachine" },
   { title: "The Gorge", cover:"https://m.media-amazon.com/images/M/MV5BOTQ5Y2QyYTktYmFmZi00NWJlLWE0MzgtYTA4M2I0ZjQwZjcxXkEyXkFqcGc@._V1_.jpg", src:"https://vidmoly.me/dl/fb17hxrc8yd5", year:2025, genre:"Fantastik", id: "thegorge" },
   { title: "Gerçek kahraman / Free Guy", cover:"https://m.media-amazon.com/images/M/MV5BN2I0MGMxYjUtZTZiMS00MzMxLTkzNWYtMDUyZmUwY2ViYTljXkEyXkFqcGc@._V1_.jpg", src:"https://dzen.ru/embed/vUAuDHapxyys?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2021, genre:"Elmi fantastik", id: "freeguy" },
   { title: "En süper kahraman / Superhero Movie", cover:"https://m.media-amazon.com/images/M/MV5BMTc0Njc1MTU5Nl5BMl5BanBnXkFtZTcwMjA4NDE2MQ@@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/vvnl92WTcjkY?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2008, genre:"Komediya", id: "superheromovie" },
