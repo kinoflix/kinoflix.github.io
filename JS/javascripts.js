@@ -386,6 +386,8 @@ const MOVIES = [
   { title: "Avatar", cover: "https://m.media-amazon.com/images/M/MV5BM2RiNGMzM2QtMzkyNi00OGYyLWE5MTctNDRkOTRkZmI5ZGJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/v_MR3qG1GUis?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2009, genre: "Fantastik", id: "avatar" },
   { title: "Kara panter: Yaşasın Wakanda  / Black Panther: Wakanda Forever", cover:"https://m.media-amazon.com/images/M/MV5BYWY5NDY1ZjItZDQxMy00MTAzLTgyOGQtNTQxYjFiMzZjMjUyXkEyXkFqcGc@._V1_.jpg", src:"https://vidmoly.me/dl/3yj0i84glfld", year:2022, genre:"Fantastik", id: "blackpanther2" },
   { title: "Kara panter / Black Panther", cover:"https://m.media-amazon.com/images/M/MV5BMTg1MTY2MjYzNV5BMl5BanBnXkFtZTgwMTc4NTMwNDI@._V1_.jpg", src:"https://vidmoly.me/dl/7kl5vrogjdtd", year:2018, genre:"Fantastik", id: "blackpanther" },
+  { title: "Doktor Strange çoklu evren çılgınlığında / Doctor Strange in the Multiverse of Madness", cover:"https://m.media-amazon.com/images/M/MV5BN2YxZGRjMzYtZjE1ZC00MDI0LThjZmQtZTZmMzVmMmQ2NzBmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/v42uE-grlMk4?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2022, genre:"Fantastik", id: "doctorstrange2" },
+  { title: "Doktor Strange  / Doctor Strange", cover:"https://m.media-amazon.com/images/M/MV5BNjgwNzAzNjk1Nl5BMl5BanBnXkFtZTgwMzQ2NjI1OTE@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/veY_n23UtCwg?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2016, genre:"Fantastik", id: "doctorstrange" },
   { title: "İnanılmaz yeşil dev / The Incredible Hulk", cover: "https://m.media-amazon.com/images/M/MV5BNzI4YjkyZTQtMjk1NS00MzhkLWEwYzgtZjZiODUyNWViNDdlXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vdv9TgfOtdBo?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2008, genre: "Fantastik", id: "theincrediblehulk" },
   { title: "Yeşil dev / Hulk", cover: "https://m.media-amazon.com/images/M/MV5BODY3ZjQ1OWItMGI5NS00NzZjLTk3ODgtZDVjOTFiMjY3NjBlXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vGsuDOBwImgM?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2003, genre: "Fantastik", id: "hulk" },
   { title: "Demir adam 3 / Iron Man 3", cover: "https://m.media-amazon.com/images/M/MV5BMjIzMzAzMjQyM15BMl5BanBnXkFtZTcwNzM2NjcyOQ@@._V1_.jpg", src: "https://dzen.ru/embed/vDBsSF-YKOXE?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2013, genre: "Fantastik", id: "ironman3" },
@@ -3168,6 +3170,12 @@ const COLLECTIONS = [
     title: "Megan / M3GAN",
     cover: "https://montroseplayhouse.co.uk/wp-content/uploads/2025/07/lHChxm7sv3gWR2qz5PwjdxcXQf7-scaled.webp",
     movies: ["megan", "megan2"]
+   },
+   {
+    id: "doctorstrange",
+    title: "Doktor Strange / Doctor Strange",
+    cover: "https://m.media-amazon.com/images/M/MV5BN2YxZGRjMzYtZjE1ZC00MDI0LThjZmQtZTZmMzVmMmQ2NzBmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["doctorstrange", "doctorstrange2"]
    },
    {
     id: "blackpanther",
