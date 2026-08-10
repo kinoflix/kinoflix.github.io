@@ -384,6 +384,16 @@ const MOVIES = [
   { title: "Avatar 3: Ateş ve kül / Avatar 3: Fire and Ash", cover:"https://m.media-amazon.com/images/M/MV5BZDYxY2I1OGMtN2Y4MS00ZmU1LTgyNDAtODA0MzAyYjI0N2Y2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vkvideo.ru/video359563763_456241595", year:2025, genre:"Fantastik", id:"avatar3" },
   { title: "Avatar: Suyun yolu / Avatar: The Deep Dive", cover: "https://m.media-amazon.com/images/M/MV5BY2ExYzkyNGUtODQwNS00MGZiLWE2NmItYTg3YjVjZGIxN2NhXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vG8OrNND6-3Y?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2022, genre: "Fantastik", id: "avatar2" },
   { title: "Avatar", cover: "https://m.media-amazon.com/images/M/MV5BM2RiNGMzM2QtMzkyNi00OGYyLWE5MTctNDRkOTRkZmI5ZGJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/v_MR3qG1GUis?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2009, genre: "Fantastik", id: "avatar" },
+  { title: "X-Men: Dark Phoenix", cover: "https://m.media-amazon.com/images/M/MV5BN2IyZjUwNDQtZmMzZi00MWJhLTgyN2ItNTE1MmNmMDhlMzIwXkEyXkFqcGc@._V1_.jpg", src: "https://vidmoly.me/dl/kxu887wlwbin", year: 2019, genre: "Fantastik", id: "xmendarkphoenix" },
+  { title: "Logan", cover: "https://m.media-amazon.com/images/M/MV5BZjNhOTIzYWEtNjdhNS00NGJjLWE1NzctYmIxMDY4M2UzOGU3XkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vPgQgIzhbLQI?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2017, genre: "Fantastik", id: "logan" },
+  { title: "X-Men: Kıyamet / X-Men: Apocalypse", cover: "https://m.media-amazon.com/images/M/MV5BNjVhNWY3NjItNmZjOS00NTU3LWFiZTctNzdjNGM5Y2Y0MDUwXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vIjkY2faLYUs?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2016, genre: "Fantastik", id: "xmenapocalypse" },
+  { title: "X-Men: Geçmiş günler gelecek / X-Men: Days of Future Past", cover: "https://m.media-amazon.com/images/M/MV5BNzNiYWE4NjMtMTU4OS00NmM4LWE4ZjAtYmE5OTA5NjkzODExXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vT4JnMGbA7Ts?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2014, genre: "Fantastik", id: "xmendaysoffuturepast" },
+  { title: "The Wolverine", cover: "https://m.media-amazon.com/images/M/MV5BNGU0MzRhMWEtYTBkNS00NzliLWJkMmUtMDFlMjkyOTkyYmZlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vbALmIYnU5xY?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2013, genre: "Fantastik", id: "thewolverine" },
+  { title: "X-Men: Birinci sınıf / X-Men: First Class", cover: "https://m.media-amazon.com/images/M/MV5BMTg5OTMxNzk4Nl5BMl5BanBnXkFtZTcwOTk1MjAwNQ@@._V1_FMjpg_UX1000_.jpg", src: "https://vidmoly.me/dl/058wk3ohtled", year: 2011, genre: "Fanstastik", id: "xmenfirstclass" },
+  { title: "X-Men Başlangıç: Wolverine / X-Men Origins: Wolverine", cover: "https://m.media-amazon.com/images/M/MV5BZjQwOGEzNjUtNDgwYS00NzUzLWJhZjAtNmFlNzY2YTQyOTllXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vF6MAQ4QiZ3M?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2009, genre: "Fanstastik", id: "xmenoriginswolverine" },
+  { title: "X-Men: Son direniş / X-Men: The Last Stand", cover: "https://m.media-amazon.com/images/M/MV5BMThmOWE3OWEtODJmNC00ZDEzLTk4MWUtNzEzM2RiNmJiZmU3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/valS5zQ85zVA?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2006, genre: "Fantastik", id: "xmenthelaststand" },
+  { title: "X2: X-Men United", cover: "https://m.media-amazon.com/images/M/MV5BNWMzMWNmNmMtMjg2ZC00YWJhLTgwOTAtMjJlZjljNDczMjY1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vidmoly.me/dl/wrqr72yjznet", year: 2003, genre: "Fantastik", id: "x2" },
+  { title: "X-Men", cover: "https://m.media-amazon.com/images/M/MV5BZjdiZTUwYzItNzczYi00MjcxLTkzNWMtY2IyZGE2OTFlN2VhXkEyXkFqcGc@._V1_.jpg", src: "https://vidmoly.me/dl/mif0pfxi0ztc", year: 2000, genre: "Fantastik", id: "xmen" },
   { title: "İnfazcı: Savaş bölgesi / Punisher: War Zone", cover:"https://m.media-amazon.com/images/M/MV5BZTdlOTkyZjUtODE4NC00ODZmLTg5OGYtMjkwZDY0MTZhMTQ0XkEyXkFqcGc@._V1_.jpg", src:"https://dzen.ru/embed/vhncDaXO-GHA?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2008, genre:"Aksiyon", id: "thepunisherwarzone" },
   { title: "İnfazcı / The Punisher", cover:"https://m.media-amazon.com/images/M/MV5BMjI5NjcwMTQxMV5BMl5BanBnXkFtZTcwODg5ODkwNQ@@._V1_.jpg", src:"https://dzen.ru/embed/v13kikMMqKxY?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2004, genre:"Aksiyon", id: "thepunisher2004" },
   { title: "İnfazcı / The Punisher", cover:"https://m.media-amazon.com/images/M/MV5BMzcxY2U1NmItNDMxYi00YTRjLWE1NTAtMmEzZDA4NmY2NTY5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/1071595850427", year:1989, genre:"Aksiyon", id: "thepunisher1989" },
@@ -3173,6 +3183,12 @@ const COLLECTIONS = [
     title: "Megan / M3GAN",
     cover: "https://montroseplayhouse.co.uk/wp-content/uploads/2025/07/lHChxm7sv3gWR2qz5PwjdxcXQf7-scaled.webp",
     movies: ["megan", "megan2"]
+   },
+   {
+    id: "xmen",
+    title: "X-Men",
+    cover: "https://m.media-amazon.com/images/M/MV5BZjdiZTUwYzItNzczYi00MjcxLTkzNWMtY2IyZGE2OTFlN2VhXkEyXkFqcGc@._V1_.jpg",
+    movies: ["xmen", "x2", "xmenthelaststand", "xmenoriginswolverine", "xmenfirstclass", "thewolverine", "xmendaysoffuturepast", "xmenapocalypse", "logan", "xmendarkphoenix"]
    },
    {
     id: "thepunisher",
