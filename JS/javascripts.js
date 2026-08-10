@@ -384,6 +384,9 @@ const MOVIES = [
   { title: "Avatar 3: Ateş ve kül / Avatar 3: Fire and Ash", cover:"https://m.media-amazon.com/images/M/MV5BZDYxY2I1OGMtN2Y4MS00ZmU1LTgyNDAtODA0MzAyYjI0N2Y2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vkvideo.ru/video359563763_456241595", year:2025, genre:"Fantastik", id:"avatar3" },
   { title: "Avatar: Suyun yolu / Avatar: The Deep Dive", cover: "https://m.media-amazon.com/images/M/MV5BY2ExYzkyNGUtODQwNS00MGZiLWE2NmItYTg3YjVjZGIxN2NhXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vG8OrNND6-3Y?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2022, genre: "Fantastik", id: "avatar2" },
   { title: "Avatar", cover: "https://m.media-amazon.com/images/M/MV5BM2RiNGMzM2QtMzkyNi00OGYyLWE5MTctNDRkOTRkZmI5ZGJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/v_MR3qG1GUis?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2009, genre: "Fantastik", id: "avatar" },
+  { title: "İnfazcı: Savaş bölgesi / Punisher: War Zone", cover:"https://m.media-amazon.com/images/M/MV5BZTdlOTkyZjUtODE4NC00ODZmLTg5OGYtMjkwZDY0MTZhMTQ0XkEyXkFqcGc@._V1_.jpg", src:"https://dzen.ru/embed/vhncDaXO-GHA?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2008, genre:"Aksiyon", id: "thepunisherwarzone" },
+  { title: "İnfazcı / The Punisher", cover:"https://m.media-amazon.com/images/M/MV5BMjI5NjcwMTQxMV5BMl5BanBnXkFtZTcwODg5ODkwNQ@@._V1_.jpg", src:"https://dzen.ru/embed/v13kikMMqKxY?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2004, genre:"Aksiyon", id: "thepunisher2004" },
+  { title: "İnfazcı / The Punisher", cover:"https://m.media-amazon.com/images/M/MV5BMzcxY2U1NmItNDMxYi00YTRjLWE1NTAtMmEzZDA4NmY2NTY5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/1071595850427", year:1989, genre:"Aksiyon", id: "thepunisher1989" },
   { title: "Kara panter: Yaşasın Wakanda  / Black Panther: Wakanda Forever", cover:"https://m.media-amazon.com/images/M/MV5BYWY5NDY1ZjItZDQxMy00MTAzLTgyOGQtNTQxYjFiMzZjMjUyXkEyXkFqcGc@._V1_.jpg", src:"https://vidmoly.me/dl/3yj0i84glfld", year:2022, genre:"Fantastik", id: "blackpanther2" },
   { title: "Kara panter / Black Panther", cover:"https://m.media-amazon.com/images/M/MV5BMTg1MTY2MjYzNV5BMl5BanBnXkFtZTgwMTc4NTMwNDI@._V1_.jpg", src:"https://vidmoly.me/dl/7kl5vrogjdtd", year:2018, genre:"Fantastik", id: "blackpanther" },
   { title: "Doktor Strange çoklu evren çılgınlığında / Doctor Strange in the Multiverse of Madness", cover:"https://m.media-amazon.com/images/M/MV5BN2YxZGRjMzYtZjE1ZC00MDI0LThjZmQtZTZmMzVmMmQ2NzBmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/v42uE-grlMk4?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2022, genre:"Fantastik", id: "doctorstrange2" },
@@ -3170,6 +3173,12 @@ const COLLECTIONS = [
     title: "Megan / M3GAN",
     cover: "https://montroseplayhouse.co.uk/wp-content/uploads/2025/07/lHChxm7sv3gWR2qz5PwjdxcXQf7-scaled.webp",
     movies: ["megan", "megan2"]
+   },
+   {
+    id: "thepunisher",
+    title: "İnfazcı / The Punisher",
+    cover: "https://montroseplayhouse.co.uk/wp-content/uploads/2025/07/lHChxm7sv3gWR2qz5PwjdxcXQf7-scaled.webp",
+    movies: ["thepunisher1989", "thepunisher2004", "thepunisherwarzone"]
    },
    {
     id: "doctorstrange",
