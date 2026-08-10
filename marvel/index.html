@@ -1,0 +1,1730 @@
+<!doctype html>
+<html lang="az">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>KINOFLIX / MARVEL</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%231db954' d='M27.5 162.2L9 187.1h90.5l6.9-130.7-78.9 105.8zM396.3 45.7L267.7 32l135.7 147.2-7.1-133.5zM112.2 218.3l-11.2-22H9.9L234.8 458zm2-31.2h284l-81.5-88.5L256.3 33zm297.3 9.1L277.6 458l224.8-261.7h-90.9zM415.4 69L406 56.4l.9 17.3 6.1 113.4h90.3zM113.5 93.5l-4.6 85.6L244.7 32 116.1 45.7zm287.7 102.7h-290l42.4 82.9L256.3 480l144.9-283.8z'/%3E%3C/svg%3E">
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #08101a; --surface: #0f1720; --muted: #94a3b8; --accent: #1db954; 
+            --text: #e6eef6; --glass: rgba(255,255,255,0.03); --radius: 12px; 
+            --card-sh: 0 8px 28px rgba(2,6,23,0.6); --header-bg: rgba(8, 16, 26, 0.8);
+            --hover-red: #d94f5c;
+        }
+
+        [data-theme="light"] {
+            --bg: #f6f8fb; --surface: #ffffff; --muted: #475569; --accent: #0b74ff; 
+            --text: #071026; --glass: rgba(0,0,0,0.04); --header-bg: rgba(246, 248, 251, 0.8);
+        }
+
+        * { box-sizing: border-box; padding: 0; margin: 0; }
+        body { background: var(--bg); color: var(--text); font-family: "Varela Round", sans-serif; transition: background 0.3s; line-height: 1.6; }
+
+        /* HEADER */
+        header {
+            position: fixed; top: 0; width: 100%; height: 72px; /* Ana səhifəyə uyğun */
+            background: var(--header-bg); backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 18px; z-index: 1000; border-bottom: 1px solid var(--glass);
+        }
+        /* DÜZƏLİŞ: Loqo ölçüsü kiçildildi */
+        .logo img { height: 30px; width: auto; transition: 0.3s; }
+
+        .icon-btn-theme {
+            background: var(--glass); border: none; color: var(--text);
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+        }
+        
+
+        /* MENYU (Desktop) */
+        .menu-container { margin-top: 100px; }
+        .menu { display: flex; justify-content: center; list-style: none; padding: 0; }
+
+        .menu li {
+            width: 125px; /* DÜZƏLİŞ: Menyu eni ana səhifəyə uyğun (125px) */
+            height: 50px; text-align: center; position: relative;
+            background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEi%0D%0AIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhs%0D%0AaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0%0D%0AaD0iMzkwcHgiIGhlaWdodD0iNTBweCIgdmlld0JveD0iMCAwIDM5MCA1MCIgZW5hYmxlLWJhY2tn%0D%0Acm91bmQ9Im5ldyAwIDAgMzkwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHBhdGggZmlsbD0i%0D%0Abm9uZSIgc3Ryb2tlPSIjZDk0ZjVjIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGlt%0D%0AaXQ9IjEwIiBkPSJNMCw0Ny41ODVjMCwwLDk3LjUsMCwxMzAsMAoJYzEzLjc1LDAsMjguNzQtMzgu%0D%0ANzc4LDQ2LjE2OC0xOS40MTZDMTkyLjY2OSw0Ni41LDI0My42MDMsNDcuNTg1LDI2MCw0Ny41ODVj%0D%0AMzEuODIxLDAsMTMwLDAsMTMwLDAiLz4KPC9zdmc+Cg==");
+            background-repeat: no-repeat; background-size: 390px 50px;
+            background-position: -390px bottom; transition: background-position 0.6s ease-out;
+            overflow: hidden;
+        }
+
+        .menu li:not(:last-child) { margin-right: 20px; }
+
+        .menu li:hover, .menu li.active { background-position: 0 bottom; }
+
+        /* DÜZƏLİŞ: Menyu font ölçüsü ana səhifəyə uyğun (18px) */
+        .menu li a { text-decoration: none; color: var(--muted); display: flex; align-items: center; justify-content: center; height: 100%; transition: 0.3s; font-size: 18px; }
+        .menu li:hover a, .menu li.active a { color: var(--hover-red); }
+
+        /* MOBİL MENYU */
+        @media (max-width: 768px) {
+            .menu { flex-direction: column; align-items: center; gap: 0; }
+            .menu li { 
+                width: 100%; max-width: 300px; background-image: none !important; 
+                border-bottom: 1px solid var(--glass); overflow: visible;
+                margin-right: 0 !important;
+            }
+            .menu li::after {
+                content: ""; position: absolute; bottom: 0; left: 50%;
+                width: 0; height: 2px; background: var(--hover-red);
+                transition: 0.3s ease; transform: translateX(-50%);
+            }
+            .menu li:hover::after, .menu li.active::after { width: 80%; }
+            .menu li a { padding: 15px 0; }
+        }
+        
+
+        /* STANDART MƏZMUN SAHƏSİ */
+        .main-content {
+            max-width: 1000px; margin: 30px auto; padding: 40px;
+            background: var(--surface); border-radius: var(--radius);
+            box-shadow: var(--card-sh); min-height: 400px;
+        }
+        /* DÜZƏLİŞ: Başlıq xətti temaya uyğun mavi/yaşıl edildi */
+        .main-content h1 { color: var(--text); border-left: 5px solid var(--accent); padding-left: 15px; margin-bottom: 25px; transition: border-color 0.3s; }
+        .main-content p { color: var(--text); font-size: 1.1rem; margin-bottom: 15px; opacity: 0.9; }
+        .main-content a { color: var(--accent); text-decoration: none; font-weight: bold; transition: 0.2s; }
+        .main-content a:hover { color: var(--hover-red); text-decoration: underline; }
+        
+        .info-card { background: var(--glass); padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
+
+        #themeToggle {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease !important;
+}
+
+#themeToggle:hover {
+    transform: scale(1.1) rotate(15deg);
+    background: var(--accent) !important;
+    color: #fff !important;
+      /* Neon effekti əlavə olundu */
+  box-shadow: 
+    0 0 10px var(--accent),
+    0 0 20px var(--accent),
+    0 0 35px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+#themeToggle i {
+    pointer-events: none; /* Klik hadisəsinin düyməyə keçməsi üçün */
+}
+      
+      /* ============================================================
+   AUTH MODAL — DÜZƏLDİLMİŞ VERSİYA
+   Dəyişikliklər:
+   1. Yuvarlaq künclər (--radius → 20px, --radius-sm → 12px)
+   2. Toast sağ yuxarıda — showToast() JS-də tam yenilənib
+   3. Modal/input genişliyi max-width ilə məhdudlaşdırıldı
+   4. Hover effektləri düzgün işləyir (visibility bug həll edildi)
+   ============================================================ */
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(2, 6, 23, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
+}
+.modal-overlay.active {
+  display: flex;
+}
+
+/* Modal card əsası */
+.modal-card {
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;          /* FIX 1: daha yuvarlaq */
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow);
+  animation: scaleUp 0.22s ease-out;
+}
+
+/* Auth modal card — maksimum en */
+.auth-modal-card {
+  max-width: 400px;             /* FIX 3: çox enli görünmür */
+}
+
+/* Modal header */
+.modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* Bağla düyməsi */
+.close-modal-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.6rem;
+  cursor: pointer;
+  line-height: 1;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+}
+.close-modal-btn:hover {
+  background: var(--glass);
+  color: var(--text);
+}
+
+/* Modal body */
+.auth-modal-body {
+  padding: 22px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Tabs */
+.auth-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: 4px;
+}
+.auth-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 11px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+  position: relative;
+}
+.auth-tab.active {
+  color: var(--accent);
+}
+.auth-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0;
+  width: 100%; height: 2px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+}
+
+/* Form görünümü */
+.auth-form {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+}
+.auth-form.active {
+  display: flex;
+}
+
+/* Input qrupları */
+.input-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.input-group > i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+  z-index: 2;
+  font-size: 0.9rem;
+}
+.input-group input {
+  width: 100%;
+  padding: 13px 14px 13px 42px;
+  border-radius: 12px;          /* FIX 1: yuvarlaq input */
+  border: 1px solid var(--glass-border);
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  font-size: 0.92rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-group input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+.input-group.half {
+  flex: 1;
+}
+.input-group.half input {
+  padding-left: 38px;
+}
+.input-group.half i {
+  left: 12px;
+}
+
+/* Ad + Soyad yan-yana */
+.name-row {
+  display: flex;
+  gap: 10px;
+}
+
+/* Şifrə yoxlama mesajları */
+.check-message {
+  font-size: 0.78rem;
+  min-height: 0;
+  padding-left: 2px;
+  transition: color 0.2s;
+  margin-top: -6px;
+}
+.check-message:empty { display: none; }
+.check-message.success { color: var(--success); }
+.check-message.error   { color: var(--danger); }
+
+/* Şifrəni göstər/gizlət düyməsi */
+.password-toggle-btn {
+  position: absolute;
+  right: 0; top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.88rem;
+  padding: 0 13px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  flex-shrink: 0;
+  z-index: 2;
+}
+.password-toggle-btn:hover {
+  color: var(--accent);           /* FIX 4: yox olmur, rəng dəyişir */
+}
+.input-group:has(.password-toggle-btn) input {
+  padding-right: 44px;
+}
+
+/* Şifrəni unutdunuzmu */
+.forgot-password-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  padding: 0;
+  transition: opacity 0.2s;
+}
+.forgot-password-link:hover { opacity: 0.7; }
+
+/* Submit düyməsi */
+.submit-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 13px;
+  border-radius: 12px;          /* FIX 1: yuvarlaq buton */
+  font-weight: bold;
+  font-size: 0.97rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  letter-spacing: 0.2px;
+}
+.submit-btn:hover {
+  background: var(--accent); /* FIX 4: hover düzgün işləyir */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.submit-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Ayırıcı xətt */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--text);
+  opacity: 0.15;
+}
+
+.auth-divider span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+/* Google düyməsi */
+.google-btn {
+  width: 100%;
+  background: #fff;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  border-radius: 12px;          /* FIX 1: yuvarlaq */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.google-btn:hover {
+  background: #f3f4f6;          /* FIX 4: düzgün hover, yox olmur */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+.google-btn:active {
+  transform: translateY(0);
+}
+.google-btn img {
+  width: 20px; height: 20px;
+}
+
+/* Auth header düyməsi */
+#authMainBtn {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+}
+#authMainBtn:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* Animasiyalar */
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Light tema */
+[data-theme="light"] .auth-modal-card {
+  background: #ffffff;
+}
+[data-theme="light"] .auth-divider span {
+  background: #ffffff;
+}
+[data-theme="light"] .google-btn {
+  background: #fff;
+  color: #1f2937;
+  border-color: #d1d5db;
+}
+[data-theme="light"] .google-btn:hover {
+  background: #f3f4f6;
+}
+
+/* Mobil uyğunluğu */
+@media (max-width: 480px) {
+  .auth-modal-card {
+    max-width: 100%;
+  }
+  .auth-modal-body {
+    padding: 18px 16px 24px;
+  }
+  .name-row {
+    flex-direction: row;
+    gap: 8px;
+  }
+}
+
+#closeAuthModal {
+  display: none;
+}
+
+#authModalTitle {
+    display: block;        /* Elementin bütün sətri tutmasını təmin edir */
+    width: 100%;           /* Enini 100% edir ki, mərkəzləmə tam işləsin */
+    text-align: center;    /* Həm tək, həm çox sətirli mətni ortalayır */
+    box-sizing: border-box;/* Padding varsa enin pozulmasının qarşısını alır */
+}
+body, input, button, select, textarea {
+    font-family: 'Varela Round', sans-serif;
+}
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+/* --- BUTTONS (YENİLƏNDİ) --- */
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.3s ease; /* Keçidləri yumşaltdıq */
+}
+
+/* Ümumi düymələr üçün köhnə hover effekti qalsın */
+.icon-btn:hover {
+  background: var(--surface);
+  outline: 2px solid var(--accent);
+}
+
+/* Buton içərisindəki ikonun öz ölçüsü */
+.icon-btn i {
+  font-size: 20px; /* İkonun ölçüsü */
+}
+/* Account İkonun ölçüsü */
+.icon-btn .fa-circle-user {
+  font-size: 25px; 
+}
+    </style>
+</head>
+<body data-theme="dark">
+
+<header>
+    <a href="../index.html" class="logo">
+        <img id="siteLogo" src="../FILES/IMG/logos/white.png" alt="KINOFLIX">
+    </a>
+    
+    <div class="header-actions">
+        <button id="themeToggle" class="icon-btn-theme">☀️</button>
+        <button id="authMainBtn" class="icon-btn" title="Hesab" aria-label="Hesab">
+            <i class="fa-solid fa-circle-user"></i>
+        </button>
+    </div>
+</header>
+
+<div class="menu-container">
+    <ul class="menu" id="mainMenu">
+    <li><a href="../index.html">ƏSAS SƏHİFƏ</a></li>
+    <li><a href="../kinoflixplus">KINOFLIX+</a></li>
+    <li><a href="messages.html">YENİLİKLƏR</a></li>
+    <li><a href="../chat">SÖHBƏT</a></li>
+    <li class="active"><a href="marvel.html">MARVEL</a></li>
+    <li><a href="about.html">HAQQIMIZDA</a></li>
+    <li><a href="contact.html">ƏLAQƏ</a></li>
+    </ul>
+</div>
+
+<main class="main-content">
+
+<h2 style="margin-top: 35px;">🎬 Marvel Filmləri — Yayımlanma Sırası</h2>
+
+<p>
+    Aşağıdakı siyahıda <strong>MCU-nun rəsmi fazaları əsas xətt</strong> kimi götürülüb.
+    Digər Marvel filmləri isə yayımlandıqları ilə uyğun dövrdə siyahıya əlavə olunub.
+    Kainat hər filmin qarşısında ayrıca göstərilib.
+</p>
+
+<div class="info-card" style="overflow-x: auto;">
+
+<h3>🎬 MCU-dan əvvəl — Marvel Filmləri</h3>
+
+<table style="width:100%; border-collapse:collapse; text-align:left;">
+    <thead>
+        <tr>
+            <th style="padding:10px;">№</th>
+            <th style="padding:10px;">Film</th>
+            <th style="padding:10px;">İl</th>
+            <th style="padding:10px;">Kainat</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>1</td><td>Howard the Duck</td><td>1986</td><td>⚫ Digər Marvel</td></tr>
+        <tr><td>2</td><td><a href="https://kinoflix.github.io/index.html?id=thepunisher1989">The Punisher</a></td><td>1989</td><td>⚫ Digər Marvel</td></tr>
+        <tr><td>3</td><td>Captain America</td><td>1990</td><td>⚫ Digər Marvel</td></tr>
+        <tr><td>4</td><td>Blade</td><td>1998</td><td>🩸 New Line / Marvel</td></tr>
+        <tr><td>5</td><td><a href="https://kinoflix.github.io/index.html?id=xmen">X-Men</a></td><td>2000</td><td>🔵 Fox / X-Men</td></tr>
+        <tr><td>6</td><td>Blade II</td><td>2002</td><td>🩸 New Line / Marvel</td></tr>
+        <tr><td>7</td><td><a href="https://kinoflix.github.io/index.html?id=spiderman">Spider-Man</a></td><td>2002</td><td>🕷️ Sony / Tobey Maguire</td></tr>
+        <tr><td>8</td><td>Daredevil</td><td>2003</td><td>🔴 Fox / Marvel</td></tr>
+        <tr><td>9</td><td><a href="https://kinoflix.github.io/index.html?id=x2">X2: X-Men United</a></td><td>2003</td><td>🔵 Fox / X-Men</td></tr>
+        <tr><td>10</td><td><a href="https://kinoflix.github.io/index.html?id=hulk">Hulk</a></td><td>2003</td><td>🟢 Universal / Marvel</td></tr>
+        <tr><td>11</td><td><a href="https://kinoflix.github.io/index.html?id=thepunisher2004">The Punisher</a></td><td>2004</td><td>⚫ Lionsgate / Marvel</td></tr>
+        <tr><td>12</td><td><a href="https://kinoflix.github.io/index.html?id=spiderman2">Spider-Man 2</a></td><td>2004</td><td>🕷️ Sony / Tobey Maguire</td></tr>
+        <tr><td>13</td><td>Blade: Trinity</td><td>2004</td><td>🩸 New Line / Marvel</td></tr>
+        <tr><td>14</td><td>Elektra</td><td>2005</td><td>🔴 Fox / Marvel</td></tr>
+        <tr><td>15</td><td>Man-Thing</td><td>2005</td><td>⚫ Lionsgate / Marvel</td></tr>
+        <tr><td>16</td><td>Fantastic Four</td><td>2005</td><td>🔵 Fox / Fantastic Four</td></tr>
+        <tr><td>17</td><td><a href="https://kinoflix.github.io/index.html?id=xmenthelaststand">X-Men: The Last Stand</a></td><td>2006</td><td>🔵 Fox / X-Men</td></tr>
+        <tr><td>18</td><td>Ghost Rider</td><td>2007</td><td>🔥 Sony / Marvel</td></tr>
+        <tr><td>19</td><td><a href="https://kinoflix.github.io/index.html?id=spiderman3">Spider-Man 3</a></td><td>2007</td><td>🕷️ Sony / Tobey Maguire</td></tr>
+        <tr><td>20</td><td>Fantastic Four: Rise of the Silver Surfer</td><td>2007</td><td>🔵 Fox / Fantastic Four</td></tr>
+    </tbody>
+</table>
+
+<div style="margin-top:20px; padding:15px; border-radius:10px; background:rgba(29,185,84,0.08);">
+    🏆 <strong>Infinity Saga</strong> — MCU-nun ilk böyük hekayə xəttidir və <strong>Faza 1, Faza 2 və Faza 3</strong>-ü əhatə edir. Bu saga əsasən <strong>Infinity Stones</strong>, onların gücü və <strong>Thanos</strong>un bütün daşları toplayaraq kainatın taleyini dəyişdirmək cəhdi ətrafında inkişaf edir. Hekayə <strong>Iron Man</strong> ilə başlayır və <strong>Avengers: Endgame</strong> ilə əsas hekayə xəttini tamamlayır.
+</div>
+
+<h3 style="margin-top:30px;">🟢 Faza 1 — 2008–2012</h3>
+
+<table style="width:100%; border-collapse:collapse; text-align:left;">
+    <thead>
+        <tr>
+            <th style="padding:10px;">№</th>
+            <th style="padding:10px;">Film</th>
+            <th style="padding:10px;">İl</th>
+            <th style="padding:10px;">Kainat</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>21</td><td><a href="https://kinoflix.github.io/index.html?id=ironman">Iron Man</a></td><td>2008</td><td>🟢 MCU — Faza 1</td></tr>
+        <tr><td>22</td><td><a href="https://kinoflix.github.io/index.html?id=theincrediblehulk">The Incredible Hulk</a></td><td>2008</td><td>🟢 MCU — Faza 1</td></tr>
+        <tr><td>23</td><td><a href="https://kinoflix.github.io/index.html?id=thepunisherwarzone">Punisher: War Zone</a></td><td>2008</td><td>⚫ Lionsgate / Marvel</td></tr>
+        <tr><td>24</td><td><a href="https://kinoflix.github.io/index.html?id=xmenoriginswolverine">X-Men Origins: Wolverine</a></td><td>2009</td><td>🔵 Fox / X-Men</td></tr>
+        <tr><td>25</td><td><a href="https://kinoflix.github.io/index.html?id=ironman2">Iron Man 2</a></td><td>2010</td><td>🟢 MCU — Faza 1</td></tr>
+        <tr><td>26</td><td>Thor</td><td>2011</td><td>🟢 MCU — Faza 1</td></tr>
+        <tr><td>27</td><td><a href="https://kinoflix.github.io/index.html?id=xmenfirstclass">X-Men: First Class</a></td><td>2011</td><td>🔵 Fox / X-Men</td></tr>
+        <tr><td>28</td><td><a href="https://kinoflix.github.io/index.html?id=captainamericafirstavenger">Captain America: The First Avenger</a></td><td>2011</td><td>🟢 MCU — Faza 1</td></tr>
+        <tr><td>29</td><td>Ghost Rider: Spirit of Vengeance</td><td>2012</td><td>🔥 Sony / Marvel</td></tr>
+        <tr><td>30</td><td><a href="https://kinoflix.github.io/index.html?id=theavengers">The Avengers</a></td><td>2012</td><td>🟢 MCU — Faza 1</td></tr>
+        <tr><td>31</td><td><a href="https://kinoflix.github.io/index.html?id=theamazingspiderman">The Amazing Spider-Man</a></td><td>2012</td><td>🕷️ Sony / Andrew Garfield</td></tr>
+    </tbody>
+</table>
+
+<h3 style="margin-top:30px;">🔵 Faza 2 — 2013–2015</h3>
+
+<table style="width:100%; border-collapse:collapse; text-align:left;">
+    <thead>
+        <tr>
+            <th style="padding:10px;">№</th>
+            <th style="padding:10px;">Film</th>
+            <th style="padding:10px;">İl</th>
+            <th style="padding:10px;">Kainat</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>32</td><td><a href="https://kinoflix.github.io/index.html?id=ironman3">Iron Man 3</a></td><td>2013</td><td>🟢 MCU — Faza 2</td></tr>
+        <tr><td>33</td><td><a href="https://kinoflix.github.io/index.html?id=thewolverine">The Wolverine</a></td><td>2013</td><td>🔵 Fox / X-Men</td></tr>
+        <tr><td>34</td><td>Thor: The Dark World</td><td>2013</td><td>🟢 MCU — Faza 2</td></tr>
+        <tr><td>35</td><td><a href="https://kinoflix.github.io/index.html?id=captainamericathewintersoldier">Captain America: The Winter Soldier</a></td><td>2014</td><td>🟢 MCU — Faza 2</td></tr>
+        <tr><td>36</td><td><a href="https://kinoflix.github.io/index.html?id=theamazingspiderman2">The Amazing Spider-Man 2</a></td><td>2014</td><td>🕷️ Sony / Andrew Garfield</td></tr>
+        <tr><td>37</td><td><a href="https://kinoflix.github.io/index.html?id=xmendaysoffuturepast">X-Men: Days of Future Past</a></td><td>2014</td><td>🔵 Fox / X-Men</td></tr>
+        <tr><td>38</td><td>Guardians of the Galaxy</td><td>2014</td><td>🟢 MCU — Faza 2</td></tr>
+        <tr><td>39</td><td><a href="https://kinoflix.github.io/index.html?id=theavengers2">Avengers: Age of Ultron</a></td><td>2015</td><td>🟢 MCU — Faza 2</td></tr>
+        <tr><td>40</td><td>Ant-Man</td><td>2015</td><td>🟢 MCU — Faza 2</td></tr>
+        <tr><td>41</td><td>Fantastic Four</td><td>2015</td><td>🔵 Fox / Fantastic Four</td></tr>
+    </tbody>
+</table>
+
+<h3 style="margin-top:30px;">🟣 Faza 3 — 2016–2019</h3>
+
+<table style="width:100%; border-collapse:collapse; text-align:left;">
+    <thead>
+        <tr>
+            <th style="padding:10px;">№</th>
+            <th style="padding:10px;">Film</th>
+            <th style="padding:10px;">İl</th>
+            <th style="padding:10px;">Kainat</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>42</td><td>Deadpool</td><td>2016</td><td>🔵 Fox / X-Men</td></tr>
+        <tr><td>43</td><td><a href="https://kinoflix.github.io/index.html?id=captainamericacivilwar">Captain America: Civil War</a></td><td>2016</td><td>🟢 MCU — Faza 3</td></tr>
+        <tr><td>44</td><td><a href="https://kinoflix.github.io/index.html?id=xmenapocalypse">X-Men: Apocalypse</a></td><td>2016</td><td>🔵 Fox / X-Men</td></tr>
+        <tr><td>45</td><td><a href="https://kinoflix.github.io/index.html?id=doctorstrange">Doctor Strange</a></td><td>2016</td><td>🟢 MCU — Faza 3</td></tr>
+        <tr><td>46</td><td><a href="https://kinoflix.github.io/index.html?id=logan">Logan</a></td><td>2017</td><td>🔵 Fox / X-Men</td></tr>
+        <tr><td>47</td><td>Guardians of the Galaxy Vol. 2</td><td>2017</td><td>🟢 MCU — Faza 3</td></tr>
+        <tr><td>48</td><td><a href="https://kinoflix.github.io/index.html?id=spidermanhomecoming">Spider-Man: Homecoming</a></td><td>2017</td><td>🟢 MCU — Faza 3</td></tr>
+        <tr><td>49</td><td>Thor: Ragnarok</td><td>2017</td><td>🟢 MCU — Faza 3</td></tr>
+        <tr><td>50</td><td><a href="https://kinoflix.github.io/index.html?id=blackpanther">Black Panther</a></td><td>2018</td><td>🟢 MCU — Faza 3</td></tr>
+        <tr><td>51</td><td><a href="https://kinoflix.github.io/index.html?id=theavengers3">Avengers: Infinity War</a></td><td>2018</td><td>🟢 MCU — Faza 3</td></tr>
+        <tr><td>52</td><td>Deadpool 2</td><td>2018</td><td>🔵 Fox / X-Men</td></tr>
+        <tr><td>53</td><td>Ant-Man and the Wasp</td><td>2018</td><td>🟢 MCU — Faza 3</td></tr>
+        <tr><td>54</td><td><a href="https://kinoflix.github.io/index.html?id=venom">Venom</a></td><td>2018</td><td>🟠 Sony / SSU</td></tr>
+        <tr><td>55</td><td><a href="https://kinoflix.github.io/index.html?id=spidermanintothespiderverse">Spider-Man: Into the Spider-Verse</a></td><td>2018</td><td>🕸️ Sony / Spider-Verse</td></tr>
+        <tr><td>56</td><td><a href="https://kinoflix.github.io/index.html?id=captainmarvel">Captain Marvel</a></td><td>2019</td><td>🟢 MCU — Faza 3</td></tr>
+        <tr><td>57</td><td><a href="https://kinoflix.github.io/index.html?id=theavengers4">Avengers: Endgame</a></td><td>2019</td><td>🟢 MCU — Faza 3</td></tr>
+        <tr><td>58</td><td><a href="https://kinoflix.github.io/index.html?id=xmendarkphoenix">Dark Phoenix</a></td><td>2019</td><td>🔵 Fox / X-Men</td></tr>
+        <tr><td>59</td><td><a href="https://kinoflix.github.io/index.html?id=spidermanfarfromhome">Spider-Man: Far From Home</a></td><td>2019</td><td>🟢 MCU — Faza 3</td></tr>
+    </tbody>
+</table>
+
+<div style="margin-top:20px; padding:15px; border-radius:10px; background:rgba(29,185,84,0.08);">
+    🏆 <strong>Multiverse Saga</strong> — MCU-nun ikinci böyük hekayə xəttidir və <strong>Faza 4, Faza 5 və Faza 6</strong>-nı əhatə edir. Bu saga müxtəlif kainatların və alternativ reallıqların mövcudluğunu ön plana çıxarır. <strong>Multiverse</strong> anlayışı ilə birlikdə fərqli kainatlardan olan personajlar və hadisələr MCU ilə əlaqələnməyə başlayır. Multiverse Saga <strong>Avengers: Doomsday</strong> və <strong>Avengers: Secret Wars</strong> ilə davam edir və böyük multiverse hadisələrinə aparır.
+</div>
+
+<h3 style="margin-top:30px;">🟡 Faza 4 — 2021–2022</h3>
+
+<table style="width:100%; border-collapse:collapse; text-align:left;">
+    <thead>
+        <tr>
+            <th style="padding:10px;">№</th>
+            <th style="padding:10px;">Film</th>
+            <th style="padding:10px;">İl</th>
+            <th style="padding:10px;">Kainat</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>60</td><td>The New Mutants</td><td>2020</td><td>🔵 Fox / X-Men</td></tr>
+        <tr><td>61</td><td><a href="https://kinoflix.github.io/index.html?id=blackwidow">Black Widow</a></td><td>2021</td><td>🟢 MCU — Faza 4</td></tr>
+        <tr><td>62</td><td>Shang-Chi and the Legend of the Ten Rings</td><td>2021</td><td>🟢 MCU — Faza 4</td></tr>
+        <tr><td>63</td><td><a href="https://kinoflix.github.io/index.html?id=venom2">Venom: Let There Be Carnage</a></td><td>2021</td><td>🟠 Sony / SSU</td></tr>
+        <tr><td>64</td><td>Eternals</td><td>2021</td><td>🟢 MCU — Faza 4</td></tr>
+        <tr><td>65</td><td><a href="https://kinoflix.github.io/index.html?id=spidermannowayhome">Spider-Man: No Way Home</a></td><td>2021</td><td>🟢 MCU — Faza 4 / Multiverse</td></tr>
+        <tr><td>66</td><td><a href="https://kinoflix.github.io/index.html?id=morbius">Morbius</a></td><td>2022</td><td>🟠 Sony / SSU</td></tr>
+        <tr><td>67</td><td><a href="https://kinoflix.github.io/index.html?id=doctorstrange2">Doctor Strange in the Multiverse of Madness</a></td><td>2022</td><td>🟢 MCU — Faza 4</td></tr>
+        <tr><td>68</td><td>Thor: Love and Thunder</td><td>2022</td><td>🟢 MCU — Faza 4</td></tr>
+        <tr><td>69</td><td><a href="https://kinoflix.github.io/index.html?id=blackpanther2">Black Panther: Wakanda Forever</a></td><td>2022</td><td>🟢 MCU — Faza 4</td></tr>
+    </tbody>
+</table>
+
+<h3 style="margin-top:30px;">🟠 Faza 5 — 2023–2025</h3>
+
+<table style="width:100%; border-collapse:collapse; text-align:left;">
+    <thead>
+        <tr>
+            <th style="padding:10px;">№</th>
+            <th style="padding:10px;">Film</th>
+            <th style="padding:10px;">İl</th>
+            <th style="padding:10px;">Kainat</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>70</td><td>Ant-Man and the Wasp: Quantumania</td><td>2023</td><td>🟢 MCU — Faza 5</td></tr>
+        <tr><td>71</td><td>Guardians of the Galaxy Vol. 3</td><td>2023</td><td>🟢 MCU — Faza 5</td></tr>
+        <tr><td>72</td><td><a href="https://kinoflix.github.io/index.html?id=spidermanacrossthespiderverse">Spider-Man: Across the Spider-Verse</a></td><td>2023</td><td>🕸️ Sony / Spider-Verse</td></tr>
+        <tr><td>73</td><td><a href="https://kinoflix.github.io/index.html?id=themarvels">The Marvels</a></td><td>2023</td><td>🟢 MCU — Faza 5</td></tr>
+        <tr><td>74</td><td><a href="https://kinoflix.github.io/index.html?id=madameweb">Madame Web</a></td><td>2024</td><td>🟠 Sony / SSU</td></tr>
+        <tr><td>75</td><td>Deadpool &amp; Wolverine</td><td>2024</td><td>🟢 MCU — Faza 5 | 🔵 Fox / X-Men</td></tr>
+        <tr><td>76</td><td><a href="https://kinoflix.github.io/index.html?id=venom3">Venom: The Last Dance</a></td><td>2024</td><td>🟠 Sony / SSU</td></tr>
+        <tr><td>77</td><td><a href="https://kinoflix.github.io/index.html?id=kravethehunter">Kraven the Hunter</a></td><td>2024</td><td>🟠 Sony / SSU</td></tr>
+        <tr><td>78</td><td><a href="https://kinoflix.github.io/index.html?id=captainamericabravenewworld">Captain America: Brave New World</a></td><td>2025</td><td>🟢 MCU — Faza 5</td></tr>
+        <tr><td>79</td><td>Thunderbolts*</td><td>2025</td><td>🟢 MCU — Faza 5</td></tr>
+    </tbody>
+</table>
+
+<h3 style="margin-top:30px;">🔴 Faza 6 — 2025–TBD</h3>
+
+<table style="width:100%; border-collapse:collapse; text-align:left;">
+    <thead>
+        <tr>
+            <th style="padding:10px;">№</th>
+            <th style="padding:10px;">Film</th>
+            <th style="padding:10px;">İl</th>
+            <th style="padding:10px;">Kainat</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>80</td><td>The Fantastic Four: First Steps</td><td>2025</td><td>🟢 MCU — Faza 6</td></tr>
+        <tr><td>81</td><td>Spider-Man: Brand New Day</td><td>2026</td><td>🟢 MCU — Faza 6</td></tr>
+        <tr><td>82</td><td>Avengers: Doomsday</td><td>2026</td><td>🟢 MCU — Faza 6</td></tr>
+        <tr><td>83</td><td>Avengers: Secret Wars</td><td>2027</td><td>🟢 MCU — Faza 6</td></tr>
+        <tr><td>84</td><td>Blade</td><td>TBD</td><td>🟢 MCU — Faza 6</td></tr>
+        <tr><td>85</td><td>Armor Wars</td><td>TBD</td><td>🟢 MCU — Faza 6</td></tr>
+        <tr><td>86</td><td>Spider-Man: Beyond the Spider-Verse</td><td>TBD</td><td>🕸️ Sony / Spider-Verse</td></tr>
+    </tbody>
+</table>
+
+</div>
+
+<h2 style="margin-top:35px;">🌌 Marvel Kainatları</h2>
+
+<ul class="feature-list">
+    <li>
+        <span>🟢</span>
+        <strong>MCU:</strong>
+        Marvel Studios-un əsas kainatı və Avengers hekayəsinin mərkəzi.
+    </li>
+
+    <li>
+        <span>🟠</span>
+        <strong>Sony / SSU:</strong>
+        Venom, Morbius, Madame Web və Kraven kimi filmlərin aid olduğu Sony's Spider-Man Universe.
+    </li>
+
+    <li>
+        <span>🔵</span>
+        <strong>Fox / X-Men:</strong>
+        X-Men, Wolverine və Deadpool filmlərinin əsas kainatı.
+    </li>
+
+    <li>
+        <span>🔴</span>
+        <strong>Fox / Marvel:</strong>
+        Daredevil və Elektra filmlərinin aid olduğu Marvel film kainatı.
+    </li>
+    
+    <li>
+        <span>🕸️</span>
+        <strong>Sony / Spider-Verse:</strong>
+        Miles Morales-in mərkəzində olduğu çox sevilən multikainat animasiya seriyası.
+    </li>
+    
+    <li>
+        <span>🕷️</span>
+        <strong>Sony / Spider-Man:</strong>
+        Tobey Maguire və Andrew Garfield Spider-Man filmlərinin əsas kainatları.
+    </li>
+    
+    <li>
+        <span>🩸</span>
+        <strong>New Line / Marvel:</strong>
+        Blade trilogiyasının aid olduğu MCU-dan əvvəlki Marvel film kainatı.
+    </li>
+
+    <li>
+        <span>🔥</span>
+        <strong>Sony / Marvel:</strong>
+        Ghost Rider filmlərinin aid olduğu Marvel film kainatı.
+    </li>
+
+    <li>
+        <span>⚫</span>
+        <strong>Digər Marvel:</strong>
+        MCU və digər əsas Marvel film kainatlarından kənarda qalan Marvel adaptasiyaları.
+    </li>
+</ul>
+
+<div class="info-card">
+    <p style="margin-bottom: 0;">
+        <strong>Qeyd:</strong> Bu siyahı hadisələrin xronoloji ardıcıllığı deyil.
+        Əsas xətt MCU-nun rəsmi fazaları və filmlərin yayımlanma sırasıdır.
+        Digər Marvel kainatlarının filmləri isə eyni dövrə yayımlanma tarixlərinə
+        uyğun şəkildə əlavə edilib.
+    </p>
+</div>
+
+<p style="margin-top: 25px; font-style: italic; opacity: 0.7;">
+    Biz hər gün platformamızı daha da təkmilləşdirir və sizin rəyləriniz əsasında yeniliklər edirik.
+    KINOFLIX+ ailəsinə qoşulduğunuz üçün təşəkkür edirik!
+    KINOFLIX Əliqoşqar Kərimli tərəfindən kodlanaraq hazırlanmışdır.
+</p>
+
+</main>
+<script>
+    const themeToggle = document.getElementById('themeToggle');
+const siteLogo = document.getElementById('siteLogo');
+const body = document.body;
+
+// Funksiya: İkonu və loqonu yeniləyir
+function updateUI(theme) {
+    const isDark = theme === 'dark';
+    
+    // İkonu dəyişdir
+    themeToggle.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+    
+    // Loqo yolunu təyin et
+    const logoColor = isDark ? 'white' : 'black';
+    siteLogo.src = `../FILES/IMG/logos/${logoColor}.png`;
+
+    // Əgər loqo tapılmazsa (məsələn, Ana səhifədədirsə), yolu düzəlt
+    siteLogo.onerror = function() {
+        this.src = `FILES/IMG/logos/${logoColor}.png`;
+        this.onerror = null; // Sonsuz döngənin qarşısını al
+    };
+}
+
+themeToggle.addEventListener('click', () => {
+    const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('flix-theme', newTheme); // Yaddaşa yaz
+    updateUI(newTheme);
+});
+
+// Səhifə yüklənəndə yaddaşdakı temanı bərpa et
+document.addEventListener("DOMContentLoaded", () => {
+    const savedTheme = localStorage.getItem('flix-theme') || 'dark';
+    body.setAttribute('data-theme', savedTheme);
+    updateUI(savedTheme);
+    
+    // Menyu aktivlik kodu (sənin mövcud kodun)
+    const currentPath = window.location.pathname.split("/").pop();
+    const menuLinks = document.querySelectorAll(".menu li a");
+    menuLinks.forEach(link => {
+        if(link.getAttribute("href") === currentPath) {
+            document.querySelectorAll(".menu li").forEach(li => li.classList.remove("active"));
+            link.parentElement.classList.add("active");
+        }
+    });
+});
+    document.addEventListener("DOMContentLoaded", () => {
+        const currentPath = window.location.pathname.split("/").pop();
+        const menuLinks = document.querySelectorAll(".menu li a");
+        
+        menuLinks.forEach(link => {
+            if(link.getAttribute("href") === currentPath) {
+                document.querySelectorAll(".menu li").forEach(li => li.classList.remove("active"));
+                link.parentElement.classList.add("active");
+            }
+        });
+    });
+</script>
+
+    <!-- ========================================================= -->
+<!-- 🔐 AUTH MODAL (Login/Register) – düzəldilmiş versiya     -->
+<!-- ========================================================= -->
+<div id="authModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card auth-modal-card">
+    <div class="modal-header">
+      <h3 id="authModalTitle">Hesaba daxil ol və ödənişsiz izləməyə başla!</h3>
+      <button id="closeAuthModal" class="close-modal-btn">&times;</button>
+    </div>
+    <div class="modal-body auth-modal-body">
+ 
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab active">Daxil Ol</button>
+        <button id="tabRegister" class="auth-tab">Qeydiyyat</button>
+      </div>
+ 
+      <!-- LOGIN FORM -->
+      <form id="loginForm" class="auth-form active">
+        <div class="input-group">
+          <i class="fa-solid fa-envelope"></i>
+          <input type="text" id="loginEmailOrUsername" placeholder="E-poçt və ya istifadəçi adı" required>
+        </div>
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="loginPassword" placeholder="Şifrə" required>
+          <button type="button" id="toggleLoginPassword" class="password-toggle-btn" tabindex="-1">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <div style="text-align:right; margin-top:-8px;">
+          <button type="button" id="forgotPasswordBtn" class="forgot-password-link">Şifrəni unutdunuzmu?</button>
+        </div>
+        <button type="submit" class="submit-btn">Daxil ol</button>
+      </form>
+ 
+      <!-- REGISTER FORM -->
+      <form id="registerForm" class="auth-form">
+        <div class="input-group">
+          <i class="fa-solid fa-at"></i>
+          <input type="text" id="regUsername" placeholder="İstifadəçi adı (3-30 simvol)" required autocomplete="off">
+        </div>
+        <div id="usernameCheckMsg" class="check-message"></div>
+ 
+        <div class="name-row">
+          <div class="input-group half">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="regFirstName" placeholder="Adınız" required>
+          </div>
+          <div class="input-group half">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="regLastName" placeholder="Soyadınız" required>
+          </div>
+        </div>
+ 
+        <div class="input-group">
+          <i class="fa-solid fa-envelope"></i>
+          <input type="email" id="regEmail" placeholder="E-poçt ünvanı" required>
+        </div>
+ 
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="regPassword" placeholder="Şifrə (Min. 6 simvol)" required>
+          <button type="button" id="toggleRegPassword" class="password-toggle-btn" tabindex="-1">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+ 
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="regPasswordConfirm" placeholder="Şifrəni təkrarlayın" required>
+          <button type="button" id="toggleRegPasswordConfirm" class="password-toggle-btn" tabindex="-1">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <div id="passwordCheckMsg" class="check-message"></div>
+ 
+        <button type="submit" class="submit-btn">Qeydiyyatı tamamla</button>
+      </form>
+ 
+      <div class="auth-divider"><span>və ya</span></div>
+ 
+      <button id="googleAuthBtn" class="google-btn">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
+        Google ilə davam et
+      </button>
+ 
+    </div><!-- /.auth-modal-body -->
+  </div><!-- /.modal-card -->
+</div><!-- /#authModal -->
+ 
+<!-- ========================================================= -->
+<!-- FIREBASE MODUL SCRIPT (əsas səhifə üçün auth)            -->
+<!-- ========================================================= -->
+<script type="importmap">
+{
+  "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js",
+    "firebase/database": "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
+  }
+}
+</script>
+ 
+<script type="module">
+// ============================================================
+// 1. FIREBASE IMPORTLARI VƏ KONFİQ
+// ============================================================
+import { initializeApp } from "firebase/app";
+import { 
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
+  sendPasswordResetEmail, updateProfile, deleteUser
+} from "firebase/auth";
+import { 
+  getFirestore, doc, setDoc, getDoc, serverTimestamp, 
+  query, collection, where, getDocs, onSnapshot
+} from "firebase/firestore";
+import {
+  getDatabase, ref, set, onValue, onDisconnect,
+  serverTimestamp as rtdbTimestamp
+} from "firebase/database";
+ 
+// Konfiqurasiya faylını import et
+import { firebaseConfig } from "https://kinoflix.github.io/chat/JS/config.js";
+ 
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const rtdb = getDatabase(app);
+const provider = new GoogleAuthProvider();
+ 
+// ============================================================
+// 2. DOM REFERANSLARI
+// ============================================================
+const authModal = document.getElementById('authModal');
+const closeAuthModal = document.getElementById('closeAuthModal');
+const authMainBtn = document.getElementById('authMainBtn');
+ 
+const tabLogin = document.getElementById('tabLogin');
+const tabRegister = document.getElementById('tabRegister');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+ 
+const loginEmailOrUsername = document.getElementById('loginEmailOrUsername');
+const loginPassword = document.getElementById('loginPassword');
+const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+ 
+const regUsername = document.getElementById('regUsername');
+const regFirstName = document.getElementById('regFirstName');
+const regLastName = document.getElementById('regLastName');
+const regEmail = document.getElementById('regEmail');
+const regPassword = document.getElementById('regPassword');
+const regPasswordConfirm = document.getElementById('regPasswordConfirm');
+const usernameCheckMsg = document.getElementById('usernameCheckMsg');
+const passwordCheckMsg = document.getElementById('passwordCheckMsg');
+ 
+const googleBtn = document.getElementById('googleAuthBtn');
+ 
+// Toggle şifrə düymələri
+document.getElementById('toggleLoginPassword').addEventListener('click', () => {
+  const inp = document.getElementById('loginPassword');
+  const icon = document.querySelector('#toggleLoginPassword i');
+  if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+  else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+});
+document.getElementById('toggleRegPassword').addEventListener('click', () => {
+  const inp = document.getElementById('regPassword');
+  const icon = document.querySelector('#toggleRegPassword i');
+  if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+  else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+});
+document.getElementById('toggleRegPasswordConfirm').addEventListener('click', () => {
+  const inp = document.getElementById('regPasswordConfirm');
+  const icon = document.querySelector('#toggleRegPasswordConfirm i');
+  if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+  else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+});
+ 
+// ============================================================
+// 3. KÖMƏKÇİ FUNKSİYALAR
+// ============================================================
+ 
+// Toast — app.js-dəki showToast ilə eyni sistem (sağ yuxarı)
+function showToast(message, type = "info") {
+  if (!document.getElementById("flix-toast-styles")) {
+    const style = document.createElement("style");
+    style.id = "flix-toast-styles";
+    style.innerHTML = `
+      .flix-toast-container {
+        position: fixed;
+        top: 20px; right: 20px; z-index: 99999;
+        display: flex; flex-direction: column; gap: 10px;
+        pointer-events: none;
+      }
+      .flix-toast {
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(12px);
+        color: #1a1a1a;
+        padding: 14px 20px;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.14);
+        font-size: 14px; font-weight: 500;
+        display: flex; align-items: center; gap: 12px;
+        transform: translateX(120%);
+        animation: flixSlideIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+        border-left: 5px solid #ccc;
+        max-width: 360px;
+        pointer-events: auto;
+      }
+      [data-theme="dark"] .flix-toast {
+        background: rgba(28,28,30,0.94);
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      }
+      .flix-toast.success { border-left-color: #2ecc71; }
+      .flix-toast.error   { border-left-color: #e74c3c; }
+      .flix-toast.warning { border-left-color: #f39c12; }
+      .flix-toast.info    { border-left-color: #3498db; }
+      @keyframes flixSlideIn { to { transform: translateX(0); } }
+      @keyframes flixFadeOut { to { opacity: 0; transform: translateY(-15px); } }
+    `;
+    document.head.appendChild(style);
+  }
+  let container = document.querySelector(".flix-toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "flix-toast-container";
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement("div");
+  toast.className = `flix-toast ${type}`;
+  const icons = { success: "✅", error: "❌", warning: "⚠️", info: "💡" };
+  toast.innerHTML = `<span>${icons[type] || "💡"}</span><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = "flixFadeOut 0.4s forwards";
+    setTimeout(() => toast.remove(), 400);
+  }, 4000);
+}
+ 
+function localizeFirebaseError(err) {
+  switch(err.code) {
+    case "auth/email-already-in-use": return "Bu e-poçt ünvanı ilə artıq qeydiyyatdan keçilib.";
+    case "auth/invalid-credential": return "İstifadəçi adı, e-poçt və ya şifrə yanlışdır.";
+    case "auth/weak-password": return "Şifrə çox zəifdir. Ən azı 6 simvoldan ibarət olmalıdır.";
+    case "auth/invalid-email": return "Daxil etdiyiniz e-poçt strukturu düzgün deyil.";
+    case "auth/user-disabled": return "Hesabınız rəhbərlik tərəfindən deaktiv edilib!";
+    case "auth/wrong-password": return "Şifrəniz yanlışdır. Zəhmət olmasa yenidən cəhd edin.";
+    case "auth/too-many-requests": return "Çox sayda uğursuz cəhd. Bir qədər gözləyin.";
+    case "auth/requires-recent-login": return "Bu əməliyyat üçün yenidən giriş etməlisiniz.";
+    case "auth/user-not-found": return "Daxil etdiyiniz e-poçt mövcud deyil.";
+    case "auth/cancelled-popup-request": return "Google ilə giriş əməliyyatı dayandırıldı.";
+    case "auth/popup-closed-by-user": return "Google ilə giriş əməliyyatı dayandırıldı.";
+    default: return err.message || "Gözlənilməz texniki xəta baş verdi.";
+  }
+}
+ 
+function isValidUsername(str) {
+  if (!str) return false;
+  const regex = /^(?!\d+$)[A-Za-z0-9](?!.*\.\.)[A-Za-z0-9._]{1,28}[A-Za-z0-9]$/;
+  return regex.test(str);
+}
+function normalizeUsername(str) { return str.toLowerCase().trim(); }
+function isValidName(str) { return /^[\p{L}]+(?:[\s][\p{L}]+)*$/u.test(str.trim()); }
+ 
+// ============================================================
+// 4. İSTİFADƏÇİ ADI YOXLAMA
+// ============================================================
+let usernameCheckTimeout = null;
+async function checkUsernameAvailability(username) {
+  if (!username) return null;
+  const normalized = normalizeUsername(username);
+  if (!isValidUsername(normalized)) return false;
+  try {
+    const q = query(collection(db, 'users'), where('username', '==', normalized));
+    const snap = await getDocs(q);
+    return snap.empty;
+  } catch { return null; }
+}
+ 
+regUsername.addEventListener('input', () => {
+  clearTimeout(usernameCheckTimeout);
+  const val = regUsername.value.trim();
+  const normalized = normalizeUsername(val);
+  if (!val) { usernameCheckMsg.textContent = ''; usernameCheckMsg.className = 'check-message'; return; }
+  if (!isValidUsername(normalized)) {
+    usernameCheckMsg.textContent = 'uyğun deyil';
+    usernameCheckMsg.className = 'check-message error';
+    return;
+  }
+  usernameCheckMsg.textContent = 'yoxlanılır...';
+  usernameCheckMsg.className = 'check-message';
+  usernameCheckTimeout = setTimeout(async () => {
+    const available = await checkUsernameAvailability(normalized);
+    if (available === null) {
+      usernameCheckMsg.textContent = 'xəta baş verdi';
+      usernameCheckMsg.className = 'check-message error';
+    } else if (available) {
+      usernameCheckMsg.textContent = 'uyğundur';
+      usernameCheckMsg.className = 'check-message success';
+    } else {
+      usernameCheckMsg.textContent = 'bu istifadəçi adı artıq alınıb';
+      usernameCheckMsg.className = 'check-message error';
+    }
+  }, 400);
+});
+ 
+regPasswordConfirm.addEventListener('input', () => {
+  const p1 = regPassword.value;
+  const p2 = regPasswordConfirm.value;
+  if (!p2) { passwordCheckMsg.textContent = ''; passwordCheckMsg.className = 'check-message'; return; }
+  if (p1 === p2) {
+    passwordCheckMsg.textContent = 'Şifrələr eynidir!';
+    passwordCheckMsg.className = 'check-message success';
+  } else {
+    passwordCheckMsg.textContent = 'Şifrələr eyni deyil!';
+    passwordCheckMsg.className = 'check-message error';
+  }
+});
+ 
+// ============================================================
+// 5. LOGIN (EMAIL / USERNAME)
+// ============================================================
+async function loginWithEmailOrUsername(identifier, password) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (emailRegex.test(identifier)) {
+    await signInWithEmailAndPassword(auth, identifier, password);
+    return;
+  }
+  const normalized = normalizeUsername(identifier);
+  try {
+    const q = query(collection(db, 'users'), where('username', '==', normalized));
+    const snap = await getDocs(q);
+    if (snap.empty) throw { code: 'auth/user-not-found', message: 'İstifadəçi tapılmadı.' };
+    const userData = snap.docs[0].data();
+    await signInWithEmailAndPassword(auth, userData.email, password);
+  } catch (err) {
+    if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+      throw { code: 'auth/invalid-credential', message: 'İstifadəçi adı və ya şifrə yanlışdır.' };
+    }
+    throw err;
+  }
+}
+ 
+// ============================================================
+// 6. AUTH FORM SUBMITLƏR
+// ============================================================
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const identifier = loginEmailOrUsername.value.trim();
+  const password = loginPassword.value;
+  try {
+    await loginWithEmailOrUsername(identifier, password);
+    loginForm.reset();
+    showToast("Uğurla giriş edildi. Xoş gəldiniz!", "success");
+    closeAuthModal.click();
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+ 
+registerForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const usernameRaw = regUsername.value.trim();
+  const username = normalizeUsername(usernameRaw);
+  const firstName = regFirstName.value.trim();
+  const lastName = regLastName.value.trim();
+  const email = regEmail.value.trim();
+  const password = regPassword.value;
+  const passwordConfirm = regPasswordConfirm.value;
+ 
+  if (!isValidUsername(username)) {
+    showToast("İstifadəçi adı qaydalara uyğun deyil (3-10 simvol, yalnız A-Z, 0-9, . _, . başda/sonda olmaz, .. olmaz).", "error");
+    return;
+  }
+  const available = await checkUsernameAvailability(username);
+  if (available === false) {
+    showToast("Bu istifadəçi adı artıq alınıb.", "error");
+    return;
+  } else if (available === null) {
+    showToast("İstifadəçi adı yoxlanılarkən xəta baş verdi.", "error");
+    return;
+  }
+  if (!isValidName(firstName) || !isValidName(lastName)) {
+    showToast("Ad və Soyad yalnız hərflər və boşluqdan ibarət ola bilər.", "error");
+    return;
+  }
+  if (password !== passwordConfirm) {
+    showToast("Şifrələr eyni deyil!", "error");
+    return;
+  }
+ 
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const displayName = `${firstName} ${lastName}`.trim();
+    await updateProfile(userCredential.user, { displayName, photoURL: "https://kinoflix.github.io/chat/img/avatar.jpg" });
+ 
+    await setDoc(doc(db, 'users', userCredential.user.uid), {
+      uid: userCredential.user.uid,
+      username,
+      firstName,
+      lastName,
+      displayName,
+      email,
+      photoURL: "https://kinoflix.github.io/chat/img/avatar.jpg",
+      role: 'user',
+      isBanned: false,
+      createdAt: serverTimestamp()
+    });
+ 
+    registerForm.reset();
+    usernameCheckMsg.textContent = '';
+    passwordCheckMsg.textContent = '';
+    showToast("Qeydiyyat uğurla tamamlandı!", "success");
+    closeAuthModal.click();
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+ 
+// ============================================================
+// 7. GOOGLE LOGIN
+// ============================================================
+googleBtn.addEventListener('click', async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+    if (!userDoc.exists()) {
+      const username = result.user.email.split('@')[0].replace(/[^A-Za-z0-9._]/g, '').slice(0, 30).toLowerCase();
+      const displayName = result.user.displayName || username;
+      const nameParts = displayName.split(' ');
+      const firstName = nameParts[0] || username;
+      const lastName = nameParts.slice(1).join(' ') || '';
+      await setDoc(doc(db, 'users', result.user.uid), {
+        uid: result.user.uid,
+        username,
+        firstName,
+        lastName,
+        displayName,
+        email: result.user.email,
+        photoURL: result.user.photoURL || "https://kinoflix.github.io/chat/img/avatar.jpg",
+        role: 'user',
+        isBanned: false,
+        createdAt: serverTimestamp()
+      });
+    }
+    showToast("Google ilə uğurla giriş edildi!", "success");
+    closeAuthModal.click();
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+ 
+// ============================================================
+// 8. ŞİFRƏ SIFIRLAMA
+// ============================================================
+forgotPasswordBtn.addEventListener('click', async () => {
+  const email = loginEmailOrUsername.value.trim();
+  if (!email) { showToast("Zəhmət olmasa əvvəlcə e-poçt ünvanınızı daxil edin.", "warning"); return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    showToast("Şifrə sıfırlama linki e-poçt ünvanınıza göndərildi.", "success");
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+ 
+// ============================================================
+// 9. TABS (Login / Register)
+// ============================================================
+tabLogin.addEventListener('click', () => {
+  tabLogin.classList.add('active'); tabRegister.classList.remove('active');
+  loginForm.classList.add('active'); registerForm.classList.remove('active');
+  
+  // LOGIN başlığını buraya əlavə etdik:
+  document.getElementById('authModalTitle').textContent = "Hesaba daxil ol və ödənişsiz izləməyə başla!";
+});
+
+tabRegister.addEventListener('click', () => {
+  tabRegister.classList.add('active'); tabLogin.classList.remove('active');
+  registerForm.classList.add('active'); loginForm.classList.remove('active');
+  
+  // REGISTER başlığını buraya əlavə etdik:
+  document.getElementById('authModalTitle').textContent = "Yeni hesab yarat və üstünlüklərdən yararlan!";
+});
+ 
+// ============================================================
+// 10. MODAL AÇ / BAĞLA
+// ============================================================
+function openAuthModal() {
+  authModal.style.display = 'flex';
+  tabLogin.click(); // default login tab
+}
+function closeAuthModalFunc() {
+  authModal.style.display = 'none';
+}
+  
+//closeAuthModal.addEventListener('click', closeAuthModalFunc);
+//authModal.addEventListener('click', (e) => {
+  //if (e.target === authModal) closeAuthModalFunc();
+//});
+//document.addEventListener('keydown', (e) => {
+  //if (e.key === 'Escape' && authModal.style.display === 'flex') closeAuthModalFunc();
+//});
+
+  closeAuthModal.addEventListener('click', () => {
+  if (auth.currentUser) closeAuthModalFunc();
+});
+authModal.addEventListener('click', (e) => {
+  if (e.target === authModal && auth.currentUser) closeAuthModalFunc();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && authModal.style.display === 'flex' && auth.currentUser) closeAuthModalFunc();
+});
+ 
+// ============================================================
+// 11. AUTH STATE İZLƏMƏ VƏ UI YENİLƏMƏ
+// ============================================================
+
+// Presence və ban izləmə dəyişənləri
+let presenceUnsubscribeConnected = null;
+let banWatcherUnsubscribe = null;
+
+// Presence qur — istifadəçi chat açmadan belə onlayn görünsün
+function setupPresence(user) {
+  // Əvvəlki listener-ləri təmizlə
+  if (presenceUnsubscribeConnected) {
+    presenceUnsubscribeConnected();
+    presenceUnsubscribeConnected = null;
+  }
+
+  const statusRef = ref(rtdb, `presence/${user.uid}`);
+
+  // RTDB bağlantı statusunu izlə
+  const connectedRef = ref(rtdb, '.info/connected');
+  const unsubConn = onValue(connectedRef, (snap) => {
+    if (snap.val() === true) {
+      // Bağlantı kəsildikdə offline yaz
+      onDisconnect(statusRef).set({
+        status: 'offline',
+        lastChanged: rtdbTimestamp()
+      }).then(() => {
+        // Onlayn olduğunu qeyd et
+        set(statusRef, {
+          status: 'online',
+          lastChanged: rtdbTimestamp()
+        });
+      });
+    }
+  });
+
+  // Away timer — 5 dəqiqə aktivlik olmasa "away" göstər
+  let isAway = false;
+  let idleTimer;
+  const resetIdle = () => {
+    clearTimeout(idleTimer);
+    if (isAway) {
+      isAway = false;
+      set(statusRef, { status: 'online', lastChanged: rtdbTimestamp() });
+    }
+    idleTimer = setTimeout(() => {
+      isAway = true;
+      set(statusRef, { status: 'away', lastChanged: rtdbTimestamp() });
+    }, 5 * 60 * 1000);
+  };
+  resetIdle();
+  window.addEventListener('mousemove', resetIdle);
+  window.addEventListener('keypress', resetIdle);
+  window.addEventListener('touchstart', resetIdle);
+
+  // Unsubscribe saxla
+  presenceUnsubscribeConnected = () => {
+    unsubConn();
+    clearTimeout(idleTimer);
+    window.removeEventListener('mousemove', resetIdle);
+    window.removeEventListener('keypress', resetIdle);
+    window.removeEventListener('touchstart', resetIdle);
+  };
+}
+
+// Ban izləyicisi — ban gəldikdə əsas səhifədən çıxış et
+function setupBanWatcher(user) {
+  // Əvvəlki listener-i təmizlə
+  if (banWatcherUnsubscribe) {
+    banWatcherUnsubscribe();
+    banWatcherUnsubscribe = null;
+  }
+
+  let isFirstSnapshot = true;
+  banWatcherUnsubscribe = onSnapshot(doc(db, 'users', user.uid), async (snapshot) => {
+    const wasFirst = isFirstSnapshot;
+    isFirstSnapshot = false;
+
+    if (!snapshot.exists()) {
+  set(ref(rtdb, `presence/${user.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+  showToast("Hesabınız sistemdən silindi!", "error");
+  try {
+    await deleteUser(user);
+  } catch (err) {
+    await signOut(auth).catch(() => {});
+  }
+  setTimeout(() => window.location.reload(), 2000);
+  return;
+                                     }
+
+    const data = snapshot.data();
+
+    // Ban yoxdursa ilk snapshot-u keç — normal login, yanlış trigger olmasın
+    if (wasFirst && !data.isBanned && !data.networkBanned) return;
+
+    if (data.isBanned && data.banExpires) {
+      // Müvəqqəti ban
+      const expires = data.banExpires.toDate ? data.banExpires.toDate() : new Date(data.banExpires);
+      if (expires <= new Date()) {
+        // Ban bitib — heç nə etmə
+        return;
+      }
+      const minsLeft = Math.ceil((expires - new Date()) / 60000);
+      const dStr = minsLeft < 60
+        ? `${minsLeft} dəqiqə`
+        : minsLeft < 1440
+          ? `${Math.floor(minsLeft / 60)} saat`
+          : `${Math.floor(minsLeft / 1440)} gün`;
+      showToast(`Hesabınız ${dStr} müddətinə banlandı! Sistemdən çıxarılırsınız.`, "error");
+      set(ref(rtdb, `presence/${user.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+      await signOut(auth).catch(() => {});
+      setTimeout(() => window.location.reload(), 2500);
+    } else if (data.isBanned || data.networkBanned) {
+      // Daimi ban
+      showToast("Hesabınız ban edildi! Sistemdən çıxarılırsınız.", "error");
+      set(ref(rtdb, `presence/${user.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+      await signOut(auth).catch(() => {});
+      setTimeout(() => window.location.reload(), 2500);
+    }
+  });
+}
+
+// Presence-i təmizlə (logout zamanı)
+function cleanupPresence(uid) {
+  if (uid) {
+    set(ref(rtdb, `presence/${uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+  }
+  if (presenceUnsubscribeConnected) {
+    presenceUnsubscribeConnected();
+    presenceUnsubscribeConnected = null;
+  }
+  if (banWatcherUnsubscribe) {
+    banWatcherUnsubscribe();
+    banWatcherUnsubscribe = null;
+  }
+}
+
+function updateAuthUI(user) {
+  const btn = authMainBtn;
+  if (user) {
+    btn.innerHTML = `<i class="fa-solid fa-right-from-bracket"></i>`;
+    btn.title = 'Çıxış';
+    btn.onclick = () => {
+      if (confirm("Hesabdan çıxmaq istədiyinizə əminsiniz?")) {
+        cleanupPresence(user.uid);
+        signOut(auth);
+        showToast("Hesabdan çıxış edildi.", "info");
+      }
+    };
+  } else {
+    btn.innerHTML = `<i class="fa-solid fa-circle-user"></i>`;
+    btn.title = 'Hesaba daxil ol';
+    btn.onclick = openAuthModal;
+  }
+}
+
+onAuthStateChanged(auth, async (user) => {
+  updateAuthUI(user);
+  if (user) {
+  // Modal açıqdırsa bağla
+  if (authModal.style.display === 'flex') {
+    closeAuthModalFunc();
+  }
+
+  // 👇 Sənəd yoxlanışı + 2 saniyə gözləmə (Google qeydiyyatı üçün)
+  try {
+    let userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (!userDoc.exists()) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (!userDoc.exists()) {
+        try {
+          await deleteUser(user);
+          showToast("Hesabınız sistemdən silindi.", "error");
+          window.location.reload();
+          return;
+        } catch (authError) {
+          if (authError.code === 'auth/requires-recent-login') {
+            showToast("Təhlükəsizlik doğrulaması tələb olunur. Yenidən daxil olun.", "info");
+            await signOut(auth);
+            window.location.reload();
+            return;
+          }
+          throw authError;
+        }
+      }
+    }
+  } catch (error) {
+    if (error.code === 'permission-denied') {
+      try {
+        const retryDoc = await getDoc(doc(db, 'users', user.uid));
+        if (!retryDoc.exists()) {
+          await deleteUser(user);
+          window.location.reload();
+          return;
+        }
+      } catch (_) {
+        await deleteUser(user);
+        window.location.reload();
+        return;
+      }
+    }
+    console.error("Auth yoxlanışı xətası:", error);
+  }
+
+  setupPresence(user);
+  setupBanWatcher(user);
+} else {
+  // Çıxış — presence və ban listener-ləri təmizlə
+  cleanupPresence(null);
+}
+});
+
+
+  // ============================================================
+// AVTOMATİK LOGİN MODAL AÇILIŞI (Tam Təhlükəsiz Versiya)
+// ============================================================
+(function() {
+    var isInitialPhase = true; // Səhifənin ilk yüklənmə fazası (Kilid)
+
+    // İlk 3 saniyə ərzində MutationObserver-in çaşmasının qarşısını alırıq
+    setTimeout(function() {
+        isInitialPhase = false;
+    }, 3000);
+
+    function triggerModalIfLoggedOut() {
+        var btn = document.getElementById('authMainBtn');
+        if (!btn) return;
+
+        var isLoggedOut = btn.innerHTML.indexOf('fa-circle-user') !== -1;
+
+        if (isLoggedOut) {
+            if (typeof window.openAuthModal === 'function') {
+                window.openAuthModal();
+            } else {
+                var modal = document.getElementById('authModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    var tabLogin = document.getElementById('tabLogin');
+                    var tabRegister = document.getElementById('tabRegister');
+                    var loginForm = document.getElementById('loginForm');
+                    var registerForm = document.getElementById('registerForm');
+                    if (tabLogin && tabRegister && loginForm && registerForm) {
+                        tabLogin.classList.add('active');
+                        tabRegister.classList.remove('active');
+                        loginForm.classList.add('active');
+                        registerForm.classList.remove('active');
+                    }
+                }
+            }
+        }
+    }
+
+    // 1. İLKİN AÇILIŞ: 2 saniyə gözlə və aç
+    setTimeout(function() {
+        triggerModalIfLoggedOut();
+    }, 2000);
+
+    // 2. LOGOUT İZLƏYİCİSİ (Ağıllı Kilid ilə)
+    var targetBtn = document.getElementById('authMainBtn');
+    if (targetBtn) {
+        var observer = new MutationObserver(function(mutations) {
+            // Əgər hələ ilk yüklənmə fazasındadısa (Firebase yoxlanışı gedirsə), heç nə etmə
+            if (isInitialPhase) return;
+
+            mutations.forEach(function(mutation) {
+                if (targetBtn.innerHTML.indexOf('fa-circle-user') !== -1) {
+                    // Mövcud açıq modal varsa və istifadəçi qeydiyyatdadırsa, müdaxilə etmə
+                    var registerForm = document.getElementById('registerForm');
+                    if (registerForm && registerForm.classList.contains('active')) {
+                        return; 
+                    }
+                    
+                    setTimeout(triggerModalIfLoggedOut, 300);
+                }
+            });
+        });
+        observer.observe(targetBtn, { childList: true, characterData: true, subtree: true });
+    }
+})();
+  </script>
+    <!-- İlkin Yüklənmə Ekranı (Loader) - Başlanğıc -->
+<div id="appLoader" class="app-loader">
+    <div class="app-loader-spinner"></div>
+    <style>
+        .app-loader {
+            position: fixed;
+            inset: 0;
+            /* Əsas CSS yüklənənə qədər ehtiyat olaraq tünd fon təyin edilir, sonra var(--bg) aktiv olur */
+            background: var(--bg, #11141a); 
+            z-index: 99999; /* Səhifədəki hər şeyin önündə görünməsi üçün artırıldı */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .app-loader-spinner {
+            width: 42px;
+            height: 42px;
+            border: 3px solid var(--glass-border, rgba(255, 255, 255, 0.08));
+            border-top-color: var(--accent, #3b82f6); /* Sizin rəng məntiqiniz */
+            border-radius: 50%;
+            animation: appLoaderSpin 0.8s linear infinite;
+        }
+        @keyframes appLoaderSpin { to { transform: rotate(360deg); } }
+        
+        /* Ekrandan yumşaq silinmə klassı */
+        .app-loader-hidden {
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+    </style>
+    <script>
+        window.addEventListener('load', function() {
+            var loader = document.getElementById('appLoader');
+            if (loader) {
+                /* Səhifə anında yüklənsə belə, loaderin görünməsi üçün 600ms gözlədir */
+                setTimeout(function() {
+                    loader.classList.add('app-loader-hidden');
+                    // Animasiya bitdikdən sonra elementi DOM-dan silir
+                    setTimeout(function() { loader.remove(); }, 400);
+                }, 600); 
+            }
+        });
+    </script>
+</div>
+<!-- İlkin Yüklənmə Ekranı (Loader) - Son -->
+
+</body>
+</html>
