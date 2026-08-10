@@ -3177,7 +3177,7 @@ const COLLECTIONS = [
    {
     id: "thepunisher",
     title: "İnfazcı / The Punisher",
-    cover: "https://montroseplayhouse.co.uk/wp-content/uploads/2025/07/lHChxm7sv3gWR2qz5PwjdxcXQf7-scaled.webp",
+    cover: "https://m.media-amazon.com/images/M/MV5BZTdlOTkyZjUtODE4NC00ODZmLTg5OGYtMjkwZDY0MTZhMTQ0XkEyXkFqcGc@._V1_.jpg",
     movies: ["thepunisher1989", "thepunisher2004", "thepunisherwarzone"]
    },
    {
