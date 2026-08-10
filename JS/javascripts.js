@@ -2,6 +2,7 @@
    MOVIES data
    =========================== */
 const MOVIES = [
+  { title: "MARVEL", cover:"https://kinoflix.github.io/FILES/IMG/logos/marvel.jpg", src:"../marvel", year:2026, genre:"Fantastik", id:"marvel", special:"yes", trend:"yes" },
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
   { title: "The Marvels", cover:"https://lumiere-a.akamaihd.net/v1/images/56245l11a_goat_philippines_apac_poster_1sht_e357e03a.jpeg", src:"https://vidmoly.me/dl/c6lmbw8t70rd", year:2023, genre:"Fantastik", id: "themarvels" },
@@ -2968,6 +2969,39 @@ document.addEventListener('keydown', function(e) {
                 e.stopImmediatePropagation();
                 e.preventDefault();
                 window.location.href = '../spider-noir';
+            }
+        }
+    }
+}, true);
+
+/* =========================================================
+   MARVEL KARTI ÜÇÜN XÜSUSİ YÖNLƏNDİRMƏ (MODAL LƏĞVİ)
+   ========================================================= */
+
+// Siçanla klikləmə üçün
+document.addEventListener('click', function(e) {
+    let card = e.target.closest('.card');
+    if (card) {
+        let title = card.querySelector('.title');
+        // Əgər kartın başlığı MARVEL-dirsə
+        if (title && title.textContent.includes('MARVEL')) {
+            e.stopImmediatePropagation(); // openPlayer funksiyasının işləməsini dayandırır
+            e.preventDefault();           // Standart hərəkətləri ləğv edir
+            window.location.href = '../marvel'; // Səhifəyə keçid edir
+        }
+    }
+}, true); // "true" məcburidir: kliki kartdan əvvəl tutmasını təmin edir
+
+// Klaviatura (Enter və ya Boşluq) ilə seçmək üçün
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+        let card = e.target.closest('.card');
+        if (card && document.activeElement === card) {
+            let title = card.querySelector('.title');
+            if (title && title.textContent.includes('MARVEL')) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                window.location.href = '../marvel';
             }
         }
     }
