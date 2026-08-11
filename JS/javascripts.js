@@ -392,6 +392,8 @@ const MOVIES = [
   { title: "Avatar 3: Ateş ve kül / Avatar 3: Fire and Ash", cover:"https://m.media-amazon.com/images/M/MV5BZDYxY2I1OGMtN2Y4MS00ZmU1LTgyNDAtODA0MzAyYjI0N2Y2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vkvideo.ru/video359563763_456241595", year:2025, genre:"Fantastik", id:"avatar3" },
   { title: "Avatar: Suyun yolu / Avatar: The Deep Dive", cover: "https://m.media-amazon.com/images/M/MV5BY2ExYzkyNGUtODQwNS00MGZiLWE2NmItYTg3YjVjZGIxN2NhXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vG8OrNND6-3Y?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2022, genre: "Fantastik", id: "avatar2" },
   { title: "Avatar", cover: "https://m.media-amazon.com/images/M/MV5BM2RiNGMzM2QtMzkyNi00OGYyLWE5MTctNDRkOTRkZmI5ZGJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/v_MR3qG1GUis?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2009, genre: "Fantastik", id: "avatar" },
+  { title: "Elektra", cover:"https://m.media-amazon.com/images/M/MV5BMTI3MTUwNzM5MV5BMl5BanBnXkFtZTcwNzczMDIzMw@@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/vDNxIpvnSrRc?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2005, genre:"Fantastik", id: "elektra" },
+  { title: "Korkusuz / Daredevil", cover:"https://m.media-amazon.com/images/M/MV5BZGVjZjU3MmEtNDFjZS00N2ExLTk4YzktYjYzM2MzYTJjYmE0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/v_STydMzAO0Y?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2003, genre:"Fantastik", id: "daredevil" },
   { title: "Bıçağın iki yüzü: Kutsal üçleme / Blade: Trinity", cover:"https://m.media-amazon.com/images/M/MV5BNWYzN2Y4NTEtM2JlNS00MTA5LWIyZDYtOTk1YzdiOWVkNDdlXkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/7169636698811", year:2004, genre:"Fantastik", id: "blade3" },
   { title: "Bıçağın iki yüzü 2 / Blade II", cover:"https://m.media-amazon.com/images/M/MV5BMGE5ZmY2NzEtZTEyMi00MWIyLThmOWYtYzJkOTQ0Y2U3ZWU1XkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/7169581386427", year:2002, genre:"Fantastik", id: "blade2" },
   { title: "Bıçağın iki yüzü / Blade", cover:"https://m.media-amazon.com/images/M/MV5BNzAzMmY3OWMtNDgyMS00Y2U4LTlmM2UtY2YwMmM0MDI5ODJmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/7169571621563", year:1998, genre:"Fantastik", id: "blade" },
@@ -3514,6 +3516,12 @@ const COLLECTIONS = [
     title: "Megan / M3GAN",
     cover: "https://montroseplayhouse.co.uk/wp-content/uploads/2025/07/lHChxm7sv3gWR2qz5PwjdxcXQf7-scaled.webp",
     movies: ["megan", "megan2"]
+   },
+   {
+    id: "daredevilandelektra",
+    title: "Daredevil &amp; Elektra",
+    cover: "https://m.media-amazon.com/images/M/MV5BMTI3MTUwNzM5MV5BMl5BanBnXkFtZTcwNzczMDIzMw@@._V1_FMjpg_UX1000_.jpg",
+    movies: ["daredevil", "elektra"]
    },
    {
     id: "blade",
