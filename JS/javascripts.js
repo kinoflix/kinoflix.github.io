@@ -3519,7 +3519,7 @@ const COLLECTIONS = [
     id: "blade",
     title: "Bıçağın iki yüzü / Blade",
     cover: "https://m.media-amazon.com/images/M/MV5BNWYzN2Y4NTEtM2JlNS00MTA5LWIyZDYtOTk1YzdiOWVkNDdlXkEyXkFqcGc@._V1_.jpg",
-    movies: ["blade1", "blade2", "blade3"]
+    movies: ["blade", "blade2", "blade3"]
    },
    {
     id: "deadpool",
