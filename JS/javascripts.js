@@ -1160,6 +1160,147 @@ searchInput.setAttribute('aria-label','Film axtar');
   });
 })();
 
+/* ===========================
+   Vidmax Video Handler
+   =========================== */
+(function(){
+  function whenOpenPlayerReady(cb){
+    if(typeof window.openPlayer === 'function'){ cb(); return; }
+    let tries=0;
+    const id=setInterval(()=>{ if(typeof window.openPlayer==='function'||++tries>40){clearInterval(id);cb();}},100);
+  }
+
+  // Vidmax linkini analiz edib embed URL çıxaran funksiya
+  function getEmbedUrl(url){
+    try{
+      const u = String(url || '');
+      
+      // Vidmax yoxlaması (məsələn: https://vidmax.fit/vize.php?vod=v1x208ec9df)
+      if(/vidmax\./i.test(u)){
+        let m = u.match(/vod=([a-zA-Z0-9_-]+)/i);
+        if(m && m[1]) return `https://vidmax.fit/vize.php?vod=${m[1]}`;
+        if(u.includes('vidmax.')) return u;
+      }
+      
+      return null;
+    }catch(e){ return null; }
+  }
+
+  let vidmaxModal = null;
+  
+  function createVidmaxModal(){
+    if(vidmaxModal) return vidmaxModal;
+    const css=`
+      .vidmax-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(2,6,23,0.8),rgba(2,6,23,0.95));z-index:9999;padding:20px;cursor:pointer}
+      .vidmax-sheet{width:52%;max-width:1100px;border-radius:12px;overflow:hidden;background:var(--surface,#0f1720);box-shadow:0 20px 60px rgba(2,6,23,0.7);display:flex;flex-direction:column;cursor:default}
+      .vidmax-top{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.03)}
+      .vidmax-left{display:flex;align-items:center;gap:8px}
+      .vidmax-title{font-weight:700;color:var(--text,#e6eef6);flex:1;text-align:center;line-height:1.05}
+      .vidmax-sub{font-size:13px;color:var(--muted,#94a3b8);text-align:center;margin-top:4px}
+      .vidmax-close{background:transparent;border:0;color:var(--text,#e6eef6);font-size:18px;cursor:pointer;padding:6px 10px;border-radius:8px}
+      .vidmax-close:hover{background:rgba(255,255,255,0.05)}
+      .vidmax-iframe-wrap{width:100%;height:60vh;min-height:320px;background:#000;position:relative}
+      .vidmax-iframe{width:100%;height:100%;border:0}
+      @media (max-width:520px){ .vidmax-iframe-wrap{height:48vh} .vidmax-title{font-size:14px} .vidmax-sheet{width:100%} }
+      @media (min-width:768px){ .vidmax-overlay {transform: translateX(-6px);} }
+    `;
+    const st = document.createElement('style');
+    st.appendChild(document.createTextNode(css));
+    document.head.appendChild(st);
+
+    vidmaxModal = document.createElement('div');
+    vidmaxModal.className = 'vidmax-overlay';
+    vidmaxModal.style.display = 'none';
+
+    vidmaxModal.innerHTML = `
+      <div class="vidmax-sheet" role="dialog" aria-modal="true">
+        <div class="vidmax-top">
+          <div class="vidmax-left">
+            <button class="vidmax-close" aria-label="Bağla">✕</button>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div class="vidmax-title"></div>
+            <div class="vidmax-sub"></div>
+          </div>
+          <div class="player-right-controls">
+            <button class="share-btn" title="Paylaş" aria-label="Paylaş" onclick="sharePlayer()">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+                <circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="2"></circle>
+                <circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="2"></circle>
+                <circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="2"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="vidmax-iframe-wrap">
+          <iframe class="vidmax-iframe" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" referrerpolicy="no-referrer"></iframe>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(vidmaxModal);
+
+    // Bağlanma hadisələri
+    vidmaxModal.addEventListener('click', (e) => {
+      if (e.target === vidmaxModal) hideVidmaxModal();
+    });
+
+    vidmaxModal.querySelector('.vidmax-close').onclick = hideVidmaxModal;
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && vidmaxModal.style.display === 'flex') hideVidmaxModal();
+    });
+
+    return vidmaxModal;
+  }
+
+  function showVidmaxModal(embedUrl, movie){
+    const m = createVidmaxModal();
+    const titleText = movie && movie.title ? movie.title : 'Vidmax Video';
+    const subtitleText = (movie.year || movie.genre) ? `${movie.year || ''} · ${movie.genre || ''}` : '';
+
+    m.querySelector('.vidmax-title').textContent = titleText;
+    const subEl = m.querySelector('.vidmax-sub');
+    if(subtitleText) { subEl.textContent = subtitleText; subEl.style.display = 'block'; } 
+    else { subEl.style.display = 'none'; }
+
+    m.querySelector('.vidmax-iframe').src = embedUrl;
+    document.documentElement.style.overflow = 'hidden';
+    m.style.display = 'flex';
+    if(typeof showToast === 'function') showToast(`${titleText} başladılır!`, 1000);
+  }
+
+  function hideVidmaxModal(){
+    window.history.pushState({ movieId: null }, document.title, window.location.pathname);
+    if(vidmaxModal){
+      vidmaxModal.querySelector('.vidmax-iframe').src = 'about:blank';
+      vidmaxModal.style.display = 'none';
+    }
+    document.documentElement.style.overflow = '';
+    
+    if(typeof showToast==='function') showToast('Film dayandırıldı!', 900);
+  }
+
+  whenOpenPlayerReady(function(){
+    const original = window.openPlayer.bind(window);
+    window.openPlayer = function(movie){
+      const src = (movie && (movie.src || movie.url)) ? (movie.src || movie.url) : String(movie||'');
+      
+      // Linki yoxlayır, əgər hədəf Vidmax-dırsa modala yönləndirir
+      const embedUrl = getEmbedUrl(src);
+      if(embedUrl){
+         showVidmaxModal(embedUrl, movie);
+         return;
+      }
+      
+      // Heç birinə uyğun gəlməzsə, original player-i açır
+      if(original) return original(movie);
+    };
+  });
+})();
+
   /* VK / vkvideo.ru video handler —  */
 (function(){
   // Wait until original openPlayer exists, but don't block forever
@@ -2871,7 +3012,8 @@ function getActivePlayerTitle() {
     '.dmmodal-title',      // 8. DM pəncərəsi
     '.stmodal-title',       // 9. ST pəncərəsi
     '.sibnetmodal-title',       // 10. Sibnet pəncərəsi
-    '.abyssmodal-title',        // 10. Abyss pəncərəsi
+    '.abyssmodal-title',        // 11. Abyss pəncərəsi
+    '.vidmaxmodal-title'        // 12. Vidmax pəncərəsi
     // Yeni handler əlavə etdikdə, onun başlıq class-ını bura əlavə etmək lazımdır.
   ];
 
