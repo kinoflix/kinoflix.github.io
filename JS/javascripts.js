@@ -1020,6 +1020,146 @@ searchInput.setAttribute('aria-label','Film axtar');
 
 })();
 
+/* ===========================
+   AbyssPlayer Video Handler
+   =========================== */
+(function(){
+  function whenOpenPlayerReady(cb){
+    if(typeof window.openPlayer === 'function'){ cb(); return; }
+    let tries=0;
+    const id=setInterval(()=>{ if(typeof window.openPlayer==='function'||++tries>40){clearInterval(id);cb();}},100);
+  }
+
+  // Yalnız AbyssPlayer linkini analiz edib embed URL çıxaran funksiya
+  function getEmbedUrl(url){
+    try{
+      const u = String(url || '');
+      
+      // AbyssPlayer yoxlaması
+      if(/abyssplayer\.com/i.test(u)){
+        let m = u.match(/abyssplayer\.com\/(?:embed\/|e\/)?([a-zA-Z0-9]+)/i);
+        if(m && m[1]) return `https://abyssplayer.com/${m[1]}`;
+      }
+      
+      return null;
+    }catch(e){ return null; }
+  }
+
+  let abyssModal = null;
+  
+  function createAbyssModal(){
+    if(abyssModal) return abyssModal;
+    const css=`
+      .abyss-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(2,6,23,0.8),rgba(2,6,23,0.95));z-index:9999;padding:20px;cursor:pointer}
+      .abyss-sheet{width:52%;max-width:1100px;border-radius:12px;overflow:hidden;background:var(--surface,#0f1720);box-shadow:0 20px 60px rgba(2,6,23,0.7);display:flex;flex-direction:column;cursor:default}
+      .abyss-top{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.03)}
+      .abyss-left{display:flex;align-items:center;gap:8px}
+      .abyss-title{font-weight:700;color:var(--text,#e6eef6);flex:1;text-align:center;line-height:1.05}
+      .abyss-sub{font-size:13px;color:var(--muted,#94a3b8);text-align:center;margin-top:4px}
+      .abyss-close{background:transparent;border:0;color:var(--text,#e6eef6);font-size:18px;cursor:pointer;padding:6px 10px;border-radius:8px}
+      .abyss-close:hover{background:rgba(255,255,255,0.05)}
+      .abyss-iframe-wrap{width:100%;height:60vh;min-height:320px;background:#000;position:relative}
+      .abyss-iframe{width:100%;height:100%;border:0}
+      @media (max-width:520px){ .abyss-iframe-wrap{height:48vh} .abyss-title{font-size:14px} .abyss-sheet{width:100%} }
+      @media (min-width:768px){ .abyss-overlay {transform: translateX(-6px);} }
+    `;
+    const st = document.createElement('style');
+    st.appendChild(document.createTextNode(css));
+    document.head.appendChild(st);
+
+    abyssModal = document.createElement('div');
+    abyssModal.className = 'abyss-overlay';
+    abyssModal.style.display = 'none';
+
+    abyssModal.innerHTML = `
+      <div class="abyss-sheet" role="dialog" aria-modal="true">
+        <div class="abyss-top">
+          <div class="abyss-left">
+            <button class="abyss-close" aria-label="Bağla">✕</button>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div class="abyss-title"></div>
+            <div class="abyss-sub"></div>
+          </div>
+          <div class="player-right-controls">
+            <button class="share-btn" title="Paylaş" aria-label="Paylaş" onclick="sharePlayer()">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+                <circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="2"></circle>
+                <circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="2"></circle>
+                <circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="2"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="abyss-iframe-wrap">
+          <iframe class="abyss-iframe" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" referrerpolicy="no-referrer"></iframe>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(abyssModal);
+
+    // Bağlanma hadisələri
+    abyssModal.addEventListener('click', (e) => {
+      if (e.target === abyssModal) hideAbyssModal();
+    });
+
+    abyssModal.querySelector('.abyss-close').onclick = hideAbyssModal;
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && abyssModal.style.display === 'flex') hideAbyssModal();
+    });
+
+    return abyssModal;
+  }
+
+  function showAbyssModal(embedUrl, movie){
+    const m = createAbyssModal();
+    const titleText = movie && movie.title ? movie.title : 'AbyssPlayer Video';
+    const subtitleText = (movie.year || movie.genre) ? `${movie.year || ''} · ${movie.genre || ''}` : '';
+
+    m.querySelector('.abyss-title').textContent = titleText;
+    const subEl = m.querySelector('.abyss-sub');
+    if(subtitleText) { subEl.textContent = subtitleText; subEl.style.display = 'block'; } 
+    else { subEl.style.display = 'none'; }
+
+    m.querySelector('.abyss-iframe').src = embedUrl;
+    document.documentElement.style.overflow = 'hidden';
+    m.style.display = 'flex';
+    if(typeof showToast === 'function') showToast(`${titleText} başladılır!`, 1000);
+  }
+
+  function hideAbyssModal(){
+    window.history.pushState({ movieId: null }, document.title, window.location.pathname);
+    if(abyssModal){
+      abyssModal.querySelector('.abyss-iframe').src = 'about:blank';
+      abyssModal.style.display = 'none';
+    }
+    document.documentElement.style.overflow = '';
+    
+    if(typeof showToast==='function') showToast('Film dayandırıldı!', 900);
+  }
+
+  whenOpenPlayerReady(function(){
+    const original = window.openPlayer.bind(window);
+    window.openPlayer = function(movie){
+      const src = (movie && (movie.src || movie.url)) ? (movie.src || movie.url) : String(movie||'');
+      
+      // Linki yoxlayır, əgər hədəf AbyssPlayer-dirsə modala yönləndirir
+      const embedUrl = getEmbedUrl(src);
+      if(embedUrl){
+         showAbyssModal(embedUrl, movie);
+         return;
+      }
+      
+      // Heç birinə uyğun gəlməzsə, original player-i açır
+      if(original) return original(movie);
+    };
+  });
+})();
+
   /* VK / vkvideo.ru video handler —  */
 (function(){
   // Wait until original openPlayer exists, but don't block forever
@@ -2730,7 +2870,8 @@ function getActivePlayerTitle() {
     '.vidmolyModal-title',  // 7. Vidmoly pəncərəsi
     '.dmmodal-title',      // 8. DM pəncərəsi
     '.stmodal-title',       // 9. ST pəncərəsi
-    '.sibnetmodal-title'       // 10. Sibnet pəncərəsi
+    '.sibnetmodal-title',       // 10. Sibnet pəncərəsi
+    '.abyssmodal-title',        // 10. Abyss pəncərəsi
     // Yeni handler əlavə etdikdə, onun başlıq class-ını bura əlavə etmək lazımdır.
   ];
 
