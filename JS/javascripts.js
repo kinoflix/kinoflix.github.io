@@ -3519,7 +3519,7 @@ const COLLECTIONS = [
    },
    {
     id: "daredevilandelektra",
-    title: "Daredevil &amp; Elektra",
+    title: "Daredevil & Elektra",
     cover: "https://m.media-amazon.com/images/M/MV5BMTI3MTUwNzM5MV5BMl5BanBnXkFtZTcwNzczMDIzMw@@._V1_FMjpg_UX1000_.jpg",
     movies: ["daredevil", "elektra"]
    },
