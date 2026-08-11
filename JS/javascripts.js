@@ -391,6 +391,9 @@ const MOVIES = [
   { title: "Avatar 3: Ateş ve kül / Avatar 3: Fire and Ash", cover:"https://m.media-amazon.com/images/M/MV5BZDYxY2I1OGMtN2Y4MS00ZmU1LTgyNDAtODA0MzAyYjI0N2Y2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vkvideo.ru/video359563763_456241595", year:2025, genre:"Fantastik", id:"avatar3" },
   { title: "Avatar: Suyun yolu / Avatar: The Deep Dive", cover: "https://m.media-amazon.com/images/M/MV5BY2ExYzkyNGUtODQwNS00MGZiLWE2NmItYTg3YjVjZGIxN2NhXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vG8OrNND6-3Y?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2022, genre: "Fantastik", id: "avatar2" },
   { title: "Avatar", cover: "https://m.media-amazon.com/images/M/MV5BM2RiNGMzM2QtMzkyNi00OGYyLWE5MTctNDRkOTRkZmI5ZGJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/v_MR3qG1GUis?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2009, genre: "Fantastik", id: "avatar" },
+  { title: "Deadpool &amp; Wolverine", cover:"https://m.media-amazon.com/images/M/MV5BZTk5ODY0MmQtMzA3Ni00NGY1LThiYzItZThiNjFiNDM4MTM3XkEyXkFqcGc@._V1_.jpg", src:"https://vidmoly.me/dl/nsleekgb1y09", year:2024, genre:"Fantastik", id: "deadpoolandwolverine" },
+  { title: "Deadpool 2", cover:"https://m.media-amazon.com/images/S/pv-target-images/971b2851954bc397d153627d79a297c654e14e3563e3ae6f53ced36d26b58f63._UR2000,3000_SX750_FMpng_.png", src:"https://dzen.ru/embed/v_P-RhlrEFns?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2018, genre:"Fantastik", id: "deadpool2" },
+  { title: "Deadpool", cover:"https://m.media-amazon.com/images/M/MV5BNzY3ZWU5NGQtOTViNC00ZWVmLTliNjAtNzViNzlkZWQ4YzQ4XkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/477881633445", year:2016, genre:"Fantastik", id: "deadpool" },
   { title: "X-Men: Dark Phoenix", cover: "https://m.media-amazon.com/images/M/MV5BN2IyZjUwNDQtZmMzZi00MWJhLTgyN2ItNTE1MmNmMDhlMzIwXkEyXkFqcGc@._V1_.jpg", src: "https://vidmoly.me/dl/kxu887wlwbin", year: 2019, genre: "Fantastik", id: "xmendarkphoenix" },
   { title: "Logan", cover: "https://m.media-amazon.com/images/M/MV5BZjNhOTIzYWEtNjdhNS00NGJjLWE1NzctYmIxMDY4M2UzOGU3XkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vPgQgIzhbLQI?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2017, genre: "Fantastik", id: "logan" },
   { title: "X-Men: Kıyamet / X-Men: Apocalypse", cover: "https://m.media-amazon.com/images/M/MV5BNjVhNWY3NjItNmZjOS00NTU3LWFiZTctNzdjNGM5Y2Y0MDUwXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vIjkY2faLYUs?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2016, genre: "Fantastik", id: "xmenapocalypse" },
@@ -3223,6 +3226,12 @@ const COLLECTIONS = [
     title: "Megan / M3GAN",
     cover: "https://montroseplayhouse.co.uk/wp-content/uploads/2025/07/lHChxm7sv3gWR2qz5PwjdxcXQf7-scaled.webp",
     movies: ["megan", "megan2"]
+   },
+   {
+    id: "deadpool",
+    title: "Deadpool",
+    cover: "https://m.media-amazon.com/images/M/MV5BNzY3ZWU5NGQtOTViNC00ZWVmLTliNjAtNzViNzlkZWQ4YzQ4XkEyXkFqcGc@._V1_.jpg",
+    movies: ["deadpool", "deadpool2", "deadpoolandwolverine"]
    },
    {
     id: "xmen",
