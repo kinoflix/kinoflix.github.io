@@ -3028,8 +3028,8 @@ function getActivePlayerTitle() {
     '.dmmodal-title',      // 8. DM pəncərəsi
     '.stmodal-title',       // 9. ST pəncərəsi
     '.sibnetmodal-title',       // 10. Sibnet pəncərəsi
-    '.abyssmodal-title',        // 11. Abyss pəncərəsi
-    '.vidmaxmodal-title'        // 12. Vidmax pəncərəsi
+    '.abyss-title',        // 11. Abyss pəncərəsi
+    '.vidmax-title'        // 12. Vidmax pəncərəsi
     // Yeni handler əlavə etdikdə, onun başlıq class-ını bura əlavə etmək lazımdır.
   ];
 
