@@ -506,6 +506,68 @@ body, input, button, select, textarea {
 .icon-btn .fa-circle-user {
   font-size: 25px; 
 }
+
+        /* MOBİL CƏDVƏL VƏ MƏZMUN DÜZƏLİŞİ */
+@media (max-width: 768px) {
+
+    .main-content {
+        padding: 18px 12px;
+        margin: 15px auto;
+        border-radius: 8px;
+    }
+
+    .main-content h1,
+    .main-content h2 {
+        font-size: 1.25rem;
+    }
+
+    .main-content h3 {
+        font-size: 1.05rem;
+    }
+
+    .main-content p {
+        font-size: 0.95rem;
+    }
+
+    .info-card {
+        padding: 10px;
+    }
+
+    /* Cədvəli minimum enlə saxla ki, sətirlər sıxılmasın,
+       əvəzinə .info-card-dəki overflow-x:auto ilə üfüqi sürüşsün */
+    .info-card table {
+        min-width: 480px;
+        font-size: 0.82rem;
+    }
+
+    .info-card table th,
+    .info-card table td {
+        padding: 6px 8px !important;
+        white-space: nowrap;
+    }
+
+    /* Film adı sütunu sıxıla bilər, amma tam qırılmasın */
+    .info-card table td:nth-child(2) {
+        white-space: normal;
+        min-width: 160px;
+    }
+
+    /* Kainat sütunu da bir qədər sərbəst qırılsın */
+    .info-card table td:nth-child(4) {
+        white-space: normal;
+        min-width: 130px;
+    }
+}
+
+@media (max-width: 420px) {
+    .info-card table {
+        font-size: 0.75rem;
+    }
+    .info-card table th,
+    .info-card table td {
+        padding: 5px 6px !important;
+    }
+}
     </style>
 </head>
 <body data-theme="dark">
