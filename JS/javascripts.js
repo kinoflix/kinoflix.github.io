@@ -397,6 +397,10 @@ const MOVIES = [
   { title: "Avatar 3: Ateş ve kül / Avatar 3: Fire and Ash", cover:"https://m.media-amazon.com/images/M/MV5BZDYxY2I1OGMtN2Y4MS00ZmU1LTgyNDAtODA0MzAyYjI0N2Y2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vkvideo.ru/video359563763_456241595", year:2025, genre:"Fantastik", id:"avatar3" },
   { title: "Avatar: Suyun yolu / Avatar: The Deep Dive", cover: "https://m.media-amazon.com/images/M/MV5BY2ExYzkyNGUtODQwNS00MGZiLWE2NmItYTg3YjVjZGIxN2NhXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vG8OrNND6-3Y?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2022, genre: "Fantastik", id: "avatar2" },
   { title: "Avatar", cover: "https://m.media-amazon.com/images/M/MV5BM2RiNGMzM2QtMzkyNi00OGYyLWE5MTctNDRkOTRkZmI5ZGJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/v_MR3qG1GUis?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2009, genre: "Fantastik", id: "avatar" },
+  { title: "Fantastik dörtlü 4: İlk adımlar / The Fantastic Four: First Steps", cover:"https://m.media-amazon.com/images/S/pv-target-images/4c3b60c421dc73dd20bace682b1d68b2165fffcbeac63865a129addb85f31c0e.jpg", src:"https://vidmax.fit/vize.php?vod=v1x3e86c6ae", year:2025, genre:"Fantastik", id: "fantasticfour4" },
+  { title: "Fantastik dörtlü 3 / Fantastic Four 3", cover:"https://m.media-amazon.com/images/M/MV5BMTk0OTMyMDA0OF5BMl5BanBnXkFtZTgwMzY5NTkzNTE@._V1_FMjpg_UX1000_.jpg", src:"https://vidmax.fit/vize.php?vod=v1xd28b309a", year:2015, genre:"Fantastik", id: "fantasticfour3" },
+  { title: "Fantastik dörtlü 2: Gümüş sörfçü'nün yükselişi / 4: Rise of the Silver Surfer", cover:"https://m.media-amazon.com/images/M/MV5BNmZmMTU0OGQtOWRmNS00ZjA1LWJkM2EtYmUwNGEzMjIyZDM1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vidmax.fit/vize.php?vod=v1xf0648203", year:2007, genre:"Fantastik", id: "fantasticfour2" },
+  { title: "Fantastik dörtlü / Fantastic Four", cover:"https://m.media-amazon.com/images/M/MV5BNjY2YmZmMzUtZWY5Mi00MzI3LTljOTgtYTMwMWY1ODI5ZWY5XkEyXkFqcGc@._V1_.jpg", src:"https://vidmax.fit/vize.php?vod=v1xe8af3a99", year:2005, genre:"Fantastik", id: "fantasticfour" },
   { title: "Elektra", cover:"https://m.media-amazon.com/images/M/MV5BMTI3MTUwNzM5MV5BMl5BanBnXkFtZTcwNzczMDIzMw@@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/vDNxIpvnSrRc?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2005, genre:"Fantastik", id: "elektra" },
   { title: "Korkusuz / Daredevil", cover:"https://m.media-amazon.com/images/M/MV5BZGVjZjU3MmEtNDFjZS00N2ExLTk4YzktYjYzM2MzYTJjYmE0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/v_STydMzAO0Y?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2003, genre:"Fantastik", id: "daredevil" },
   { title: "Bıçağın iki yüzü: Kutsal üçleme / Blade: Trinity", cover:"https://m.media-amazon.com/images/M/MV5BNWYzN2Y4NTEtM2JlNS00MTA5LWIyZDYtOTk1YzdiOWVkNDdlXkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/7169636698811", year:2004, genre:"Fantastik", id: "blade3" },
@@ -3533,6 +3537,12 @@ const COLLECTIONS = [
     title: "Bıçağın iki yüzü / Blade",
     cover: "https://m.media-amazon.com/images/M/MV5BNWYzN2Y4NTEtM2JlNS00MTA5LWIyZDYtOTk1YzdiOWVkNDdlXkEyXkFqcGc@._V1_.jpg",
     movies: ["blade", "blade2", "blade3"]
+   },
+   {
+    id: "fantasticfour",
+    title: "Fantastik dörtlü / Fantastic Four",
+    cover: "https://m.media-amazon.com/images/S/pv-target-images/4c3b60c421dc73dd20bace682b1d68b2165fffcbeac63865a129addb85f31c0e.jpg",
+    movies: ["fantasticfour", "fantasticfour2", "fantasticfour3", "fantasticfour4"]
    },
    {
     id: "deadpool",
