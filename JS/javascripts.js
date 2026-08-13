@@ -857,6 +857,9 @@ searchInput.setAttribute('aria-label','Film axtar');
   /* ============================================================
      PROVIDER (platforma) siyahısı
      ============================================================ */
+
+  const DEFAULT_SANDBOX = 'allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen';
+
   const PROVIDERS = [
     {
       name: 'Odnoklassniki',
@@ -909,7 +912,10 @@ searchInput.setAttribute('aria-label','Film axtar');
       embed: u => {
         const m = u.match(/\/(?:v|e)\/([a-zA-Z0-9]+)/i);
         return (m && m[1]) ? `https://streamtape.com/e/${encodeURIComponent(m[1])}` : u;
-      }
+      },
+      // Streamtape-in öz anti-adblock skriptini kor edən sınanmış "forum trick":
+      // 'allow-popups' YOXDUR, amma 'allow-popups-to-escape-sandbox' var.
+      sandbox: 'allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock allow-modals allow-popups-to-escape-sandbox allow-fullscreen'
     },
     {
       name: 'Mail.ru',
@@ -945,6 +951,7 @@ searchInput.setAttribute('aria-label','Film axtar');
       // icazə zənciri səbəbindən modal daxilində işləmir, ona görə bizim
       // əl ilə idarə olunan Fullscreen düyməmiz YALNIZ bu provayder üçün göstərilir.
       forceFsButton: true
+      // sandbox verilmir -> DEFAULT_SANDBOX tətbiq olunur
     },
     {
       name: 'Google Drive',
@@ -1079,7 +1086,7 @@ searchInput.setAttribute('aria-label','Film axtar');
     return univModal;
   }
 
-  function showUnivModal(embedUrl, originalUrl, titleText, subtitleText, showFsButton) {
+  function showUnivModal(embedUrl, originalUrl, titleText, subtitleText, showFsButton, sandboxTokens) {
     const m = createUnivModal();
     const iframe = m.querySelector('.univmodal-iframe');
     const titleEl = m.querySelector('.univmodal-title');
@@ -1087,6 +1094,11 @@ searchInput.setAttribute('aria-label','Film axtar');
     const fsBtn = m.querySelector('.univmodal-fs');
 
     fsBtn.style.display = showFsButton ? '' : 'none';
+
+    // Sandbox-u src-dən ƏVVƏL qoyuruq ki, iframe elə əvvəldən məhdudiyyətli
+    // kontekstdə naviqasiya etsin (reklam/pop-up bloklaması üçün vacibdir).
+    if (sandboxTokens) iframe.setAttribute('sandbox', sandboxTokens);
+    else iframe.removeAttribute('sandbox');
 
     if (titleText) titleEl.textContent = titleText;
     if (subtitleText) { subEl.textContent = subtitleText; subEl.style.display = 'block'; }
@@ -1154,7 +1166,7 @@ searchInput.setAttribute('aria-label','Film axtar');
           if (parts.length) subtitle = parts.join(' · ');
         }
 
-        showUnivModal(embed, src, (movie && movie.title) ? movie.title : `${provider.name} video`, subtitle, !!provider.forceFsButton);
+        showUnivModal(embed, src, (movie && movie.title) ? movie.title : `${provider.name} video`, subtitle, !!provider.forceFsButton, provider.sandbox || DEFAULT_SANDBOX);
       } catch (err) {
         if (original) return original(movie);
         try { window.open((movie && movie.src) || movie || '', '_blank'); } catch (e) {}
@@ -1807,60 +1819,18 @@ document.addEventListener("DOMContentLoaded", () => {
    KOLLEKSİYA PANELİ-SON
    ========================================================= */
 
-/* Adblocker script */
-
+/* Adblocker script (sadələşdirilmiş) */
+   
 (function() {
-    // Səhifə səviyyəsində window.open funksiyasını sığortalayırıq
-    const bypassWindowOpen = () => {
         try {
-            const originalOpen = window.open;
-            window.open = function(url, name, specs) {
-                // Əgər çağırış streamtape-dən gəlirsə, tamamilə rədd et
-                if (url && (url.includes('streamtape') || url.includes('ad') || url.includes('pop'))) {
-                    return null; 
-                }
-                return originalOpen.apply(this, arguments);
-            };
-        } catch (e) { }
-    };
-    bypassWindowOpen();
-
-    function patchStreamtape() {
-        const iframes = document.getElementsByTagName('iframe');
-        
-        for (let i = 0; i < iframes.length; i++) {
-            let iframe = iframes[i];
-            let src = iframe.src || '';
-
-            if (iframe.getAttribute('data-player-fixed') === 'true') continue;
-
-            if (src.toLowerCase().includes('streamtape')) {
-                // FORUM TRICK: 'allow-popups' YOXDUR, amma 'allow-popups-to-escape-sandbox' var.
-                // Bu kombinasiya Streamtape-in anti-adblock skriptini tamamilə kor edir.
-                iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock allow-modals allow-popups-to-escape-sandbox');
-                iframe.setAttribute('data-player-fixed', 'true');
-                
-                // İframe-i yeni qaydalarla yenidən yükləyirik
-                iframe.src = src;
-            } 
-            // Digər standart playerlər üçün qorunma
-            else if (['vidmoly', 'dailymotion', 'player', 'embed'].some(k => src.toLowerCase().includes(k))) {
-                iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
-                iframe.setAttribute('data-player-fixed', 'true');
-                iframe.src = src;
+        const originalOpen = window.open;
+        window.open = function(url, name, specs) {
+            if (url && (url.includes('streamtape') || url.includes('ad') || url.includes('pop'))) {
+                return null;
             }
-        }
-    }
-
-    // DOM dəyişikliklərini izləmək və dinamik yüklənən playerləri yaxalamaq üçün
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', patchStreamtape);
-    } else {
-        patchStreamtape();
-    }
-
-    const observer = new MutationObserver(() => { patchStreamtape(); });
-    observer.observe(document.documentElement, { childList: true, subtree: true });
+            return originalOpen.apply(this, arguments);
+        };
+    } catch (e) {}
 })();
 
 
@@ -2198,18 +2168,13 @@ document.addEventListener("DOMContentLoaded", () => {
 })();
 
 /* ========================================================
-   UNIVERSAL KINOFLIX PATCH: Sandbox, Bufer Qorunması & Auto-Landscape
+   Bufer Qorunması & Auto-Landscape
    ======================================================== */
 (function() {
-    // 1. Element.setAttribute üzərində qlobal nəzarət (Sandbox ləğvi və Src qorunması)
+    // 1. Element.setAttribute üzərində qlobal nəzarət (yalnız Src qorunması)
     const originalSetAttribute = Element.prototype.setAttribute;
     Element.prototype.setAttribute = function(name, value) {
-        // A) Bütün skriptlərdə 'sandbox' atributunun iframelərə yazılmasını bloklayır
-        if (this.tagName === 'IFRAME' && name.toLowerCase() === 'sandbox') {
-            return; // Sandbox atributunu rədd et
-        }
-        
-        // B) Bufer qorunması: Eyni linkin setAttribute ilə təkrar yazılmasını blokla
+        // Bufer qorunması: Eyni linkin setAttribute ilə təkrar yazılmasını blokla
         if ((this.tagName === 'IFRAME' || this.tagName === 'VIDEO') && name.toLowerCase() === 'src') {
             const currentSrc = this.getAttribute('src') || this.src;
             // Əgər yeni link köhnə ilə eynidirsə (və təmizlənmirsə), icra etmə
@@ -2235,31 +2200,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 3. innerHTML ilə gələn gizli sandbox-ları təmizləyən arxa plan məhdudlaşdırıcısı
-    // (Arxa planda baş verən DOM dəyişikliklərini izləyir və sandbox-u dərhal silir)
-    const removeSandbox = () => {
-        document.querySelectorAll('iframe[sandbox]').forEach(iframe => {
-            iframe.removeAttribute('sandbox');
-        });
-    };
-    removeSandbox(); // İlk yüklənmədə təmizlə
-    
-    const observer = new MutationObserver((mutations) => {
-        let needsCleaning = false;
-        for (let m of mutations) {
-            if (m.addedNodes.length > 0 || m.attributeName === 'sandbox') {
-                needsCleaning = true; break;
-            }
-        }
-        if (needsCleaning) removeSandbox();
-    });
-    // Bütün DOM-u dinləyir, kənar skriptlərin müdaxiləsini sıfırlayır
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['sandbox'] });
-
-    // 4. Mobildə Tam Ekran (Fullscreen) olanda avtomatik eninə (landscape) çevirmək
+    // 3. Mobildə Tam Ekran (Fullscreen) olanda avtomatik eninə (landscape) çevirmək
     const handleFullscreenChange = async () => {
         const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
-        
+
         if (isFullscreen) {
             // Tam ekrana keçdikdə ekranı eninə kilidlə (Landscape)
             if (screen.orientation && screen.orientation.lock) {
