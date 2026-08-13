@@ -840,7 +840,7 @@ searchInput.setAttribute('aria-label','Film axtar');
 })();
 /* === SON === */
 
-  /* ============================================================
+/* ============================================================
    UNIVERSAL VIDEO HANDLER
    ============================================================ */
 (function () {
@@ -940,7 +940,11 @@ searchInput.setAttribute('aria-label','Film axtar');
       embed: u => {
         const m = u.match(/vidmoly\.[a-z]+.*?(?:\/embed-|\/d\/|\/w\/|\/)([a-zA-Z0-9]{10,20})/i);
         return (m && m[1]) ? `https://vidmoly.net/embed-${m[1]}.html` : null;
-      }
+      },
+      // VidMoly-nin daxili fullscreen düyməsi cross-origin/nested iframe
+      // icazə zənciri səbəbindən modal daxilində işləmir, ona görə bizim
+      // əl ilə idarə olunan Fullscreen düyməmiz YALNIZ bu provayder üçün göstərilir.
+      forceFsButton: true
     },
     {
       name: 'Google Drive',
@@ -996,13 +1000,17 @@ searchInput.setAttribute('aria-label','Film axtar');
       .univmodal-left{display:flex;align-items:center;gap:8px}
       .univmodal-title{font-weight:700;color:var(--text,#e6eef6);flex:1;text-align:center;line-height:1.05}
       .univmodal-sub{font-size:13px;color:var(--muted,#94a3b8);text-align:center;margin-top:4px}
-      .univmodal-close{background:transparent;border:0;color:var(--text,#e6eef6);font-size:18px;cursor:pointer;padding:6px 10px;border-radius:8px}
-      .univmodal-close:hover{background:rgba(255,255,255,0.05)}
-      .univmodal-iframe-wrap{width:100%;height:60vh;min-height:320px;background:#000}
+      .univmodal-close, .univmodal-fs{background:transparent;border:0;color:var(--text,#e6eef6);font-size:18px;cursor:pointer;padding:6px 10px;border-radius:8px}
+      .univmodal-close:hover, .univmodal-fs:hover{background:rgba(255,255,255,0.05)}
+      .univmodal-iframe-wrap{width:100%;height:60vh;min-height:320px;background:#000;position:relative}
       .univmodal-iframe{width:100%;height:100%;border:0}
       @media (max-width:520px){ .univmodal-iframe-wrap{height:48vh} .univmodal-title{font-size:14px} .univmodal-sub{font-size:12px} .univmodal-sheet{width:100%} }
-      @media (min-width:768px){ .univmodal-overlay{transform:translateX(-6px);} }
     `;
+    /* QEYD: .univmodal-overlay üçün "transform: translateX(...)" YAZMAYIN.
+       CSS transform olan əcdad (ancestor) elementi native Fullscreen API-nin
+       düzgün renderini poza bilər (Chrome/Firefox top-layer məhdudiyyəti).
+       Bu, aşağıdakı əl ilə idarə olunan Fullscreen düyməsinin etibarlı
+       işləməsi üçün önəmlidir. */
     const st = document.createElement('style');
     st.appendChild(document.createTextNode(css));
     document.head.appendChild(st);
@@ -1015,6 +1023,7 @@ searchInput.setAttribute('aria-label','Film axtar');
         <div class="univmodal-top">
           <div class="univmodal-left">
             <button class="univmodal-close" aria-label="Bağla">✕</button>
+            <button class="univmodal-fs" title="Tam Ekran" aria-label="Tam Ekran"><i class="fas fa-expand"></i></button>
           </div>
           <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
             <div class="univmodal-title"></div>
@@ -1048,14 +1057,36 @@ searchInput.setAttribute('aria-label','Film axtar');
     univModal.addEventListener('click', (e) => { if (e.target === univModal) closeWithToast(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && univModal.style.display === 'flex') closeWithToast(); });
 
+    /* --- FULLSCREEN DÜYMƏSİ ---
+       Bəzi platformaların (məs. VidMoly) daxili player fullscreen düyməsi
+       cross-origin/nested iframe icazə zənciri səbəbindən modal daxilində
+       işləmir. Ona görə öz div-imizi (iframe-wrap) fullscreen edirik —
+       bu bizim öz DOM elementimiz olduğu üçün icazə problemi yaranmır. */
+    const fsBtn = univModal.querySelector('.univmodal-fs');
+    const wrap = univModal.querySelector('.univmodal-iframe-wrap');
+    fsBtn.addEventListener('click', async () => {
+      try {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+          if (wrap.requestFullscreen) await wrap.requestFullscreen();
+          else if (wrap.webkitRequestFullscreen) await wrap.webkitRequestFullscreen();
+        } else {
+          if (document.exitFullscreen) await document.exitFullscreen();
+          else if (document.webkitExitFullscreen) await document.webkitExitFullscreen();
+        }
+      } catch (err) { console.error(err); }
+    });
+
     return univModal;
   }
 
-  function showUnivModal(embedUrl, originalUrl, titleText, subtitleText) {
+  function showUnivModal(embedUrl, originalUrl, titleText, subtitleText, showFsButton) {
     const m = createUnivModal();
     const iframe = m.querySelector('.univmodal-iframe');
     const titleEl = m.querySelector('.univmodal-title');
     const subEl = m.querySelector('.univmodal-sub');
+    const fsBtn = m.querySelector('.univmodal-fs');
+
+    fsBtn.style.display = showFsButton ? '' : 'none';
 
     if (titleText) titleEl.textContent = titleText;
     if (subtitleText) { subEl.textContent = subtitleText; subEl.style.display = 'block'; }
@@ -1123,7 +1154,7 @@ searchInput.setAttribute('aria-label','Film axtar');
           if (parts.length) subtitle = parts.join(' · ');
         }
 
-        showUnivModal(embed, src, (movie && movie.title) ? movie.title : `${provider.name} video`, subtitle);
+        showUnivModal(embed, src, (movie && movie.title) ? movie.title : `${provider.name} video`, subtitle, !!provider.forceFsButton);
       } catch (err) {
         if (original) return original(movie);
         try { window.open((movie && movie.src) || movie || '', '_blank'); } catch (e) {}
