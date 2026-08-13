@@ -401,6 +401,8 @@ const MOVIES = [
   { title: "Fantastik dörtlü 3 / Fantastic Four 3", cover:"https://m.media-amazon.com/images/M/MV5BMTk0OTMyMDA0OF5BMl5BanBnXkFtZTgwMzY5NTkzNTE@._V1_FMjpg_UX1000_.jpg", src:"https://vidmax.fit/vize.php?vod=v1xd28b309a", year:2015, genre:"Fantastik", id: "fantasticfour3" },
   { title: "Fantastik dörtlü 2: Gümüş sörfçü'nün yükselişi / 4: Rise of the Silver Surfer", cover:"https://m.media-amazon.com/images/M/MV5BNmZmMTU0OGQtOWRmNS00ZjA1LWJkM2EtYmUwNGEzMjIyZDM1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://vidmax.fit/vize.php?vod=v1xf0648203", year:2007, genre:"Fantastik", id: "fantasticfour2" },
   { title: "Fantastik dörtlü / Fantastic Four", cover:"https://m.media-amazon.com/images/M/MV5BNjY2YmZmMzUtZWY5Mi00MzI3LTljOTgtYTMwMWY1ODI5ZWY5XkEyXkFqcGc@._V1_.jpg", src:"https://vidmax.fit/vize.php?vod=v1xe8af3a99", year:2005, genre:"Fantastik", id: "fantasticfour" },
+  { title: "Hayalet sürücü: İntikam ateşi / Ghost Rider: Spirit of Vengeance", cover:"https://m.media-amazon.com/images/M/MV5BN2FmZGVlNTgtYTllNC00YmUzLTk5YmUtNWNhMzk3ZmE2NmQ0XkEyXkFqcGc@._V1_.jpg", src:"https://dzen.ru/embed/vPSd-pYlxDEk?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2011, genre:"Fantastik", id: "ghostrider2" },
+  { title: "Hayalet sürücü / Ghost Rider", cover:"https://m.media-amazon.com/images/M/MV5BMzIyNDE5ODI1OV5BMl5BanBnXkFtZTcwNTIyNDE0MQ@@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/vv7qHAy68Xn4?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2007, genre:"Fantastik", id: "ghostrider" },
   { title: "Elektra", cover:"https://m.media-amazon.com/images/M/MV5BMTI3MTUwNzM5MV5BMl5BanBnXkFtZTcwNzczMDIzMw@@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/vDNxIpvnSrRc?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2005, genre:"Fantastik", id: "elektra" },
   { title: "Korkusuz / Daredevil", cover:"https://m.media-amazon.com/images/M/MV5BZGVjZjU3MmEtNDFjZS00N2ExLTk4YzktYjYzM2MzYTJjYmE0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://dzen.ru/embed/v_STydMzAO0Y?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2003, genre:"Fantastik", id: "daredevil" },
   { title: "Bıçağın iki yüzü: Kutsal üçleme / Blade: Trinity", cover:"https://m.media-amazon.com/images/M/MV5BNWYzN2Y4NTEtM2JlNS00MTA5LWIyZDYtOTk1YzdiOWVkNDdlXkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/7169636698811", year:2004, genre:"Fantastik", id: "blade3" },
@@ -1529,6 +1531,12 @@ const COLLECTIONS = [
     title: "Bıçağın iki yüzü / Blade",
     cover: "https://m.media-amazon.com/images/M/MV5BNWYzN2Y4NTEtM2JlNS00MTA5LWIyZDYtOTk1YzdiOWVkNDdlXkEyXkFqcGc@._V1_.jpg",
     movies: ["blade", "blade2", "blade3"]
+   },
+   {
+    id: "ghostrider",
+    title: "Hayalet sürücü / Ghost Rider",
+    cover: "https://m.media-amazon.com/images/M/MV5BN2FmZGVlNTgtYTllNC00YmUzLTk5YmUtNWNhMzk3ZmE2NmQ0XkEyXkFqcGc@._V1_.jpg",
+    movies: ["ghostrider", "ghostrider2"]
    },
    {
     id: "fantasticfour",
