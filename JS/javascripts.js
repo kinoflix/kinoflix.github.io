@@ -411,6 +411,10 @@ const MOVIES = [
   { title: "Deadpool &amp; Wolverine", cover:"https://m.media-amazon.com/images/M/MV5BZTk5ODY0MmQtMzA3Ni00NGY1LThiYzItZThiNjFiNDM4MTM3XkEyXkFqcGc@._V1_.jpg", src:"https://vidmoly.me/dl/nsleekgb1y09", year:2024, genre:"Fantastik", id: "deadpoolandwolverine" },
   { title: "Deadpool 2", cover:"https://m.media-amazon.com/images/S/pv-target-images/971b2851954bc397d153627d79a297c654e14e3563e3ae6f53ced36d26b58f63._UR2000,3000_SX750_FMpng_.png", src:"https://dzen.ru/embed/v_P-RhlrEFns?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year:2018, genre:"Fantastik", id: "deadpool2" },
   { title: "Deadpool", cover:"https://m.media-amazon.com/images/M/MV5BNzY3ZWU5NGQtOTViNC00ZWVmLTliNjAtNzViNzlkZWQ4YzQ4XkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/477881633445", year:2016, genre:"Fantastik", id: "deadpool" },
+  { title: "Galaksinin koruyucuları 3 / Guardians of the Galaxy Vol. 3", cover: "https://m.media-amazon.com/images/M/MV5BOTJhOTMxMmItZmE0Ny00MDc3LWEzOGEtOGFkMzY4MWYyZDQ0XkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vYul2ODcWXFc?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2023, genre: "Fantastik", id: "guardiansofthegalaxy3" },
+  { title: "The Guardians of the Galaxy Holiday Special", cover: "https://m.media-amazon.com/images/M/MV5BZDA3MzdlYTQtMTUxNi00ZjJmLTkyOTYtNDkzYmIzYTJkZjMzXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vJ0UCeCIE1CA?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2022, genre: "Fantastik", id: "guardiansofthegalaxyholidayspecial" },
+  { title: "Galaksinin koruyucuları 2 / Guardians of the Galaxy Vol. 2", cover: "https://m.media-amazon.com/images/M/MV5BNWE5MGI3MDctMmU5Ni00YzI2LWEzMTQtZGIyZDA5MzQzNDBhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vidmoly.me/dl/h1hqe5w978yx", year: 2017, genre: "Fantastik", id: "guardiansofthegalaxy2" },
+  { title: "Galaksinin koruyucuları / Guardians of the Galaxy", cover: "https://m.media-amazon.com/images/M/MV5BM2ZmNjQ2MzAtNDlhNi00MmQyLWJhZDMtNmJiMjFlOWY4MzcxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/v5DmIy_By9nI?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2014, genre: "Fantastik", id: "guardiansofthegalaxy" },
   { title: "X-Men: Dark Phoenix", cover: "https://m.media-amazon.com/images/M/MV5BN2IyZjUwNDQtZmMzZi00MWJhLTgyN2ItNTE1MmNmMDhlMzIwXkEyXkFqcGc@._V1_.jpg", src: "https://vidmoly.me/dl/kxu887wlwbin", year: 2019, genre: "Fantastik", id: "xmendarkphoenix" },
   { title: "Logan", cover: "https://m.media-amazon.com/images/M/MV5BZjNhOTIzYWEtNjdhNS00NGJjLWE1NzctYmIxMDY4M2UzOGU3XkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vPgQgIzhbLQI?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2017, genre: "Fantastik", id: "logan" },
   { title: "X-Men: Kıyamet / X-Men: Apocalypse", cover: "https://m.media-amazon.com/images/M/MV5BNjVhNWY3NjItNmZjOS00NTU3LWFiZTctNzdjNGM5Y2Y0MDUwXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vIjkY2faLYUs?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2016, genre: "Fantastik", id: "xmenapocalypse" },
@@ -1553,6 +1557,12 @@ const COLLECTIONS = [
     title: "Deadpool",
     cover: "https://m.media-amazon.com/images/M/MV5BNzY3ZWU5NGQtOTViNC00ZWVmLTliNjAtNzViNzlkZWQ4YzQ4XkEyXkFqcGc@._V1_.jpg",
     movies: ["deadpool", "deadpool2", "deadpoolandwolverine"]
+   },
+   {
+    id: "guardiansofthegalaxy",
+    title: "Galaksinin koruyucuları / Guardians of the Galaxy",
+    cover: "https://m.media-amazon.com/images/M/MV5BM2ZmNjQ2MzAtNDlhNi00MmQyLWJhZDMtNmJiMjFlOWY4MzcxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+    movies: ["guardiansofthegalaxy", "guardiansofthegalaxyholidayspecial", "guardiansofthegalaxy2", "guardiansofthegalaxy3"]
    },
    {
     id: "xmen",
