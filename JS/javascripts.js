@@ -433,6 +433,10 @@ const MOVIES = [
   { title: "Demir adam 3 / Iron Man 3", cover: "https://m.media-amazon.com/images/M/MV5BMjIzMzAzMjQyM15BMl5BanBnXkFtZTcwNzM2NjcyOQ@@._V1_.jpg", src: "https://dzen.ru/embed/vDBsSF-YKOXE?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2013, genre: "Fantastik", id: "ironman3" },
   { title: "Demir adam 2 / Iron Man 2", cover: "https://m.media-amazon.com/images/M/MV5BYWYyOGQzOGYtMGQ1My00ZWYxLTgzZjktZWYzN2IwYjkxYzM0XkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vZFXW4wMebjE?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2010, genre: "Fantastik", id: "ironman2" },
   { title: "Demir adam / Iron Man", cover: "https://m.media-amazon.com/images/M/MV5BMTczNTI2ODUwOF5BMl5BanBnXkFtZTcwMTU0NTIzMw@@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vIGzkdQpfFF8?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2008, genre: "Fantastik", id: "ironman" },
+  { title: "Thor: Aşk ve gök gürültüsü / Thor: Love and Thunder", cover: "https://m.media-amazon.com/images/M/MV5BZjRiMDhiZjQtNjk5Yi00ZDcwLTkyYTEtMDc1NjdmNjFhNGIzXkEyXkFqcGc@._V1_.jpg", src: "https://vidmax.fit/vize.php?vod=v1x748712c7", year: 2022, genre: "Fantastik", id: "thor4" },
+  { title: "Thor: Ragnarok", cover: "https://m.media-amazon.com/images/M/MV5BMjMyNDkzMzI1OF5BMl5BanBnXkFtZTgwODcxODg5MjI@._V1_FMjpg_UX1000_.jpg", src: "https://vidmax.fit/vize.php?vod=v1x23500e37", year: 2017, genre: "Fantastik", id: "thor3" },
+  { title: "Thor: Karanlık Dünya / Thor: The Dark World", cover: "https://m.media-amazon.com/images/M/MV5BMTQyNzAwOTUxOF5BMl5BanBnXkFtZTcwMTE0OTc5OQ@@._V1_.jpg", src: "https://vidmax.fit/vize.php?vod=v1x83e58438", year: 2013, genre: "Fantastik", id: "thor2" },
+  { title: "Thor", cover: "https://m.media-amazon.com/images/M/MV5BNjRhNGZjZjEtYTQzYS00OWUxLThjNGEtMTIwMTE2ZDFlZTZkXkEyXkFqcGc@._V1_.jpg", src: "https://vidmax.fit/vize.php?vod=v1xd6981a51", year: 2011, genre: "Fantastik", id: "thor" },
   { title: "Kaptan Amerika: Cesur yeni dünya / Captain America: Brave New World", cover: "https://m.media-amazon.com/images/M/MV5BNDRjY2E0ZmEtN2QwNi00NTEwLWI3MWItODNkMGYwYWFjNGE0XkEyXkFqcGc@._V1_.jpg", src: "https://vidmoly.me/dl/m8cm6bo0yykf", year: 2025, genre: "Fantastik", id: "captainamericabravenewworld" },
   { title: "Kaptan Amerika: Kahramanların savaşı / Captain America: Civil War", cover: "https://m.media-amazon.com/images/M/MV5BMjQ0MTgyNjAxMV5BMl5BanBnXkFtZTgwNjUzMDkyODE@._V1_.jpg", src: "https://vidmoly.me/dl/9c3lat8szmo2", year: 2016, genre: "Fantastik", id: "captainamericacivilwar" },
   { title: "Kaptan Amerika: Kış askeri / Captain America: The Winter Soldier", cover: "https://m.media-amazon.com/images/M/MV5BNWY1NjFmNDItZDhmOC00NjI1LWE0ZDItMTM0MjBjZThiOTQ2XkEyXkFqcGc@._V1_.jpg", src: "https://vidmoly.me/dl/qnwftwtslw02", year: 2014, genre: "Fantastik", id: "captainamericathewintersoldier" },
@@ -1585,6 +1589,12 @@ const COLLECTIONS = [
     title: "Demir adam / Iron Man",
     cover: "https://m.media-amazon.com/images/M/MV5BMjIzMzAzMjQyM15BMl5BanBnXkFtZTcwNzM2NjcyOQ@@._V1_.jpg",
     movies: ["ironman", "ironman2", "ironman3"]
+   },
+   {
+    id: "thor",
+    title: "Thor",
+    cover: "https://m.media-amazon.com/images/M/MV5BNjRhNGZjZjEtYTQzYS00OWUxLThjNGEtMTIwMTE2ZDFlZTZkXkEyXkFqcGc@._V1_.jpg",
+    movies: ["thor", "thor2", "thor3", "thor4"]
    },
    {
     id: "captainamerica",
