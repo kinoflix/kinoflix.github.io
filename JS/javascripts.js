@@ -415,6 +415,9 @@ const MOVIES = [
   { title: "The Guardians of the Galaxy Holiday Special", cover: "https://m.media-amazon.com/images/M/MV5BZDA3MzdlYTQtMTUxNi00ZjJmLTkyOTYtNDkzYmIzYTJkZjMzXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vJ0UCeCIE1CA?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2022, genre: "Fantastik", id: "guardiansofthegalaxyholidayspecial" },
   { title: "Galaksinin koruyucuları 2 / Guardians of the Galaxy Vol. 2", cover: "https://m.media-amazon.com/images/M/MV5BNWE5MGI3MDctMmU5Ni00YzI2LWEzMTQtZGIyZDA5MzQzNDBhXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vidmoly.me/dl/h1hqe5w978yx", year: 2017, genre: "Fantastik", id: "guardiansofthegalaxy2" },
   { title: "Galaksinin koruyucuları / Guardians of the Galaxy", cover: "https://m.media-amazon.com/images/M/MV5BM2ZmNjQ2MzAtNDlhNi00MmQyLWJhZDMtNmJiMjFlOWY4MzcxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/v5DmIy_By9nI?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2014, genre: "Fantastik", id: "guardiansofthegalaxy" },
+  { title: "Karınca Adam ve Yaban arısı: Kuantum Alemi / Ant-Man and the Wasp: Quantumania", cover: "https://m.media-amazon.com/images/M/MV5BMThkYWY5ZjQtYjJlMS00MDFmLWFkYzEtODEzZjg5YWFmMGY4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vidmax.fit/vize.php?vod=v1xab5b77ac", year: 2023, genre: "Fantastik", id: "antmanandthewaspquantumania" },
+  { title: "Karınca Adam ve Yaban arısı / Ant-Man and the Wasp", cover: "https://m.media-amazon.com/images/M/MV5BODVkY2ZmZTAtYzFhMi00YzZlLWE2YWMtMDBiYjY2OTU4ZWM0XkEyXkFqcGc@._V1_.jpg", src: "https://vidmax.fit/vize.php?vod=v1x9f956aaa", year: 2018, genre: "Fantastik", id: "antmanandthewasp" },
+  { title: "Karınca adam / Ant-Man", cover: "https://m.media-amazon.com/images/M/MV5BMWZiY2U0YTYtZDRiMS00ZmRjLTllOGEtMzUxYzg3NGVjYjc3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vidmax.fit/vize.php?vod=v1x91ba3d82", year: 2015, genre: "Fantastik", id: "antman" },
   { title: "X-Men: Dark Phoenix", cover: "https://m.media-amazon.com/images/M/MV5BN2IyZjUwNDQtZmMzZi00MWJhLTgyN2ItNTE1MmNmMDhlMzIwXkEyXkFqcGc@._V1_.jpg", src: "https://vidmoly.me/dl/kxu887wlwbin", year: 2019, genre: "Fantastik", id: "xmendarkphoenix" },
   { title: "Logan", cover: "https://m.media-amazon.com/images/M/MV5BZjNhOTIzYWEtNjdhNS00NGJjLWE1NzctYmIxMDY4M2UzOGU3XkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vPgQgIzhbLQI?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2017, genre: "Fantastik", id: "logan" },
   { title: "X-Men: Kıyamet / X-Men: Apocalypse", cover: "https://m.media-amazon.com/images/M/MV5BNjVhNWY3NjItNmZjOS00NTU3LWFiZTctNzdjNGM5Y2Y0MDUwXkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vIjkY2faLYUs?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2016, genre: "Fantastik", id: "xmenapocalypse" },
@@ -1563,6 +1566,12 @@ const COLLECTIONS = [
     title: "Galaksinin koruyucuları / Guardians of the Galaxy",
     cover: "https://m.media-amazon.com/images/M/MV5BM2ZmNjQ2MzAtNDlhNi00MmQyLWJhZDMtNmJiMjFlOWY4MzcxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
     movies: ["guardiansofthegalaxy", "guardiansofthegalaxyholidayspecial", "guardiansofthegalaxy2", "guardiansofthegalaxy3"]
+   },
+   {
+    id: "antman",
+    title: "Karınca adam / Ant-Man",
+    cover: "https://m.media-amazon.com/images/M/MV5BODVkY2ZmZTAtYzFhMi00YzZlLWE2YWMtMDBiYjY2OTU4ZWM0XkEyXkFqcGc@._V1_.jpg",
+    movies: ["antman", "antmanandthewasp", "antmanandthewaspquantumania"]
    },
    {
     id: "xmen",
