@@ -1770,3 +1770,54 @@ body, input, button, select, textarea {
 @media (max-width: 480px) {
   .msg-reply-body { height: 72vh; }
 }
+/* ===== ONLİNE STATUS DOT (chat-dakı kimi) ===== */
+.msg-dropdown-avatar-wrapper,
+.msg-reply-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.msg-status-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+}
+.msg-status-dot.online  { background: #1db954; }
+.msg-status-dot.away    { background: #f59e0b; }
+.msg-status-dot.offline { background: #94a3b8; }
+
+/* ===== REPLY MODALINDA AD BLOKU ===== */
+.msg-reply-name-block h3 { margin: 0; font-size: 1.05rem; }
+.msg-reply-username {
+  margin: 2px 0 0;
+  font-size: .78rem;
+  color: var(--muted);
+}
+
+/* ===== MÜASİR SCROLL DİZAYNI ===== */
+.msg-dropdown,
+.msg-reply-messages {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+.msg-dropdown::-webkit-scrollbar,
+.msg-reply-messages::-webkit-scrollbar {
+  width: 6px;
+}
+.msg-dropdown::-webkit-scrollbar-track,
+.msg-reply-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+.msg-dropdown::-webkit-scrollbar-thumb,
+.msg-reply-messages::-webkit-scrollbar-thumb {
+  background: var(--glass);
+  border-radius: 10px;
+}
+.msg-dropdown::-webkit-scrollbar-thumb:hover,
+.msg-reply-messages::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
