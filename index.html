@@ -587,8 +587,14 @@ scrollBtn.addEventListener("click", () => {
   <div class="modal-card msg-reply-card">
     <div class="modal-header">
       <div class="msg-reply-header-info">
-        <img id="msgReplyAvatar" class="msg-reply-avatar" src="" alt="">
-        <h3 id="msgReplyName">İstifadəçi</h3>
+        <div class="msg-reply-avatar-wrapper">
+          <img id="msgReplyAvatar" class="msg-reply-avatar" src="" alt="">
+          <span id="msgReplyStatusDot" class="msg-status-dot offline"></span>
+        </div>
+        <div class="msg-reply-name-block">
+          <h3 id="msgReplyName">İstifadəçi</h3>
+          <p id="msgReplyUsername" class="msg-reply-username"></p>
+        </div>
       </div>
       <button id="closeMsgReplyModal" class="close-modal-btn">&times;</button>
     </div>
@@ -1228,15 +1234,41 @@ async function getMsgUserProfile(uid) {
     const data = snap.exists() ? snap.data() : {};
     const profile = {
       displayName: data.displayName || data.username || 'İstifadəçi',
+      username: data.username || '',
       photoURL: data.photoURL || DEFAULT_MSG_AVATAR
     };
     msgUserCache[uid] = profile;
     return profile;
   } catch (e) {
-    return { displayName: 'İstifadəçi', photoURL: DEFAULT_MSG_AVATAR };
+    return { displayName: 'İstifadəçi', username: '', photoURL: DEFAULT_MSG_AVATAR };
+  }
+}
+  // ---- Online status (presence) izləyicisi ----
+let msgPresenceCache = {};
+let unsubscribeMsgPresence = null;
+
+function getPresenceStatus(uid) {
+  return msgPresenceCache[uid]?.status || 'offline';
+}
+
+function updateMsgReplyStatusDot(uid) {
+  if (msgReplyStatusDot) {
+    msgReplyStatusDot.className = `msg-status-dot ${getPresenceStatus(uid)}`;
   }
 }
 
+function startMsgPresenceListener() {
+  if (unsubscribeMsgPresence) return;
+  unsubscribeMsgPresence = onValue(ref(rtdb, 'presence'), (snap) => {
+    msgPresenceCache = snap.val() || {};
+    if (msgDropdown.style.display !== 'none' && msgDropdown._latestRooms) {
+      renderMsgDropdown(msgDropdown._latestRooms, auth.currentUser?.uid);
+    }
+    if (msgReplyModal.classList.contains('active') && activeMsgReplyTargetUid) {
+      updateMsgReplyStatusDot(activeMsgReplyTargetUid);
+    }
+  });
+}
 async function renderMsgDropdown(rooms, myUid) {
   const dmRooms = rooms.filter(r => r.isDM);
   if (!dmRooms.length) {
@@ -1249,16 +1281,20 @@ async function renderMsgDropdown(rooms, myUid) {
     const otherUid = room.participants.find(id => id !== myUid);
     if (!otherUid) return '';
     const profile = await getMsgUserProfile(otherUid);
-    const unread = room[`unread_${myUid}`] || 0;
+    const unread = Number(room[`unread_${myUid}`]) || 0;
     const isUnread = unread > 0;
     const preview = room.lastMessageText
       ? (room.lastMessageSenderId === myUid ? 'Siz: ' : '') + room.lastMessageText
-      : 'Söhbətə başlayın';
+      : `@${profile.username || 'istifadeci'}`;
     const time = timeAgoShort(room.lastMessageAt?.toDate ? room.lastMessageAt.toDate() : null);
+    const status = getPresenceStatus(otherUid);
 
     return `
       <div class="msg-dropdown-item ${isUnread ? 'unread' : ''}" data-uid="${otherUid}">
-        <img class="avatar" src="${profile.photoURL}" alt="">
+        <div class="msg-dropdown-avatar-wrapper">
+          <img class="avatar" src="${profile.photoURL}" alt="">
+          <span class="msg-status-dot ${status}"></span>
+        </div>
         <div class="msg-item-text">
           <div class="msg-item-name">
             <span>${escapeHtmlLocal(profile.displayName)}</span>
@@ -1286,16 +1322,26 @@ function setupMessagesWidget(user) {
   if (!msgBtnWrapper) return;
   msgBtnWrapper.style.display = 'inline-block';
   if (unsubscribeMsgRooms) unsubscribeMsgRooms();
+  startMsgPresenceListener();
 
   unsubscribeMsgRooms = onSnapshot(
     query(collection(db, 'rooms'), where('participants', 'array-contains', user.uid)),
     (snapshot) => {
       const rooms = [];
       snapshot.forEach(d => rooms.push(d.data()));
-      const totalUnread = rooms.reduce((sum, r) => sum + (r[`unread_${user.uid}`] || 0), 0);
 
-      msgBadge.textContent = totalUnread > 99 ? '99+' : totalUnread;
-      msgBadge.style.display = totalUnread > 0 ? 'inline-block' : 'none';
+      const dmRooms = rooms.filter(r => r.isDM === true);
+      const totalUnread = dmRooms.reduce((sum, r) => {
+        const val = Number(r[`unread_${user.uid}`]);
+        return sum + (Number.isFinite(val) && val > 0 ? val : 0);
+      }, 0);
+
+      if (totalUnread > 0) {
+        msgBadge.textContent = totalUnread > 99 ? '99+' : String(totalUnread);
+        msgBadge.style.display = 'inline-flex';
+      } else {
+        msgBadge.style.display = 'none';
+      }
 
       msgDropdown._latestRooms = rooms;
       if (msgDropdown.style.display !== 'none') renderMsgDropdown(rooms, user.uid);
@@ -1303,8 +1349,20 @@ function setupMessagesWidget(user) {
   );
 }
 
+async function markAllDmRoomsAsRead(rooms) {
+  const myUid = auth.currentUser?.uid;
+  if (!myUid) return;
+  const toReset = rooms.filter(r => r.isDM && Number(r[`unread_${myUid}`]) > 0 && r.roomId);
+  for (const room of toReset) {
+    try {
+      await setDoc(doc(db, 'rooms', room.roomId), { [`unread_${myUid}`]: 0 }, { merge: true });
+    } catch (e) { /* səssiz keç */ }
+  }
+}
 function cleanupMessagesWidget() {
   if (unsubscribeMsgRooms) { unsubscribeMsgRooms(); unsubscribeMsgRooms = null; }
+  if (unsubscribeMsgPresence) { unsubscribeMsgPresence(); unsubscribeMsgPresence = null; }
+  msgPresenceCache = {};
   if (msgBtnWrapper) msgBtnWrapper.style.display = 'none';
   if (msgDropdown) msgDropdown.style.display = 'none';
   if (msgBadge) msgBadge.style.display = 'none';
@@ -1318,7 +1376,9 @@ if (messagesBtn) {
       msgDropdown.style.display = 'none';
     } else {
       msgDropdown.style.display = 'block';
-      renderMsgDropdown(msgDropdown._latestRooms || [], auth.currentUser?.uid);
+      const rooms = msgDropdown._latestRooms || [];
+      renderMsgDropdown(rooms, auth.currentUser?.uid);
+      markAllDmRoomsAsRead(rooms);
     }
   });
   document.addEventListener('click', (e) => {
@@ -1333,7 +1393,9 @@ if (messagesBtn) {
 // ============================================================
 const msgReplyModal    = document.getElementById('msgReplyModal');
 const msgReplyAvatar   = document.getElementById('msgReplyAvatar');
+const msgReplyStatusDot = document.getElementById('msgReplyStatusDot');
 const msgReplyName     = document.getElementById('msgReplyName');
+const msgReplyUsername = document.getElementById('msgReplyUsername');
 const msgReplyMessages = document.getElementById('msgReplyMessages');
 const msgReplyInput    = document.getElementById('msgReplyInput');
 const msgReplySendBtn  = document.getElementById('msgReplySendBtn');
@@ -1352,6 +1414,8 @@ function openMsgReplyModal(targetUid, profile) {
 
   msgReplyAvatar.src = profile.photoURL;
   msgReplyName.textContent = profile.displayName;
+  msgReplyUsername.textContent = profile.username ? `@${profile.username}` : '';
+  updateMsgReplyStatusDot(targetUid);
   msgReplyMessages.innerHTML = '<p class="msg-reply-loading">Yüklənir...</p>';
   msgReplyModal.classList.add('active');
   msgReplyInput.value = '';
