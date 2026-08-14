@@ -44,6 +44,7 @@ let activeRoomId = 'global_room';
 let activeRoomIsDM = false;
 let currentIgnoreList = [];
 let lastPublicRoom = 'global';
+let dmAutoOpenDone = false;
 
 let unsubscribeGeneralMessages = null;
 let unsubscribePrivateMessages = null;
@@ -725,6 +726,19 @@ function listenUsersAndPresence() {
             if (uData.uid !== currentUser.uid) currentUsersList.push(uData);
         });
         renderUsersList();
+
+        if (!dmAutoOpenDone) {
+            const dmParam = new URLSearchParams(window.location.search).get('dm');
+            if (dmParam) {
+                const targetUser = currentUsersList.find(u => u.uid === dmParam);
+                if (targetUser) {
+                    dmAutoOpenDone = true;
+                    openPrivateRoom(targetUser);
+                }
+            } else {
+                dmAutoOpenDone = true;
+            }
+        }
     });
 
     unsubscribePresenceList = onValue(ref(rtdb, 'presence'), (snap) => {
