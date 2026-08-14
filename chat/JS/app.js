@@ -1365,6 +1365,8 @@ async function submitMessage(isDMContext) {
             const targetUserId = activeRoomId.split('_').find(id => id !== currentUser.uid);
             await setDoc(doc(db, 'rooms', activeRoomId), {
                 lastMessageAt: serverTimestamp(),
+                lastMessageText: text ? text : (fileURL ? '📎 Fayl göndərildi' : ''),
+                lastMessageSenderId: currentUser.uid,
                 [`unread_${targetUserId}`]: increment(1)
             }, { merge: true });
         } else {
