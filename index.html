@@ -581,6 +581,30 @@ scrollBtn.addEventListener("click", () => {
     </div><!-- /.auth-modal-body -->
   </div><!-- /.modal-card -->
 </div><!-- /#authModal -->
+
+  <!-- 💬 SÜRƏTLİ CAVAB MODALI (ana səhifədən çıxmadan yazışma) -->
+<div id="msgReplyModal" class="modal-overlay">
+  <div class="modal-card msg-reply-card">
+    <div class="modal-header">
+      <div class="msg-reply-header-info">
+        <img id="msgReplyAvatar" class="msg-reply-avatar" src="" alt="">
+        <h3 id="msgReplyName">İstifadəçi</h3>
+      </div>
+      <button id="closeMsgReplyModal" class="close-modal-btn">&times;</button>
+    </div>
+    <div class="modal-body msg-reply-body">
+      <div id="msgReplyMessages" class="msg-reply-messages">
+        <p class="msg-reply-loading">Yüklənir...</p>
+      </div>
+      <div class="msg-reply-input-bar">
+        <input type="text" id="msgReplyInput" placeholder="Cavabınızı yazın..." autocomplete="off">
+        <button id="msgReplySendBtn" class="msg-reply-send-btn">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
  
 <!-- ========================================================= -->
 <!-- FIREBASE MODUL SCRIPT (əsas səhifə üçün auth)            -->
@@ -608,7 +632,8 @@ import {
 } from "firebase/auth";
 import { 
   getFirestore, doc, setDoc, getDoc, serverTimestamp, 
-  query, collection, where, getDocs, onSnapshot
+  query, collection, where, getDocs, onSnapshot,
+  addDoc, increment, orderBy, limit
 } from "firebase/firestore";
 import {
   getDatabase, ref, set, onValue, onDisconnect,
@@ -1164,6 +1189,257 @@ function updateAuthUI(user) {
   }
 }
 
+  // ============================================================
+// 💬 MESAJ İKONU – Chat bildirişləri inteqrasiyası
+// ============================================================
+const msgBtnWrapper   = document.getElementById('msgBtnWrapper');
+const messagesBtn     = document.getElementById('messagesBtn');
+const msgBadge        = document.getElementById('msgBadge');
+const msgDropdown     = document.getElementById('msgDropdown');
+const msgDropdownList = document.getElementById('msgDropdownList');
+
+const DEFAULT_MSG_AVATAR = "https://kinoflix.github.io/chat/img/avatar.jpg";
+let unsubscribeMsgRooms = null;
+const msgUserCache = {}; // uid -> {displayName, photoURL}
+
+function escapeHtmlLocal(s) {
+  return String(s).replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function timeAgoShort(date) {
+  if (!date) return '';
+  const diffMin = Math.floor((Date.now() - date.getTime()) / 60000);
+  if (diffMin < 1) return 'indi';
+  if (diffMin < 60) return `${diffMin}dq`;
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return `${diffH}s`;
+  return `${Math.floor(diffH / 24)}g`;
+}
+
+function formatMsgTime(date) {
+  if (!date) return '';
+  return date.toLocaleTimeString('az', { hour: '2-digit', minute: '2-digit' });
+}
+
+async function getMsgUserProfile(uid) {
+  if (msgUserCache[uid]) return msgUserCache[uid];
+  try {
+    const snap = await getDoc(doc(db, 'users', uid));
+    const data = snap.exists() ? snap.data() : {};
+    const profile = {
+      displayName: data.displayName || data.username || 'İstifadəçi',
+      photoURL: data.photoURL || DEFAULT_MSG_AVATAR
+    };
+    msgUserCache[uid] = profile;
+    return profile;
+  } catch (e) {
+    return { displayName: 'İstifadəçi', photoURL: DEFAULT_MSG_AVATAR };
+  }
+}
+
+async function renderMsgDropdown(rooms, myUid) {
+  const dmRooms = rooms.filter(r => r.isDM);
+  if (!dmRooms.length) {
+    msgDropdownList.innerHTML = '<p class="msg-dropdown-empty">Hələ mesajınız yoxdur.</p>';
+    return;
+  }
+  dmRooms.sort((a, b) => (b.lastMessageAt?.toMillis?.() || 0) - (a.lastMessageAt?.toMillis?.() || 0));
+
+  const rows = await Promise.all(dmRooms.slice(0, 15).map(async (room) => {
+    const otherUid = room.participants.find(id => id !== myUid);
+    if (!otherUid) return '';
+    const profile = await getMsgUserProfile(otherUid);
+    const unread = room[`unread_${myUid}`] || 0;
+    const isUnread = unread > 0;
+    const preview = room.lastMessageText
+      ? (room.lastMessageSenderId === myUid ? 'Siz: ' : '') + room.lastMessageText
+      : 'Söhbətə başlayın';
+    const time = timeAgoShort(room.lastMessageAt?.toDate ? room.lastMessageAt.toDate() : null);
+
+    return `
+      <div class="msg-dropdown-item ${isUnread ? 'unread' : ''}" data-uid="${otherUid}">
+        <img class="avatar" src="${profile.photoURL}" alt="">
+        <div class="msg-item-text">
+          <div class="msg-item-name">
+            <span>${escapeHtmlLocal(profile.displayName)}</span>
+            <span class="msg-item-time">${time}</span>
+          </div>
+          <div class="msg-item-preview">${escapeHtmlLocal(preview)}</div>
+        </div>
+        ${isUnread ? '<span class="msg-item-dot"></span>' : ''}
+      </div>`;
+  }));
+
+  msgDropdownList.innerHTML = rows.join('') || '<p class="msg-dropdown-empty">Hələ mesajınız yoxdur.</p>';
+
+  msgDropdownList.querySelectorAll('.msg-dropdown-item').forEach(el => {
+    el.addEventListener('click', async () => {
+      const uid = el.getAttribute('data-uid');
+      const profile = await getMsgUserProfile(uid);
+      msgDropdown.style.display = 'none';
+      openMsgReplyModal(uid, profile);
+    });
+  });
+}
+
+function setupMessagesWidget(user) {
+  if (!msgBtnWrapper) return;
+  msgBtnWrapper.style.display = 'inline-block';
+  if (unsubscribeMsgRooms) unsubscribeMsgRooms();
+
+  unsubscribeMsgRooms = onSnapshot(
+    query(collection(db, 'rooms'), where('participants', 'array-contains', user.uid)),
+    (snapshot) => {
+      const rooms = [];
+      snapshot.forEach(d => rooms.push(d.data()));
+      const totalUnread = rooms.reduce((sum, r) => sum + (r[`unread_${user.uid}`] || 0), 0);
+
+      msgBadge.textContent = totalUnread > 99 ? '99+' : totalUnread;
+      msgBadge.style.display = totalUnread > 0 ? 'inline-block' : 'none';
+
+      msgDropdown._latestRooms = rooms;
+      if (msgDropdown.style.display !== 'none') renderMsgDropdown(rooms, user.uid);
+    }
+  );
+}
+
+function cleanupMessagesWidget() {
+  if (unsubscribeMsgRooms) { unsubscribeMsgRooms(); unsubscribeMsgRooms = null; }
+  if (msgBtnWrapper) msgBtnWrapper.style.display = 'none';
+  if (msgDropdown) msgDropdown.style.display = 'none';
+  if (msgBadge) msgBadge.style.display = 'none';
+}
+
+if (messagesBtn) {
+  messagesBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = msgDropdown.style.display !== 'none';
+    if (isOpen) {
+      msgDropdown.style.display = 'none';
+    } else {
+      msgDropdown.style.display = 'block';
+      renderMsgDropdown(msgDropdown._latestRooms || [], auth.currentUser?.uid);
+    }
+  });
+  document.addEventListener('click', (e) => {
+    if (msgDropdown && !msgDropdown.contains(e.target) && !messagesBtn.contains(e.target)) {
+      msgDropdown.style.display = 'none';
+    }
+  });
+}
+
+// ============================================================
+// 💬 SÜRƏTLİ CAVAB MODALI – ana səhifədən çıxmadan yazışma
+// ============================================================
+const msgReplyModal    = document.getElementById('msgReplyModal');
+const msgReplyAvatar   = document.getElementById('msgReplyAvatar');
+const msgReplyName     = document.getElementById('msgReplyName');
+const msgReplyMessages = document.getElementById('msgReplyMessages');
+const msgReplyInput    = document.getElementById('msgReplyInput');
+const msgReplySendBtn  = document.getElementById('msgReplySendBtn');
+const closeMsgReplyModal = document.getElementById('closeMsgReplyModal');
+
+let unsubscribeMsgReplyMessages = null;
+let activeMsgReplyRoomId = null;
+let activeMsgReplyTargetUid = null;
+
+function openMsgReplyModal(targetUid, profile) {
+  const myUid = auth.currentUser?.uid;
+  if (!myUid) return;
+
+  activeMsgReplyTargetUid = targetUid;
+  activeMsgReplyRoomId = [myUid, targetUid].sort().join('_');
+
+  msgReplyAvatar.src = profile.photoURL;
+  msgReplyName.textContent = profile.displayName;
+  msgReplyMessages.innerHTML = '<p class="msg-reply-loading">Yüklənir...</p>';
+  msgReplyModal.classList.add('active');
+  msgReplyInput.value = '';
+  msgReplyInput.focus();
+
+  setDoc(doc(db, 'rooms', activeMsgReplyRoomId), {
+    roomId: activeMsgReplyRoomId, isDM: true, participants: [myUid, targetUid],
+    [`unread_${myUid}`]: 0
+  }, { merge: true }).catch(() => {});
+
+  if (unsubscribeMsgReplyMessages) unsubscribeMsgReplyMessages();
+  const msgQuery = query(
+    collection(db, 'rooms', activeMsgReplyRoomId, 'messages'),
+    orderBy('createdAt', 'desc'),
+    limit(30)
+  );
+  unsubscribeMsgReplyMessages = onSnapshot(msgQuery, (snapshot) => {
+    const messages = [];
+    snapshot.forEach(d => messages.push(d.data()));
+    messages.reverse();
+
+    if (!messages.length) {
+      msgReplyMessages.innerHTML = '<p class="msg-reply-loading">Hələ mesaj yoxdur. İlk mesajı siz yazın!</p>';
+    } else {
+      msgReplyMessages.innerHTML = messages.map(m => {
+        const isMe = m.senderId === myUid;
+        const time = formatMsgTime(m.createdAt?.toDate ? m.createdAt.toDate() : null);
+        return `
+          <div class="msg-reply-row ${isMe ? 'me' : 'other'}">
+            <div class="msg-reply-bubble">
+              ${escapeHtmlLocal(m.text || '')}
+              <span class="msg-reply-bubble-time">${time}</span>
+            </div>
+          </div>`;
+      }).join('');
+    }
+    msgReplyMessages.scrollTop = msgReplyMessages.scrollHeight;
+  });
+}
+
+function closeMsgReplyModalFn() {
+  msgReplyModal.classList.remove('active');
+  if (unsubscribeMsgReplyMessages) { unsubscribeMsgReplyMessages(); unsubscribeMsgReplyMessages = null; }
+  activeMsgReplyRoomId = null;
+  activeMsgReplyTargetUid = null;
+}
+
+closeMsgReplyModal.addEventListener('click', closeMsgReplyModalFn);
+msgReplyModal.addEventListener('click', (e) => { if (e.target === msgReplyModal) closeMsgReplyModalFn(); });
+
+async function sendMsgReply() {
+  const text = msgReplyInput.value.trim();
+  const myUid = auth.currentUser?.uid;
+  if (!text || !myUid || !activeMsgReplyRoomId || !activeMsgReplyTargetUid) return;
+
+  msgReplyInput.value = '';
+  msgReplySendBtn.disabled = true;
+
+  try {
+    const myProfile = await getMsgUserProfile(myUid);
+    await addDoc(collection(db, 'rooms', activeMsgReplyRoomId, 'messages'), {
+      senderId: myUid,
+      senderName: myProfile.displayName,
+      senderAvatar: myProfile.photoURL,
+      text: text,
+      fileURL: null,
+      fileType: null,
+      createdAt: serverTimestamp()
+    });
+
+    await setDoc(doc(db, 'rooms', activeMsgReplyRoomId), {
+      lastMessageAt: serverTimestamp(),
+      lastMessageText: text,
+      lastMessageSenderId: myUid,
+      [`unread_${activeMsgReplyTargetUid}`]: increment(1)
+    }, { merge: true });
+  } catch (err) {
+    console.error('Mesaj göndərilə bilmədi:', err);
+  } finally {
+    msgReplySendBtn.disabled = false;
+  }
+}
+
+msgReplySendBtn.addEventListener('click', sendMsgReply);
+msgReplyInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); sendMsgReply(); }
+});
+
 onAuthStateChanged(auth, async (user) => {
   updateAuthUI(user);
   if (user) {
@@ -1215,9 +1491,11 @@ onAuthStateChanged(auth, async (user) => {
 
   setupPresence(user);
   setupBanWatcher(user);
+  setupMessagesWidget(user);
 } else {
   // Çıxış — presence və ban listener-ləri təmizlə
   cleanupPresence(null);
+  cleanupMessagesWidget();
 }
 });
 </script>
