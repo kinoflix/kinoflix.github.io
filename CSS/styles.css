@@ -1847,31 +1847,34 @@ body, input, button, select, textarea {
 .msg-reply-messages::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
 }
-/* ===== SÖHBƏTİ TƏMİZLƏMƏ DÜYMƏSİ ===== */
-.msg-reply-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+/* ===== SİYAHIDAN GİZLƏTMƏ (×) DÜYMƏSİ ===== */
+.msg-dropdown-item {
+  position: relative;
+  padding-right: 32px; /* × düyməsi üçün yer */
 }
-.msg-reply-clear-btn {
-  background: none;
+
+.msg-hide-btn {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
   border: none;
+  background: transparent;
   color: var(--muted);
-  font-size: 1rem;
-  cursor: pointer;
-  width: 34px;
-  height: 34px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition: background .2s, color .2s;
+  cursor: pointer;
+  font-size: .75rem;
+  transition: background .15s ease, color .15s ease;
 }
-.msg-reply-clear-btn:hover {
-  background: rgba(231, 76, 60, .12);
+.msg-hide-btn:hover {
+  background: rgba(231, 76, 60, .15);
   color: #e74c3c;
 }
-.msg-reply-clear-btn:disabled { opacity: .5; cursor: default; }
 
 /* Oxunmamış söhbətdə ad da qalın görünsün */
 .msg-dropdown-item.unread .msg-item-name span { font-weight: 700; }
