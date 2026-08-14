@@ -1685,8 +1685,16 @@ body, input, button, select, textarea {
 .msg-dropdown-item .msg-item-time { font-size: .7rem; color: var(--muted); flex-shrink: 0; margin-left: 6px; }
 .msg-dropdown-item .msg-item-dot { width: 8px; height: 8px; border-radius: 50%; background: #e74c3c; flex-shrink: 0; }
 
-@media (max-width: 480px) {
-  .msg-dropdown { position: fixed; top: 64px; right: 8px; left: 8px; width: auto; }
+@media (max-width: 600px) {
+  .msg-dropdown {
+    position: fixed;
+    top: 64px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: calc(100vw - 24px);
+    max-width: 420px;
+  }
 }
 
 /* ===== SÜRƏTLİ CAVAB MODALI ===== */
