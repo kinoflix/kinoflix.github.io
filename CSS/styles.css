@@ -1886,7 +1886,3 @@ body, input, button, select, textarea {
 
 /* Oxunmamış söhbətdə ad da qalın görünsün */
 .msg-dropdown-item.unread .msg-item-name span { font-weight: 700; }
-
-.apk-final-fix {
-    display: none !important;
-}
