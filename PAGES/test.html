@@ -414,26 +414,44 @@
 
 /* Auth header düyməsi */
 #authMainBtn {
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  color: var(--text);
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease !important;
 }
 #authMainBtn:hover {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
+    transform: scale(1.1) rotate(15deg);
+    background: var(--accent) !important;
+    color: #fff !important;
+      /* Neon effekti əlavə olundu */
+  box-shadow: 
+    0 0 10px var(--accent),
+    0 0 20px var(--accent),
+    0 0 35px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+#authMainBtn i  {
+    pointer-events: none; /* Klik hadisəsinin düyməyə keçməsi üçün */
 }
 
 /* Mesajlar düyməsi */
 #messagesBtn {
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  color: var(--text);
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease !important;
 }
 #messagesBtn:hover {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
+    transform: scale(1.1) rotate(15deg);
+    background: var(--accent) !important;
+    color: #fff !important;
+      /* Neon effekti əlavə olundu */
+  box-shadow: 
+    0 0 10px var(--accent),
+    0 0 20px var(--accent),
+    0 0 35px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+#messagesBtn i  {
+    pointer-events: none; /* Klik hadisəsinin düyməyə keçməsi üçün */
 }
 
 /* Animasiyalar */
