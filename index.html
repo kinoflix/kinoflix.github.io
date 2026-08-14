@@ -90,6 +90,23 @@
     
     <button id="infoBtn" class="icon-btn" style="display: none;">©️</button>
     <button id="themeToggle" class="icon-btn" title="Tema dəyişdir" aria-label="Tema dəyişdir">🌙</button>
+    <!-- 💬 MESAJ İKONU (yalnız daxil olmuş istifadəçilər üçün) -->
+<div class="msg-btn-wrapper" id="msgBtnWrapper" style="display:none;">
+  <button id="messagesBtn" class="icon-btn" title="Mesajlar" aria-label="Mesajlar">
+    <i class="fa-regular fa-envelope"></i>
+    <span id="msgBadge" class="msg-badge" style="display:none;">0</span>
+  </button>
+
+  <div id="msgDropdown" class="msg-dropdown" style="display:none;">
+    <div class="msg-dropdown-header">
+      <span>Mesajlar</span>
+      <a href="chat" class="msg-dropdown-alllink">Hamısına bax</a>
+    </div>
+    <div id="msgDropdownList" class="msg-dropdown-list">
+      <p class="msg-dropdown-empty">Hələ mesajınız yoxdur.</p>
+    </div>
+  </div>
+</div>
   <!-- 🔐 LOGIN / LOGOUT BUTONU (dinamik) -->
     <button id="authMainBtn" class="icon-btn" title="Hesab" aria-label="Hesab">
     <i class="fa-solid fa-circle-user"></i>
