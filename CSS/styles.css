@@ -1525,6 +1525,18 @@ header{
   border-color: var(--accent);
 }
 
+/* Mesajlar düyməsi */
+#messagesBtn {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+}
+#messagesBtn:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
 /* Animasiyalar */
 @keyframes scaleUp {
   from { opacity: 0; transform: scale(0.95); }
