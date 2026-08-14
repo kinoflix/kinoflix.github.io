@@ -1651,7 +1651,15 @@ body, input, button, select, textarea {
 .msg-dropdown-item:hover { background: var(--glass); }
 .msg-dropdown-item.unread { background: rgba(29, 185, 84, 0.08); }
 
-.msg-dropdown-item .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.msg-dropdown-item .avatar { flex-shrink: 0; }
+.msg-avatar-circle {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  display: block;
+  flex-shrink: 0;
+}
 .msg-dropdown-item .msg-item-text { flex: 1; min-width: 0; }
 .msg-dropdown-item .msg-item-name {
   display: flex; align-items: center; justify-content: space-between;
@@ -1673,7 +1681,13 @@ body, input, button, select, textarea {
 .msg-reply-card { max-width: 420px; }
 
 .msg-reply-header-info { display: flex; align-items: center; gap: 10px; }
-.msg-reply-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+.msg-reply-avatar {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  display: block;
+}
 
 .msg-reply-body {
   padding: 0;
@@ -1821,3 +1835,31 @@ body, input, button, select, textarea {
 .msg-reply-messages::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
 }
+/* ===== SÖHBƏTİ TƏMİZLƏMƏ DÜYMƏSİ ===== */
+.msg-reply-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.msg-reply-clear-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1rem;
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background .2s, color .2s;
+}
+.msg-reply-clear-btn:hover {
+  background: rgba(231, 76, 60, .12);
+  color: #e74c3c;
+}
+.msg-reply-clear-btn:disabled { opacity: .5; cursor: default; }
+
+/* Oxunmamış söhbətdə ad da qalın görünsün */
+.msg-dropdown-item.unread .msg-item-name span { font-weight: 700; }
