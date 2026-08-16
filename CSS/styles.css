@@ -1694,7 +1694,13 @@ body, input, button, select, textarea {
     transform: translateX(-50%);
     width: calc(100vw - 24px);
     max-width: 420px;
+    animation: msgDropdownInMobile .18s ease;
   }
+}
+
+@keyframes msgDropdownInMobile {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 /* ===== SÜRƏTLİ CAVAB MODALI ===== */
