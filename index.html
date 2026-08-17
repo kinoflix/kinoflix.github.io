@@ -1291,50 +1291,76 @@ function startMsgPresenceListener() {
   });
 }
 
-  // Bu otaq mənim üçün gizlədilibmi? (yalnız yeni mesaj gələnə qədər)
-function isRoomHiddenForMe(room, myUid) {
+  // Sürətli klikləmələr zamanı köhnə render-in yeni render-in üzərinə yazmasının qarşısını alır
+let msgRenderVersion = 0;
+
+// Otağın DENORMALIZE OLUNMUŞ sahələrinə (lastMessageAt/lastMessageText) ARTIQ ETİBAR ETMİRİK,
+// çünki chat-js.js söhbəti sadəcə açanda belə lastMessageAt-i yeniləyir və mesaj silinəndə
+// lastMessageText təmizlənmir. Ona görə əsl son mesajı birbaşa alt-kolleksiyadan oxuyuruq.
+async function fetchRealLastMessage(roomId) {
+  try {
+    const q = query(
+      collection(db, 'rooms', roomId, 'messages'),
+      orderBy('createdAt', 'desc'),
+      limit(1)
+    );
+    const snap = await getDocs(q);
+    if (snap.empty) return null;
+    return snap.docs[0].data();
+  } catch (e) {
+    return null;
+  }
+}
+
+// Hər DM otağı üçün: profil real olmalı VƏ real mesaj olmalıdır (silinmiş söhbətlər çıxarılır)
+async function buildRealDmConversations(rooms, myUid) {
+  const dmRooms = rooms.filter(r => r.isDM === true && r.roomId);
+
+  const resolved = await Promise.all(dmRooms.map(async (room) => {
+    const otherUid = room.participants?.find(id => id !== myUid);
+    if (!otherUid) return null;
+
+    const profile = await getMsgUserProfile(otherUid);
+    if (!profile.exists) return null;
+
+    const lastMsg = await fetchRealLastMessage(room.roomId);
+    if (!lastMsg) return null; // real mesaj yoxdursa (silinib və ya heç yazılmayıb)
+
+    return { room, otherUid, profile, lastMsg };
+  }));
+
+  return resolved.filter(Boolean);
+}
+
+// Bu söhbət mənim üçün gizlədilibmi? — ƏSL son mesajın vaxtına görə yoxlanılır
+function isConvHiddenForMe(room, lastMsg, myUid) {
   const hiddenAt = room[`hiddenAt_${myUid}`];
-  if (!hiddenAt || !room.lastMessageAt) return false;
+  if (!hiddenAt) return false;
   const hiddenMillis  = hiddenAt.toMillis ? hiddenAt.toMillis() : 0;
-  const lastMsgMillis = room.lastMessageAt.toMillis ? room.lastMessageAt.toMillis() : 0;
+  const lastMsgMillis = lastMsg?.createdAt?.toMillis ? lastMsg.createdAt.toMillis() : 0;
   return hiddenMillis >= lastMsgMillis;
 }
 
-// Sürətli klikləmələr zamanı köhnə render-in yeni render-in üzərinə yazmasının qarşısını alır
-let msgRenderVersion = 0;
-
 async function renderMsgDropdown(rooms, myUid) {
   const myVersion = ++msgRenderVersion;
+  msgDropdownList.innerHTML = '<p class="msg-dropdown-empty">Yüklənir...</p>';
 
-  // Yalnız real DM + real mesajı olan + hələ gizlədilməmiş otaqlar
-  const dmRooms = rooms.filter(r => r.isDM && r.lastMessageText && !isRoomHiddenForMe(r, myUid));
-
-  if (!dmRooms.length) {
-    msgDropdownList.innerHTML = '<p class="msg-dropdown-empty">Hələ mesajınız yoxdur.</p>';
-    return;
-  }
-  dmRooms.sort((a, b) => (b.lastMessageAt?.toMillis?.() || 0) - (a.lastMessageAt?.toMillis?.() || 0));
-
-  const resolved = await Promise.all(dmRooms.slice(0, 15).map(async (room) => {
-    const otherUid = room.participants.find(id => id !== myUid);
-    if (!otherUid) return null;
-    const profile = await getMsgUserProfile(otherUid);
-    if (!profile.exists) return null;
-    return { room, otherUid, profile };
-  }));
-
+  const conversations = await buildRealDmConversations(rooms, myUid);
   if (myVersion !== msgRenderVersion) return;
-  const valid = resolved.filter(Boolean);
 
-  if (!valid.length) {
+  const visible = conversations.filter(c => !isConvHiddenForMe(c.room, c.lastMsg, myUid));
+
+  if (!visible.length) {
     msgDropdownList.innerHTML = '<p class="msg-dropdown-empty">Hələ mesajınız yoxdur.</p>';
     return;
   }
 
-  msgDropdownList.innerHTML = valid.map(({ room, otherUid, profile }) => {
+  visible.sort((a, b) => (b.lastMsg.createdAt?.toMillis?.() || 0) - (a.lastMsg.createdAt?.toMillis?.() || 0));
+
+  msgDropdownList.innerHTML = visible.slice(0, 15).map(({ room, otherUid, profile, lastMsg }) => {
     const unread = Number(room[`unread_${myUid}`]) || 0;
     const isUnread = unread > 0;
-    const preview = (room.lastMessageSenderId === myUid ? 'Siz: ' : '') + room.lastMessageText;
+    const preview = (lastMsg.senderId === myUid ? 'Siz: ' : '') + (lastMsg.text || '');
     const status = getPresenceStatus(otherUid);
 
     return `
@@ -1358,7 +1384,7 @@ async function renderMsgDropdown(rooms, myUid) {
 
   msgDropdownList.querySelectorAll('.msg-dropdown-item').forEach(el => {
     const uid = el.getAttribute('data-uid');
-    const match = valid.find(v => v.otherUid === uid);
+    const match = visible.find(v => v.otherUid === uid);
 
     el.addEventListener('click', async () => {
       const profile = await getMsgUserProfile(uid);
@@ -1369,7 +1395,7 @@ async function renderMsgDropdown(rooms, myUid) {
     const hideBtn = el.querySelector('.msg-hide-btn');
     if (hideBtn && match) {
       hideBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // sətrin özünə klik təsiri getməsin, modal açılmasın
+        e.stopPropagation();
         hideMsgConversation(match.room);
       });
     }
@@ -1380,16 +1406,15 @@ async function hideMsgConversation(room) {
   const myUid = auth.currentUser?.uid;
   if (!myUid || !room.roomId) return;
   try {
-    // Chat-dakı əsl yazışmaya TOXUNMURUQ — yalnız "bu adamı nə vaxta qədər gizlət" işarəsini qoyuruq
+    // Chat-dakı əsl yazışmaya TOXUNMURUQ — yalnız "indidən sonrakı mesajlara qədər gizlət" işarəsi
     await setDoc(doc(db, 'rooms', room.roomId), {
-      [`hiddenAt_${myUid}`]: room.lastMessageAt || serverTimestamp(),
+      [`hiddenAt_${myUid}`]: serverTimestamp(),
       [`unread_${myUid}`]: 0
     }, { merge: true });
   } catch (err) {
     console.error('Söhbət siyahıdan gizlədilə bilmədi:', err);
   }
 }
-
 function setupMessagesWidget(user) {
   if (!msgBtnWrapper) return;
   msgBtnWrapper.style.display = 'inline-block';
@@ -1402,20 +1427,12 @@ function setupMessagesWidget(user) {
       const rooms = [];
       snapshot.forEach(d => rooms.push(d.data()));
 
-      // Yalnız real (isDM + mesajı olan + gizlədilməmiş) otaqlar
-      const dmRooms = rooms.filter(r => r.isDM === true && r.lastMessageText && !isRoomHiddenForMe(r, user.uid));
+      // Real mesajı olan, real profilə bağlı bütün söhbətlər (gizlədilmə burada nəzərə alınmır,
+      // çünki gizlədilən söhbətin unread dəyəri onsuz da 0-dır)
+      const conversations = await buildRealDmConversations(rooms, user.uid);
 
-      // Fantom (silinmiş) istifadəçilərin otaqlarını say-a qatma
-      const checks = await Promise.all(dmRooms.map(async (r) => {
-        const otherUid = r.participants.find(id => id !== user.uid);
-        if (!otherUid) return null;
-        const profile = await getMsgUserProfile(otherUid);
-        return profile.exists ? r : null;
-      }));
-      const validRooms = checks.filter(Boolean);
-
-      const totalUnread = validRooms.reduce((sum, r) => {
-        const val = Number(r[`unread_${user.uid}`]);
+      const totalUnread = conversations.reduce((sum, c) => {
+        const val = Number(c.room[`unread_${user.uid}`]);
         return sum + (Number.isFinite(val) && val > 0 ? val : 0);
       }, 0);
 
@@ -1431,7 +1448,6 @@ function setupMessagesWidget(user) {
     }
   );
 }
-
 function cleanupMessagesWidget() {
   if (unsubscribeMsgRooms) { unsubscribeMsgRooms(); unsubscribeMsgRooms = null; }
   if (unsubscribeMsgPresence) { unsubscribeMsgPresence(); unsubscribeMsgPresence = null; }
