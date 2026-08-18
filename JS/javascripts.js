@@ -996,10 +996,7 @@ searchInput.setAttribute('aria-label','Film axtar');
      {
       name: 'TRPlayer',
       test: u => /trplayer\.com/i.test(u),
-      embed: u => {
-        const m = u.match(/[?&]v=([a-zA-Z0-9_-]+)/i);
-        return (m && m[1]) ? `https://watch.trplayer.com/embed/${encodeURIComponent(m[1])}` : u;
-      }
+      embed: u => u // Linki dəyişmədən birbaşa iframe-ə verir (watch?v=... formatında)
     }
     /* Yeni platforma əlavə etmək üçün buraya eyni formatda { name, test, embed } obyekti əlavə edin */
   ];
