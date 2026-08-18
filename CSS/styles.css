@@ -2098,3 +2098,8 @@ body, input, button, select, textarea {
   display: block;
   cursor: pointer;
 }
+/* ===== "Yeni söhbət" və "Şəxsi yazışma" modallarının × düyməsini mərkəzləşdir ===== */
+#closeMsgReplyModal,
+#closeMsgUserPickerModal {
+  padding-bottom: 4px;
+}
