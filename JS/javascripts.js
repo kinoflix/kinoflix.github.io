@@ -462,6 +462,7 @@ const MOVIES = [
   { title: "Venom: Zehirli öfke 1", cover: "https://m.media-amazon.com/images/M/MV5BMTU3MTQyNjQwM15BMl5BanBnXkFtZTgwNDgxNDczNTM@._V1_.jpg", src: "https://ok.ru/video/2786564115078", year: 2018, genre: "Fantastik", id: "venom" },
   { title: "Örümcek Adam: Örümcek evrenine geçiş  / Spider Man: Across the Spider-Verse", cover: "https://m.media-amazon.com/images/M/MV5BZjI5MjFiZmQtNGQ4Ni00OThjLWE3OTctOGI4NmZiNmZmZmNmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://vkvideo.ru/video784107073_456239616", year: 2023, genre: "Fantastik", id: "spidermanacrossthespiderverse" },
   { title: "Örümcek Adam: Örümcek evreninde  / Spider Man: Into the Spider-Verse", cover: "https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNTkwNTQ3NjM@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vJtyGbz7qu3I?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2018, genre: "Fantastik", id: "spidermanintothespiderverse" },
+  { title: "Örümcek Adam: Yepyeni bir gün / Spider Man: Brand New Day", cover: "https://m.media-amazon.com/images/M/MV5BOWNjYWM3NWItOGE0ZS00MWRjLThiZWEtYjc4ZmNmMmU5ZTVmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://watch.trplayer.com/watch?v=92JWN3XY", year: 2026, genre: "Fantastik", id: "spidermanbrandnewday" },
   { title: "Örümcek Adam: Eve dönüş yok / Spider Man: No Way Home", cover: "https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/9940033669820", year: 2021, genre: "Fantastik", id: "spidermannowayhome" },
   { title: "Örümcek Adam: Evden uzakta / Spider Man: Far from Home", cover: "https://m.media-amazon.com/images/M/MV5BM2Y2YzE5MGEtMGZjYS00MGM5LTlmYzEtYTNmMGZjZDY4YTkzXkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/10501162339004", year: 2019, genre: "Fantastik", id: "spidermanfarfromhome" },
   { title: "Örümcek Adam: Eve dönüş / Spider Man: Homecoming", cover: "https://m.media-amazon.com/images/M/MV5BODY2MTAzOTQ4M15BMl5BanBnXkFtZTgwNzg5MTE0MjI@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/9249481558716", year: 2017, genre: "Fantastik", id: "spidermanhomecoming" },
@@ -990,6 +991,14 @@ searchInput.setAttribute('aria-label','Film axtar');
       embed: u => {
         let m = u.match(/video\/([a-zA-Z0-9]+)/i) || u.match(/dai\.ly\/([a-zA-Z0-9]+)/i);
         return (m && m[1]) ? `https://geo.dailymotion.com/player.html?video=${encodeURIComponent(m[1])}` : u;
+      }
+    },
+     {
+      name: 'TRPlayer',
+      test: u => /trplayer\.com/i.test(u),
+      embed: u => {
+        const m = u.match(/[?&]v=([a-zA-Z0-9_-]+)/i);
+        return (m && m[1]) ? `https://watch.trplayer.com/embed/${encodeURIComponent(m[1])}` : u;
       }
     }
     /* Yeni platforma əlavə etmək üçün buraya eyni formatda { name, test, embed } obyekti əlavə edin */
