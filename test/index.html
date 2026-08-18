@@ -924,12 +924,13 @@ import { initializeApp } from "firebase/app";
 import { 
   getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
   GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
-  sendPasswordResetEmail, updateProfile, deleteUser
+  sendPasswordResetEmail, updateProfile, deleteUser,
+  reauthenticateWithCredential, EmailAuthProvider, updateEmail, updatePassword
 } from "firebase/auth";
 import { 
   getFirestore, doc, setDoc, getDoc, serverTimestamp, 
   query, collection, where, getDocs, onSnapshot,
-  addDoc, increment, orderBy, limit, deleteDoc
+  addDoc, increment, orderBy, limit, deleteDoc, updateDoc
 } from "firebase/firestore";
 import {
   getDatabase, ref, set, onValue, onDisconnect,
@@ -944,6 +945,40 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const rtdb = getDatabase(app);
 const provider = new GoogleAuthProvider();
+
+  // ============================================================
+// 2b. ÇAT STATE VƏ KONFİQ DƏYİŞƏNLƏRİ
+// ============================================================
+const IMGBB_API_KEY = "5437281cb3fb0c2e28ca265eefa6eaf7";
+const DEFAULT_AVATAR = "https://kinoflix.github.io/chat/img/avatar.jpg";
+
+let chatCurrentUser = null;
+let chatCurrentUserData = {
+    role: 'user', displayName: '', photoURL: DEFAULT_AVATAR, isBanned: false,
+    username: '', firstName: '', lastName: ''
+};
+let activeRoomId = 'global_room';
+let activeRoomIsDM = false;
+let currentIgnoreList = [];
+let lastPublicRoom = 'global';
+let dmAutoOpenDone = false;
+
+let unsubscribeGeneralMessages = null;
+let unsubscribePrivateMessages = null;
+let unsubscribeUsers = null;
+let unsubscribeRooms = null;
+let unsubscribeTyping = null;
+let unsubscribeSelfDestruct = null;
+let unsubscribeAdminMessages = null;
+let typingTimeout = null;
+let unsubscribePresenceList = null;
+let isRegistering = false;
+
+let currentUsersList = [];
+let currentStatuses = {};
+let currentRooms = {};
+let userRolesMap = {};
+let userDataMap = {};
  
 // ============================================================
 // 2. DOM REFERANSLARI
@@ -2168,6 +2203,39 @@ if (msgUserSearchInput) {
 
 onAuthStateChanged(auth, async (user) => {
   updateAuthUI(user);
+// --- ÇAT İNİSİALİZASİYASI ---
+  if (user) {
+    chatCurrentUser = user;
+    // İstifadəçi məlumatlarını Firestore-dan çəkib çat state-inə yazırıq
+    getDoc(doc(db, 'users', user.uid)).then(userDoc => {
+        if(userDoc.exists()){
+            const data = userDoc.data();
+            chatCurrentUserData = {
+                role: data.role || 'user',
+                displayName: data.displayName || '',
+                photoURL: data.photoURL || DEFAULT_AVATAR,
+                isBanned: data.isBanned || false,
+                username: data.username || '',
+                firstName: data.firstName || '',
+                lastName: data.lastName || ''
+            };
+            // Çat üçün istifadəçi siyahısı və mesaj listener-lərini başladırıq
+            // (Bu funksiyaları Fəza 4-də köçürəcəyik, indi adlarını veririk)
+            if(typeof listenUsersAndPresence === 'function') listenUsersAndPresence();
+            if(typeof loadGeneralMessages === 'function') loadGeneralMessages();
+        }
+    });
+  } else {
+    chatCurrentUser = null;
+    // İstifadəçi çıxış edəndə bütün çat listener-lərini təmizlə
+    if (unsubscribeUsers) unsubscribeUsers();
+    if (unsubscribeGeneralMessages) unsubscribeGeneralMessages();
+    if (unsubscribePrivateMessages) unsubscribePrivateMessages();
+    if (unsubscribeAdminMessages) unsubscribeAdminMessages();
+    if (unsubscribeRooms) unsubscribeRooms();
+    if (unsubscribePresenceList) unsubscribePresenceList();
+  }
+  // --- ÇAT İNİSİALİZASİYASI SONU ---
   if (user) {
   // Modal açıqdırsa bağla
   if (authModal.style.display === 'flex') {
@@ -2269,6 +2337,43 @@ onAuthStateChanged(auth, async (user) => {
                 }, 600); 
             }
         });
+
+      // ============================================================
+// ÇAT OVERLAY UI İDARƏETMƏSİ
+// ============================================================
+window.openFullChat = function() {
+  const overlay = document.getElementById('fullChatOverlay');
+  if(overlay) {
+    overlay.classList.remove('chat-overlay-hidden');
+    document.body.classList.add('chat-is-open');
+    // Çat açılanda header-dəki mesaj ikonunun dropdown-unu gizlət (əgər açıqdırsa)
+    const msgDropdown = document.getElementById('msgDropdown');
+    if(msgDropdown) msgDropdown.style.display = 'none';
+  }
+};
+
+window.closeFullChat = function() {
+  const overlay = document.getElementById('fullChatOverlay');
+  if(overlay) {
+    overlay.classList.add('chat-overlay-hidden');
+    document.body.classList.remove('chat-is-open');
+  }
+};
+
+// Menyudakı "SÖHBƏT" linki və Header-dəki "Mesajlar" ikonunu birləşdir
+document.addEventListener('DOMContentLoaded', () => {
+    const menuBtn = document.getElementById('openChatMenuBtn');
+    if(menuBtn) menuBtn.addEventListener('click', window.openFullChat);
+
+    const closeBtn = document.getElementById('closeFullChatBtn');
+    if(closeBtn) closeBtn.addEventListener('click', window.closeFullChat);
+
+    const msgIconBtn = document.getElementById('messagesBtn');
+    if(msgIconBtn) msgIconBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Dropdown-un açılmasını əngəllə, birbaşa çatı aç
+        window.openFullChat();
+    });
+});
     </script>
 </div>
 <!-- İlkin Yüklənmə Ekranı (Loader) - Son -->
