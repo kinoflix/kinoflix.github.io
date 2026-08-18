@@ -1086,6 +1086,27 @@ document.addEventListener('keydown', (e) => {
 let presenceUnsubscribeConnected = null;
 let banWatcherUnsubscribe = null;
 
+let banWatcherUnsubscribe = null;
+let presenceHeartbeatInterval = null;
+let presenceHeartbeatTimeout = null;
+
+// Chat-dakı EYNİ heartbeat sistemi — admin "Toplu offlayn et" funksiyasını
+// işə salanda ana səhifədə olan istifadəçi "ghost hesab" sayılıb səhvən
+// offline edilməsin deyə, bu da öz heartbeat-ini yazır.
+function startPresenceHeartbeat(user) {
+  const sendHeartbeat = () => {
+    if (!auth.currentUser) return;
+    set(ref(rtdb, `heartbeats/${user.uid}`), rtdbTimestamp()).catch(() => {});
+  };
+  presenceHeartbeatTimeout = setTimeout(sendHeartbeat, 3 * 1000);
+  presenceHeartbeatInterval = setInterval(sendHeartbeat, 2 * 60 * 1000);
+}
+
+function stopPresenceHeartbeat() {
+  if (presenceHeartbeatTimeout) { clearTimeout(presenceHeartbeatTimeout); presenceHeartbeatTimeout = null; }
+  if (presenceHeartbeatInterval) { clearInterval(presenceHeartbeatInterval); presenceHeartbeatInterval = null; }
+}
+
 // Presence qur — istifadəçi chat açmadan belə onlayn görünsün
 function setupPresence(user) {
   // Əvvəlki listener-ləri təmizlə
@@ -1093,6 +1114,8 @@ function setupPresence(user) {
     presenceUnsubscribeConnected();
     presenceUnsubscribeConnected = null;
   }
+  stopPresenceHeartbeat();
+  startPresenceHeartbeat(user);
 
   const statusRef = ref(rtdb, `presence/${user.uid}`);
 
@@ -1213,8 +1236,8 @@ function cleanupPresence(uid) {
     banWatcherUnsubscribe();
     banWatcherUnsubscribe = null;
   }
+  stopPresenceHeartbeat();
 }
-
 function updateAuthUI(user) {
   const btn = authMainBtn;
   if (user) {
