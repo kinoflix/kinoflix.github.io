@@ -607,11 +607,27 @@ scrollBtn.addEventListener("click", () => {
       <div id="msgReplyMessages" class="msg-reply-messages">
         <p class="msg-reply-loading">Yüklənir...</p>
       </div>
+        <div id="msgReplyFilePreviewBar" class="file-preview-bar hidden">
+        <i class="fa-regular fa-image file-preview-icon"></i>
+        <span id="msgReplyFileNameDisplay" class="file-preview-name"></span>
+        <button type="button" id="msgReplyFileClearBtn" class="file-clear-btn" title="Şəkli sil"><i class="fa-solid fa-xmark"></i></button>
+      </div>
       <div class="msg-reply-input-bar">
+        <label for="msgReplyFileInput" class="attach-btn" title="Şəkil göndər">
+          <i class="fa-solid fa-paperclip"></i>
+          <input type="file" id="msgReplyFileInput" accept="image/*" hidden>
+        </label>
+        <div class="emoji-picker-wrapper">
+          <button type="button" id="msgReplyEmojiBtn" class="emoji-btn" title="Smaylik əlavə et">
+            <i class="fa-regular fa-face-smile"></i>
+          </button>
+          <div id="msgReplyEmojiPicker" class="emoji-picker-panel hidden"></div>
+        </div>
         <input type="text" id="msgReplyInput" placeholder="Cavabınızı yazın..." autocomplete="off">
         <button id="msgReplySendBtn" class="msg-reply-send-btn">
           <i class="fa-solid fa-paper-plane"></i>
         </button>
+      </div>
       </div>
     </div>
   </div>
@@ -1246,7 +1262,7 @@ async function getMsgUserProfile(uid) {
   try {
     const snap = await getDoc(doc(db, 'users', uid));
     if (!snap.exists()) {
-      const ghost = { displayName: '', username: '', photoURL: DEFAULT_MSG_AVATAR, exists: false };
+      const ghost = { displayName: '', username: '', photoURL: DEFAULT_MSG_AVATAR, role: 'user', exists: false };
       msgUserCache[uid] = ghost;
       return ghost;
     }
@@ -1255,12 +1271,13 @@ async function getMsgUserProfile(uid) {
       displayName: data.displayName || data.username || 'İstifadəçi',
       username: data.username || '',
       photoURL: data.photoURL || DEFAULT_MSG_AVATAR,
+      role: data.role || 'user',
       exists: true
     };
     msgUserCache[uid] = profile;
     return profile;
   } catch (e) {
-    return { displayName: '', username: '', photoURL: DEFAULT_MSG_AVATAR, exists: false };
+    return { displayName: '', username: '', photoURL: DEFAULT_MSG_AVATAR, role: 'user', exists: false };
   }
 }
 
@@ -1312,13 +1329,75 @@ async function fetchRealLastMessage(roomId) {
   }
 }
 
-// Hər DM otağı üçün: profil real olmalı VƏ real mesaj olmalıdır (silinmiş söhbətlər çıxarılır)
+// ---- Chat-dakı ROL SƏVİYYƏSİ və ULDUZ İKONLARI (eyni məntiq, eyni görünüş) ----
+const getMsgRoleLevel = (role) => {
+  if (role === 'super_admin') return 4;
+  if (role === 'admin') return 3;
+  if (role === 'moderator') return 2;
+  return 1;
+};
+
+const getMsgRoleStarsHtml = (role) => {
+  let color = '';
+  let starClass = '';
+  if (role === 'super_admin') { color = '#f1c40f'; starClass = 'super-admin-star'; }
+  else if (role === 'admin') { color = '#e74c3c'; starClass = 'admin-star'; }
+  else if (role === 'moderator') { color = '#3498db'; starClass = 'moderator-star'; }
+  else return '';
+  return `<i class="fa-solid fa-star role-star ${starClass}" style="color: ${color}; font-size: 11px; margin-left: 4px;" title="${role}"></i>`;
+};
+
+// Chat-dakı users-list sıralama qaydası: əvvəlcə rollu istifadəçilər (səviyyəyə görə, öz aralarında
+// onlayn-əvvəl + əlifba), sonra sıravi onlayn istifadəçilər (əlifba), sonra oflayn (əlifba)
+function sortLikeChat(items, getRole, getUid, getName) {
+  const roled = [], online = [], offline = [];
+  items.forEach(item => {
+    const role = getRole(item);
+    const level = getMsgRoleLevel(role);
+    const status = getPresenceStatus(getUid(item));
+    const isOnline = status === 'online' || status === 'away';
+    if (level > 1) {
+      roled.push({ item, level, isOnline, name: getName(item) });
+    } else if (isOnline) {
+      online.push({ item, isOnline, name: getName(item) });
+    } else {
+      offline.push({ item, isOnline, name: getName(item) });
+    }
+  });
+  const alpha = (a, b) => (a.name || '').localeCompare(b.name || '', 'az');
+  roled.sort((a, b) => (b.level - a.level) || ((a.isOnline === b.isOnline) ? alpha(a, b) : (a.isOnline ? -1 : 1)));
+  online.sort(alpha);
+  offline.sort(alpha);
+  return [...roled, ...online, ...offline].map(x => x.item);
+}
+
+// ---- Chat-dakı İQNOR sistemi (ignore_lists/{uid}) ----
+let msgIgnoreList = [];
+let unsubscribeMsgIgnoreList = null;
+
+function startMsgIgnoreListener(user) {
+  if (unsubscribeMsgIgnoreList) unsubscribeMsgIgnoreList();
+  unsubscribeMsgIgnoreList = onSnapshot(
+    doc(db, 'ignore_lists', user.uid),
+    (snap) => {
+      msgIgnoreList = snap.exists() ? (snap.data().ignored || []) : [];
+      if (msgDropdown._latestRooms) {
+        recomputeMsgBadge(msgDropdown._latestRooms, user.uid);
+        if (msgDropdown.style.display !== 'none') renderMsgDropdown(msgDropdown._latestRooms, user.uid);
+      }
+    },
+    () => { msgIgnoreList = []; }
+  );
+}
+
+// Hər DM otağı üçün: profil real olmalı, real mesaj olmalı VƏ iqnor edilməməlidir
 async function buildRealDmConversations(rooms, myUid) {
   const dmRooms = rooms.filter(r => r.isDM === true && r.roomId);
 
   const resolved = await Promise.all(dmRooms.map(async (room) => {
     const otherUid = room.participants?.find(id => id !== myUid);
     if (!otherUid) return null;
+    if (msgIgnoreList.includes(otherUid)) return null; // iqnor edilən şəxs — göstərmə
 
     const profile = await getMsgUserProfile(otherUid);
     if (!profile.exists) return null;
@@ -1355,13 +1434,19 @@ async function renderMsgDropdown(rooms, myUid) {
     return;
   }
 
-  visible.sort((a, b) => (b.lastMsg.createdAt?.toMillis?.() || 0) - (a.lastMsg.createdAt?.toMillis?.() || 0));
+  const sorted = sortLikeChat(
+    visible,
+    (v) => v.profile.role,
+    (v) => v.otherUid,
+    (v) => v.profile.displayName
+  );
 
-  msgDropdownList.innerHTML = visible.slice(0, 15).map(({ room, otherUid, profile, lastMsg }) => {
+  msgDropdownList.innerHTML = sorted.slice(0, 15).map(({ room, otherUid, profile, lastMsg }) => {
     const unread = Number(room[`unread_${myUid}`]) || 0;
     const isUnread = unread > 0;
     const preview = (lastMsg.senderId === myUid ? 'Siz: ' : '') + (lastMsg.text || '');
     const status = getPresenceStatus(otherUid);
+    const stars = getMsgRoleStarsHtml(profile.role);
 
     return `
       <div class="msg-dropdown-item ${isUnread ? 'unread' : ''}" data-uid="${otherUid}">
@@ -1371,7 +1456,7 @@ async function renderMsgDropdown(rooms, myUid) {
         </div>
         <div class="msg-item-text">
           <div class="msg-item-name">
-            <span>${escapeHtmlLocal(profile.displayName)}</span>
+            <span>${escapeHtmlLocal(profile.displayName)}${stars}</span>
           </div>
           <div class="msg-item-preview">${escapeHtmlLocal(preview)}</div>
         </div>
@@ -1384,7 +1469,7 @@ async function renderMsgDropdown(rooms, myUid) {
 
   msgDropdownList.querySelectorAll('.msg-dropdown-item').forEach(el => {
     const uid = el.getAttribute('data-uid');
-    const match = visible.find(v => v.otherUid === uid);
+    const match = sorted.find(v => v.otherUid === uid);
 
     el.addEventListener('click', async () => {
       const profile = await getMsgUserProfile(uid);
@@ -1415,11 +1500,27 @@ async function hideMsgConversation(room) {
     console.error('Söhbət siyahıdan gizlədilə bilmədi:', err);
   }
 }
+async function recomputeMsgBadge(rooms, myUid) {
+  const conversations = await buildRealDmConversations(rooms, myUid);
+  const totalUnread = conversations.reduce((sum, c) => {
+    const val = Number(c.room[`unread_${myUid}`]);
+    return sum + (Number.isFinite(val) && val > 0 ? val : 0);
+  }, 0);
+
+  if (totalUnread > 0) {
+    msgBadge.textContent = totalUnread > 99 ? '99+' : String(totalUnread);
+    msgBadge.style.display = 'inline-flex';
+  } else {
+    msgBadge.style.display = 'none';
+  }
+}
+
 function setupMessagesWidget(user) {
   if (!msgBtnWrapper) return;
   msgBtnWrapper.style.display = 'inline-block';
   if (unsubscribeMsgRooms) unsubscribeMsgRooms();
   startMsgPresenceListener();
+  startMsgIgnoreListener(user);
 
   unsubscribeMsgRooms = onSnapshot(
     query(collection(db, 'rooms'), where('participants', 'array-contains', user.uid)),
@@ -1427,23 +1528,8 @@ function setupMessagesWidget(user) {
       const rooms = [];
       snapshot.forEach(d => rooms.push(d.data()));
 
-      // Real mesajı olan, real profilə bağlı bütün söhbətlər (gizlədilmə burada nəzərə alınmır,
-      // çünki gizlədilən söhbətin unread dəyəri onsuz da 0-dır)
-      const conversations = await buildRealDmConversations(rooms, user.uid);
-
-      const totalUnread = conversations.reduce((sum, c) => {
-        const val = Number(c.room[`unread_${user.uid}`]);
-        return sum + (Number.isFinite(val) && val > 0 ? val : 0);
-      }, 0);
-
-      if (totalUnread > 0) {
-        msgBadge.textContent = totalUnread > 99 ? '99+' : String(totalUnread);
-        msgBadge.style.display = 'inline-flex';
-      } else {
-        msgBadge.style.display = 'none';
-      }
-
       msgDropdown._latestRooms = rooms;
+      await recomputeMsgBadge(rooms, user.uid);
       if (msgDropdown.style.display !== 'none') renderMsgDropdown(rooms, user.uid);
     }
   );
@@ -1451,7 +1537,9 @@ function setupMessagesWidget(user) {
 function cleanupMessagesWidget() {
   if (unsubscribeMsgRooms) { unsubscribeMsgRooms(); unsubscribeMsgRooms = null; }
   if (unsubscribeMsgPresence) { unsubscribeMsgPresence(); unsubscribeMsgPresence = null; }
+  if (unsubscribeMsgIgnoreList) { unsubscribeMsgIgnoreList(); unsubscribeMsgIgnoreList = null; }
   msgPresenceCache = {};
+  msgIgnoreList = [];
   if (msgBtnWrapper) msgBtnWrapper.style.display = 'none';
   if (msgDropdown) msgDropdown.style.display = 'none';
   if (msgBadge) msgBadge.style.display = 'none';
@@ -1503,7 +1591,9 @@ function openMsgReplyModal(targetUid, profile) {
 
   msgReplyAvatar.src = profile.photoURL;
   msgReplyName.textContent = profile.displayName || 'İstifadəçi';
-  msgReplyUsername.textContent = profile.username ? `@${profile.username}` : '';
+  msgReplyUsername.innerHTML = profile.username
+    ? `@${escapeHtmlLocal(profile.username)}${getMsgRoleStarsHtml(profile.role)}`
+    : '';
   updateMsgReplyStatusDot(targetUid);
   msgReplyMessages.innerHTML = '<p class="msg-reply-loading">Yüklənir...</p>';
   msgReplyModal.classList.add('active');
@@ -1533,10 +1623,14 @@ function openMsgReplyModal(targetUid, profile) {
       msgReplyMessages.innerHTML = messages.map(m => {
         const isMe = m.senderId === myUid;
         const time = formatMsgTime(m.createdAt?.toDate ? m.createdAt.toDate() : null);
+        const imgHtml = m.fileURL
+          ? `<img src="${m.fileURL}" class="chat-shared-image" alt="Şəkil" onclick="window.open('${m.fileURL}')">`
+          : '';
         return `
           <div class="msg-reply-row ${isMe ? 'me' : 'other'}">
             <div class="msg-reply-bubble">
-              ${escapeHtmlLocal(m.text || '')}
+              ${m.text ? escapeHtmlLocal(m.text) : ''}
+              ${imgHtml}
               <span class="msg-reply-bubble-time">${time}</span>
             </div>
           </div>`;
@@ -1558,11 +1652,35 @@ msgReplyModal.addEventListener('click', (e) => { if (e.target === msgReplyModal)
 
 async function sendMsgReply() {
   const text = msgReplyInput.value.trim();
+  const file = msgReplyFileInput.files[0];
   const myUid = auth.currentUser?.uid;
-  if (!text || !myUid || !activeMsgReplyRoomId || !activeMsgReplyTargetUid) return;
+  if ((!text && !file) || !myUid || !activeMsgReplyRoomId || !activeMsgReplyTargetUid) return;
+
+  // Qarşı tərəf məni iqnor edibsə, mesaj göndərilmir (chat-dakı qayda ilə eyni)
+  try {
+    const theirIgnoreDoc = await getDoc(doc(db, 'ignore_lists', activeMsgReplyTargetUid));
+    if (theirIgnoreDoc.exists() && (theirIgnoreDoc.data().ignored || []).includes(myUid)) {
+      alert('Bu şəxs tərəfindən ignor edildiyiniz üçün mesaj göndərə bilmirsiniz.');
+      return;
+    }
+  } catch (e) { /* qaydalar oxumağa icazə vermirsə keç */ }
 
   msgReplyInput.value = '';
   msgReplySendBtn.disabled = true;
+
+  let fileURL = null, fileType = null;
+  if (file) {
+    try {
+      fileURL = await uploadImageToImgBB(file);
+      fileType = file.type;
+    } catch (err) {
+      console.error('Şəkil yüklənə bilmədi:', err);
+      msgReplySendBtn.disabled = false;
+      return;
+    }
+  }
+  msgReplyFileInput.value = '';
+  msgReplyFilePreviewBar.classList.add('hidden');
 
   try {
     const myProfile = await getMsgUserProfile(myUid);
@@ -1570,15 +1688,16 @@ async function sendMsgReply() {
       senderId: myUid,
       senderName: myProfile.displayName || 'Anonim',
       senderAvatar: myProfile.photoURL,
+      senderUsername: myProfile.username || '',
       text: text,
-      fileURL: null,
-      fileType: null,
+      fileURL: fileURL,
+      fileType: fileType,
       createdAt: serverTimestamp()
     });
 
     await setDoc(doc(db, 'rooms', activeMsgReplyRoomId), {
       lastMessageAt: serverTimestamp(),
-      lastMessageText: text,
+      lastMessageText: text || (fileURL ? '📎 Şəkil göndərildi' : ''),
       lastMessageSenderId: myUid,
       [`unread_${activeMsgReplyTargetUid}`]: increment(1)
     }, { merge: true });
@@ -1594,6 +1713,76 @@ msgReplyInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') { e.preventDefault(); sendMsgReply(); }
 });
 
+// ---- Şəkil önizləmə paneli ----
+const msgReplyFileInput      = document.getElementById('msgReplyFileInput');
+const msgReplyFilePreviewBar = document.getElementById('msgReplyFilePreviewBar');
+const msgReplyFileNameDisplay = document.getElementById('msgReplyFileNameDisplay');
+const msgReplyFileClearBtn   = document.getElementById('msgReplyFileClearBtn');
+
+msgReplyFileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) { msgReplyFileNameDisplay.textContent = file.name; msgReplyFilePreviewBar.classList.remove('hidden'); }
+  else { msgReplyFileNameDisplay.textContent = ''; msgReplyFilePreviewBar.classList.add('hidden'); }
+});
+msgReplyFileClearBtn.addEventListener('click', () => {
+  msgReplyFileInput.value = '';
+  msgReplyFileNameDisplay.textContent = '';
+  msgReplyFilePreviewBar.classList.add('hidden');
+});
+
+// ---- Chat-dakı EYNİ smaylik (emoji) paneli ----
+const IMGBB_API_KEY_MSG = "5437281cb3fb0c2e28ca265eefa6eaf7";
+
+async function uploadImageToImgBB(file) {
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Sistem yalnız şəkil fayllarını (JPG, PNG, WEBP, GIF) dəstəkləyir.");
+  }
+  const formData = new FormData();
+  formData.append('image', file);
+  const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY_MSG}`, { method: 'POST', body: formData });
+  if (!response.ok) throw new Error("Şəkil serverə yüklənərkən xəta baş verdi.");
+  const resData = await response.json();
+  return resData.data.url;
+}
+
+const MSG_EMOJI_LIST = [
+  "😀","😁","😂","🤣","😊","🙂","😉","😍","😘","😜","🤔","🤨","😎","🥳","🤩",
+  "😢","😭","😡","😱","😴","🥰","😇","😏","😅","🙄","😬","🤐","😮","😞","😔",
+  "👍","👎","👏","🙏","💪","👋","✌️","🤝","👀","🙌",
+  "🔥","🎉","✨","⭐","💯","❤️","💔","✅","❌"
+];
+
+function buildMsgEmojiPicker(panelEl, targetInput) {
+  panelEl.innerHTML = '';
+  MSG_EMOJI_LIST.forEach(emoji => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = emoji;
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const start = targetInput.selectionStart ?? targetInput.value.length;
+      const end = targetInput.selectionEnd ?? targetInput.value.length;
+      targetInput.value = targetInput.value.slice(0, start) + emoji + targetInput.value.slice(end);
+      const newCursorPos = start + emoji.length;
+      targetInput.focus();
+      targetInput.setSelectionRange(newCursorPos, newCursorPos);
+    });
+    panelEl.appendChild(btn);
+  });
+}
+
+const msgReplyEmojiBtn = document.getElementById('msgReplyEmojiBtn');
+const msgReplyEmojiPicker = document.getElementById('msgReplyEmojiPicker');
+buildMsgEmojiPicker(msgReplyEmojiPicker, msgReplyInput);
+
+msgReplyEmojiBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  msgReplyEmojiPicker.classList.toggle('hidden');
+});
+msgReplyEmojiPicker.addEventListener('click', (e) => e.stopPropagation());
+document.addEventListener('click', () => {
+  msgReplyEmojiPicker.classList.add('hidden');
+});
   // ============================================================
 // 💬 YENİ SÖHBƏT BAŞLAT — istifadəçi seçici modalı
 // ============================================================
@@ -1609,24 +1798,32 @@ function renderMsgUserPickerList(usersMap, filterText) {
   const myUid = auth.currentUser?.uid;
   const q = (filterText || '').trim().toLowerCase();
 
-  const list = Object.values(usersMap).filter(u => {
+  const filtered = Object.values(usersMap).filter(u => {
     if (u.uid === myUid) return false;
     if (!q) return true;
     const username = (u.username || '').toLowerCase();
     const fullName = (`${u.firstName || ''} ${u.lastName || ''}`.trim() || u.displayName || '').toLowerCase();
     const email = (u.email || '').toLowerCase();
     return username.includes(q) || fullName.includes(q) || email.includes(q);
-  }).sort((a, b) => (a.displayName || a.username || '').localeCompare(b.displayName || b.username || '', 'az'));
+  });
 
-  if (!list.length) {
+  if (!filtered.length) {
     msgUserPickerList.innerHTML = '<li class="msg-user-picker-empty">İstifadəçi tapılmadı.</li>';
     return;
   }
 
-  msgUserPickerList.innerHTML = list.map(u => {
+  const sorted = sortLikeChat(
+    filtered,
+    (u) => u.role,
+    (u) => u.uid,
+    (u) => `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.displayName || u.username || ''
+  );
+
+  msgUserPickerList.innerHTML = sorted.map(u => {
     const username = u.username || 'istifadeci';
     const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.displayName || username;
     const status = getPresenceStatus(u.uid);
+    const stars = getMsgRoleStarsHtml(u.role);
     return `
       <li class="msg-picker-item" data-uid="${u.uid}">
         <div class="msg-dropdown-avatar-wrapper">
@@ -1634,7 +1831,7 @@ function renderMsgUserPickerList(usersMap, filterText) {
           <span class="msg-status-dot ${status}"></span>
         </div>
         <div class="msg-picker-text">
-          <div class="msg-picker-username">@${escapeHtmlLocal(username)}</div>
+          <div class="msg-picker-username">@${escapeHtmlLocal(username)}${stars}</div>
           <div class="msg-picker-name">${escapeHtmlLocal(fullName)}</div>
         </div>
       </li>`;
@@ -1649,9 +1846,10 @@ function renderMsgUserPickerList(usersMap, filterText) {
         displayName: `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.displayName || u.username || 'İstifadəçi',
         username: u.username || '',
         photoURL: u.photoURL || DEFAULT_MSG_AVATAR,
+        role: u.role || 'user',
         exists: true
       };
-      msgUserCache[uid] = profile; // keşə də əlavə et ki, dropdown-da da düzgün görünsün
+      msgUserCache[uid] = profile;
       closeMsgUserPickerModalFn();
       openMsgReplyModal(uid, profile);
     });
