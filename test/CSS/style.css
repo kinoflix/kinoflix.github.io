@@ -1,45 +1,2173 @@
-/* ==========================================================================
-   1. DİZAYN TOKENLƏRİ VƏ DƏYİŞƏNLƏR (Theme Engine)
-   ========================================================================== */
-:root {
-    --bg: #08101a;
-    --surface: #0f1720;
-    --surface-hover: #172230;
-    --muted: #94a3b8;
-    --accent: #1db954;
-    --accent-hover: #1aa34a;
-    --text: #e6eef6;
-    --text-muted: #64748b;
-    --glass: rgba(255, 255, 255, 0.03);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --radius: 16px;
-    --radius-sm: 8px;
-    --shadow: 0 12px 40px rgba(2, 6, 23, 0.7);
-    --header-bg: rgba(8, 16, 26, 0.85);
-    --danger: #d94f5c;
-    --success: #1db954;
-    --me-bubble: #1db954;
-    --other-bubble: #172230;
-    --dropdown-bg: #1a2535;
+:root{
+  --bg:#08101a; --surface:#0f1720; --muted:#94a3b8; --accent:#1db954; --text:#e6eef6; --glass: rgba(255,255,255,0.03);
+  --radius:12px; --card-sh: 0 8px 28px rgba(2,6,23,0.6);
+  /* Çat inteqrasiyası üçün əlavə dəyişənlər */
+  --surface-hover: #172230;
+  --accent-hover: #1aa34a;
+  --text-muted: #64748b;
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --header-bg: rgba(8, 16, 26, 0.85);
+  --danger: #d94f5c;
+  --success: #1db954;
+  --me-bubble: #1db954;
+  --other-bubble: #172230;
+  --dropdown-bg: #1a2535;
+}
+[data-theme="light"]{
+  --bg:#f6f8fb; --surface:#ffffff; --muted:#475569; --accent:#0b74ff; --text:#071026; --glass: rgba(0,0,0,0.04);
+  /* Çat inteqrasiyası üçün əlavə dəyişənlər */
+  --surface-hover: #f1f5f9;
+  --accent-hover: #0062e3;
+  --text-muted: #94a3b8;
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --header-bg: rgba(244, 246, 249, 0.85);
+  --me-bubble: #0b74ff;
+  --other-bubble: #f1f5f9;
+  --dropdown-bg: #ffffff;
+}
+*{box-sizing:border-box}
+html,body{height:100%,overflow-y: auto;}
+body{
+  margin:0;background:linear-gradient(180deg,var(--bg),color-mix(in srgb,var(--bg) 100%, #0000));   /* Qeyd: Rəng parçalanmasını ləğv etmək üçün color-mix(in srgb,var(--bg) 85% göstəricisini 100% etdim. */
+  color:var(--text);font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  transition:background .22s,color .22s;
+  padding-top:72px;
+}
+  /* Menyu üçün ümumi tənzimləmələr */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
-[data-theme="light"] {
-    --bg: #f4f6f9;
-    --surface: #ffffff;
-    --surface-hover: #f1f5f9;
-    --muted: #475569;
-    --accent: #0b74ff;
-    --accent-hover: #0062e3;
-    --text: #0f172a;
-    --text-muted: #94a3b8;
-    --glass: rgba(0, 0, 0, 0.02);
-    --glass-border: rgba(0, 0, 0, 0.08);
-    --shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
-    --header-bg: rgba(244, 246, 249, 0.85);
-    --me-bubble: #0b74ff;
-    --other-bubble: #f1f5f9;
-    --dropdown-bg: #ffffff;
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Varela Round", sans-serif;
+  line-height: 1.6;
 }
+
+/* --- DESKTOP MENYU --- */
+.menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 1000px;
+  margin: 40px auto;
+  list-style: none;
+  padding: 0;
+}
+
+.menu li {
+  width: 125px;
+  height: 50px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEi%0D%0AIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhs%0D%0AaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0%0D%0AaD0iMzkwcHgiIGhlaWdodD0iNTBweCIgdmlld0JveD0iMCAwIDM5MCA1MCIgZW5hYmxlLWJhY2tn%0D%0Acm91bmQ9Im5ldyAwIDAgMzkwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHBhdGggZmlsbD0i%0D%0Abm9uZSIgc3Ryb2tlPSIjZDk0ZjVjIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGlt%0D%0AaXQ9IjEwIiBkPSJNMCw0Ny41ODVjMCwwLDk3LjUsMCwxMzAsMAoJYzEzLjc1LDAsMjguNzQtMzgu%0D%0ANzc4LDQ2LjE2OC0xOS40MTZDMTkyLjY2OSw0Ni41LDI0My42MDMsNDcuNTg1LDI2MCw0Ny41ODVj%0D%0AMzEuODIxLDAsMTMwLDAsMTMwLDAiLz4KPC9zdmc+Cg==");
+  background-repeat: no-repeat;
+  background-size: 390px 50px;
+  background-position: -390px bottom;
+  transition: background-position 0.6s ease-out;
+}
+
+/* Hover və Active vəziyyəti birlikdə */
+.menu li:hover, 
+.menu li.active {
+  background-position: 0px bottom;
+}
+
+.menu li a {
+  font-size: 18px;
+  color: var(--muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  transition: color 0.3s;
+}
+
+/* Link rəngi Hover və Active halında */
+.menu li:hover a, 
+.menu li.active a {
+  color: #d94f5c;
+}
+
+.menu li:not(:last-child) {
+  margin-right: 20px;
+}
+
+/* --- MOBİL ÜÇÜN --- */
+@media (max-width: 768px) {
+  .menu {
+    flex-direction: column;
+    width: 100%;
+  }
+  .menu li {
+    width: 100%;
+    background-image: none !important;
+    height: auto;
+    margin-right: 0 !important;
+    border-bottom: 1px solid var(--glass);
+    position: relative; 
+  }
+  
+  .menu li a {
+    padding: 15px 0;
+  }
+
+  .menu li::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: #d94f5c; 
+    transition: width 0.4s ease;
+    transform: translateX(-50%);
+  }
+
+  /* Hover və ya Active olanda xətt görünsün */
+  .menu li:hover::after, 
+  .menu li.active::after {
+    width: 80%;
+  }
+
+  .menu li:hover {
+    background-color: var(--glass);
+    border-bottom: 1px solid transparent; 
+  }
+} 
+/* Header: logo left, center empty, controls right (Info -> Search -> Theme) */
+header{
+  position:fixed;top:0;left:0;right:0;height:72px;display:flex;align-items:center;
+  justify-content:space-between;padding:10px 18px;z-index:80;
+  background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.12));
+  backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.02);
+}
+.header-left{display:flex;align-items:center;gap:12px}
+#logoImg{width:120px;height:46px;border-radius:8px;object-fit:contain;cursor:pointer;box-shadow:v*r(--card-sh);background:transparent;padding:6px}
+.header-center{flex:1}
+.header-right{display:flex;align-items:center;gap:10px}
+
+/* Search */
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border-radius: 999px;
+}
+
+.search-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  color: var(--text); /* Tema dəyişəndə avtomatik rəng */
+}
+
+.search-btn svg {
+  width: 18px;
+  height: 18px;
+  opacity: .95;
+}
+
+/* İkonun rəngi currentColor (yəni var(--text)) ilə idarə olunur */
+.search-btn svg * {
+  stroke: currentColor;
+  fill: none;
+}
+/* Qeyd: Axtar butonunun üzərinə gəldikdə çöl kənar xəttləri görünsün deyə hover əlavə etdim */
+.search-btn:hover {
+  background: var(--surface);
+  outline: 2px solid var(--accent); /* Qeyd: Maus üzərinə gəldikdə çöl kənar xəttlər görünsün. */
+}
+  
+.search-input {
+  outline: 2px solid var(--accent); /* Qeyd: Axtarış sahəsi açıldıqda çöl kənar xəttləri yaşıl/mavi olsun deyə əlavə etdim */
+  width: 0;
+  max-width: 420px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  transition: width .28s cubic-bezier(.2, .9, .2, 1), opacity .2s;
+  opacity: 0;
+  border-left: 0;
+}
+
+.search-input.open {
+  width: 250px;
+  opacity: 1;
+}
+
+.search-input::placeholder {
+  color: var(--muted);
+  opacity: .9;
+}
+
+/* --- BUTTONS (YENİLƏNDİ) --- */
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.3s ease; /* Keçidləri yumşaltdıq */
+}
+
+/* Ümumi düymələr üçün köhnə hover effekti qalsın */
+.icon-btn:hover {
+  background: var(--surface);
+  outline: 2px solid var(--accent);
+}
+
+/* Buton içərisindəki ikonun öz ölçüsü */
+.icon-btn i {
+  font-size: 20px; /* İkonun ölçüsü */
+}
+/* Account İkonun ölçüsü */
+.icon-btn .fa-circle-user {
+  font-size: 25px; 
+}
+
+/* --- TEMA DÜYMƏSİ ÜÇÜN ÖZƏL (Sənin istədiyin KINOFLIX+ stili) --- */
+#themeToggle {
+  border-radius: 50% !important; /* Dairəvi forma */
+  background: var(--glass);
+  border: none;
+}
+
+#themeToggle:hover {
+  outline: none !important; /* Kvadrat xətti ləğv edirik */
+  background: var(--accent) !important; /* Yaşıl və ya Mavi fon */
+  color: #fff !important;
+  transform: scale(1.1) rotate(15deg); /* Dönmə effekti */
+  /* Neon effekti əlavə olundu */
+  box-shadow: 
+    0 0 10px var(--accent),
+    0 0 20px var(--accent),
+    0 0 35px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+/* Mobildə toxunanda (active) eyni effekt olsun */
+@media (max-width: 768px) {
+  #themeToggle:active {
+    background: var(--accent) !important;
+    transform: scale(1.1) rotate(15deg);
+  }
+}
+
+  /* === YENİ ===: Filter Select Dropdown */
+.filter-select {
+  /* Əvvəlki stil dəyərləri */
+  background-color: var(--surface);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  padding: 12px 40px 12px 12px; /* Sağ tərəfdən ikon üçün boşluq qoyulur */
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 160px;
+  
+  /* Əsas custom görünüş */
+  appearance: none; /* Default brauzer ikonunu gizlədir */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  /* Aşağı baxan ox ikonu (Ağ rəng) */
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23e6eef6' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center; /* İkonun yerini tənzimləyir */
+  background-size: 16px;
+  transition: background-image 0.2s ease;
+}
+
+/* 1. Select açıldıqda/fokuslandıqda oxu yuxarıya çevir (Ağ rəng) */
+.filter-select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23e6eef6' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 14l5-5 5 5z'/%3E%3C/svg%3E");
+}
+
+/* 2. Gündüz rejimi (Light Mode) üçün ikon rəngi dəyiş (Qara/Tünd rəng) */
+[data-theme="light"] .filter-select {
+  /* Aşağı baxan ox ikonu (Tünd rəng) */
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23071026' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+}
+
+/* 3. Gündüz rejimində Select açıldıqda/fokuslandıqda oxu yuxarıya çevir (Tünd rəng) */
+[data-theme="light"] .filter-select:focus {
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23071026' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 14l5-5 5 5z'/%3E%3C/svg%3E");
+}
+/* === SON === */
+
+/* Gallery */
+.container{max-width:1180px;margin:22px auto;padding:8px 18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
+.card{background:linear-gradient(180deg,var(--surface), color-mix(in srgb,var(--surface) 90%, #0000));border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:var(--card-sh);transition:transform .18s}
+.card:hover{transform:translateY(-6px)}
+.poster{width:100%;height:0;padding-bottom:150%;background-size:cover;background-position:center}
+.meta{padding:10px 12px}
+.title{margin:0;font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub{margin:6px 0 0 0;font-size:12px;color:var(--muted)}
+
+/* Loader */
+.loader{display:flex;align-items:center;justify-content:center;padding:18px 12px;gap:12px;color:var(--muted)}
+.spinner{width:34px;height:34px;border-radius:50%;border:4px solid rgba(255,255,255,0.06);border-top-color:var(--accent);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.all-loaded{display:none;padding:14px 12px;text-align:center;color:var(--muted)}
+
+  /* Modal içində video ilə overlay arası məsafə */
+.modal-inner {
+  padding: 20px; /* İstədiyin qədər məsafə ver */
+  box-sizing: border-box; /* padding-in layouta təsir etməsi üçün */
+}
+
+.video-container {
+  padding: 12px; /* Video ilə modal içi kənar arasına əlavə boşluq */
+}
+  
+
+/* Modal & player */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(2,6,23,0.76), rgba(2,6,23,0.9));z-index:120;padding:18px}
+.modal.open{display:flex}
+.modal-inner{width:52%;max-width:1100px;border-radius:12px;overflow:hidden;background:var(--surface);box-shadow:0 20px 60px rgba(2,6,23,0.7);display:flex;flex-direction:column;align-items:center}
+.player-top{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;width:100%}
+.player-title{font-weight:700;text-align:center;width:100%}
+.player-sub{font-size:13px;color:var(--muted);text-align:center;width:100%}
+.close-btn{background:transparent;border:0;color:var(--text);font-size:20px;cursor:pointer;padding:8px}
+
+/* Video container: responsive 16:9 with fallback */
+.video-container{width:100%;padding:0 12px 12px 12px}
+.video-container.responsive{position:relative;padding-top:56.25%}
+.video-container.responsive .video-js{position:absolute;top:0;left:0;width:100%;height:100%}
+
+/* modern - Qaçma probleminin həlli üçün: aspect-ratio çıxarıldı, video kəsilmir, vizual round üçün overlay əlavə olunur */
+.video-js{
+  /* aspect-ratio:16/9;  --> PROBLEM mənbəyi olduğu üçün çıxarıldı */
+  width:100%;
+  max-height:80vh;
+  height:auto;
+  /* border-radius və overflow: hidden videonu kəsdiyindən silindi */
+  /* border-radius:12px; overflow:hidden; */
+  aspect-ratio: unset;
+}
+
+/* video element (texnologiya) tam yerləşsin */
+.video-js .vjs-tech,
+.video-js .vjs-poster {
+  width:100% !important;
+  height:100% !important;
+  object-fit: contain;
+  display:block;
+  border-radius: 0; /* videonun özü kəsilməsin */
+}
+
+/* -- Minimal estetik: container üzərində overlay ilə "görünüşdə" rounded corners -- */
+.video-container.responsive {
+  /* (sənin mövcud qaydanın içində olduğu üçün - yalnız əlavə edin) */
+  border-radius: 12px;       /* vizual künc radiusu */
+  /* QƏDƏR: əhəmiyyətli — overflow *olmayacaq* (videonu kəsməmək üçün) */
+  overflow: visible;
+  position: relative;
+  padding-top: 54.55%;
+}
+
+/* overlay: video kəsilmədən görünüşdə yuvarlaq künc effekti verir */
+.video-container.responsive::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;    /* kontrollerə müdaxilə etmir */
+  border-radius: 12px;
+  /* aşağıdakı line səhifə fonuna uyğun olmalıdır; əgər səhifə fonun #08101a kimidirsə istifadə et */
+  box-shadow: 0 0 0 9999px var(--bg, #08101a);
+  mix-blend-mode: normal;
+  /* əgər fon fərqlidirsə, var(--bg) dəyişdir */
+}
+  /* BAŞLIQ, ALT BAŞLIQ VƏ X-I QORU: keep the overlay but put it behind controls */
+.video-container.responsive::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px var(--bg, #08101a);
+  mix-blend-mode: normal;
+  z-index: 0; /* <- ADDED: push overlay behind */
+}
+
+/* ensure player header / close button are above overlay */
+.player-top,
+.player-top * {
+  position: relative;
+  z-index: 2; /* <- ADDED: above overlay */
+}
+
+/* if needed, make modal-inner above overlay as well */
+.modal-inner { position: relative; z-index: 3; }
+
+
+
+/* Ensure the custom skip icons render exactly: force sizing/color via currentColor */
+.vjs-control.custom-skip,
+.video-js .vjs-control.custom-skip {
+  display:inline-flex;align-items:center;justify-content:center;width:3em;height:3em;padding:0;margin:0 6px;background:transparent;border:0;color:var(--text);
+}
+.vjs-control.custom-skip svg{width:22px;height:22px;display:block;pointer-events:none}
+.vjs-control.custom-skip svg path{fill:white;opacity:0.95;transform-origin:center}
+
+/* Toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;background:var(--surface);padding:10px 16px;border-radius:999px;color:var(--text);box-shadow:0 10px 30px rgba(2,6,23,0.6);z-index:200;display:none}
+.toast.show{display:block;animation:toastpop .22s ease}
+@keyframes toastpop{from{transform:translateX(-50%) translateY(10px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+
+  /* === SHARE BUTTON: player-top içində sağ tərəf üçün === */
+/* (CSS DÜZƏLİŞİ: Bu blok @media xaricinə, qlobal sahəyə köçürüldü) */
+.player-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Right-side wrapper */
+.player-right-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  margin-left: 8px;
+}
+
+/* Share button core */
+#mainShareBtn,
+.player-right-controls .share-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0); /* Qeyd: Əvvəlki göstərici var(--surface) xüsusi handlerlərə təsir etmədiyi üçün sabit rəng ilə dəyişdim və 0 edərək şəffaf etdim. */
+  border: 1px solid rgba(0, 0, 0, 0); /* Qeyd: İç kənar kənar xəttlər görünməsin deyə 0 edərək şəffaf etdim. */
+  cursor: pointer;
+  color: var(--text);        /* SVG stroke will use currentColor -> var(--text) */
+  padding: 0;
+  line-height: 0;
+  box-sizing: border-box;
+  transition: background .18s ease;
+}
+
+/* hover */
+#mainShareBtn:hover,
+.player-right-controls .share-btn:hover {
+  background: rgba(0, 0, 0, 0); /* Qeyd: Maus üzərinə gəldikdə arxa plan rəng deyə deyə 0 edərək şəffaf etdim. Əvvəlki göstərici: rgba(255,255,255,0.02) */
+  outline: 2px solid var(--accent); /* Qeyd: Maus üzərinə gəldikdə çöl kənar xəttlər görünsün. */
+}
+
+  /*
+/ * focus for keyboard users * /
+#mainShareBtn:focus,
+.player-right-controls .share-btn:focus {
+  outline: 2px solid var(--accent); / * Qeyd: Əvvəlki göstərici rgba(11,119,255,0.14) idi * /
+  outline-offset: 2px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.25);
+}
+  */
+
+/* SVG size */
+#mainShareBtn svg,
+.player-right-controls .share-btn svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  vertical-align: middle;
+}
+
+/* Use stroke=currentColor and no fill so icon is outline and follows theme */
+#mainShareBtn svg * ,
+.player-right-controls .share-btn svg * {
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 2 !important;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: none !important; /* immediate color change */
+}
+
+/* Slightly smaller on very small screens */
+@media (max-width: 420px) {
+  #mainShareBtn,
+  .player-right-controls .share-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+  #mainShareBtn svg,
+  .player-right-controls .share-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Extra specificity fallback in case generic rules override */
+.modal-inner #mainShareBtn { }
+/* (SHARE BUTTON CSS SONU) */
+
+/* responsive */
+@media (max-width:520px){
+  .overlay { width: 89%; }
+  .video-container {
+    padding: 0 8px;  /* mövcud qayda */
+  }
+  .modal-inner {
+    width: 100%;
+  }
+
+  .video-js {
+    height: 236px;    /* mövcud qayda */
+  }
+  .video-container.responsive {
+    padding-top: 56.25%;
+  }
+
+  /* yeni əlavə qaydalar */
+  .modal-inner {
+    padding: 12px;    /* overlay və video arasında boşluq */
+  }
+  .search-input.open{width:140px}
+  .search-btn, .icon-btn{width:40px;height:40px}
+  header{height:64px;padding:8px 12px}
+  body{padding-top:64px}
+}
+    /* Video pəncərəsinin (arxa sahənin) masaüstü üçün hizalanmasını tənzimlə */
+@media (min-width: 768px){
+.modal,
+.modal-dialog,
+.overlay {
+  transform: translateX(-6px) !important; /* pəncərəni sola 0.2 sm çəkir */
+}
+  /* KİÇİK EKRANLAR ÜÇÜN: make modal layout flexible and limit total height */
+.modal-inner {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 24px); /* page top/bottom margin */
+}
+
+/* player header: allow it to shrink on small screens */
+.player-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;        /* daha kompakt padding */
+  flex: 0 0 auto;          /* don't stretch */
+}
+
+/* title responsive size — shrinks on small screens */
+.player-title {
+  font-size: clamp(14px, 2.6vw, 16px);
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ensure video container uses remaining vertical space */
+.video-container {
+  flex: 1 1 auto;
+  min-height: 0; /* important for flex children to allow shrinking */
+}
+
+/* video uses available container height but not overflow modal */
+.video-container .video-js {
+  width: 100%;
+  height: 100%;
+  max-height: calc(100vh - 80px); /* safe default: viewport minus header+margins */
+  object-fit: contain;
+}
+}
+  /* =========================================================
+   SON ƏLAVƏ EDİLƏNLƏR CHECK BOX (QLOBAL VƏ RESPONSIVE)
+   ========================================================= */
+  
+/* Ana Konteyner */
+.flix-switch-container {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  padding: 8px 14px !important;
+  border-radius: var(--radius) !important;
+  background: var(--glass) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  margin-top: 10px !important;
+  margin-bottom: 18px !important;
+  touch-action: manipulation !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.flix-switch-container:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* İşarə mətni */
+.flix-switch-label {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--muted) !important;
+  transition: color 0.3s ease !important;
+  white-space: nowrap !important;
+}
+
+/* Orijinal gizli checkbox (Mobildə tam gizlənməsi üçün "foolproof" metod) */
+.flix-switch-container input {
+  position: absolute !important;
+  opacity: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+}
+
+/* Keçid qutusunun (Açarın) gövdəsi */
+.flix-slider {
+  position: relative !important;
+  display: block !important;
+  width: 38px !important;
+  height: 20px !important;
+  background-color: var(--muted) !important;
+  opacity: 0.6 !important;
+  border-radius: 100px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  flex-shrink: 0 !important; /* Mobildə düymənin sıxılmasını əngəlləyir */
+}
+
+/* Daxildəki hərəkət edən dairəvi düymə */
+.flix-slider::before {
+  content: "" !important;
+  position: absolute !important;
+  height: 14px !important;
+  width: 14px !important;
+  left: 3px !important;
+  bottom: 3px !important;
+  background-color: var(--surface) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* --- AKTİV (CHECKED) VƏZİYYƏT --- */
+.flix-switch-container input:checked ~ .flix-slider {
+  background-color: var(--accent) !important;
+  opacity: 1 !important;
+}
+
+.flix-switch-container input:checked ~ .flix-slider::before {
+  transform: translateX(18px) !important;
+  background-color: #ffffff !important; 
+}
+
+.flix-switch-container input:checked ~ .flix-switch-label {
+  color: var(--text) !important;
+}
+
+/* Light Theme üçün istisnalar */
+[data-theme="light"] .flix-switch-container {
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* MOBİL EKRANLAR ÜÇÜN ÖLÇÜ OPTİMİZASİYASI */
+@media screen and (max-width: 768px) {
+  .flix-switch-container {
+    padding: 10px 14px !important; 
+  }
+  .flix-switch-label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+  }
+  .flix-slider {
+    width: 42px !important;
+    height: 22px !important;
+  }
+  .flix-slider::before {
+    height: 16px !important;
+    width: 16px !important;
+  }
+  .flix-switch-container input:checked ~ .flix-slider::before {
+    transform: translateX(20px) !important; 
+  }
+}
+
+/* =========================================================
+   SON ƏLAVƏ EDİLƏNLƏR CHECK BOX (QLOBAL VƏ RESPONSIVE)-SON
+   ========================================================= */
+
+/* =========================================================
+   KOLLEKSİYA PANELİ
+   ========================================================= */
+
+/* SPOTLIGHT BÖLMƏSİ */
+.spotlight-section {
+    position: relative;
+    max-width: 1200px; /* Saytınızın ümumi eninə uyğunlaşdıra bilərsiniz */
+    height: 380px;
+    margin: 20px auto;
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: #12131a;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.spotlight-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.35;
+    transition: opacity 0.4s ease, transform 0.6s ease;
+    z-index: 1;
+}
+
+.spotlight-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(15, 16, 22, 1) 35%, rgba(15, 16, 22, 0.7) 65%, rgba(15, 16, 22, 0.2) 100%);
+    z-index: 2;
+}
+
+.spotlight-content {
+    position: relative;
+    display: flex;
+    height: 100%;
+    z-index: 3;
+    padding: 40px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.spotlight-info {
+    flex: 1;
+    max-width: 50%;
+}
+
+.spotlight-badge {
+    background: #e50914; /* Netflix qırmızı tonu */
+    color: white;
+    padding: 6px 14px;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: bold;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.spotlight-title {
+    font-size: 32px;
+    margin: 0 0 10px 0;
+    font-weight: 700;
+    color: #ffffff;
+    font-family: sans-serif;
+}
+
+.spotlight-count {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 25px;
+    display: block;
+    font-family: sans-serif;
+}
+
+.spotlight-btn {
+    background: #ffffff;
+    color: #0f1016;
+    border: none;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s, color 0.2s;
+}
+
+.spotlight-btn:hover {
+    background: #e50914;
+    color: white;
+    transform: scale(1.03);
+}
+
+.spotlight-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 320px;
+    border-left: 2px solid rgba(255,255,255,0.1);
+    padding-left: 25px;
+}
+
+.tab-item {
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-family: sans-serif;
+}
+
+.tab-item.active, .tab-item:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+    padding-left: 22px;
+}
+
+
+/* Kolleksiya Siyahısına Şaquli Scroll Əlavəsi */
+.spotlight-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 320px;
+    border-left: 2px solid rgba(255,255,255,0.1);
+    padding-left: 25px;
+    
+    /* 7-dən çox kolleksiya olduqda işə düşən scroll mexanizmi */
+    max-height: 310px; /* Sabit hündürlük */
+    overflow-y: auto;  /* Şaquli sürüşdürmə */
+    padding-right: 5px;
+}
+
+/* Scrollbar-ı vizual olaraq modern və incə etmək üçün */
+.spotlight-tabs::-webkit-scrollbar {
+    width: 4px;
+}
+.spotlight-tabs::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+}
+.spotlight-tabs::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+.spotlight-tabs::-webkit-scrollbar-thumb:hover {
+    background: #e50914; /* Aktiv olanda Netflix qırmızısı */
+}
+
+/* Mobil cihazlar üçün tam uyğunlaşma (Responsive) */
+@media (max-width: 768px) {
+    .spotlight-section { height: auto; margin: 10px; }
+    .spotlight-content { flex-direction: column; padding: 20px; gap: 20px; }
+    .spotlight-info { max-width: 100%; text-align: center; }
+    .spotlight-overlay { background: linear-gradient(to top, rgba(15, 16, 22, 1) 50%, rgba(15, 16, 22, 0.4) 100%); }
+    .spotlight-tabs { width: 100%; border-left: none; border-top: 1px solid rgba(255,255,255,0.1); padding-left: 0; padding-top: 15px; flex-direction: row; overflow-x: auto; scrollbar-width: none; }
+    .tab-item { flex: 0 0 auto; padding: 8px 12px; }
+    .tab-item.active, .tab-item:hover { padding-left: 12px; }
+    #spotlightTabsContainer { padding-bottom: 12px !important; }
+  
+}
+
+  /* =========================================================
+   KOLLEKSİYA PANELİ-SON
+   ========================================================= */
+
+/* ÇATBOT STİLLƏRİ */
+/* --- KINOFLIX AI PREMIUM GLASSMORPHISM WIDGET STYLES --- */
+:root {
+    --chat-primary: #6366f1;
+    --chat-primary-dark: #4f46e5;
+}
+
+#chat-toggle-btn {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    width: 55px;
+    height: 55px;
+    background: transparent; /* SVG qara fonlu olduğu üçün */
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    transition: transform 0.3s ease;
+    overflow: hidden; /* SVG-nin düymədən kənara çıxmaması üçün */
+    padding: 0;
+}
+
+#chat-toggle-btn:hover {
+    transform: scale(1.1);
+}
+
+.siri-icon {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+#chat-window {
+    position: fixed;
+    bottom: 100px;
+    left: 24px;
+    width: 360px;
+    height: 550px;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 10000;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    
+    /* YENİLƏNDİ: Açılış animasiyası ilə yanaşı, gecə/gündüz rejim keçidləri də yumşaldıldı */
+    transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), 
+                transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+                background-color 0.5s ease,
+                border-color 0.5s ease;
+}
+
+.chat-hidden {
+    opacity: 0;
+    transform: translateY(30px) scale(0.92);
+    pointer-events: none;
+}
+
+#chat-window.light-mode {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+#chat-window.dark-mode {
+    background: rgba(24, 24, 27, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#chat-header {
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    /* YENİLƏNDİ: Gecə rejiminə keçəndə xəttin rəngi yumşaq dəyişsin */
+    transition: border-color 0.5s ease;
+}
+.dark-mode #chat-header { border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+
+.header-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Profil Şəkli və Yaşıl Online Nöqtə Strukturu */
+.avatar-container {
+    position: relative;
+    display: inline-block;
+}
+
+.avatar {
+    background: linear-gradient(135deg, var(--chat-primary), var(--chat-primary-dark));
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+
+    /* İlkin vəziyyətdə əyri durur */
+    transform: rotate(3deg); 
+    transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    overflow: visible !important; 
+}
+
+/* YALNIZ avatara siçanla toxunanda (hover edəndə) düzəlir */
+.avatar:hover {
+    transform: rotate(0deg) scale(1.05);
+}
+
+.online-dot {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 11px;
+    height: 11px;
+    background-color: #10b981;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    /* YENİLƏNDİ: Arxa fon borderi rejimlərə görə süzülərək dəyişsin */
+    transition: border-color 0.5s ease;
+}
+.dark-mode .online-dot {
+    border-color: #27272a;
+}
+/* Yanıb sönmə animasiyası */
+@keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.5; }
+}
+.online-dot {
+    animation: pulse 2s infinite ease-in-out;
+}
+
+.bot-title {
+    display: block;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.3px;
+    /* YENİLƏNDİ: Rejim dəyişəndə mətnin rəngi süzülsün */
+    transition: color 0.5s ease;
+}
+.light-mode .bot-title { color: #1f2937; }
+.dark-mode .bot-title { color: #f4f4f5; }
+
+#bot-status {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    color: #10b981;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#chat-clear-btn, #chat-theme-btn, #chat-close-btn {
+    background: transparent;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    /* YENİLƏNDİ: Düymə rəngləri və fonları animasiyalı keçsin */
+    transition: background-color 0.5s ease, color 0.5s ease, transform 0.2s ease;
+}
+
+.light-mode #chat-clear-btn, .light-mode #chat-theme-btn, .light-mode #chat-close-btn { color: #4b5563; }
+.dark-mode #chat-clear-btn, .dark-mode #chat-theme-btn, .dark-mode #chat-close-btn { color: #a1a1aa; }
+
+#chat-clear-btn:hover { color: #ef4444 !important; }
+#chat-theme-btn:hover, #chat-close-btn:hover { transform: scale(1.05); }
+
+.light-mode #chat-clear-btn:hover, .light-mode #chat-theme-btn:hover, .light-mode #chat-close-btn:hover { background: rgba(0,0,0,0.05); }
+.dark-mode #chat-clear-btn:hover, .dark-mode #chat-theme-btn:hover, .dark-mode #chat-close-btn:hover { background: rgba(255,255,255,0.05); }
+
+/* YENİLƏNDİ: Rejim dəyişərkən Mövzu İkonunun (gündüz/gecə) özünə də fırlanma effekti verildi */
+#chat-theme-btn svg {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#chat-theme-btn:active svg {
+    transform: rotate(180deg) scale(1.1);
+}
+
+#chat-messages {
+    flex: 1;
+    padding: 20px 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+#chat-messages::-webkit-scrollbar { width: 4px; }
+#chat-messages::-webkit-scrollbar-track { background: transparent; }
+.light-mode #chat-messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+.dark-mode #chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+.chat-message {
+    padding: 11px 15px;
+    max-width: 82%;
+    font-size: 14px;
+    line-height: 1.45;
+    animation: slideInUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards;
+}
+
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(12px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.bot-message {
+    align-self: flex-start;
+    border-radius: 18px 18px 18px 4px;
+    /* YENİLƏNDİ: Köhnə bot mesajlarının fonu və mətni də keçid anında yumşaq süzülsün */
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+.light-mode .bot-message { background: rgba(0, 0, 0, 0.04); color: #1f2937; }
+.dark-mode .bot-message { background: rgba(255, 255, 255, 0.05); color: #e4e4e7; }
+
+.user-message {
+    background: var(--chat-primary);
+    color: #ffffff;
+    align-self: flex-end;
+    border-radius: 18px 18px 4px 18px;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+#chat-typing-indicator { padding: 4px 20px; }
+.indicator-hidden { display: none; }
+.typing-dots { display: flex; align-items: center; gap: 4px; }
+.typing-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--chat-primary);
+    border-radius: 50%;
+    display: inline-block;
+    animation: chatBounce 1.4s infinite ease-in-out;
+}
+@keyframes chatBounce {
+    0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+    40% { transform: scale(1); opacity: 1; }
+}
+.indicator-text { 
+    font-size: 11px; 
+    margin-left: 6px; 
+    font-weight: 500;
+    /* YENİLƏNDİ */
+    transition: color 0.5s ease;
+}
+.light-mode .indicator-text { color: #6b7280; }
+.dark-mode .indicator-text { color: #9ca3af; }
+
+#chat-footer {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+    /* YENİLƏNDİ */
+    transition: border-color 0.5s ease;
+}
+.dark-mode #chat-footer { border-top: 1px solid rgba(255, 255, 255, 0.05); }
+
+#chat-input-area { display: flex; gap: 8px; position: relative; }
+#chat-input { 
+    flex: 1; 
+    padding: 12px 50px 12px 16px; 
+    border: 1px solid transparent; 
+    border-radius: 14px; 
+    outline: none; 
+    font-size: 14px; 
+    /* YENİLƏNDİ: Fokuslanma və Rejim dəyişikliyi tam olaraq 0.5s ərzində süzülür */
+    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.3s ease, box-shadow 0.3s ease; 
+}
+.light-mode #chat-input { background: rgba(0,0,0,0.04); color: #111827; }
+.dark-mode #chat-input { background: rgba(255,255,255,0.05); color: #f4f4f5; }
+.light-mode #chat-input:focus { border-color: var(--chat-primary); background: #fff; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+.dark-mode #chat-input:focus { border-color: var(--chat-primary); background: #18181b; box-shadow: 0 0 0 3px rgba(99,102,241,0.2); }
+
+#chat-send-btn {
+    position: absolute; right: 6px; top: 6px; bottom: 6px; background: var(--chat-primary); color: white; border: none; border-radius: 10px; width: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s;
+}
+#chat-send-btn:hover { background: var(--chat-primary-dark); }
+
+.quick-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+.quick-chips::-webkit-scrollbar { height: 2px; }
+.quick-chips::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.2); }
+.chip-btn { 
+    white-space: nowrap; 
+    padding: 6px 12px; 
+    font-size: 11px; 
+    font-weight: 600; 
+    border-radius: 20px; 
+    cursor: pointer; 
+    /* YENİLƏNDİ: Çiplərin keçidləri yumşaldıldı */
+    transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease; 
+}
+.light-mode .chip-btn { background: #fff; border: 1px solid #e4e4e7; color: #4b5563; }
+.dark-mode .chip-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); color: #d4d4d8; }
+.light-mode .chip-btn:hover { background: #f4f4f5; border-color: var(--chat-primary); color: var(--chat-primary) !important; transition: all 0.2s ease; }
+.dark-mode .chip-btn:hover { background: rgba(99,102,241,0.1); border-color: var(--chat-primary); color: #fff !important; transition: all 0.2s ease; }
+
+
+
+/* ============================================================
+   AUTH MODAL — DÜZƏLDİLMİŞ VERSİYA
+   Dəyişikliklər:
+   1. Yuvarlaq künclər (--radius → 20px, --radius-sm → 12px)
+   2. Toast sağ yuxarıda — showToast() JS-də tam yenilənib
+   3. Modal/input genişliyi max-width ilə məhdudlaşdırıldı
+   4. Hover effektləri düzgün işləyir (visibility bug həll edildi)
+   ============================================================ */
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(2, 6, 23, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
+}
+.modal-overlay.active {
+  display: flex;
+}
+
+/* Modal card əsası */
+.modal-card {
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;          /* FIX 1: daha yuvarlaq */
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow);
+  animation: scaleUp 0.22s ease-out;
+}
+
+/* Auth modal card — maksimum en */
+.auth-modal-card {
+  max-width: 400px;             /* FIX 3: çox enli görünmür */
+}
+
+/* Modal header */
+.modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* Bağla düyməsi */
+.close-modal-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.6rem;
+  cursor: pointer;
+  line-height: 1;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+}
+.close-modal-btn:hover {
+  background: var(--glass);
+  color: var(--text);
+}
+
+/* Modal body */
+.auth-modal-body {
+  padding: 22px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Tabs */
+.auth-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: 4px;
+}
+.auth-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 11px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+  position: relative;
+}
+.auth-tab.active {
+  color: var(--accent);
+}
+.auth-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0;
+  width: 100%; height: 2px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+}
+
+/* Form görünümü */
+.auth-form {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+}
+.auth-form.active {
+  display: flex;
+}
+
+/* Input qrupları */
+.input-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.input-group > i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+  z-index: 2;
+  font-size: 0.9rem;
+}
+.input-group input {
+  width: 100%;
+  padding: 13px 14px 13px 42px;
+  border-radius: 12px;          /* FIX 1: yuvarlaq input */
+  border: 1px solid var(--glass-border);
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  font-size: 0.92rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-group input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+.input-group.half {
+  flex: 1;
+}
+.input-group.half input {
+  padding-left: 38px;
+}
+.input-group.half i {
+  left: 12px;
+}
+
+/* Ad + Soyad yan-yana */
+.name-row {
+  display: flex;
+  gap: 10px;
+}
+
+/* Şifrə yoxlama mesajları */
+.check-message {
+  font-size: 0.78rem;
+  min-height: 0;
+  padding-left: 2px;
+  transition: color 0.2s;
+  margin-top: -6px;
+}
+.check-message:empty { display: none; }
+.check-message.success { color: var(--success); }
+.check-message.error   { color: var(--danger); }
+
+/* Şifrəni göstər/gizlət düyməsi */
+.password-toggle-btn {
+  position: absolute;
+  right: 0; top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.88rem;
+  padding: 0 13px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  flex-shrink: 0;
+  z-index: 2;
+}
+.password-toggle-btn:hover {
+  color: var(--accent);           /* FIX 4: yox olmur, rəng dəyişir */
+}
+.input-group:has(.password-toggle-btn) input {
+  padding-right: 44px;
+}
+
+/* Şifrəni unutdunuzmu */
+.forgot-password-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  padding: 0;
+  transition: opacity 0.2s;
+}
+.forgot-password-link:hover { opacity: 0.7; }
+
+/* Submit düyməsi */
+.submit-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 13px;
+  border-radius: 12px;          /* FIX 1: yuvarlaq buton */
+  font-weight: bold;
+  font-size: 0.97rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  letter-spacing: 0.2px;
+}
+.submit-btn:hover {
+  background: var(--accent); /* FIX 4: hover düzgün işləyir */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.submit-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Ayırıcı xətt */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--text);
+  opacity: 0.15;
+}
+
+.auth-divider span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+/* Google düyməsi */
+.google-btn {
+  width: 100%;
+  background: #fff;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  border-radius: 12px;          /* FIX 1: yuvarlaq */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.google-btn:hover {
+  background: #f3f4f6;          /* FIX 4: düzgün hover, yox olmur */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+.google-btn:active {
+  transform: translateY(0);
+}
+.google-btn img {
+  width: 20px; height: 20px;
+}
+
+/* Auth header düyməsi */
+#authMainBtn {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+}
+#authMainBtn:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* Mesajlar düyməsi */
+#messagesBtn {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+}
+#messagesBtn:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* Animasiyalar */
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Light tema */
+[data-theme="light"] .auth-modal-card {
+  background: #ffffff;
+}
+[data-theme="light"] .auth-divider span {
+  background: #ffffff;
+}
+[data-theme="light"] .google-btn {
+  background: #fff;
+  color: #1f2937;
+  border-color: #d1d5db;
+}
+[data-theme="light"] .google-btn:hover {
+  background: #f3f4f6;
+}
+
+/* Mobil uyğunluğu */
+@media (max-width: 480px) {
+  .auth-modal-card {
+    max-width: 100%;
+  }
+  .auth-modal-body {
+    padding: 18px 16px 24px;
+  }
+  .name-row {
+    flex-direction: row;
+    gap: 8px;
+  }
+}
+
+#closeAuthModal {
+  display: none;
+}
+
+#authModalTitle {
+    display: block;        /* Elementin bütün sətri tutmasını təmin edir */
+    width: 100%;           /* Enini 100% edir ki, mərkəzləmə tam işləsin */
+    text-align: center;    /* Həm tək, həm çox sətirli mətni ortalayır */
+    box-sizing: border-box;/* Padding varsa enin pozulmasının qarşısını alır */
+}
+body, input, button, select, textarea {
+    font-family: 'Varela Round', sans-serif;
+}
+
+/* ===== MESAJ İKONU VƏ BİLDİRİŞ (Chat inteqrasiyası) ===== */
+.msg-btn-wrapper { position: relative; }
+
+.msg-badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  background: #e74c3c;
+  color: #fff;
+  border-radius: 20px;
+  min-width: 18px; height: 18px;
+  padding: 0 4px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(231, 76, 60, .45);
+  animation: msgBadgePulse 1.5s infinite;
+  pointer-events: none;
+}
+
+@keyframes msgBadgePulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+.msg-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 320px;
+  max-width: 90vw;
+  max-height: 420px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--glass);
+  border-radius: var(--radius, 12px);
+  box-shadow: var(--card-sh, 0 8px 28px rgba(2,6,23,.6));
+  z-index: 500;
+  animation: msgDropdownIn .18s ease;
+}
+
+@keyframes msgDropdownIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.msg-dropdown-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--glass);
+  font-weight: 700;
+  color: var(--text);
+}
+.msg-dropdown-alllink { font-size: .8rem; font-weight: 600; color: var(--accent); text-decoration: none; }
+.msg-dropdown-alllink:hover { text-decoration: underline; }
+
+.msg-dropdown-list { padding: 6px; flex: 1; overflow-y: auto; }
+
+.msg-dropdown-footer {
+  flex-shrink: 0;
+  padding: 10px 12px;
+  border-top: 1px solid var(--glass);
+  display: flex;
+  justify-content: flex-end;
+}
+.msg-new-chat-footer-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .15s ease, opacity .15s ease;
+}
+.msg-new-chat-footer-btn:hover { transform: scale(1.04); }
+
+.msg-dropdown-empty {
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--muted);
+  font-size: .85rem;
+}
+
+.msg-dropdown-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.msg-dropdown-item:hover { background: var(--glass); }
+.msg-dropdown-item.unread { background: rgba(29, 185, 84, 0.08); }
+
+.msg-dropdown-item .avatar { flex-shrink: 0; }
+.msg-avatar-circle {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  display: block;
+  flex-shrink: 0;
+}
+.msg-dropdown-item .msg-item-text { flex: 1; min-width: 0; }
+.msg-dropdown-item .msg-item-name {
+  display: flex; align-items: center; justify-content: space-between;
+  font-weight: 600; font-size: .88rem; color: var(--text);
+}
+.msg-dropdown-item .msg-item-preview {
+  font-size: .78rem; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.msg-dropdown-item.unread .msg-item-preview { color: var(--text); font-weight: 600; }
+.msg-dropdown-item .msg-item-time { font-size: .7rem; color: var(--muted); flex-shrink: 0; margin-left: 6px; }
+.msg-dropdown-item .msg-item-dot { width: 8px; height: 8px; border-radius: 50%; background: #e74c3c; flex-shrink: 0; }
+
+@media (max-width: 600px) {
+  .msg-dropdown {
+    position: fixed;
+    top: 64px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: calc(100vw - 24px);
+    max-width: 420px;
+    animation: msgDropdownInMobile .18s ease;
+  }
+}
+
+@keyframes msgDropdownInMobile {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ===== SÜRƏTLİ CAVAB MODALI ===== */
+.msg-reply-card { max-width: 420px; }
+
+.msg-reply-header-info { display: flex; align-items: center; gap: 10px; }
+.msg-reply-avatar {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  display: block;
+}
+
+.msg-reply-body {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 62vh;
+  max-height: 520px;
+}
+
+.msg-reply-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.msg-reply-loading {
+  text-align: center;
+  color: var(--muted);
+  font-size: .85rem;
+  margin-top: 20px;
+}
+
+.msg-reply-row { display: flex; }
+.msg-reply-row.me { justify-content: flex-end; }
+.msg-reply-row.other { justify-content: flex-start; }
+
+.msg-reply-bubble {
+  max-width: 78%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: .9rem;
+  line-height: 1.4;
+  word-break: break-word;
+  position: relative;
+}
+.msg-reply-row.me .msg-reply-bubble {
+  background: var(--accent);
+  color: #fff;
+  border-top-right-radius: 4px;
+}
+.msg-reply-row.other .msg-reply-bubble {
+  background: var(--glass);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-top-left-radius: 4px;
+}
+
+.msg-reply-bubble-time {
+  display: block;
+  font-size: .65rem;
+  opacity: .7;
+  margin-top: 4px;
+  text-align: right;
+}
+
+.msg-reply-input-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--glass);
+}
+
+.msg-reply-input-bar input {
+  flex: 1;
+  background: var(--glass);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-size: .9rem;
+  outline: none;
+}
+.msg-reply-input-bar input:focus { border-color: var(--accent); }
+
+.msg-reply-send-btn {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: transform .15s ease, opacity .15s ease;
+}
+.msg-reply-send-btn:hover { transform: scale(1.05); }
+.msg-reply-send-btn:disabled { opacity: .6; cursor: default; transform: none; }
+
+@media (max-width: 480px) {
+  .msg-reply-body { height: 72vh; }
+}
+/* ===== ONLİNE STATUS DOT (chat-dakı kimi) ===== */
+.msg-dropdown-avatar-wrapper,
+.msg-reply-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.msg-status-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+}
+.msg-status-dot.online  { background: #1db954; }
+.msg-status-dot.away    { background: #f59e0b; }
+.msg-status-dot.offline { background: #94a3b8; }
+
+/* ===== REPLY MODALINDA AD BLOKU ===== */
+.msg-reply-name-block h3 { margin: 0; font-size: 1.05rem; }
+.msg-reply-username {
+  margin: 2px 0 0;
+  font-size: .78rem;
+  color: var(--muted);
+}
+
+/* ===== MÜASİR SCROLL DİZAYNI ===== */
+.msg-dropdown,
+.msg-reply-messages {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+.msg-dropdown::-webkit-scrollbar,
+.msg-reply-messages::-webkit-scrollbar {
+  width: 6px;
+}
+.msg-dropdown::-webkit-scrollbar-track,
+.msg-reply-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+.msg-dropdown::-webkit-scrollbar-thumb,
+.msg-reply-messages::-webkit-scrollbar-thumb {
+  background: var(--glass);
+  border-radius: 10px;
+}
+.msg-dropdown::-webkit-scrollbar-thumb:hover,
+.msg-reply-messages::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+/* ===== SİYAHIDAN GİZLƏTMƏ (×) DÜYMƏSİ ===== */
+.msg-dropdown-item {
+  position: relative;
+  padding-right: 32px; /* × düyməsi üçün yer */
+}
+
+.msg-hide-btn {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: .75rem;
+  transition: background .15s ease, color .15s ease;
+}
+.msg-hide-btn:hover {
+  background: rgba(231, 76, 60, .15);
+  color: #e74c3c;
+}
+
+/* Oxunmamış söhbətdə ad da qalın görünsün */
+.msg-dropdown-item.unread .msg-item-name span { font-weight: 700; }
+
+/* ===== YENİ SÖHBƏT — İSTİFADƏÇİ SEÇİCİ MODALI ===== */
+.msg-user-picker-card { max-width: 400px; }
+
+.msg-user-picker-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 70vh;
+  padding: 16px;
+}
+
+.msg-user-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--glass);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 10px 12px;
+  flex-shrink: 0;
+}
+.msg-user-search-wrapper i { color: var(--muted); font-size: .85rem; }
+.msg-user-search-wrapper input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  color: var(--text);
+  font-size: .9rem;
+}
+
+.msg-user-picker-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+.msg-user-picker-list::-webkit-scrollbar { width: 6px; }
+.msg-user-picker-list::-webkit-scrollbar-track { background: transparent; }
+.msg-user-picker-list::-webkit-scrollbar-thumb { background: var(--glass); border-radius: 10px; }
+.msg-user-picker-list::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+.msg-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.msg-picker-item:hover { background: var(--glass); }
+
+.msg-picker-text { flex: 1; min-width: 0; }
+.msg-picker-username {
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.msg-picker-name {
+  font-size: .78rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.msg-user-picker-loading,
+.msg-user-picker-empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: .85rem;
+  padding: 24px 12px;
+  list-style: none;
+}
+/* ===== FAYL ÖNİZLƏMƏ + EMOJİ PANELİ (chat-dakı eyni görünüş) ===== */
+.file-preview-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: var(--glass);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.file-preview-bar.hidden { display: none !important; }
+.file-preview-icon { color: var(--accent); font-size: 1rem; flex-shrink: 0; }
+.file-preview-name {
+  flex: 1;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--accent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-clear-btn {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background .2s;
+  flex-shrink: 0;
+}
+.file-clear-btn:hover { background: rgba(231, 76, 60, .12); }
+
+.attach-btn {
+  color: var(--muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: color .2s;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.attach-btn:hover { color: var(--accent); }
+
+.emoji-picker-wrapper { position: relative; flex-shrink: 0; }
+.emoji-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: color .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.emoji-btn:hover { color: var(--accent); }
+.emoji-picker-panel {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  width: 240px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--glass);
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(2,6,23,.5);
+  padding: 8px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  z-index: 50;
+}
+.emoji-picker-panel.hidden { display: none !important; }
+.emoji-picker-panel button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background .15s;
+}
+.emoji-picker-panel button:hover { background: var(--glass); }
+
+.msg-reply-bubble img.chat-shared-image {
+  max-width: 100%;
+  max-height: 220px;
+  border-radius: 10px;
+  margin-top: 6px;
+  display: block;
+  cursor: pointer;
+}
+/* ===== "Yeni söhbət" və "Şəxsi yazışma" modallarının × düyməsini mərkəzləşdir ===== */
+#closeMsgReplyModal,
+#closeMsgUserPickerModal {
+  padding-bottom: 4px;
+}
+/* ===== ROL ULDUZLARI — chat-dakı eyni neon hover effekti ===== */
+.role-star {
+  transition: text-shadow 0.3s ease;
+  cursor: default;
+}
+.role-star:hover,
+.role-star:active {
+  text-shadow: 0 0 8px currentColor, 0 0 16px currentColor;
+}
+
+/* =========================================================
+   TAM EKRANLI ÇAT OVERLAY STİLLƏRİ
+   ========================================================= */
+#fullChatOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 4000; /* Ana səhifənin header (80) və video modalından (120) yuxarı */
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+  box-shadow: 0 0 50px rgba(0,0,0,0.5);
+}
+
+.chat-overlay-hidden {
+  transform: translateX(100%); /* Sağ tərəfdən girib çıxacaq */
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Çat açılanda ana səhifənin scrollunu dondur (JS ilə idarə olunacaq, amma CSS dəstəyi) */
+body.chat-is-open {
+  overflow: hidden !important;
+}
+
+/* Çat overlay-i içindəki modalların z-index-i overlay-dən yuxarı olmalıdır */
+#fullChatOverlay .modal-overlay {
+  z-index: 4500;
+}
+
+
 
 /* ==========================================================================
    2. BAZA VƏ RESET AYARLARI
@@ -51,14 +2179,9 @@
     font-family: "Varela Round", sans-serif;
 }
 
-body {
-    background: var(--bg);
-    color: var(--text);
-    transition: background 0.3s, color 0.3s;
-    line-height: 1.5;
-    overflow: hidden;
-    height: 100vh;
-    height: 100dvh;
+/* Çat üçün body əvəzinə konteyner stilləri */
+#fullChatOverlay {
+  overflow: hidden; 
 }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
