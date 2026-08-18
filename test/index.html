@@ -99,9 +99,9 @@
 
   <div id="msgDropdown" class="msg-dropdown" style="display:none;">
     <div class="msg-dropdown-header">
-      <span>Mesajlar</span>
-      <a href="chat" class="msg-dropdown-alllink">Hamısına bax</a>
-    </div>
+  <span>Mesajlar</span>
+  <button type="button" id="msgViewAllBtn" class="msg-dropdown-alllink">Hamısına bax</button>
+</div>
     <div id="msgDropdownList" class="msg-dropdown-list">
       <p class="msg-dropdown-empty">Hələ mesajınız yoxdur.</p>
     </div>
@@ -126,7 +126,7 @@
     <li class="active"><a href="index.html">ƏSAS SƏHİFƏ</a></li>
     <li><a href="kinoflixplus">KINOFLIX+</a></li>
     <li><a href="PAGES/messages.html">YENİLİKLƏR</a></li>
-    <li><a href="#" id="openChatMenuBtn" onclick="event.preventDefault();">SÖHBƏT</a></li>
+    <li><a href="chat">SÖHBƏT</a></li>
     <li><a href="PAGES/about.html">HAQQIMIZDA</a></li>
     <li><a href="PAGES/contact.html">ƏLAQƏ</a></li>
 
@@ -495,258 +495,7 @@ scrollBtn.addEventListener("click", () => {
 
   
 <!-- AI ÇATBOT-SONU -->
-
-    <!-- ========================================================= -->
-<!-- 💬 TAM EKRANLI ÇAT OVERLAY (Bütün çat interfeysi)        -->
-<!-- ========================================================= -->
-<div id="fullChatOverlay" class="chat-overlay-hidden">
-    
-    <!-- ÇATIN ƏSAS EKRANI -->
-    <section id="chatScreen" class="chat-screen active">
-        <div class="chat-layout">
-            
-            <!-- SOL SIDEBAR (İstifadəçilər və Otaqlar) -->
-            <aside id="usersSidebar" class="sidebar">
-                <div class="current-user-card">
-                    <img id="currentUserAvatar" src="https://via.placeholder.com/40" alt="Avatar" class="avatar">
-                    <div class="user-info">
-                        <span id="currentUserName" class="name">Yüklənir...</span>
-                        <span id="currentUserRole" class="role-badge">İstifadəçi</span>
-                    </div>
-                </div>
-
-                <div class="sidebar-navigation">
-                    <button id="btnGlobalRoom" class="nav-tab active">
-                        <i class="fa-solid fa-earth-americas"></i> Ümumi Çat
-                    </button>
-                    <button id="btnAdminRoom" class="nav-tab hidden">
-                        <i class="fa-solid fa-shield-halved"></i> Rəhbərlik otağı
-                    </button>
-                    <!-- Ana səhifəyə qayıtmaq üçün yeni düymə əlavə edirik -->
-                    <button id="closeFullChatBtn" class="nav-tab" style="background: var(--glass); color: var(--danger); border: 1px solid var(--danger);">
-                        <i class="fa-solid fa-arrow-left"></i> Səhifəyə qayıt
-                    </button>
-                </div>
-
-                <div class="sidebar-list-container">
-                    <h3><i class="fa-solid fa-circle text-success"></i> Aktiv İstifadəçilər</h3>
-                    <ul id="usersList" class="users-list"></ul>
-                </div>
-            </aside>
-
-            <!-- SAĞ TƏRƏF (Mesajlar və Inputlar) -->
-            <section class="chat-window">
-                <div class="chat-window-header">
-                    <div class="active-room-info">
-                        <h2 id="activeRoomTitle">Ümumi Çat</h2>
-                        <p id="activeRoomSub">Son 50 mesaj göstərilir</p>
-                    </div>
-                    <button id="mobileUsersToggleBtn" class="icon-btn mobile-only" title="Aktiv İstifadəçilər">
-                        <i class="fa-solid fa-users"></i>
-                    </button>
-                </div>
-
-                <!-- Ümumi Çat Otağı -->
-                <div id="generalChatArea" class="chat-layer active">
-                    <div id="chatMessagesArea" class="chat-messages-area"></div>
-                    <div id="typingIndicator" class="typing-indicator hidden">
-                        <span id="typingText">Kimsə yazır...</span>
-                        <div class="dots"><span></span><span></span><span></span></div>
-                    </div>
-                    <div id="chatFilePreviewBar" class="file-preview-bar hidden">
-                        <i class="fa-regular fa-image file-preview-icon"></i>
-                        <span id="chatFileNameDisplay" class="file-preview-name"></span>
-                        <button type="button" id="chatFileClearBtn" class="file-clear-btn" title="Faylı sil"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
-                    <div class="chat-input-bar">
-                        <label for="chatFileInput" class="attach-btn" title="Şəkil göndər">
-                            <i class="fa-solid fa-paperclip"></i>
-                            <input type="file" id="chatFileInput" accept="image/*, application/pdf, text/plain" hidden>
-                        </label>
-                        <div class="emoji-picker-wrapper">
-                            <button type="button" id="chatEmojiBtn" class="emoji-btn" title="Smaylik əlavə et"><i class="fa-regular fa-face-smile"></i></button>
-                            <div id="chatEmojiPicker" class="emoji-picker-panel hidden"></div>
-                        </div>
-                        <input type="text" id="messageInputField" placeholder="Ümumi çata mesaj yazın..." autocomplete="off">
-                        <button id="sendMessageBtn" class="send-btn"><i class="fa-solid fa-paper-plane"></i></button>
-                    </div>
-                </div>
-
-                <!-- Admin Otağı -->
-                <div id="adminChatArea" class="chat-layer hidden">
-                    <div id="adminMessagesArea" class="chat-messages-area"></div>
-                    <div id="adminTypingIndicator" class="typing-indicator hidden">
-                        <span>Kimsə yazır...</span>
-                        <div class="dots"><span></span><span></span><span></span></div>
-                    </div>
-                    <div id="adminFilePreviewBar" class="file-preview-bar hidden">
-                        <i class="fa-regular fa-image file-preview-icon"></i>
-                        <span id="adminFileNameDisplay" class="file-preview-name"></span>
-                        <button type="button" id="adminFileClearBtn" class="file-clear-btn" title="Faylı sil"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
-                    <div class="chat-input-bar">
-                        <label for="adminFileInput" class="attach-btn" title="Şəkil göndər">
-                            <i class="fa-solid fa-paperclip"></i>
-                            <input type="file" id="adminFileInput" accept="image/*, application/pdf, text/plain" hidden>
-                        </label>
-                        <div class="emoji-picker-wrapper">
-                            <button type="button" id="adminEmojiBtn" class="emoji-btn" title="Smaylik əlavə et"><i class="fa-regular fa-face-smile"></i></button>
-                            <div id="adminEmojiPicker" class="emoji-picker-panel hidden"></div>
-                        </div>
-                        <input type="text" id="adminInputField" placeholder="Rəhbərlik otağına mesaj yazın..." autocomplete="off">
-                        <button id="sendAdminMessageBtn" class="send-btn"><i class="fa-solid fa-paper-plane"></i></button>
-                    </div>
-                </div>
-
-                <!-- Şəxsi Mesajlar (DM) -->
-                <div id="privateChatArea" class="chat-layer hidden">
-                    <div id="privateChatHeader" class="private-chat-header">
-                        <i class="fa-solid fa-chevron-left"></i>
-                        <img id="privateChatAvatar" src="" alt="" class="avatar" style="width:36px;height:36px;flex-shrink:0;border-radius:50%;object-fit:cover;">
-                        <div class="pm-info">
-                            <h3 id="privateRoomTitle">İstifadəçi Adı</h3>
-                            <p id="privateRoomUsername" style="font-size:0.75rem;color:var(--muted);"></p>
-                        </div>
-                    </div>
-                    <div id="privateMessagesArea" class="chat-messages-area"></div>
-                    <div id="privateFilePreviewBar" class="file-preview-bar hidden">
-                        <i class="fa-regular fa-image file-preview-icon"></i>
-                        <span id="privateFileNameDisplay" class="file-preview-name"></span>
-                        <button type="button" id="privateFileClearBtn" class="file-clear-btn" title="Faylı sil"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
-                    <div class="chat-input-bar">
-                        <label for="privateFileInput" class="attach-btn" title="Fayl göndər">
-                            <i class="fa-solid fa-paperclip"></i>
-                            <input type="file" id="privateFileInput" accept="image/*, application/pdf, text/plain" hidden>
-                        </label>
-                        <div class="emoji-picker-wrapper">
-                            <button type="button" id="privateEmojiBtn" class="emoji-btn" title="Smaylik əlavə et"><i class="fa-regular fa-face-smile"></i></button>
-                            <div id="privateEmojiPicker" class="emoji-picker-panel hidden"></div>
-                        </div>
-                        <input type="text" id="privateInputField" placeholder="Şəxsi mesajınızı yazın..." autocomplete="off">
-                        <button id="sendPrivateMessageBtn" class="send-btn"><i class="fa-solid fa-paper-plane"></i></button>
-                    </div>
-                </div>
-
-            </section>
-        </div>
-    </section>
-
-    <!-- ÇATIN XÜSUSİ MODALLARI (Whois, Temp Ban, Settings) -->
-    
-    <!-- Whois Modal -->
-    <div id="whoisModal" class="modal-overlay">
-        <div class="modal-card" style="max-width: 480px;">
-            <div class="modal-header">
-                <h3 id="whoisModalTitle">Whois Məlumatı</h3>
-                <button id="closeWhoisBtn" class="close-modal-btn">&times;</button>
-            </div>
-            <div class="modal-body" style="padding: 20px 24px; display: flex; flex-direction: column; gap: 10px;">
-                <div id="whoisContent" style="font-size: 0.95rem; line-height: 1.6; color: var(--text);">
-                    <p style="color: var(--text-muted);">Məlumat yüklənir...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Vaxt ilə qov Modalı -->
-    <div id="tempBanModal" class="modal-overlay">
-        <div class="modal-card" style="max-width: 400px;">
-            <div class="modal-header">
-                <h3 id="tempBanModalTitle">Vaxt ilə qov</h3>
-                <button id="closeTempBanBtn" class="close-modal-btn">&times;</button>
-            </div>
-            <div class="modal-body" style="padding: 20px 24px; display: flex; flex-direction: column; gap: 16px;">
-                <p id="tempBanTargetName" style="color: var(--muted); font-size: 0.95rem;"></p>
-                <div id="tempBanDurationGroup" style="display: flex; flex-direction: column; gap: 8px;">
-                    <label style="font-weight: 600; color: var(--text);">Müddət seçin:</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
-                        <label><input type="radio" name="tempBanDuration" value="1"> 1 dəq</label>
-                        <label><input type="radio" name="tempBanDuration" value="5"> 5 dəq</label>
-                        <label><input type="radio" name="tempBanDuration" value="10"> 10 dəq</label>
-                        <label><input type="radio" name="tempBanDuration" value="60"> 1 saat</label>
-                        <label><input type="radio" name="tempBanDuration" value="720"> 12 saat</label>
-                        <label><input type="radio" name="tempBanDuration" value="1440"> 1 gün</label>
-                    </div>
-                </div>
-                <button id="removeTempBanBtn" class="submit-btn" style="background: var(--danger); display: none;">Banı qaldır</button>
-                <button id="confirmTempBanBtn" class="submit-btn" style="margin-top: 4px;">Təsdiqlə</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Profil Ayarları Modalı -->
-    <div id="settingsModal" class="modal-overlay">
-        <div class="modal-card settings-modal-card">
-            <div class="modal-header">
-                <h3>Profil Ayarları</h3>
-                <button id="closeSettingsBtn" class="close-modal-btn">&times;</button>
-            </div>
-            <div class="modal-body settings-modal-body">
-                <div class="settings-avatar-center">
-                    <div class="settings-avatar-wrap">
-                        <img id="settingsAvatarPreview" src="https://via.placeholder.com/100" alt="Avatar" class="large-avatar">
-                        <label for="avatarFileInput" class="avatar-camera-btn" title="Şəkil seç">
-                            <i class="fa-solid fa-camera"></i> Şəkil Seç
-                        </label>
-                        <input type="file" id="avatarFileInput" accept="image/*" hidden>
-                    </div>
-                    <span id="avatarFileNameDisplay" class="file-name-display"></span>
-                </div>
-
-                <form id="profileSettingsForm" class="settings-unified-form">
-                    <div class="settings-field">
-                        <label>İstifadəçi adı (@username):</label>
-                        <input type="text" id="settingsUsername" placeholder="İstifadəçi adı" required>
-                        <div id="settingsUsernameCheckMsg" class="check-message"></div>
-                    </div>
-                    <div class="settings-field">
-                        <label for="settingsFirstName">Adınız:</label>
-                        <input type="text" id="settingsFirstName" placeholder="Adınız" required>
-                    </div>
-                    <div class="settings-field">
-                        <label for="settingsLastName">Soyadınız:</label>
-                        <input type="text" id="settingsLastName" placeholder="Soyadınız" required>
-                    </div>
-                    <div class="settings-field">
-                        <label for="settingsEmailDisplay">E-poçt ünvanınız:</label>
-                        <input type="email" id="settingsEmailDisplay" placeholder="E-poçt ünvanı">
-                    </div>
-                    <div class="settings-security-title">
-                        <i class="fa-solid fa-shield-halved"></i> Təhlükəsizlik ayarları
-                    </div>
-                    <div class="settings-field">
-                        <label for="currentPasswordInput">Cari Şifrə:</label>
-                        <div class="settings-pw-wrap">
-                            <input type="password" id="currentPasswordInput" placeholder="E-poçt və şifrə dəyişikliyi zamanı məcburidir.">
-                            <button type="button" class="settings-eye-btn" data-target="currentPasswordInput"><i class="fa-solid fa-eye"></i></button>
-                        </div>
-                    </div>
-                    <div class="settings-field">
-                        <label for="newPasswordInput">Yeni Şifrə:</label>
-                        <div class="settings-pw-wrap">
-                            <input type="password" id="newPasswordInput" placeholder="Yeni şifrə (Dəyişmək istəmirsinizsə boş buraxın.)">
-                            <button type="button" class="settings-eye-btn" data-target="newPasswordInput"><i class="fa-solid fa-eye"></i></button>
-                        </div>
-                    </div>
-                    <button type="submit" class="settings-main-save-btn">
-                        Dəyişiklikləri yadda saxla
-                    </button>
-                </form>
-
-                <div class="danger-zone">
-                    <h4>Hesabın silinməsi</h4>
-                    <p>Hesabınızı sildiyiniz təqdirdə bütün məlumatlarınız sistemdən tamamilə təmizlənəcəkdir. Bu əməliyyatı geri almaq mümkün deyildir!</p>
-                    <button id="deleteAccBtn" class="delete-account-btn">
-                        <i class="fa-solid fa-user-xmark"></i> Hesabımı sil
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div> <!-- / Tam Ekranlı Çat Overlay sonu -->
-    
+  
 <!-- ========================================================= -->
 <!-- 🔐 AUTH MODAL (Login/Register) – düzəldilmiş versiya     -->
 <!-- ========================================================= -->
@@ -901,6 +650,285 @@ scrollBtn.addEventListener("click", () => {
     </div>
   </div>
 </div>
+
+  <!-- ========================================================= -->
+<!-- 💬 CHAT MODAL — Ümumi/Rəhbərlik/Şəxsi söhbətlər (YENİ)   -->
+<!-- ========================================================= -->
+<div id="chatModal" class="modal-overlay">
+  <div class="modal-card chat-modal-card">
+    <div class="modal-header">
+      <h3>Söhbət</h3>
+      <div class="chat-modal-header-actions">
+        <button id="openSettingsBtn" class="icon-btn hidden" title="Profil Tənzimləmələri">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+        <button id="closeChatModalBtn" class="close-modal-btn">&times;</button>
+      </div>
+    </div>
+    <div class="modal-body chat-modal-body">
+      <div class="chat-layout">
+
+        <aside id="usersSidebar" class="sidebar">
+          <div class="current-user-card">
+            <img id="currentUserAvatar" src="https://via.placeholder.com/40" alt="Avatar" class="avatar">
+            <div class="user-info">
+              <span id="currentUserName" class="name">Yüklənir...</span>
+              <span id="currentUserRole" class="role-badge">İstifadəçi</span>
+            </div>
+          </div>
+
+          <div class="sidebar-navigation">
+            <button id="btnGlobalRoom" class="nav-tab active">
+              <i class="fa-solid fa-earth-americas"></i> Ümumi Çat
+            </button>
+            <button id="btnAdminRoom" class="nav-tab hidden">
+              <i class="fa-solid fa-shield-halved"></i> Rəhbərlik otağı
+            </button>
+          </div>
+
+          <div class="sidebar-list-container">
+            <h3><i class="fa-solid fa-circle text-success"></i> Aktiv İstifadəçilər</h3>
+            <ul id="usersList" class="users-list"></ul>
+          </div>
+        </aside>
+
+        <section class="chat-window">
+          <div class="chat-window-header">
+            <div class="active-room-info">
+              <h2 id="activeRoomTitle">Ümumi Çat</h2>
+              <p id="activeRoomSub">Son 50 mesaj göstərilir</p>
+            </div>
+            <button id="mobileUsersToggleBtn" class="icon-btn mobile-only" title="Aktiv İstifadəçilər">
+              <i class="fa-solid fa-users"></i>
+            </button>
+          </div>
+
+          <div id="generalChatArea" class="chat-layer active">
+            <div id="chatMessagesArea" class="chat-messages-area"></div>
+
+            <div id="typingIndicator" class="typing-indicator hidden">
+              <span id="typingText">Kimsə yazır...</span>
+              <div class="dots"><span></span><span></span><span></span></div>
+            </div>
+
+            <div id="chatFilePreviewBar" class="file-preview-bar hidden">
+              <i class="fa-regular fa-image file-preview-icon"></i>
+              <span id="chatFileNameDisplay" class="file-preview-name"></span>
+              <button type="button" id="chatFileClearBtn" class="file-clear-btn" title="Faylı sil"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="chat-input-bar">
+              <label for="chatFileInput" class="attach-btn" title="Şəkil göndər">
+                <i class="fa-solid fa-paperclip"></i>
+                <input type="file" id="chatFileInput" accept="image/*, application/pdf, text/plain" hidden>
+              </label>
+              <div class="emoji-picker-wrapper">
+                <button type="button" id="chatEmojiBtn" class="emoji-btn" title="Smaylik əlavə et">
+                  <i class="fa-regular fa-face-smile"></i>
+                </button>
+                <div id="chatEmojiPicker" class="emoji-picker-panel hidden"></div>
+              </div>
+              <input type="text" id="messageInputField" placeholder="Ümumi çata mesaj yazın..." autocomplete="off">
+              <button id="sendMessageBtn" class="send-btn">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+
+          <div id="adminChatArea" class="chat-layer hidden">
+            <div id="adminMessagesArea" class="chat-messages-area"></div>
+            <div id="adminTypingIndicator" class="typing-indicator hidden">
+              <span>Kimsə yazır...</span>
+              <div class="dots"><span></span><span></span><span></span></div>
+            </div>
+            <div id="adminFilePreviewBar" class="file-preview-bar hidden">
+              <i class="fa-regular fa-image file-preview-icon"></i>
+              <span id="adminFileNameDisplay" class="file-preview-name"></span>
+              <button type="button" id="adminFileClearBtn" class="file-clear-btn" title="Faylı sil"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="chat-input-bar">
+              <label for="adminFileInput" class="attach-btn" title="Şəkil göndər">
+                <i class="fa-solid fa-paperclip"></i>
+                <input type="file" id="adminFileInput" accept="image/*, application/pdf, text/plain" hidden>
+              </label>
+              <div class="emoji-picker-wrapper">
+                <button type="button" id="adminEmojiBtn" class="emoji-btn" title="Smaylik əlavə et">
+                  <i class="fa-regular fa-face-smile"></i>
+                </button>
+                <div id="adminEmojiPicker" class="emoji-picker-panel hidden"></div>
+              </div>
+              <input type="text" id="adminInputField" placeholder="Rəhbərlik otağına mesaj yazın..." autocomplete="off">
+              <button id="sendAdminMessageBtn" class="send-btn">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+
+          <div id="privateChatArea" class="chat-layer hidden">
+            <div id="privateChatHeader" class="private-chat-header">
+              <i class="fa-solid fa-chevron-left"></i>
+              <img id="privateChatAvatar" src="" alt="" class="avatar" style="width:36px;height:36px;flex-shrink:0;border-radius:50%;object-fit:cover;">
+              <div class="pm-info">
+                <h3 id="privateRoomTitle">İstifadəçi Adı</h3>
+                <p id="privateRoomUsername" style="font-size:0.75rem;color:var(--muted);"></p>
+              </div>
+            </div>
+
+            <div id="privateMessagesArea" class="chat-messages-area"></div>
+
+            <div id="privateFilePreviewBar" class="file-preview-bar hidden">
+              <i class="fa-regular fa-image file-preview-icon"></i>
+              <span id="privateFileNameDisplay" class="file-preview-name"></span>
+              <button type="button" id="privateFileClearBtn" class="file-clear-btn" title="Faylı sil"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="chat-input-bar">
+              <label for="privateFileInput" class="attach-btn" title="Fayl göndər">
+                <i class="fa-solid fa-paperclip"></i>
+                <input type="file" id="privateFileInput" accept="image/*, application/pdf, text/plain" hidden>
+              </label>
+              <div class="emoji-picker-wrapper">
+                <button type="button" id="privateEmojiBtn" class="emoji-btn" title="Smaylik əlavə et">
+                  <i class="fa-regular fa-face-smile"></i>
+                </button>
+                <div id="privateEmojiPicker" class="emoji-picker-panel hidden"></div>
+              </div>
+              <input type="text" id="privateInputField" placeholder="Şəxsi mesajınızı yazın..." autocomplete="off">
+              <button id="sendPrivateMessageBtn" class="send-btn">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Whois Modal -->
+<div id="whoisModal" class="modal-overlay">
+  <div class="modal-card" style="max-width: 480px;">
+    <div class="modal-header">
+      <h3 id="whoisModalTitle">Whois Məlumatı</h3>
+      <button id="closeWhoisBtn" class="close-modal-btn">&times;</button>
+    </div>
+    <div class="modal-body" style="padding: 20px 24px; display: flex; flex-direction: column; gap: 10px;">
+      <div id="whoisContent" style="font-size: 0.95rem; line-height: 1.6; color: var(--text);">
+        <p style="color: var(--text-muted);">Məlumat yüklənir...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Vaxt ilə qov Modalı -->
+<div id="tempBanModal" class="modal-overlay">
+  <div class="modal-card" style="max-width: 400px;">
+    <div class="modal-header">
+      <h3 id="tempBanModalTitle">Vaxt ilə qov</h3>
+      <button id="closeTempBanBtn" class="close-modal-btn">&times;</button>
+    </div>
+    <div class="modal-body" style="padding: 20px 24px; display: flex; flex-direction: column; gap: 16px;">
+      <p id="tempBanTargetName" style="color: var(--muted); font-size: 0.95rem;"></p>
+      <div id="tempBanDurationGroup" style="display: flex; flex-direction: column; gap: 8px;">
+        <label style="font-weight: 600; color: var(--text);">Müddət seçin:</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+          <label><input type="radio" name="tempBanDuration" value="1"> 1 dəq</label>
+          <label><input type="radio" name="tempBanDuration" value="5"> 5 dəq</label>
+          <label><input type="radio" name="tempBanDuration" value="10"> 10 dəq</label>
+          <label><input type="radio" name="tempBanDuration" value="60"> 1 saat</label>
+          <label><input type="radio" name="tempBanDuration" value="720"> 12 saat</label>
+          <label><input type="radio" name="tempBanDuration" value="1440"> 1 gün</label>
+        </div>
+      </div>
+      <button id="removeTempBanBtn" class="submit-btn" style="background: var(--danger); display: none;">Banı qaldır</button>
+      <button id="confirmTempBanBtn" class="submit-btn" style="margin-top: 4px;">Təsdiqlə</button>
+    </div>
+  </div>
+</div>
+
+<!-- Profil Ayarları Modalı -->
+<div id="settingsModal" class="modal-overlay">
+  <div class="modal-card settings-modal-card">
+    <div class="modal-header">
+      <h3>Profil Ayarları</h3>
+      <button id="closeSettingsBtn" class="close-modal-btn">&times;</button>
+    </div>
+    <div class="modal-body settings-modal-body">
+
+      <div class="settings-avatar-center">
+        <div class="settings-avatar-wrap">
+          <img id="settingsAvatarPreview" src="https://via.placeholder.com/100" alt="Avatar" class="large-avatar">
+          <label for="avatarFileInput" class="avatar-camera-btn" title="Şəkil seç">
+            <i class="fa-solid fa-camera"></i> Şəkil Seç
+          </label>
+          <input type="file" id="avatarFileInput" accept="image/*" hidden>
+        </div>
+        <span id="avatarFileNameDisplay" class="file-name-display"></span>
+      </div>
+
+      <form id="profileSettingsForm" class="settings-unified-form">
+        <div class="settings-field">
+          <label>İstifadəçi adı (@username):</label>
+          <input type="text" id="settingsUsername" placeholder="İstifadəçi adı" required>
+          <div id="settingsUsernameCheckMsg" class="check-message"></div>
+        </div>
+
+        <div class="settings-field">
+          <label for="settingsFirstName">Adınız:</label>
+          <input type="text" id="settingsFirstName" placeholder="Adınız" required>
+        </div>
+
+        <div class="settings-field">
+          <label for="settingsLastName">Soyadınız:</label>
+          <input type="text" id="settingsLastName" placeholder="Soyadınız" required>
+        </div>
+
+        <div class="settings-field">
+          <label for="settingsEmailDisplay">E-poçt ünvanınız:</label>
+          <input type="email" id="settingsEmailDisplay" placeholder="E-poçt ünvanı">
+        </div>
+
+        <div class="settings-security-title">
+          <i class="fa-solid fa-shield-halved"></i> Təhlükəsizlik ayarları
+        </div>
+
+        <div class="settings-field">
+          <label for="currentPasswordInput">Cari Şifrə:</label>
+          <div class="settings-pw-wrap">
+            <input type="password" id="currentPasswordInput" placeholder="E-poçt və şifrə dəyişikliyi zamanı məcburidir.">
+            <button type="button" class="settings-eye-btn" data-target="currentPasswordInput"><i class="fa-solid fa-eye"></i></button>
+          </div>
+        </div>
+        <div class="settings-field">
+          <label for="newPasswordInput">Yeni Şifrə:</label>
+          <div class="settings-pw-wrap">
+            <input type="password" id="newPasswordInput" placeholder="Yeni şifrə (Dəyişmək istəmirsinizsə boş buraxın.)">
+            <button type="button" class="settings-eye-btn" data-target="newPasswordInput"><i class="fa-solid fa-eye"></i></button>
+          </div>
+        </div>
+
+        <button type="submit" class="settings-main-save-btn">
+          Dəyişiklikləri yadda saxla
+        </button>
+      </form>
+
+      <div class="danger-zone">
+        <h4>Hesabın silinməsi</h4>
+        <p>Hesabınızı sildiyiniz təqdirdə bütün məlumatlarınız sistemdən tamamilə təmizlənəcəkdir. Bu əməliyyatı geri almaq mümkün deyildir!</p>
+        <button id="deleteAccBtn" class="delete-account-btn">
+          <i class="fa-solid fa-user-xmark"></i> Hesabımı sil
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div hidden>
+  <form id="changeEmailForm"><input id="emailCurrentPasswordInput"><input id="newEmailInput"><button type="submit"></button></form>
+  <form id="changePasswordForm"><button type="submit"></button></form>
+</div>
  
 <!-- ========================================================= -->
 <!-- FIREBASE MODUL SCRIPT (əsas səhifə üçün auth)            -->
@@ -924,13 +952,12 @@ import { initializeApp } from "firebase/app";
 import { 
   getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
   GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
-  sendPasswordResetEmail, updateProfile, deleteUser,
-  reauthenticateWithCredential, EmailAuthProvider, updateEmail, updatePassword
+  sendPasswordResetEmail, updateProfile, deleteUser
 } from "firebase/auth";
 import { 
   getFirestore, doc, setDoc, getDoc, serverTimestamp, 
   query, collection, where, getDocs, onSnapshot,
-  addDoc, increment, orderBy, limit, deleteDoc, updateDoc
+  addDoc, increment, orderBy, limit, deleteDoc
 } from "firebase/firestore";
 import {
   getDatabase, ref, set, onValue, onDisconnect,
@@ -945,40 +972,6 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const rtdb = getDatabase(app);
 const provider = new GoogleAuthProvider();
-
-  // ============================================================
-// 2b. ÇAT STATE VƏ KONFİQ DƏYİŞƏNLƏRİ
-// ============================================================
-const IMGBB_API_KEY = "5437281cb3fb0c2e28ca265eefa6eaf7";
-const DEFAULT_AVATAR = "https://kinoflix.github.io/chat/img/avatar.jpg";
-
-let chatCurrentUser = null;
-let chatCurrentUserData = {
-    role: 'user', displayName: '', photoURL: DEFAULT_AVATAR, isBanned: false,
-    username: '', firstName: '', lastName: ''
-};
-let activeRoomId = 'global_room';
-let activeRoomIsDM = false;
-let currentIgnoreList = [];
-let lastPublicRoom = 'global';
-let dmAutoOpenDone = false;
-
-let unsubscribeGeneralMessages = null;
-let unsubscribePrivateMessages = null;
-let unsubscribeUsers = null;
-let unsubscribeRooms = null;
-let unsubscribeTyping = null;
-let unsubscribeSelfDestruct = null;
-let unsubscribeAdminMessages = null;
-let typingTimeout = null;
-let unsubscribePresenceList = null;
-let isRegistering = false;
-
-let currentUsersList = [];
-let currentStatuses = {};
-let currentRooms = {};
-let userRolesMap = {};
-let userDataMap = {};
  
 // ============================================================
 // 2. DOM REFERANSLARI
@@ -2203,39 +2196,6 @@ if (msgUserSearchInput) {
 
 onAuthStateChanged(auth, async (user) => {
   updateAuthUI(user);
-// --- ÇAT İNİSİALİZASİYASI ---
-  if (user) {
-    chatCurrentUser = user;
-    // İstifadəçi məlumatlarını Firestore-dan çəkib çat state-inə yazırıq
-    getDoc(doc(db, 'users', user.uid)).then(userDoc => {
-        if(userDoc.exists()){
-            const data = userDoc.data();
-            chatCurrentUserData = {
-                role: data.role || 'user',
-                displayName: data.displayName || '',
-                photoURL: data.photoURL || DEFAULT_AVATAR,
-                isBanned: data.isBanned || false,
-                username: data.username || '',
-                firstName: data.firstName || '',
-                lastName: data.lastName || ''
-            };
-            // Çat üçün istifadəçi siyahısı və mesaj listener-lərini başladırıq
-            // (Bu funksiyaları Fəza 4-də köçürəcəyik, indi adlarını veririk)
-            if(typeof listenUsersAndPresence === 'function') listenUsersAndPresence();
-            if(typeof loadGeneralMessages === 'function') loadGeneralMessages();
-        }
-    });
-  } else {
-    chatCurrentUser = null;
-    // İstifadəçi çıxış edəndə bütün çat listener-lərini təmizlə
-    if (unsubscribeUsers) unsubscribeUsers();
-    if (unsubscribeGeneralMessages) unsubscribeGeneralMessages();
-    if (unsubscribePrivateMessages) unsubscribePrivateMessages();
-    if (unsubscribeAdminMessages) unsubscribeAdminMessages();
-    if (unsubscribeRooms) unsubscribeRooms();
-    if (unsubscribePresenceList) unsubscribePresenceList();
-  }
-  // --- ÇAT İNİSİALİZASİYASI SONU ---
   if (user) {
   // Modal açıqdırsa bağla
   if (authModal.style.display === 'flex') {
@@ -2337,43 +2297,6 @@ onAuthStateChanged(auth, async (user) => {
                 }, 600); 
             }
         });
-
-      // ============================================================
-// ÇAT OVERLAY UI İDARƏETMƏSİ
-// ============================================================
-window.openFullChat = function() {
-  const overlay = document.getElementById('fullChatOverlay');
-  if(overlay) {
-    overlay.classList.remove('chat-overlay-hidden');
-    document.body.classList.add('chat-is-open');
-    // Çat açılanda header-dəki mesaj ikonunun dropdown-unu gizlət (əgər açıqdırsa)
-    const msgDropdown = document.getElementById('msgDropdown');
-    if(msgDropdown) msgDropdown.style.display = 'none';
-  }
-};
-
-window.closeFullChat = function() {
-  const overlay = document.getElementById('fullChatOverlay');
-  if(overlay) {
-    overlay.classList.add('chat-overlay-hidden');
-    document.body.classList.remove('chat-is-open');
-  }
-};
-
-// Menyudakı "SÖHBƏT" linki və Header-dəki "Mesajlar" ikonunu birləşdir
-document.addEventListener('DOMContentLoaded', () => {
-    const menuBtn = document.getElementById('openChatMenuBtn');
-    if(menuBtn) menuBtn.addEventListener('click', window.openFullChat);
-
-    const closeBtn = document.getElementById('closeFullChatBtn');
-    if(closeBtn) closeBtn.addEventListener('click', window.closeFullChat);
-
-    const msgIconBtn = document.getElementById('messagesBtn');
-    if(msgIconBtn) msgIconBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Dropdown-un açılmasını əngəllə, birbaşa çatı aç
-        window.openFullChat();
-    });
-});
     </script>
 </div>
 <!-- İlkin Yüklənmə Ekranı (Loader) - Son -->
