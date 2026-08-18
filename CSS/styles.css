@@ -2103,3 +2103,12 @@ body, input, button, select, textarea {
 #closeMsgUserPickerModal {
   padding-bottom: 4px;
 }
+/* ===== ROL ULDUZLARI — chat-dakı eyni neon hover effekti ===== */
+.role-star {
+  transition: text-shadow 0.3s ease;
+  cursor: default;
+}
+.role-star:hover,
+.role-star:active {
+  text-shadow: 0 0 8px currentColor, 0 0 16px currentColor;
+}
