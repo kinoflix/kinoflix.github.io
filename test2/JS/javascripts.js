@@ -2245,16 +2245,17 @@ document.addEventListener("DOMContentLoaded", () => {
 })();
 
 /* =========================================================
-   CHAT FULL MODAL - "Hamısına bax" üçün
+   CHAT FULL MODAL - "Hamısına bax" üçün (YENİLƏNİB)
    ========================================================= */
 
 (function() {
+    // DOM elementlərini tap
     const modal = document.getElementById('chatFullModal');
     const closeBtn = document.getElementById('closeChatFullModal');
     const iframe = document.getElementById('chatFullIframe');
 
-    // Modalı aç
-    function openChatFullModal() {
+    // Modalı açan funksiya (qlobal da edək)
+    window.openChatFullModal = function() {
         if (!modal) return;
         modal.style.display = 'flex';
         modal.classList.add('active');
@@ -2266,9 +2267,9 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             iframe.src = iframe.src; // reload
         } catch (_) {}
-    }
+    };
 
-    // Modalı bağla
+    // Modalı bağlayan funksiya
     function closeChatFullModal() {
         if (!modal) return;
         modal.style.display = 'none';
@@ -2276,21 +2277,24 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.style.overflow = '';
     }
 
-    // Event: "Hamısına bax" linki
+    // --- EVENT LİSTENERLƏR ---
+
+    // 1. "Hamısına bax" linkinə klik (artıq onclick ilə idarə olunur, amma təhlükəsizlik üçün)
+    // (Bu hissəni istəsən saxla, amma əsas iş onclick-dədir)
     document.addEventListener('click', function(e) {
         const link = e.target.closest('.msg-dropdown-alllink');
         if (link) {
-            e.preventDefault();
-            openChatFullModal();
+            // onclick artıq işləyəcək, amma yenə də qarşısını alaq
+            // Amma burada heç nə etmə, onclick özü işləsin
         }
     });
 
-    // Event: Bağla düyməsi
+    // 2. Bağla düyməsi
     if (closeBtn) {
         closeBtn.addEventListener('click', closeChatFullModal);
     }
 
-    // Event: Arxa plana klik
+    // 3. Arxa plana klik
     if (modal) {
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
@@ -2299,17 +2303,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Event: Escape düyməsi
+    // 4. Escape düyməsi
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && modal && modal.style.display === 'flex') {
             closeChatFullModal();
         }
     });
 
-    // Əgər iframe yüklənmə zamanı xəta versə
+    // 5. Iframe yüklənmə xətası
     if (iframe) {
         iframe.addEventListener('error', function() {
-            // Səssizcə keç, istifadəçi təkrar cəhd edə bilər
+            console.warn('Chat iframe yüklənə bilmədi.');
         });
     }
+
+    console.log('[ChatFullModal] Hazırdır!');
 })();
