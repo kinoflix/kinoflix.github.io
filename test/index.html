@@ -952,12 +952,13 @@ import { initializeApp } from "firebase/app";
 import { 
   getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
   GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
-  sendPasswordResetEmail, updateProfile, deleteUser
+  sendPasswordResetEmail, updateProfile, deleteUser,
+  reauthenticateWithCredential, EmailAuthProvider, updateEmail, updatePassword
 } from "firebase/auth";
 import { 
   getFirestore, doc, setDoc, getDoc, serverTimestamp, 
   query, collection, where, getDocs, onSnapshot,
-  addDoc, increment, orderBy, limit, deleteDoc
+  addDoc, increment, orderBy, limit, deleteDoc, updateDoc
 } from "firebase/firestore";
 import {
   getDatabase, ref, set, onValue, onDisconnect,
@@ -2195,7 +2196,195 @@ if (msgUserSearchInput) {
   });
 }
 
+// ============================================================
+// MƏRHƏLƏ 4 — CHAT MODALI ÜÇÜN QLOBAL DƏYİŞƏNLƏR
+// ============================================================
+const DEFAULT_AVATAR = DEFAULT_MSG_AVATAR; // eyni avatar URL-i, mövcud dəyişənə istinad
 
+let currentUser = null;
+let currentUserData = {
+  role: 'user', displayName: '', photoURL: DEFAULT_AVATAR, isBanned: false,
+  username: '', firstName: '', lastName: ''
+};
+let activeRoomId = 'global_room';
+let activeRoomIsDM = false;
+let currentIgnoreList = [];
+let lastPublicRoom = 'global';
+let dmAutoOpenDone = false;
+
+let unsubscribeGeneralMessages = null;
+let unsubscribePrivateMessages = null;
+let unsubscribeUsers = null;
+let unsubscribeRooms = null;
+let unsubscribeTyping = null;
+let unsubscribeSelfDestruct = null;
+let unsubscribeAdminMessages = null;
+let unsubscribePresenceList = null;
+let typingTimeout = null;
+let banCleanupInterval = null;
+let tempBanTargetUid = null;
+let settingsUsernameCheckTimeout = null;
+
+let currentUsersList = [];
+let currentStatuses = {};
+let currentRooms = {};
+let userRolesMap = {};
+let userDataMap = {};
+
+// ---- Chat Modal DOM referansları ----
+const chatModal = document.getElementById('chatModal');
+const closeChatModalBtn = document.getElementById('closeChatModalBtn');
+const msgViewAllBtn = document.getElementById('msgViewAllBtn');
+
+const usersSidebar = document.getElementById('usersSidebar');
+const mobileUsersToggleBtn = document.getElementById('mobileUsersToggleBtn');
+const usersList = document.getElementById('usersList');
+const btnGlobalRoom = document.getElementById('btnGlobalRoom');
+const btnAdminRoom = document.getElementById('btnAdminRoom');
+const activeRoomTitle = document.getElementById('activeRoomTitle');
+const activeRoomSub = document.getElementById('activeRoomSub');
+
+const generalChatArea = document.getElementById('generalChatArea');
+const chatMessagesArea = document.getElementById('chatMessagesArea');
+const messageInputField = document.getElementById('messageInputField');
+const sendMessageBtn = document.getElementById('sendMessageBtn');
+const chatFileInput = document.getElementById('chatFileInput');
+
+const adminChatArea = document.getElementById('adminChatArea');
+const adminMessagesArea = document.getElementById('adminMessagesArea');
+const adminInputField = document.getElementById('adminInputField');
+const sendAdminMessageBtn = document.getElementById('sendAdminMessageBtn');
+const adminFileInput = document.getElementById('adminFileInput');
+const adminFilePreviewBar = document.getElementById('adminFilePreviewBar');
+const adminFileNameDisplay = document.getElementById('adminFileNameDisplay');
+const adminFileClearBtn = document.getElementById('adminFileClearBtn');
+const adminEmojiBtn = document.getElementById('adminEmojiBtn');
+const adminEmojiPicker = document.getElementById('adminEmojiPicker');
+const adminTypingIndicator = document.getElementById('adminTypingIndicator');
+
+const privateChatArea = document.getElementById('privateChatArea');
+const privateChatHeader = document.getElementById('privateChatHeader');
+const privateRoomTitle = document.getElementById('privateRoomTitle');
+const privateRoomUsername = document.getElementById('privateRoomUsername');
+const privateChatAvatar = document.getElementById('privateChatAvatar');
+const privateMessagesArea = document.getElementById('privateMessagesArea');
+const privateInputField = document.getElementById('privateInputField');
+const sendPrivateMessageBtn = document.getElementById('sendPrivateMessageBtn');
+const privateFileInput = document.getElementById('privateFileInput');
+
+const openSettingsBtn = document.getElementById('openSettingsBtn');
+const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+const settingsModal = document.getElementById('settingsModal');
+const profileSettingsForm = document.getElementById('profileSettingsForm');
+const settingsUsername = document.getElementById('settingsUsername');
+const settingsUsernameCheckMsg = document.getElementById('settingsUsernameCheckMsg');
+const settingsFirstName = document.getElementById('settingsFirstName');
+const settingsLastName = document.getElementById('settingsLastName');
+const settingsEmailDisplay = document.getElementById('settingsEmailDisplay');
+const settingsAvatarPreview = document.getElementById('settingsAvatarPreview');
+const avatarFileInput = document.getElementById('avatarFileInput');
+const avatarFileNameDisplay = document.getElementById('avatarFileNameDisplay');
+const currentPasswordInput = document.getElementById('currentPasswordInput');
+const newPasswordInput = document.getElementById('newPasswordInput');
+
+const tempBanModal = document.getElementById('tempBanModal');
+const closeTempBanBtn = document.getElementById('closeTempBanBtn');
+const confirmTempBanBtn = document.getElementById('confirmTempBanBtn');
+const tempBanTargetName = document.getElementById('tempBanTargetName');
+const tempBanDurationGroup = document.getElementById('tempBanDurationGroup');
+const removeTempBanBtn = document.getElementById('removeTempBanBtn');
+
+// ---- Köməkçi funksiyalar (chat-css/js-dəki adları ilə eyni) ----
+const getRoleLevel = (role) => {
+  if (role === 'super_admin') return 4;
+  if (role === 'admin') return 3;
+  if (role === 'moderator') return 2;
+  return 1;
+};
+
+const getRoleStarsHtml = (role) => {
+  let color = '', starClass = '';
+  if (role === 'super_admin') { color = '#f1c40f'; starClass = 'super-admin-star'; }
+  else if (role === 'admin') { color = '#e74c3c'; starClass = 'admin-star'; }
+  else if (role === 'moderator') { color = '#3498db'; starClass = 'moderator-star'; }
+  else { return ''; }
+  return `<i class="fa-solid fa-star role-star ${starClass}" style="color: ${color}; font-size: 11px; margin-left: 4px;" title="${role}"></i>`;
+};
+
+const escapeHTML = (str) => {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+};
+  // ============================================================
+// MƏRHƏLƏ 4 — CHAT SESSİYASININ BAŞLADILMASI (lazy — modal açılanda çağırılır)
+// ============================================================
+let chatSessionInitialized = false;
+
+async function initializeChatSession(user) {
+  currentUser = user;
+
+  const userDoc = await getDoc(doc(db, 'users', user.uid));
+  if (userDoc.exists()) {
+    currentUserData = userDoc.data();
+  }
+
+  const displayName = currentUserData.displayName
+    || `${currentUserData.firstName || ''} ${currentUserData.lastName || ''}`.trim()
+    || 'Anonim';
+  document.getElementById('currentUserName').innerHTML = escapeHTML(displayName) + getRoleStarsHtml(currentUserData.role);
+  document.getElementById('currentUserAvatar').src = currentUserData.photoURL || DEFAULT_AVATAR;
+
+  try {
+    const ignoreDoc = await getDoc(doc(db, 'ignore_lists', user.uid));
+    currentIgnoreList = ignoreDoc.exists() ? (ignoreDoc.data().ignored || []) : [];
+  } catch (err) { currentIgnoreList = []; }
+
+  let roleTitle = 'İstifadəçi';
+  if (currentUserData.role === 'super_admin') roleTitle = 'Super Admin';
+  else if (currentUserData.role === 'admin') roleTitle = 'Admin';
+  else if (currentUserData.role === 'moderator') roleTitle = 'Moderator';
+  document.getElementById('currentUserRole').innerText = roleTitle;
+
+  const myLevel = getRoleLevel(currentUserData.role);
+  if (myLevel >= 2) btnAdminRoom.classList.remove('hidden');
+  else btnAdminRoom.classList.add('hidden');
+
+  openSettingsBtn.classList.remove('hidden');
+
+  listenUsersAndPresence();
+  checkActiveRoomTyping();
+  switchToGlobalRoom();
+
+  if (unsubscribeSelfDestruct) unsubscribeSelfDestruct();
+  startSelfDestructListener(user);
+
+  updateUserNetwork().catch(() => {});
+  startBanCleanup();
+
+  chatSessionInitialized = true;
+}
+
+function openChatModal() {
+  if (!auth.currentUser) {
+    openAuthModal();
+    return;
+  }
+  if (msgDropdown) msgDropdown.style.display = 'none';
+  chatModal.classList.add('active');
+  if (!chatSessionInitialized) {
+    initializeChatSession(auth.currentUser);
+  }
+}
+
+function closeChatModalFn() {
+  chatModal.classList.remove('active');
+}
+
+msgViewAllBtn?.addEventListener('click', () => openChatModal());
+closeChatModalBtn.addEventListener('click', closeChatModalFn);
+chatModal.addEventListener('click', (e) => {
+  if (e.target === chatModal) closeChatModalFn();
+});
 onAuthStateChanged(auth, async (user) => {
   updateAuthUI(user);
   if (user) {
@@ -2252,6 +2441,20 @@ onAuthStateChanged(auth, async (user) => {
   // Çıxış — presence və ban listener-ləri təmizlə
   cleanupPresence(null);
   cleanupMessagesWidget();
+
+  // Mərhələ 4: chat sessiyasını da təmizlə
+  currentUser = null;
+  chatSessionInitialized = false;
+  chatModal.classList.remove('active');
+  if (unsubscribeGeneralMessages) { unsubscribeGeneralMessages(); unsubscribeGeneralMessages = null; }
+  if (unsubscribePrivateMessages) { unsubscribePrivateMessages(); unsubscribePrivateMessages = null; }
+  if (unsubscribeUsers) { unsubscribeUsers(); unsubscribeUsers = null; }
+  if (unsubscribeRooms) { unsubscribeRooms(); unsubscribeRooms = null; }
+  if (unsubscribeTyping) { unsubscribeTyping(); unsubscribeTyping = null; }
+  if (unsubscribeSelfDestruct) { unsubscribeSelfDestruct(); unsubscribeSelfDestruct = null; }
+  if (unsubscribeAdminMessages) { unsubscribeAdminMessages(); unsubscribeAdminMessages = null; }
+  if (unsubscribePresenceList) { unsubscribePresenceList(); unsubscribePresenceList = null; }
+  if (banCleanupInterval) { clearInterval(banCleanupInterval); banCleanupInterval = null; }
 }
 });
 </script>
