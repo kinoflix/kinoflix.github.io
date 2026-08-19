@@ -1093,6 +1093,7 @@ function localizeFirebaseError(err) {
     case "auth/too-many-requests": return "Çox sayda uğursuz cəhd. Bir qədər gözləyin.";
     case "auth/requires-recent-login": return "Bu əməliyyat üçün yenidən giriş etməlisiniz.";
     case "auth/user-not-found": return "Daxil etdiyiniz e-poçt mövcud deyil.";
+    case "auth/email-already-exists": return "Bu e-poçt ünvanı artıq istifadə edilir.";
     case "auth/cancelled-popup-request": return "Google ilə giriş əməliyyatı dayandırıldı.";
     case "auth/popup-closed-by-user": return "Google ilə giriş əməliyyatı dayandırıldı.";
     default: return err.message || "Gözlənilməz texniki xəta baş verdi.";
@@ -1105,7 +1106,8 @@ function isValidUsername(str) {
   return regex.test(str);
 }
 function normalizeUsername(str) { return str.toLowerCase().trim(); }
-function isValidName(str) { return /^[\p{L}]+(?:[\s][\p{L}]+)*$/u.test(str.trim()); }
+function isValidName(str) { if (!str) return false; return /^[\p{L}]+(?:[\s][\p{L}]+)*$/u.test(str.trim()); }
+function namesAreValid(first, last) { return isValidName(first) && isValidName(last); }
  
 // ============================================================
 // 4. İSTİFADƏÇİ ADI YOXLAMA
