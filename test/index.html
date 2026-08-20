@@ -3043,6 +3043,193 @@ function setupEmojiButton(btnEl, panelEl, targetInput) {
 setupEmojiButton(document.getElementById('chatEmojiBtn'), document.getElementById('chatEmojiPicker'), messageInputField);
 setupEmojiButton(document.getElementById('privateEmojiBtn'), document.getElementById('privateEmojiPicker'), privateInputField);
 setupEmojiButton(document.getElementById('adminEmojiBtn'), document.getElementById('adminEmojiPicker'), adminInputField);
+
+  // ============================================================
+// MƏRHƏLƏ 4 (4/4) — MODERASİYA FUNKSİYALARI
+// ============================================================
+async function changeUserRole(userId, currentRole) {
+  const myLevel = getRoleLevel(currentUserData.role);
+  if (myLevel < 3) { showToast("Bu əməliyyat üçün ən azı Admin səlahiyyətiniz olmalıdır!", "error"); return; }
+
+  const targetLevel = getRoleLevel(currentRole);
+  let newRole = null;
+
+  if (myLevel === 4) {
+    newRole = prompt(`İstifadəçinin yeni rolunu daxil edin:\n(super_admin, admin, moderator, user)\n\nHazırki rol: ${currentRole}`, currentRole);
+    if (!newRole) return;
+    const validRoles = ["super_admin", "admin", "moderator", "user"];
+    newRole = newRole.trim().toLowerCase();
+    if (!validRoles.includes(newRole)) { showToast("Yanlış rol! Yalnız: super_admin, admin, moderator, user qəbul edilir.", "warning"); return; }
+  } else if (myLevel === 3) {
+    if (targetLevel > 2) { showToast("Adminlər yalnız 'user' və 'moderator' rollarını dəyişə bilər!", "error"); return; }
+    newRole = prompt(`İstifadəçinin yeni rolunu daxil edin:\n(moderator, user)\n\nHazırki rol: ${currentRole}`, currentRole);
+    if (!newRole) return;
+    const validRoles = ["moderator", "user"];
+    newRole = newRole.trim().toLowerCase();
+    if (!validRoles.includes(newRole)) { showToast("Adminlər yalnız 'moderator' və ya 'user' rolu verə bilər.", "warning"); return; }
+  }
+
+  try {
+    await updateDoc(doc(db, 'users', userId), { role: newRole });
+    showToast("İstifadəçinin rolu uğurla yeniləndi!", "success");
+  } catch (error) {
+    console.error("Rol dəyişərkən xəta:", error);
+    showToast("Rol dəyişdirilə bilmədi: " + error.message, "error");
+  }
+}
+
+async function toggleBanUser(targetUserId, isCurrentlyBanned) {
+  const myLevel = getRoleLevel(currentUserData.role);
+  if (myLevel < 3) { showToast("Hesab banlamaq üçün Admin səlahiyyəti tələb olunur!", "error"); return; }
+  try {
+    const targetDoc = await getDoc(doc(db, 'users', targetUserId));
+    if (!targetDoc.exists()) { showToast("İstifadəçi tapılmadı.", "error"); return; }
+    const targetLevel = getRoleLevel(targetDoc.data().role);
+    const canBan = (myLevel === 4) || (myLevel === 3 && targetLevel <= 2);
+    if (!canBan) { showToast("Səlahiyyətiniz çatmır! Yalnız öz səlahiyyət səviyyənizdən aşağıdakılara ban tətbiq edə bilərsiniz.", "error"); return; }
+    const actionLabel = isCurrentlyBanned ? "banını qaldırmaq" : "banlamaq";
+    if (!confirm(`Bu istifadəçinin ${actionLabel} istədiyinizdən əminsiniz?`)) return;
+    await updateDoc(doc(db, 'users', targetUserId), { isBanned: !isCurrentlyBanned, banExpires: null });
+    showToast(`İstifadəçi uğurla ${isCurrentlyBanned ? 'banı qaldırıldı' : 'banlandı'}!`, "success");
+  } catch (err) {
+    console.error("Ban xətası:", err);
+    showToast("Ban əməliyyatı yerinə yetirilmədi: " + err.message, "error");
+  }
+}
+
+async function adminDeleteUser(targetUserId) {
+  const myLevel = getRoleLevel(currentUserData.role);
+  if (myLevel !== 4) { showToast("Hesab silmək üçün yalnız Super Admin yetkilidir!", "error"); return; }
+  if (!confirm("DİQQƏT: Bu istifadəçini bazadan tamamilə silmək istədiyinizə əminsiniz? (Geri qaytarıla bilməz)")) return;
+  try {
+    await deleteDoc(doc(db, 'users', targetUserId));
+    showToast("İstifadəçi profili silindi. Sistem onu dərhal kənarlaşdıracaq.", "success");
+  } catch (err) {
+    console.error("Admin silmə xətası:", err);
+    showToast("İstifadəçini silmək mümkün olmadı: " + err.message, "error");
+  }
+}
+
+async function toggleIgnoreUser(targetUserId, targetName) {
+  const targetRole = userRolesMap[targetUserId] || 'user';
+  if (targetRole === 'super_admin' && currentUserData.role !== 'super_admin') {
+    showToast("Bu şəxs iqnor edilə bilməz.", "error");
+    return;
+  }
+  const isIgnored = currentIgnoreList.includes(targetUserId);
+  if (isIgnored) {
+    currentIgnoreList = currentIgnoreList.filter(id => id !== targetUserId);
+    showToast(`${escapeHTML(targetName)} artıq ignor siyahınızdan çıxarıldı.`, "info");
+  } else {
+    currentIgnoreList.push(targetUserId);
+    showToast(`${escapeHTML(targetName)} uğurla ignor edildi. Onun mesajları sizə görünməyəcək.`, "info");
+  }
+  try {
+    await setDoc(doc(db, 'ignore_lists', currentUser.uid), { ignored: currentIgnoreList, updatedAt: serverTimestamp() });
+  } catch (err) {
+    console.error("İgnor siyahısı xətası:", err.code, err.message);
+    if (isIgnored) { currentIgnoreList.push(targetUserId); }
+    else { currentIgnoreList = currentIgnoreList.filter(id => id !== targetUserId); }
+    if (err.code === 'permission-denied' || err.code === 'PERMISSION_DENIED') {
+      showToast("İgnor əməliyyatı üçün icazə yoxdur. Firebase Rules-u yoxlayın.", "error");
+    } else {
+      showToast("İgnor siyahısı yenilənərkən xəta baş verdi: " + err.message, "error");
+    }
+  }
+  renderUsersList();
+  loadGeneralMessages();
+  loadAdminMessages();
+  if (activeRoomIsDM) loadPrivateMessages();
+}
+
+async function handleNetworkBan(targetUid) {
+  const myLevel = getRoleLevel(currentUserData.role);
+  if (myLevel !== 4) { showToast("Bu əməliyyat yalnız Super Admin üçündür!", "error"); return; }
+  try {
+    const netDoc = await getDoc(doc(db, "user_network", targetUid));
+    const isBanned = await getDoc(doc(db, "blacklist", targetUid));
+    const currentlyBanned = isBanned.exists();
+    if (currentlyBanned) {
+      if (!confirm("İstifadəçinin IP, Cihaz və Hesab banını QALDIRMAQ istəyirsiniz?")) return;
+      const data = netDoc.exists() ? netDoc.data() : {};
+      if (data.lastIp) await deleteDoc(doc(db, "blacklist", data.lastIp));
+      if (data.lastDevice) await deleteDoc(doc(db, "blacklist", data.lastDevice));
+      await deleteDoc(doc(db, "blacklist", targetUid));
+      await setDoc(doc(db, "users", targetUid), { isBanned: false, networkBanned: false, banExpires: null }, { merge: true });
+      showToast("Şəbəkə və hesab banı tamamilə ləğv edildi!", "success");
+    } else {
+      if (!confirm("DİQQƏT: Bu istifadəçini IP, Cihaz və Hesab olaraq tam bloklamaq istəyirsiniz?")) return;
+      const data = netDoc.exists() ? netDoc.data() : {};
+      const banPayload = { banned: true, reason: "Super Admin IP/Cihaz Banı", timestamp: new Date().toISOString() };
+      if (data.lastIp) await setDoc(doc(db, "blacklist", data.lastIp), banPayload);
+      if (data.lastDevice) await setDoc(doc(db, "blacklist", data.lastDevice), banPayload);
+      await setDoc(doc(db, "blacklist", targetUid), banPayload);
+      await setDoc(doc(db, "users", targetUid), { isBanned: false, networkBanned: true, banExpires: null }, { merge: true });
+      showToast("İstifadəçi şəbəkə səviyyəsində uğurla banlandı!", "success");
+    }
+    renderUsersList();
+  } catch (err) {
+    showToast("Xəta: " + err.message, "error");
+  }
+}
+
+// ============================================================
+// MƏRHƏLƏ 4 (4/4) — NETWORK BAN: GİRİŞ ZAMANI YOXLAMA
+// (özündən müstəqil IIFE — heç nə ilə toqquşmur, olduğu kimi köçürülür)
+// ============================================================
+(function () {
+  let networkBanChecked = false;
+
+  async function fetchIP() {
+    try { const res = await fetch('https://api.ipify.org?format=json'); const data = await res.json(); return data.ip; }
+    catch { return null; }
+  }
+
+  function getDeviceId() {
+    const info = navigator.userAgent + navigator.language + screen.width + screen.height;
+    let hash = 0;
+    for (let i = 0; i < info.length; i++) { hash = ((hash << 5) - hash) + info.charCodeAt(i); hash |= 0; }
+    return 'dev_' + Math.abs(hash);
+  }
+
+  function showBanPage(message) {
+    document.body.innerHTML = `
+      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; height:100dvh; background: radial-gradient(circle at center, #1a0b12 0%, #08101a 100%); color:#e74c3c; font-family:'Varela Round', sans-serif; text-align:center; padding:20px; box-sizing:border-box; overflow:hidden;">
+        <div style="background: rgba(231, 76, 60, 0.05); border: 1px solid rgba(231, 76, 60, 0.2); padding: 40px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-width: 450px; width: 100%; backdrop-filter: blur(10px);">
+          <div style="width: 80px; height: 80px; background: rgba(231, 76, 60, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; border: 2px solid rgba(231,76,60,0.5);">
+            <i class="fa-solid fa-network-wired" style="font-size: 32px; color: #e74c3c;"></i>
+          </div>
+          <h2 style="margin: 0 0 15px 0; font-size: 24px; letter-spacing: 1px; color: #fff;">GİRİŞ QADAĞANDIR</h2>
+          <p style="color:#94a3b8; margin: 0; font-size: 15px; line-height: 1.6;">Sizin IP ünvanınız və cihazınız istifadə qaydalarını pozduğuna görə sistemdən <strong style="color:#e74c3c;">tamamilə uzaqlaşdırılıb</strong>.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  async function checkNetworkBan(user) {
+    if (networkBanChecked) return;
+    networkBanChecked = true;
+    const ip = await fetchIP();
+    const deviceId = getDeviceId();
+    try {
+      const checks = [getDoc(doc(db, "blacklist", user.uid))];
+      if (ip) checks.push(getDoc(doc(db, "blacklist", ip)));
+      checks.push(getDoc(doc(db, "blacklist", deviceId)));
+      const results = await Promise.all(checks);
+      if (results.some(r => r.exists())) {
+        showBanPage();
+        await signOut(auth).catch(() => {});
+      }
+    } catch (e) { /* səssiz xəta */ }
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      networkBanChecked = false;
+      setTimeout(() => checkNetworkBan(user), 2000);
+    }
+  });
+})();
 onAuthStateChanged(auth, async (user) => {
   updateAuthUI(user);
   if (user) {
