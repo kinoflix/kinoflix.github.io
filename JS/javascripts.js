@@ -364,6 +364,16 @@ const MOVIES = [
   { title: "Sihirbazlar çetesi / Now You See Me", cover: "https://m.media-amazon.com/images/M/MV5BMTY0NDY3MDMxN15BMl5BanBnXkFtZTcwOTM5NzMzOQ@@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vfXt5DGIcmAc?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2013, genre: "Macəra", id: "nowyouseeme" },
   { title: "Karateci çocuk: Efsane dövüşçüler / Karate Kid: Legends", cover: "https://m.media-amazon.com/images/M/MV5BM2MwYTlkY2MtNmUzNy00MTljLThjNDAtZGUzNzMxMzcxNzM5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/9885577644649", year: 2025, genre: "Aksiyon", id: "thekaratekid2" },
   { title: "Karateci çocuk / The Karate kid", cover: "https://m.media-amazon.com/images/M/MV5BODQ2MDJiMDItN2QwMS00Yzg1LWJlZDEtN2Y3M2UyYWEzZDk3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://m.ok.ru/video/581747149537", year: 2010, genre: "Aksiyon", id: "thekaratekid" },
+  { title: "Maymunlar cehennemi: Yeni krallık / Kingdom of the Planet of the Apes", cover: "https://m.media-amazon.com/images/S/pv-target-images/945441437c34ba93d21a08a69f511a52bd0b1c749ad2cada5de1e8135c3700ca.jpg", src: "https://dzen.ru/embed/vGwpBFwBbikE?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2024, genre: "Fantastik", id: "planetoftheapes10" },
+  { title: "Maymunlar cehennemi: Savaş / War for the Planet of the Apes", cover: "https://m.media-amazon.com/images/M/MV5BMzNhMzNiZDYtMzYxYy00YTYwLTkxNmYtNTJhOGU1Yjg5ODI5XkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/345206360763", year: 2017, genre: "Fantastik", id: "planetoftheapes9" },
+  { title: "Maymunlar cehennemi: Şafak vakti / Dawn of the Planet of the Apes", cover: "https://m.media-amazon.com/images/S/pv-target-images/4882c4f274171641f91d719ee98f1acecd36b4a1f839c89fd31f5e07dbe2b265.jpg", src: "https://dzen.ru/embed/vM9fD1b2fwmM?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2014, genre: "Fantastik", id: "planetoftheapes8" },
+  { title: "Maymunlar cehennemi: Başlangıç / Rise of the Planet of the Apes", cover: "https://m.media-amazon.com/images/S/pv-target-images/87e98625688a14a4e649ae5f5d4fc398705afa014c93fa35afbb61bb38759532.jpg", src: "https://dzen.ru/embed/vyQA42Ha4bio?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2011, genre: "Fantastik", id: "planetoftheapes7" },
+  { title: "Maymunlar cehennemi / Planet of the Apes", cover: "https://m.media-amazon.com/images/M/MV5BYjczODRhOTQtZjdkYi00MmM2LTg1ZmEtZDQ3YjA5MDJhODNhXkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/2153203960401", year: 2001, genre: "Fantastik", id: "planetoftheapes6" },
+  { title: "Maymunlar gezegeninde savaş / Battle for the Planet of the Apes", cover: "https://m.media-amazon.com/images/S/pv-target-images/d0c284e9c796a31f65b6a3d4bb702c6b12ddc20ae2d4f2577ef381ef630c1326.jpg", src: "https://ok.ru/video/2152739310161", year: 1973, genre: "Fantastik", id: "planetoftheapes5" },
+  { title: "Maymunlar gezegeninde isyan / Conquest of the Planet of the Apes", cover: "https://m.media-amazon.com/images/I/A1A8MUWUPVL._AC_UF894,1000_QL80_.jpg", src: "https://ok.ru/video/2152636811857", year: 1972, genre: "Fantastik", id: "planetoftheapes4" },
+  { title: "Maymunlar cehenneminden kaçış / Escape from the Planet of the Apes", cover: "https://m.media-amazon.com/images/S/pv-target-images/2069d1aa883a7d0cc5a9d7532959ac2c593ea7af1e32b8498da8f37a01d26172.jpg", src: "https://ok.ru/video/2152343669329", year: 1971, genre: "Fantastik", id: "planetoftheapes3" },
+  { title: "Maymunlar cehennemine dönüş / Beneath the Planet of the Apes", cover: "https://m.media-amazon.com/images/S/pv-target-images/491405e116872424c6a5fda14e99a25cb746dd7f150f02582e8216a96216b416.jpg", src: "https://ok.ru/video/2152343472721", year: 1970, genre: "Fantastik", id: "planetoftheapes2" },
+  { title: "Maymunlar cehennemi / Planet of the Apes", cover: "https://m.media-amazon.com/images/M/MV5BZWU0ZTM1NWEtN2MzOS00ZDk4LTgyNmQtZDhkNzBjNmIxNzA3XkEyXkFqcGc@._V1_.jpg", src: "https://ok.ru/video/2152343734865", year: 1968, genre: "Fantastik", id: "planetoftheapes" },
   { title: "Hızlı ve öfkeli 10 / Fast X", cover: "https://m.media-amazon.com/images/M/MV5BYzEwZjczOTktYzU1OS00YjJlLTgyY2UtNWEzODBlN2RjZDEwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://ok.ru/video/11792629959356", year: 2023, genre: "Aksiyon", id: "fastx" },
   { title: "Hızlı ve öfkeli 9 / F9: The Fast Saga", cover: "https://m.media-amazon.com/images/M/MV5BODJkMTQ5ZmQtNzQxYy00ZWNlLWI0ZGYtYjU1NzdiMjcyNDRmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src: "https://dzen.ru/embed/vgsbQ-E4Tzlw?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2021, genre: "Aksiyon", id: "f9thefastsaga" },
   { title: "Hızlı ve öfkeli: Hobbs ve Shaw / Fast and Furious Presents: Hobbs and Shaw", cover: "https://m.media-amazon.com/images/M/MV5BNmU4OTA5NGYtMTFjMS00MzgxLWFjNTMtYjdlMThlYzc4M2M4XkEyXkFqcGc@._V1_.jpg", src: "https://dzen.ru/embed/vGVXP2su1RmA?from_block=partner&from=zen&mute=0&autoplay=0&tv=0", year: 2019, genre: "Aksiyon", id: "fastandfuriouspresentshobbsandshaw" },
@@ -1454,6 +1464,12 @@ const COLLECTIONS = [
     title: "Karateci çocuk / Karate Kid",
     cover: "https://m.media-amazon.com/images/M/MV5BM2MwYTlkY2MtNmUzNy00MTljLThjNDAtZGUzNzMxMzcxNzM5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
     movies: ["thekaratekid", "thekaratekid2"]
+   },
+   {
+    id: "planetoftheapes",
+    title: "Maymunlar cehennemi / Planet of the Apes",
+    cover: "https://m.media-amazon.com/images/S/pv-target-images/945441437c34ba93d21a08a69f511a52bd0b1c749ad2cada5de1e8135c3700ca.jpg",
+    movies: ["planetoftheapes", "planetoftheapes2", "planetoftheapes3", "planetoftheapes4", "planetoftheapes5", "planetoftheapes6", "planetoftheapes7", "planetoftheapes8", "planetoftheapes9", "planetoftheapes10"]
    },
    {
     id: "malefisent",
