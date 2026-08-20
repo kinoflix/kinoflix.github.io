@@ -2151,6 +2151,7 @@ body, input, button, select, textarea {
   height: 85vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 .chat-modal-header-actions {
   display: flex;
@@ -2501,4 +2502,26 @@ body, input, button, select, textarea {
     box-shadow: 10px 0 30px rgba(0,0,0,0.5);
   }
   .sidebar.mobile-open { left: 0; }
+}
+
+
+/* =========================================================
+   MƏRHƏLƏ 5.5 — DÜZƏLİŞ: saytın öz .avatar class-ı ilə
+   chat-ın profil şəkilləri arasındakı toqquşma
+   ========================================================= */
+#chatModal .avatar,
+#whoisModal .avatar,
+#tempBanModal .avatar,
+#settingsModal .avatar {
+  background: var(--glass-border);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  box-shadow: none;
+  transform: none;
+  overflow: hidden;
+}
+#chatModal .avatar:hover,
+#settingsModal .avatar:hover {
+  transform: none;
 }
