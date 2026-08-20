@@ -2734,6 +2734,315 @@ function openPrivateRoom(targetUser) {
   loadPrivateMessages();
   renderUsersList();
 }
+  // ============================================================
+// MƏRHƏLƏ 4 (3/4) — MESAJ YÜKLƏMƏ VƏ GÖNDƏRMƏ
+// ============================================================
+function loadGeneralMessages() {
+  if (unsubscribeGeneralMessages) unsubscribeGeneralMessages();
+  const msgQuery = query(collection(db, 'rooms', 'global_room', 'messages'), orderBy('createdAt', 'desc'), limit(50));
+  unsubscribeGeneralMessages = onSnapshot(msgQuery, (snapshot) => {
+    let messages = [];
+    snapshot.forEach(doc => messages.push({ id: doc.id, ...doc.data() }));
+    messages.reverse();
+    chatMessagesArea.innerHTML = '';
+    messages.forEach(msg => {
+      if (currentIgnoreList.includes(msg.senderId)) return;
+      chatMessagesArea.appendChild(createMessageElement(msg, 'global_room'));
+    });
+    chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight;
+  });
+}
+
+function loadAdminMessages() {
+  if (unsubscribeAdminMessages) unsubscribeAdminMessages();
+  const msgQuery = query(collection(db, 'rooms', 'admin_room', 'messages'), orderBy('createdAt', 'desc'), limit(50));
+  unsubscribeAdminMessages = onSnapshot(msgQuery, (snapshot) => {
+    let messages = [];
+    snapshot.forEach(doc => messages.push({ id: doc.id, ...doc.data() }));
+    messages.reverse();
+    adminMessagesArea.innerHTML = '';
+    messages.forEach(msg => {
+      if (currentIgnoreList.includes(msg.senderId)) return;
+      adminMessagesArea.appendChild(createMessageElement(msg, 'admin_room'));
+    });
+    adminMessagesArea.scrollTop = adminMessagesArea.scrollHeight;
+  });
+}
+
+function loadPrivateMessages() {
+  if (unsubscribePrivateMessages) unsubscribePrivateMessages();
+  privateMessagesArea.innerHTML = '';
+  const msgQuery = query(collection(db, 'rooms', activeRoomId, 'messages'), orderBy('createdAt', 'desc'), limit(50));
+  unsubscribePrivateMessages = onSnapshot(msgQuery, (snapshot) => {
+    let messages = [];
+    snapshot.forEach(doc => messages.push({ id: doc.id, ...doc.data() }));
+    messages.reverse();
+    privateMessagesArea.innerHTML = '';
+    messages.forEach(msg => {
+      if (currentIgnoreList.includes(msg.senderId)) return;
+      privateMessagesArea.appendChild(createMessageElement(msg, activeRoomId));
+    });
+    privateMessagesArea.scrollTop = privateMessagesArea.scrollHeight;
+    if (currentRooms[activeRoomId]?.[`unread_${currentUser.uid}`] > 0) {
+      setDoc(doc(db, 'rooms', activeRoomId), { [`unread_${currentUser.uid}`]: 0 }, { merge: true });
+    }
+  });
+}
+
+function createMessageElement(msg, roomIdContext) {
+  const isMe = msg.senderId === currentUser.uid;
+  const wrapper = document.createElement('div');
+  wrapper.className = `message-wrapper ${isMe ? 'me' : 'other'}`;
+
+  const myLevel = getRoleLevel(currentUserData.role);
+  const senderLevel = getRoleLevel(userRolesMap[msg.senderId] || 'user');
+
+  let canDelete = false;
+  if (isMe) canDelete = true;
+  else if (myLevel === 4) canDelete = true;
+  else if (myLevel === 3 && senderLevel <= 2) canDelete = true;
+  else if (myLevel === 2 && senderLevel === 1) canDelete = true;
+
+  const deleteBtnHtml = canDelete ? `<button class="delete-msg-btn" data-id="${msg.id}" title="Mesajı sil"><i class="fa-solid fa-trash"></i></button>` : '';
+
+  let senderUsername = msg.senderUsername || (userDataMap[msg.senderId]?.username || '');
+
+  let contentHtml = `<p>${escapeHTML(msg.text)}</p>`;
+  if (msg.fileURL) contentHtml += `<img src="${msg.fileURL}" class="chat-shared-image" alt="Şəkil" onclick="window.open('${msg.fileURL}')">`;
+
+  const time = msg.createdAt ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "...";
+  const senderRole = userRolesMap[msg.senderId] || 'user';
+  const roleStars = getRoleStarsHtml(senderRole);
+  const senderNameHtml = escapeHTML(msg.senderName) + roleStars;
+  const usernameHtml = senderUsername ? `<span class="sender-username">@${escapeHTML(senderUsername)}</span>` : '';
+
+  wrapper.innerHTML = `
+    <img src="${msg.senderAvatar || DEFAULT_AVATAR}" class="msg-avatar" alt="">
+    <div class="message-bubble">
+      <span class="sender-name">${senderNameHtml} ${deleteBtnHtml}</span>
+      ${usernameHtml}
+      ${contentHtml}
+      <span class="timestamp">${time}</span>
+    </div>
+  `;
+
+  const delBtn = wrapper.querySelector('.delete-msg-btn');
+  if (delBtn) {
+    delBtn.addEventListener('click', async () => {
+      if (confirm("Bu mesajı silmək istədiyinizdən əminsiniz?")) {
+        await deleteDoc(doc(db, 'rooms', roomIdContext, 'messages', msg.id));
+        showToast("Mesaj uğurla silindi.", "info");
+      }
+    });
+  }
+  return wrapper;
+}
+
+async function submitMessage(isDMContext) {
+  let textInput, fileInput, targetRoom;
+  if (isDMContext) {
+    textInput = privateInputField; fileInput = privateFileInput; targetRoom = activeRoomId;
+  } else if (activeRoomId === 'admin_room') {
+    textInput = adminInputField; fileInput = adminFileInput; targetRoom = 'admin_room';
+  } else {
+    textInput = messageInputField; fileInput = chatFileInput; targetRoom = 'global_room';
+  }
+
+  const text = textInput.value.trim();
+  const file = fileInput.files[0];
+  if (!text && !file) return;
+
+  if (isDMContext) {
+    const targetUserId = activeRoomId.split('_').find(id => id !== currentUser.uid);
+    if (targetUserId) {
+      try {
+        const theirIgnoreDoc = await getDoc(doc(db, 'ignore_lists', targetUserId));
+        if (theirIgnoreDoc.exists()) {
+          const theirIgnored = theirIgnoreDoc.data().ignored || [];
+          if (theirIgnored.includes(currentUser.uid)) {
+            showToast("Bu şəxs tərəfindən ignor edildiniz.", "error");
+            return;
+          }
+        }
+      } catch (e) { /* Firestore rules səbəbindən oxuna bilməsə keç */ }
+    }
+  }
+
+  textInput.value = ''; fileInput.value = '';
+  if (activeRoomId === 'admin_room') {
+    adminFileNameDisplay.textContent = ''; adminFilePreviewBar.classList.add('hidden');
+  } else if (isDMContext) {
+    document.getElementById('privateFileNameDisplay').textContent = '';
+    document.getElementById('privateFilePreviewBar').classList.add('hidden');
+  } else {
+    document.getElementById('chatFileNameDisplay').textContent = '';
+    document.getElementById('chatFilePreviewBar').classList.add('hidden');
+  }
+
+  let fileURL = null; let fileType = null;
+  if (file) {
+    try { fileURL = await uploadImageToImgBB(file); fileType = file.type; }
+    catch (err) { showToast(err.message, "error"); return; }
+  }
+
+  const senderUsername = currentUserData.username || '';
+
+  try {
+    const docRef = await addDoc(collection(db, 'rooms', targetRoom, 'messages'), {
+      senderId: currentUser.uid, senderName: currentUserData.displayName || 'Anonim',
+      senderAvatar: currentUserData.photoURL || DEFAULT_AVATAR, senderUsername: senderUsername,
+      text: text, fileURL: fileURL, fileType: fileType, createdAt: serverTimestamp()
+    });
+
+    try {
+      const rtdbPath = isDMContext ? `messages/private/${activeRoomId}/${docRef.id}` : `messages/${targetRoom}/${docRef.id}`;
+      await set(ref(rtdb, rtdbPath), {
+        senderId: currentUser.uid, senderName: currentUserData.displayName || 'Anonim',
+        senderAvatar: currentUserData.photoURL || DEFAULT_AVATAR, senderUsername: senderUsername,
+        text: text, fileURL: fileURL, fileType: fileType, createdAt: rtdbTimestamp()
+      });
+    } catch (rtdbErr) { console.error("Mesaj RTDB-yə sinxronizasiya oluna bilmədi:", rtdbErr); }
+
+    if (isDMContext) {
+      const targetUserId = activeRoomId.split('_').find(id => id !== currentUser.uid);
+      await setDoc(doc(db, 'rooms', activeRoomId), {
+        lastMessageAt: serverTimestamp(),
+        lastMessageText: text ? text : (fileURL ? '📎 Fayl göndərildi' : ''),
+        lastMessageSenderId: currentUser.uid,
+        [`unread_${targetUserId}`]: increment(1)
+      }, { merge: true });
+    } else {
+      await setDoc(doc(db, 'rooms', targetRoom), { lastMessageAt: serverTimestamp() }, { merge: true });
+    }
+  } catch (err) {
+    if (err.code === 'permission-denied') {
+      showToast("Bu əməliyyat üçün icazəniz yoxdur. Hesabınız silinib!", "error");
+      auth.currentUser.delete().catch(() => {});
+      setTimeout(() => { window.location.reload(); }, 1500);
+      return;
+    }
+    showToast("Mesaj göndərilərkən xəta: " + err.message, "error");
+  }
+}
+
+sendMessageBtn.addEventListener('click', () => submitMessage(false));
+messageInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitMessage(false); });
+sendAdminMessageBtn.addEventListener('click', () => submitMessage(false));
+adminInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitMessage(false); });
+sendPrivateMessageBtn.addEventListener('click', () => submitMessage(true));
+privateInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitMessage(true); });
+
+function checkActiveRoomTyping() {
+  if (unsubscribeTyping) unsubscribeTyping();
+  unsubscribeTyping = onValue(ref(rtdb, 'presence'), (snap) => {
+    let someoneTyping = false;
+    const statuses = snap.val() || {};
+    for (let uid in statuses) {
+      if (currentUser && uid !== currentUser.uid && statuses[uid].typingTo === activeRoomId) { someoneTyping = true; break; }
+    }
+    const indicator = activeRoomId === 'global_room' ? document.getElementById('typingIndicator') :
+                      activeRoomId === 'admin_room' ? document.getElementById('adminTypingIndicator') : null;
+    if (indicator) {
+      if (someoneTyping && !activeRoomIsDM) indicator.classList.remove('hidden');
+      else indicator.classList.add('hidden');
+    }
+  });
+}
+
+function handleTypingEvent() {
+  set(ref(rtdb, `presence/${currentUser.uid}/typingTo`), activeRoomId);
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => { set(ref(rtdb, `presence/${currentUser.uid}/typingTo`), null); }, 1800);
+}
+messageInputField.addEventListener('input', handleTypingEvent);
+adminInputField.addEventListener('input', handleTypingEvent);
+privateInputField.addEventListener('input', handleTypingEvent);
+
+// ============================================================
+// MƏRHƏLƏ 4 (3/4) — FAYL ÖNİZLƏMƏ BARLARI
+// ============================================================
+chatFileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  const bar = document.getElementById('chatFilePreviewBar');
+  const nameSpan = document.getElementById('chatFileNameDisplay');
+  if (file) { nameSpan.textContent = file.name; bar.classList.remove('hidden'); }
+  else { nameSpan.textContent = ''; bar.classList.add('hidden'); }
+});
+document.getElementById('chatFileClearBtn').addEventListener('click', () => {
+  chatFileInput.value = '';
+  document.getElementById('chatFileNameDisplay').textContent = '';
+  document.getElementById('chatFilePreviewBar').classList.add('hidden');
+});
+
+privateFileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  const bar = document.getElementById('privateFilePreviewBar');
+  const nameSpan = document.getElementById('privateFileNameDisplay');
+  if (file) { nameSpan.textContent = file.name; bar.classList.remove('hidden'); }
+  else { nameSpan.textContent = ''; bar.classList.add('hidden'); }
+});
+document.getElementById('privateFileClearBtn').addEventListener('click', () => {
+  privateFileInput.value = '';
+  document.getElementById('privateFileNameDisplay').textContent = '';
+  document.getElementById('privateFilePreviewBar').classList.add('hidden');
+});
+
+adminFileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) { adminFileNameDisplay.textContent = file.name; adminFilePreviewBar.classList.remove('hidden'); }
+  else { adminFileNameDisplay.textContent = ''; adminFilePreviewBar.classList.add('hidden'); }
+});
+adminFileClearBtn.addEventListener('click', () => {
+  adminFileInput.value = '';
+  adminFileNameDisplay.textContent = '';
+  adminFilePreviewBar.classList.add('hidden');
+});
+
+// ============================================================
+// MƏRHƏLƏ 4 (3/4) — EMOJI PICKER (3 input üçün ortaq)
+// ============================================================
+const EMOJI_LIST = [
+  "😀","😁","😂","🤣","😊","🙂","😉","😍","😘","😜","🤔","🤨","😎","🥳","🤩",
+  "😢","😭","😡","😱","😴","🥰","😇","😏","😅","🙄","😬","🤐","😮","😞","😔",
+  "👍","👎","👏","🙏","💪","👋","✌️","🤝","👀","🙌",
+  "🔥","🎉","✨","⭐","💯","❤️","💔","✅","❌"
+];
+
+function buildEmojiPicker(panelEl, targetInput) {
+  panelEl.innerHTML = '';
+  EMOJI_LIST.forEach(emoji => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = emoji;
+    btn.addEventListener('click', (e) => { e.stopPropagation(); insertEmojiIntoInput(targetInput, emoji); });
+    panelEl.appendChild(btn);
+  });
+}
+
+function insertEmojiIntoInput(inputEl, emoji) {
+  const start = inputEl.selectionStart ?? inputEl.value.length;
+  const end = inputEl.selectionEnd ?? inputEl.value.length;
+  inputEl.value = inputEl.value.slice(0, start) + emoji + inputEl.value.slice(end);
+  const newCursorPos = start + emoji.length;
+  inputEl.focus();
+  inputEl.setSelectionRange(newCursorPos, newCursorPos);
+}
+
+function setupEmojiButton(btnEl, panelEl, targetInput) {
+  if (!btnEl || !panelEl || !targetInput) return;
+  buildEmojiPicker(panelEl, targetInput);
+  btnEl.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = !panelEl.classList.contains('hidden');
+    document.querySelectorAll('.emoji-picker-panel').forEach(p => p.classList.add('hidden'));
+    if (!isOpen) panelEl.classList.remove('hidden');
+  });
+  panelEl.addEventListener('click', (e) => e.stopPropagation());
+}
+
+setupEmojiButton(document.getElementById('chatEmojiBtn'), document.getElementById('chatEmojiPicker'), messageInputField);
+setupEmojiButton(document.getElementById('privateEmojiBtn'), document.getElementById('privateEmojiPicker'), privateInputField);
+setupEmojiButton(document.getElementById('adminEmojiBtn'), document.getElementById('adminEmojiPicker'), adminInputField);
 onAuthStateChanged(auth, async (user) => {
   updateAuthUI(user);
   if (user) {
