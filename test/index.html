@@ -2370,12 +2370,14 @@ function openChatModal() {
     return;
   }
   if (msgDropdown) msgDropdown.style.display = 'none';
+  if (typeof closeMsgReplyModalFn === 'function' && msgReplyModal?.classList.contains('active')) {
+    closeMsgReplyModalFn();
+  }
   chatModal.classList.add('active');
   if (!chatSessionInitialized) {
     initializeChatSession(auth.currentUser);
   }
 }
-
 function closeChatModalFn() {
   chatModal.classList.remove('active');
 }
