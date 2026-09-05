@@ -5,6 +5,7 @@ const MOVIES = [
   { title: "MARVEL", cover:"https://kinoflix.github.io/FILES/IMG/logos/marvel.jpg", src:"../marvel", year:2026, genre:"Fantastik", id:"marvel", special:"yes", trend:"yes" },
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "Özür dilerim", cover:"https://m.media-amazon.com/images/M/MV5BOWJlNGNiM2QtMjBmZC00ODJjLWIyMTEtMjk4MDNmODk3NGNkXkEyXkFqcGc@._V1_.jpg", src:"https://vidmoly.me/dl/qu0thtxz6tm5", year:2023, genre:"Komediya", id: "ozurdilerim" },
   { title: "Aşk kırmızı", cover:"https://m.media-amazon.com/images/M/MV5BMTc0NTkzNjM4NV5BMl5BanBnXkFtZTcwODYxNjUyOQ@@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/1105011673647", year:2013, genre:"Dram", id: "askkirmizi" },
   { title: "Acı aşk", cover:"https://m.media-amazon.com/images/M/MV5BMTQ3NzM5MDUxOF5BMl5BanBnXkFtZTcwMTI5NDI5Ng@@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/367143815814", year:2009, genre:"Dram", id: "aciask" },
   { title: "Öteki taraf", cover:"https://m.media-amazon.com/images/M/MV5BNDZjMjMwZDAtMzdiOC00ZWY2LThmNDctODY1Y2U4ZDkyODQ4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/2483417580805", year:2017, genre:"Triller", id: "otekitaraf" },
