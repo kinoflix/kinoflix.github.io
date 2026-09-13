@@ -24,7 +24,7 @@ let isMobile = sp.get('mobile');
 let display = null;
 let screenCtx = null;
 
-let fractionScale = sp.get('fractionScale') || (localStorage && localStorage.getItem("pl.zb3.freej2me.fractionScale") === "true");
+let fractionScale = true;
 let scaleSet = false;
 
 const keyRepeatManager = new KeyRepeatManager();
