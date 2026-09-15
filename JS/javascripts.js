@@ -5,6 +5,7 @@ const MOVIES = [
   { title: "MARVEL", cover:"https://kinoflix.github.io/FILES/IMG/logos/marvel.jpg", src:"../marvel", year:2026, genre:"Fantastik", id:"marvel", special:"yes", trend:"yes" },
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "Dayanılmaz çekim / Drawn Together", cover:"https://m.media-amazon.com/images/M/MV5BYWJjNDFiNDAtYTcwNi00MmNlLTk2NzYtYjJiY2I3ZWE2ZjY0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/15897389959785", year:2026, genre:"Dram", id: "drawntogether" },
   { title: "Mayday", cover:"https://m.media-amazon.com/images/M/MV5BM2VmYWEzM2UtODNjZi00YTk1LWEzZjEtNzY4OGU0YTdkNmJmXkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/15839437523561", year:2026, genre:"Komediya", id: "mayday" },
   { title: "Özür dilerim", cover:"https://m.media-amazon.com/images/M/MV5BOWJlNGNiM2QtMjBmZC00ODJjLWIyMTEtMjk4MDNmODk3NGNkXkEyXkFqcGc@._V1_.jpg", src:"https://vidmoly.me/dl/qu0thtxz6tm5", year:2023, genre:"Komediya", id: "ozurdilerim" },
   { title: "Aşk kırmızı", cover:"https://m.media-amazon.com/images/M/MV5BMTc0NTkzNjM4NV5BMl5BanBnXkFtZTcwODYxNjUyOQ@@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/1105011673647", year:2013, genre:"Dram", id: "askkirmizi" },
