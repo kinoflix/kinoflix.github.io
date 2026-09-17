@@ -2285,3 +2285,65 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
 })();
+/* =========================================================
+   PATCH: VidMoly üçün sandbox-u söndürmək
+   (universal-video-handler.js-in ÖZÜNƏ TOXUNMADAN)
+
+   NECƏ İŞLƏYİR:
+   universal handler modalı açanda əvvəlcə .univmodal-iframe-ə
+   "sandbox" atributunu qoyur, SONRA "src"-i təyin edir. Bu patch
+   "src" dəyişdikdə dərhal işə düşür: əgər yeni src VidMoly-ə
+   aiddirsə, "sandbox" atributunu silir. Digər bütün provayderlərə
+   TOXUNMUR — onların sandbox-u (DEFAULT_SANDBOX / Streamtape-in öz
+   sətri) olduğu kimi qalır.
+
+   QURAŞDIRMA: bu faylın məzmununu JS fayllarınızın ƏN SONUNA
+   (universal-video-handler.js-dən SONRA) əlavə edin.
+   ========================================================= */
+(function () {
+
+  function stripSandboxIfVidmoly(iframe) {
+    if (!iframe || iframe.tagName !== 'IFRAME') return;
+    const src = iframe.getAttribute('src') || '';
+    if (/vidmoly\./i.test(src) && iframe.hasAttribute('sandbox')) {
+      iframe.removeAttribute('sandbox');
+    }
+  }
+
+  // Səhifə artıq yüklənibsə, indi mövcud olan iframe-ə də tətbiq et
+  document.querySelectorAll('.univmodal-iframe').forEach(stripSandboxIfVidmoly);
+
+  const observer = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      // Modal iframe-inin "src"-i dəyişəndə yoxla
+      if (
+        m.type === 'attributes' &&
+        m.attributeName === 'src' &&
+        m.target.classList &&
+        m.target.classList.contains('univmodal-iframe')
+      ) {
+        stripSandboxIfVidmoly(m.target);
+      }
+      // Modal iframe-i sonradan DOM-a əlavə olunubsa (ilk açılış anı)
+      if (m.addedNodes && m.addedNodes.length) {
+        m.addedNodes.forEach((node) => {
+          if (node.nodeType !== 1) return;
+          if (node.classList && node.classList.contains('univmodal-iframe')) {
+            stripSandboxIfVidmoly(node);
+          }
+          if (node.querySelectorAll) {
+            node.querySelectorAll('.univmodal-iframe').forEach(stripSandboxIfVidmoly);
+          }
+        });
+      }
+    }
+  });
+
+  observer.observe(document.documentElement, {
+    subtree: true,
+    childList: true,
+    attributes: true,
+    attributeFilter: ['src']
+  });
+
+})();
