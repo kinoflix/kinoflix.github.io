@@ -1243,11 +1243,6 @@ searchInput.setAttribute('aria-label','Film axtar');
         );
       } catch (err) {
         if (original) return original(movie);
-        try {
-          window.open((movie && movie.src) || movie || '', '_blank');
-        } catch (e) {}
-      }
-        if (original) return original(movie);
         try { window.open((movie && movie.src) || movie || '', '_blank'); } catch (e) {}
       }
     };
