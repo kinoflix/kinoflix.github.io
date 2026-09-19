@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="az"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vidmoly — PC sınağı</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0b0e14;color:#e9edf5;font:15px/1.5 system-ui,sans-serif}main{max-width:1100px;margin:35px auto;padding:0 18px}h1{font-size:26px;margin-bottom:4px}p{color:#acb6c8}form{display:grid;gap:12px;margin:22px 0}input,select,button{font:inherit;border:1px solid #354057;border-radius:9px;padding:12px;background:#151c29;color:inherit;width:100%}label{display:grid;gap:6px}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}button{cursor:pointer;background:#2ddb92;color:#082519;font-weight:700;border:0}.screen{aspect-ratio:16/9;background:#000;border:1px solid #354057;border-radius:12px;overflow:hidden;display:grid;place-items:center}.screen iframe{width:100%;height:100%;border:0}.screen:fullscreen{width:100vw;height:100vh;aspect-ratio:auto;border-radius:0}.actions{display:flex;align-items:center;gap:18px;margin:14px 0}.actions button{width:auto;background:#202c40;color:white}a{color:#61e3b1}#address{overflow-wrap:anywhere;font:13px/1.5 monospace}#status{min-height:24px;color:#c3d2e9}.hint{padding:12px;border-left:3px solid #2ddb92;background:#131b27}summary{cursor:pointer}li{margin:8px 0}@media(max-width:620px){main{margin:18px auto}.row{grid-template-columns:1fr}}
+</style></head><body><main>
+<h1>Vidmoly — PC sınağı</h1><p>Eyni video, fərqli iframe parametrləri. Universal handlerdən asılı deyil.</p>
+<p class="hint" id="environment"></p>
+<form id="form"><label>Vidmoly linki<input id="url" value="https://vidmoly.me/dl/mif0pfxi0ztc" spellcheck="false" required></label>
+<div class="row"><label>Ünvan<select id="route"><option value="original">Orijinal link — olduğu kimi</option><option value="handler">Handlerdəki ünvan — vidmoly.net/embed-…</option></select></label>
+<label>Sınaq rejimi<select id="mode"><option value="A">A — Sandbox yoxdur, normal referrer</option><option value="B">B — Sandbox yoxdur, no-referrer</option><option value="C">C — Sandbox var, normal referrer</option><option value="D">D — Sandbox var, no-referrer (handler kimi)</option></select></label></div>
+<button type="submit">Pleyeri aç / yenidən yüklə</button></form>
+<div class="screen" id="screen"><p>Başlamaq üçün “Pleyeri aç” düyməsinə basın.</p></div>
+<div class="actions"><button id="fullscreen" type="button">Tam ekran</button><a id="external" target="_blank" rel="noopener noreferrer" hidden>Eyni ünvanı ayrıca aç ↗</a></div>
+<p id="status" role="status"></p><p id="address"></p>
+<details><summary>Nəticəni necə müqayisə etməli?</summary><ol>
+<li>Əvvəl orijinal linklə A rejimini yoxlayın. Sonra “Handlerdəki ünvan” seçib A rejimini yenidən yoxlayın.</li>
+<li>İşləyən ünvan seçimini saxlayaraq B, C və D rejimlərini sınayın. Hər dəyişiklikdən sonra “Pleyeri aç” düyməsinə basın.</li>
+<li>A işləyir, C işləmirsə sandbox; A işləyir, B işləmirsə referrer siyasəti şübhəlidir. Bunlar diaqnostik işarələrdir, təkbaşına qəti sübut deyil.</li>
+<li>D burada işləyib əsas saytda işləmirsə, saytın digər skriptləri və səhifə parametrləri də yoxlanmalıdır.</li></ol>
+<p>A və B rejimlərində sandbox məhdudiyyətləri, o cümlədən onun pop-up bloklaması tətbiq edilmir.</p></details>
+</main><script>
+'use strict';
+const $=id=>document.getElementById(id);
+const sandbox='allow-scripts allow-same-origin allow-forms allow-presentation';
+function resolveUrl(raw,route){
+ const text=raw.trim();
+ const u=new URL(/^https?:\/\//i.test(text)?text:'https://'+text);
+ if(u.protocol!=='https:' || u.username || u.password || !/^(?:www\.)?vidmoly\.(me|net|to|tv)$/i.test(u.hostname))throw Error('Tam HTTPS Vidmoly linki daxil edin.');
+ if(route==='original')return u.href;
+ // Göndərilən universal handlerin URL çevirməsi, müqayisə üçün eynilə saxlanılıb.
+ const m=u.href.match(/vidmoly\.[a-z]+.*?(?:\/embed-|\/d\/|\/w\/|\/)([a-zA-Z0-9]{10,20})/i);
+ if(!m)throw Error('Handler bu linkdən video kodunu ayıra bilmir. Orijinal link rejimini seçin.');
+ return 'https://vidmoly.net/embed-'+m[1]+'.html';
+}
+$('environment').textContent=location.protocol==='file:'
+ ? 'Referrer müqayisəsinin düzgün olması üçün bu faylı GitHub saytına yükləyib həmin HTTPS ünvanından açın. Lokal faylda referrer göndərilməyə bilər.'
+ : 'Sınağı əsas saytla eyni PC brauzerində aparın. Hər rejim yeni iframe yaradır.';
+$('form').addEventListener('submit',e=>{
+ e.preventDefault();let url;try{url=resolveUrl($('url').value,$('route').value)}catch(err){$('status').textContent=err.message;return}
+ const mode=$('mode').value;
+ const frame=document.createElement('iframe');
+ frame.title='Vidmoly video';
+ frame.setAttribute('allow','autoplay; fullscreen; encrypted-media; picture-in-picture');
+ frame.setAttribute('allowfullscreen','');
+ frame.referrerPolicy=(mode==='A'||mode==='C')?'strict-origin-when-cross-origin':'no-referrer';
+ if(mode==='C'||mode==='D')frame.setAttribute('sandbox',sandbox);
+ frame.src=url;
+ $('screen').replaceChildren(frame);
+ $('external').href=url;$('external').hidden=false;
+ $('address').textContent=url;
+ $('status').textContent='Rejim '+mode+' açılır. Videonu pleyerin öz düyməsindən başladın. Bu səhifə iframe daxilindəki oynatma və xəta vəziyyətini avtomatik oxuya bilmir.';
+});
+$('fullscreen').addEventListener('click',async()=>{
+ try{if(document.fullscreenElement)await document.exitFullscreen();else if($('screen').requestFullscreen)await $('screen').requestFullscreen();else throw Error('unsupported')}catch{$('status').textContent='Bu brauzerdə tam ekran açıla bilmədi.'}
+});
+</script></body></html>
