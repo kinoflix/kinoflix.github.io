@@ -982,18 +982,17 @@ searchInput.setAttribute('aria-label','Film axtar');
       }
     },
     {
-  name: 'VidMoly',
-  test: u => /vidmoly\./i.test(u),
-  embed: u => {
-    const m = u.match(/vidmoly\.[a-z]+.*?(?:\/embed-|\/d\/|\/w\/|\/)([a-zA-Z0-9]{10,20})/i);
-
-    return (m && m[1])
-      ? `https://vidmoly.net/embed-${m[1]}.html`
-      : null;
-  },
-  forceFsButton: true,
-  sandbox: 'vidmoly-adaptive'
-},
+    name: 'VidMoly',
+    test: u => /vidmoly\./i.test(u),
+    embed: u => {
+        const m = u.match(/vidmoly\.[a-z]+.*?(?:\/embed-|\/d\/|\/w\/|\/)([a-zA-Z0-9]{10,20})/i);
+        return (m && m[1])
+          ? `https://vidmoly.net/embed-${m[1]}.html`
+          : null;
+       },
+    forceFsButton: true,
+    sandbox: 'vidmoly-adaptive'
+      },
     {
       name: 'Google Drive',
       test: u => /drive\.google\.com/i.test(u),
