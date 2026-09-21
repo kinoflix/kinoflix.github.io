@@ -959,7 +959,11 @@ body, input, button, select, textarea {
 
             <div style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.1); padding:4px 8px; border-radius:4px; font-size:10px; color:#333; font-weight:bold; pointer-events:none;">PREVIEW</div>
 
-            <iframe id="output"></iframe>
+            <iframe
+                id="output"
+                title="Kodun önizləməsi"
+                sandbox="allow-scripts"
+            ></iframe>
 
         </div>
 
@@ -1041,7 +1045,7 @@ body, input, button, select, textarea {
             const templates = {
                 html: '<div class="card">\n  <h1>Salam KINOFLIX+</h1>\n  <p>Kodlama sahəsinə xoş gəldiniz!</p>\n  <button id="btn">Mənə Kliklə</button>\n</div>',
                 css: 'body {\n  font-family: sans-serif;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: 100vh;\n  background: #f0f2f5;\n}\n.card {\n  background: white;\n  padding: 2rem;\n  border-radius: 12px;\n  box-shadow: 0 4px 12px rgba(0,0,0,0.1);\n  text-align: center;\n}\nh1 { color: #1db954; }\nbutton {\n  background: #1db954;\n  color: white;\n  border: none;\n  padding: 10px 20px;\n  border-radius: 20px;\n  cursor: pointer;\n  margin-top: 10px;\n}',
-                js: 'document.getElementById("btn").addEventListener("click", () => {\n  alert("Kodun əla işləyir! 🚀");\n});'
+                js: 'document.getElementById("btn").addEventListener("click", () => {\n  document.getElementById("btn").textContent = "Kodun əla işləyir! 🚀";\n});'
             };
 
             textarea.value = templates[targetId];
