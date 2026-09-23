@@ -37,15 +37,88 @@ export function shiftDate(ymd, days) {
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 }
+const AZ_MONTHS = [
+  "yanvar",
+  "fevral",
+  "mart",
+  "aprel",
+  "may",
+  "iyun",
+  "iyul",
+  "avqust",
+  "sentyabr",
+  "oktyabr",
+  "noyabr",
+  "dekabr",
+];
+const AZ_WEEKDAYS = {
+  Monday: "Bazar ertəsi",
+  Tuesday: "Çərşənbə axşamı",
+  Wednesday: "Çərşənbə",
+  Thursday: "Cümə axşamı",
+  Friday: "Cümə",
+  Saturday: "Şənbə",
+  Sunday: "Bazar",
+};
 export function formatDate(value, options = {}) {
   const date = new Date(value);
   if (!value || Number.isNaN(date.getTime())) return "—";
-  return new Intl.DateTimeFormat(CONFIG.LOCALE, {
+  const settings = {
     timeZone: CONFIG.TIMEZONE,
     day: "numeric",
     month: "long",
     ...options,
-  }).format(date);
+  };
+  // Some browsers have incomplete az locale data ("M09", English weekdays).
+  // Intl still performs all timezone conversion; local labels ensure AZ text.
+  if (
+    CONFIG.LOCALE.startsWith("az") &&
+    (settings.day || settings.month || settings.year)
+  ) {
+    const parts = new Intl.DateTimeFormat("en-GB", {
+      timeZone: CONFIG.TIMEZONE,
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).formatToParts(date);
+    const part = (type) => parts.find((p) => p.type === type).value;
+    const fields = [];
+    if (settings.day)
+      fields.push(
+        settings.day === "2-digit" ? part("day") : String(Number(part("day"))),
+      );
+    if (settings.month) {
+      const name = AZ_MONTHS[Number(part("month")) - 1];
+      fields.push(
+        settings.month === "long"
+          ? name
+          : settings.month === "short"
+            ? name.slice(0, 3)
+            : settings.month === "2-digit"
+              ? part("month")
+              : String(Number(part("month"))),
+      );
+    }
+    if (settings.year)
+      fields.push(
+        settings.year === "2-digit" ? part("year").slice(-2) : part("year"),
+      );
+    let result = fields.join(
+      ["numeric", "2-digit"].includes(settings.month) ? "." : " ",
+    );
+    if (settings.weekday) {
+      const weekday = new Intl.DateTimeFormat("en-US", {
+        timeZone: CONFIG.TIMEZONE,
+        weekday: "long",
+      }).format(date);
+      result += `, ${AZ_WEEKDAYS[weekday]}`;
+    }
+    if (settings.hour || settings.minute || settings.second) {
+      result += `, ${new Intl.DateTimeFormat(CONFIG.LOCALE, { timeZone: CONFIG.TIMEZONE, hour: settings.hour, minute: settings.minute, second: settings.second, hourCycle: "h23" }).format(date)}`;
+    }
+    return result;
+  }
+  return new Intl.DateTimeFormat(CONFIG.LOCALE, settings).format(date);
 }
 export const time = (value) =>
   formatDate(value, {
