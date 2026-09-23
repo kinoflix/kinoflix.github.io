@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="az" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="KINOFLIX Futbol Mərkəzi — oyun təqvimi, nəticələr, futbolçular, komandalar və turnir cədvəlləri."
+    />
+    <meta name="color-scheme" content="dark light" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' https: data:; connect-src https: http://127.0.0.1:8787 http://localhost:8787; object-src 'none'; base-uri 'self'; form-action 'none'"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <title>Futbol Mərkəzi • KINOFLIX</title>
+    <link rel="icon" href="assets/team.svg" type="image/svg+xml" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/football.css" />
+    <script src="js/theme.js"></script>
+    <script type="module" src="js/app.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#content">Oyunlara keç</a>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="KINOFLIX ana səhifə"
+        ><span>KINOFLIX<span class="brand-plus">+</span></span
+        ><span class="brand-divider"></span
+        ><span class="brand-sport">FUTBOL</span></a
+      >
+      <div class="header-actions">
+        <a class="home-link" href="/"
+          ><i class="fa-solid fa-house" aria-hidden="true"></i
+          ><span>Ana səhifə</span></a
+        ><button
+          id="theme-toggle"
+          class="icon-button"
+          aria-label="Rəng rejimini dəyiş"
+        >
+          <i class="fa-solid fa-sun" aria-hidden="true"></i>
+        </button>
+      </div>
+    </header>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">OYUNUN RİTMİNİ TUT</p>
+          <h1>Futbol Mərkəzi<span class="accent-dot">.</span></h1>
+          <p class="muted">Meydançada nə baş verir? Hamısı bir yerdə.</p>
+        </div>
+        <div class="hero-clock">
+          <i class="fa-regular fa-clock" aria-hidden="true"></i>
+          <div>
+            <strong id="baku-date"></strong><span>Bakı vaxtı · 24 saat</span>
+          </div>
+        </div>
+      </section>
+      <div class="search-wrap" id="search-wrap">
+        <label class="search-label" for="search"
+          ><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i
+          ><input
+            id="search"
+            type="search"
+            placeholder="Futbolçu və ya komanda axtar..."
+            autocomplete="off"
+            aria-controls="search-results"
+            aria-expanded="false"
+          /><span class="search-hint">Ən azı 3 hərf</span></label
+        >
+        <div id="search-results" class="search-results" hidden></div>
+      </div>
+      <nav class="main-tabs" aria-label="Futbol bölmələri">
+        <button data-view="live">
+          <span class="live-dot"></span>Canlı
+          <span id="live-count" class="count" hidden></span>
+        </button>
+        <button data-view="today" aria-current="page">Bu gün</button>
+        <button data-view="tomorrow">Sabah</button>
+        <button data-view="leagues">
+          <i class="fa-solid fa-trophy" aria-hidden="true"></i>Liqalar
+        </button>
+        <button data-view="standings">Cədvəllər</button>
+        <button data-view="scorers">Bombardirlər</button>
+        <button data-view="favorites">
+          <i class="fa-regular fa-star" aria-hidden="true"></i>Favoritlər
+        </button>
+      </nav>
+      <div class="dashboard">
+        <aside class="sidebar">
+          <section class="panel">
+            <div class="section-heading">
+              <h2>
+                <i class="fa-solid fa-star" aria-hidden="true"></i> Mənim
+                komandalarım
+              </h2>
+            </div>
+            <div id="favorite-teams" class="side-list"></div>
+          </section>
+          <section class="panel">
+            <div class="section-heading"><h2>Futbol bələdçisi</h2></div>
+            <div class="guide">
+              <p>Komandanı və ya futbolçunu axtar, profilində ulduza toxun.</p>
+              <p>Oyun kartından hadisələrə, statistikaya və heyətlərə keç.</p>
+              <span class="guide-badge"
+                ><i class="fa-solid fa-globe" aria-hidden="true"></i>
+                Asia/Baku</span
+              >
+            </div>
+          </section>
+        </aside>
+        <section class="main-column" aria-label="Futbol məlumatları">
+          <div class="toolbar" id="match-toolbar">
+            <div class="date-control">
+              <button
+                id="prev-day"
+                class="icon-button"
+                aria-label="Əvvəlki gün"
+              >
+                <i
+                  class="fa-solid fa-chevron-left"
+                  aria-hidden="true"
+                ></i></button
+              ><label class="date-label"
+                ><span class="sr-only">Oyun tarixi</span
+                ><input type="date" id="match-date" /></label
+              ><button
+                id="next-day"
+                class="icon-button"
+                aria-label="Sonrakı gün"
+              >
+                <i
+                  class="fa-solid fa-chevron-right"
+                  aria-hidden="true"
+                ></i></button
+              ><button id="jump-today" class="text-button">Bu gün</button>
+            </div>
+            <div class="filters">
+              <label
+                ><span class="sr-only">Matç statusu</span
+                ><select id="status-filter">
+                  <option value="all">Hamısı</option>
+                  <option value="live">Canlı</option>
+                  <option value="finished">Bitmiş</option>
+                  <option value="scheduled">Başlamayıb</option>
+                </select></label
+              ><label
+                ><span class="sr-only">Liqa filtri</span
+                ><select id="league-filter">
+                  <option value="all">Bütün liqalar</option>
+                </select></label
+              >
+            </div>
+          </div>
+          <div class="content-heading">
+            <div>
+              <p class="eyebrow" id="view-kicker">OYUN TƏQVİMİ</p>
+              <h2 id="view-title">Bugünkü oyunlar</h2>
+            </div>
+            <button id="refresh" class="button compact">
+              <i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>
+              Yenilə
+            </button>
+          </div>
+          <div
+            id="data-status"
+            class="data-status"
+            role="status"
+            aria-live="polite"
+          ></div>
+          <div id="content" tabindex="-1"></div>
+        </section>
+      </div>
+      <footer>
+        <span
+          >KINOFLIX<span class="brand-plus">+</span>
+          <span class="muted">/ Futbol Mərkəzi</span></span
+        ><span>Məlumat: API-Football · Əhatə dairəsi paketdən asılıdır</span>
+      </footer>
+    </main>
+    <dialog id="detail" aria-labelledby="detail-title">
+      <div class="dialog-header">
+        <h2 id="detail-title">Detallar</h2>
+        <div id="detail-actions"></div>
+        <button
+          id="close-detail"
+          class="icon-button"
+          aria-label="Pəncərəni bağla"
+        >
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div id="detail-body"></div>
+    </dialog>
+    <div id="toast" class="toast" role="status" hidden></div>
+    <noscript
+      ><p>
+        Futbol Mərkəzindən istifadə etmək üçün JavaScript-i aktiv edin.
+      </p></noscript
+    >
+  </body>
+</html>

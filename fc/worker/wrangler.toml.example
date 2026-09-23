@@ -1,0 +1,23 @@
+name = "kinoflix-football"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+[vars]
+ALLOWED_ORIGINS = "https://kinoflix.github.io"
+DATA_MODE = "economy"
+DAILY_BUDGET = "95"
+CORE_RESERVE = "35"
+UPSTREAM_PER_MINUTE = "10"
+
+[[durable_objects.bindings]]
+name = "FOOTBALL_HUB"
+class_name = "FootballHub"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["FootballHub"]
+
+# Secret: FOOTBALL_API_KEY (wrangler secret put; never write it here)
+# For LOCAL development only add http://localhost:8080 and http://127.0.0.1:8080
+# to ALLOWED_ORIGINS; restore the production value before deployment.
