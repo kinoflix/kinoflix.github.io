@@ -1106,7 +1106,7 @@ searchInput.setAttribute('aria-label','Film axtar');
         </div>
         <div class="univmodal-iframe-wrap">
           <iframe class="univmodal-iframe" allowfullscreen webkitallowfullscreen mozallowfullscreen
-            allow="fullscreen; autoplay; encrypted-media; picture-in-picture; geolocation; microphone; camera"
+            allow="fullscreen *; autoplay *; encrypted-media *; picture-in-picture *; geolocation; microphone; camera"
             referrerpolicy="no-referrer" src="about:blank"></iframe>
         </div>
       </div>
