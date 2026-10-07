@@ -523,7 +523,7 @@ const MOVIES = [
 
 /* ===========================
    State & refs
-   =========================== */
+   ===========================/
 let state = { all: MOVIES.slice(), filtered: MOVIES.slice(), perPage:21, page:0, loading:false, modalOpen:false, current:null };
 
 const grid = document.getElementById('grid');
@@ -542,7 +542,7 @@ const toast = document.getElementById('toast');
 const closeModal = document.getElementById('closeModal');
 const genreFilter = document.getElementById('genreFilter'); // <-- YENİ DOM Referansı
 
-/* === YENİ ===: Janr Filtrini Doldurmaq */
+/* === YENİ ===: Janr Filtrini Doldurmaq/
 function populateGenres() {
   // Bütün unikal janrları tap və əlifba sırası ilə düz
   const genres = [...new Set(MOVIES.map(m => m.genre))].sort();
@@ -556,9 +556,9 @@ function populateGenres() {
   });
 }
 populateGenres(); // Səhifə yüklənəndə funksiyanı çağır
-/* === SON === */
+/* === SON ===/
 
-/* Theme handling + logo swapping - YENİLƏNDİ */
+/* Theme handling + logo swapping - YENİLƏNDİ/
 let theme = localStorage.getItem('flix-theme') || 'dark';
 
 function applyTheme(t) {
@@ -595,7 +595,7 @@ themeToggle.addEventListener('click', () => {
 // Səhifə yüklənəndə tətbiq et
 applyTheme(theme);
 
-/* Toast helper */
+/* Toast helper/
 function showToast(msg, ms=2000){
   toast.textContent = msg; toast.classList.add('show'); toast.style.display='block';
   clearTimeout(toast._t); toast._t = setTimeout(()=>{ toast.classList.remove('show'); toast.style.display='none'; }, ms);
@@ -1149,7 +1149,7 @@ searchInput.setAttribute('aria-label','Film axtar');
     const subEl = m.querySelector('.univmodal-sub');
     const fsBtn = m.querySelector('.univmodal-fs');
 
-    fsBtn.style.display = showFsButton ? '' : 'none';
+    fsBtn.style.display = 'none';
 
     // Sandbox-u src-dən ƏVVƏL qoyuruq ki, iframe elə əvvəldən məhdudiyyətli
     // kontekstdə naviqasiya etsin (reklam/pop-up bloklaması üçün vacibdir).
