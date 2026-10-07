@@ -1149,7 +1149,7 @@ searchInput.setAttribute('aria-label','Film axtar');
     const subEl = m.querySelector('.univmodal-sub');
     const fsBtn = m.querySelector('.univmodal-fs');
 
-    fsBtn.style.display = 'none';
+    fsBtn.style.display = showFsButton ? '' : 'none';
 
     // Sandbox-u src-dən ƏVVƏL qoyuruq ki, iframe elə əvvəldən məhdudiyyətli
     // kontekstdə naviqasiya etsin (reklam/pop-up bloklaması üçün vacibdir).
