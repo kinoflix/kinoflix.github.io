@@ -1106,7 +1106,7 @@ searchInput.setAttribute('aria-label','Film axtar');
         </div>
         <div class="univmodal-iframe-wrap">
           <iframe class="univmodal-iframe" allowfullscreen webkitallowfullscreen mozallowfullscreen
-            allow="fullscreen; autoplay; encrypted-media; picture-in-picture; geolocation; microphone; camera"
+            allow="fullscreen *; autoplay *; encrypted-media *; picture-in-picture *; geolocation; microphone; camera"
             referrerpolicy="no-referrer" src="about:blank"></iframe>
         </div>
       </div>
@@ -1149,7 +1149,7 @@ searchInput.setAttribute('aria-label','Film axtar');
     const subEl = m.querySelector('.univmodal-sub');
     const fsBtn = m.querySelector('.univmodal-fs');
 
-    fsBtn.style.display = showFsButton ? '' : 'none';
+    fsBtn.style.display = 'none'; 
 
     // Sandbox-u src-dən ƏVVƏL qoyuruq ki, iframe elə əvvəldən məhdudiyyətli
     // kontekstdə naviqasiya etsin (reklam/pop-up bloklaması üçün vacibdir).
