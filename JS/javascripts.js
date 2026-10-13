@@ -5,6 +5,7 @@ const MOVIES = [
   { title: "MARVEL", cover:"https://kinoflix.github.io/FILES/IMG/logos/marvel.jpg", src:"../marvel", year:2026, genre:"Fantastik", id:"marvel", special:"yes", trend:"yes" },
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "10x10", cover:"https://m.media-amazon.com/images/M/MV5BODRlZDRjMDctYzhjNy00ZDRhLThjNmQtYTI2YmE4YmQ2ZjU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/16307305843305", year:2018, genre:"Triller", id: "10x10" },
   { title: "Animals", cover:"https://m.media-amazon.com/images/M/MV5BOGQyMTU2NjYtYzk0MS00NTU5LTk1NWQtMTllNGM2MzQ5ZTU0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/16259504540265", year:2026, genre:"Triller", id: "animals" },
   { title: "Matchbox the Movie", cover:"https://m.media-amazon.com/images/M/MV5BMzFjYmM0NTQtM2ZkNS00ODUwLWI2Y2UtNTJkYThjM2RmODQ2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/16260058843753", year:2026, genre:"Aksiyon", id: "matchboxthemovie" },
   { title: "Karanlık / Darkness", cover:"https://m.media-amazon.com/images/M/MV5BODc3ODdlMWMtY2M4OS00YWY1LTg1M2ItZWZiYmQ4YjE5YmJmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/16291525364329", year:2002, genre:"Qorxu", id: "darkness" },
