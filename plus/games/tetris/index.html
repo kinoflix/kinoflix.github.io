@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%231db954' d='M27.5 162.2L9 187.1h90.5l6.9-130.7-78.9 105.8zM396.3 45.7L267.7 32l135.7 147.2-7.1-133.5zM112.2 218.3l-11.2-22H9.9L234.8 458zm2-31.2h284l-81.5-88.5L256.3 33zm297.3 9.1L277.6 458l224.8-261.7h-90.9zM415.4 69L406 56.4l.9 17.3 6.1 113.4h90.3zM113.5 93.5l-4.6 85.6L244.7 32 116.1 45.7zm287.7 102.7h-290l42.4 82.9L256.3 480l144.9-283.8z'/%3E%3C/svg%3E">
+  <title>Tetris – KINOFLIX+ GAMES</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #08101a;
+      --surface: #0f1720;
+      --text: #e6eef6;
+      --muted: #94a3b8;
+      --accent: #1db954; /* Kinoflix Dark (Yaşıl) */
+      --glass: rgba(255, 255, 255, 0.03);
+      --card-sh: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --border: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-theme="light"] {
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --text: #071026;
+      --muted: #475569;
+      --accent: #0b74ff; /* Kinoflix Light (Mavi) */
+      --glass: rgba(0, 0, 0, 0.04);
+      --border: rgba(0, 0, 0, 0.1);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Varela Round', sans-serif;
+      transition: background 0.4s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 90px; /* Header hündürlüyü */
+      min-height: 100vh;
+    }
+
+    /* HEADER & LOGO */
+    header {
+      position: fixed; top: 0; width: 100%; height: 72px;
+      background: var(--bg); backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; z-index: 1000; border-bottom: 1px solid var(--glass);
+    }
+
+    .logo-container {
+      display: flex; align-items: center; gap: 10px; text-decoration: none;
+    }
+    .logo-icon {
+      font-size: 24px; color: var(--accent);
+      filter: drop-shadow(0 0 8px var(--accent)); transition: 0.3s;
+    }
+    .logo-text {
+      font-size: 1.2rem; font-weight: 700; color: var(--text);
+      letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .logo-text span { color: var(--accent); font-weight: 300; }
+
+    .logo-container:hover .logo-icon { transform: rotate(-15deg) scale(1.1); }
+
+    /* TEMA BUTONU */
+    #themeToggle {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--glass); border: 1px solid var(--border);
+      color: var(--text); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    #themeToggle:hover {
+      background: var(--accent); color: white; border-color: transparent;
+      transform: scale(1.1) rotate(15deg);
+      box-shadow: 0 0 15px var(--accent);
+    }
+
+    /* OYUN BÖLMƏSİ */
+    .game-container {
+      width: min(94%, 420px);
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 1.5rem; margin: 0 0 20px;
+      border-left: 4px solid var(--accent); padding-left: 15px;
+    }
+
+    .game-frame-card {
+      background: var(--surface);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--card-sh);
+      border: 1px solid var(--glass);
+      transition: border-color 0.3s ease;
+    }
+    .game-frame-card:hover { border-color: var(--accent); }
+
+    /* Ölçüləri JS dəqiq təyin edir (en = 10 blokun misli, hündürlük = en × 2) */
+    #tetris {
+      width: 100%;
+      aspect-ratio: 1 / 2;
+      user-select: none; -webkit-user-select: none;
+    }
+
+    .game-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 12px 16px;
+      border-top: 1px solid var(--glass);
+    }
+    .game-bar-info { min-width: 0; }
+    .game-bar-title {
+      font-size: 0.95rem; font-weight: bold; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .game-bar-category { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+    /* Klaviatura göstərişləri (başlanğıc pəncərəsində, kompüterdə) */
+    .key-hints {
+      display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+      width: max-content; max-width: 100%; margin: 22px auto 0;
+      font-size: 0.78rem; color: var(--muted); text-align: left;
+    }
+    .key-hints > div { display: flex; align-items: center; gap: 10px; }
+    .key-hints .keys { display: inline-flex; gap: 4px; min-width: 58px; }
+    .key-hints kbd {
+      display: inline-grid; place-items: center;
+      min-width: 24px; height: 24px; padding: 0 6px;
+      border-radius: 6px; background: var(--glass); border: 1px solid var(--border);
+      color: var(--text); font-family: inherit; font-size: 0.75rem;
+    }
+
+    .pause-btn {
+      flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 16px; border-radius: 50px;
+      background: var(--glass); color: var(--text); border: 1px solid var(--accent);
+      font-family: inherit; font-weight: bold; font-size: 0.8rem; cursor: pointer; transition: 0.3s;
+    }
+    .pause-btn[hidden] { display: none; }
+    .pause-btn:hover { background: var(--accent); color: #fff; box-shadow: 0 0 15px var(--accent); }
+
+    /* Mobil idarəetmə düymələri */
+    .touch-pad {
+      display: none;
+      width: min(94%, 420px);
+      margin: 12px 0 24px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .pad-btn {
+      height: 56px; border-radius: 14px;
+      background: var(--surface); color: var(--text);
+      border: 1px solid var(--border);
+      font-size: 1.15rem; cursor: pointer;
+      display: grid; place-items: center;
+      touch-action: none;
+      user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+      transition: background 0.15s, box-shadow 0.15s, border-color 0.15s;
+    }
+    .pad-btn.is-down {
+      background: var(--accent); color: #fff; border-color: var(--accent);
+      box-shadow: 0 0 14px var(--accent);
+    }
+
+    /* BlockRain daxili elementləri (saytın rəng dəyişənləri ilə) */
+    .blockrain-game-holder { position: relative; color: var(--text); font-size: 16px; line-height: 140%; }
+
+    .blockrain-score-holder, .best-holder {
+      position: absolute; top: 10px; right: 12px; text-align: right;
+      pointer-events: none; text-shadow: 0 1px 8px var(--bg), 0 0 2px var(--bg);
+    }
+    .blockrain-score-msg {
+      font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase;
+      color: var(--muted); line-height: 100%; margin-bottom: 0.25em;
+    }
+    .best-holder { right: auto; left: 12px; text-align: left; }
+    .best-holder .blockrain-score-num { color: var(--text); }
+    .blockrain-score-num { font-size: 1.3rem; font-weight: bold; color: var(--accent); }
+    .final-score.is-record b { color: #f5b301; }
+
+    .blockrain-start-holder, .blockrain-game-over-holder, .pause-holder {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: color-mix(in srgb, var(--bg) 84%, transparent);
+      -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+      text-align: center;
+    }
+    .pause-holder { display: none; z-index: 5; }
+    .pause-holder.show { display: block; }
+    .blockrain-start, .blockrain-game-over {
+      position: absolute; top: 50%; width: 100%; transform: translateY(-50%);
+      padding: 0 16px;
+    }
+    .blockrain-start-msg, .blockrain-game-over-msg {
+      font-size: 1.05rem; font-weight: bold; line-height: 1.4; margin-bottom: 18px;
+    }
+    .final-score { margin-top: 6px; font-size: 0.85rem; font-weight: normal; color: var(--muted); }
+    .final-score b { color: var(--accent); font-size: 1.1rem; }
+
+    .blockrain-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 26px; border-radius: 50px;
+      background: var(--accent); color: #fff; border: 1px solid var(--accent);
+      font-weight: bold; font-size: 0.9rem; text-decoration: none; white-space: nowrap;
+      cursor: pointer; transition: 0.3s;
+    }
+    .blockrain-btn:hover, .blockrain-btn:focus-visible {
+      transform: translateY(-2px); box-shadow: 0 0 15px var(--accent); outline: none;
+    }
+
+    /* Çox kiçik lövhədə (qısa ekran) yazılar və düymə sıxlaşır */
+    .is-compact .blockrain-start, .is-compact .blockrain-game-over { padding: 0 8px; }
+    .is-compact .blockrain-btn { padding: 10px 14px; font-size: 0.8rem; }
+    .is-compact .blockrain-btn i { display: none; }
+    .is-compact .blockrain-start-msg, .is-compact .blockrain-game-over-msg { font-size: 0.9rem; margin-bottom: 12px; }
+    .is-compact .key-hints { margin-top: 14px; gap: 6px; }
+
+    /* MOBİL ÜÇÜN */
+    @media (hover: none) and (pointer: coarse), (max-width: 600px) {
+      .touch-pad { display: grid; }
+      .game-container { margin-bottom: 0; }
+      .key-hints { display: none; }
+    }
+    @media (max-width: 600px) {
+      body { padding-top: 82px; }
+      .section-title { display: none; }
+      .game-bar { padding: 10px 12px; }
+    }
+
+          /* ============================================================
+   AUTH MODAL — DÜZƏLDİLMİŞ VERSİYA
+   ============================================================ */
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(2, 6, 23, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
+}
+.modal-overlay.active {
+  display: flex;
+}
+
+/* Modal card əsası */
+.modal-card {
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow);
+  animation: scaleUp 0.22s ease-out;
+}
+
+/* Auth modal card — maksimum en */
+.auth-modal-card {
+  max-width: 400px;
+}
+
+/* Modal header */
+.modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* Bağla düyməsi */
+.close-modal-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.6rem;
+  cursor: pointer;
+  line-height: 1;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+}
+.close-modal-btn:hover {
+  background: var(--glass);
+  color: var(--text);
+}
+
+/* Modal body */
+.auth-modal-body {
+  padding: 22px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Tabs */
+.auth-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: 4px;
+}
+.auth-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 11px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+  position: relative;
+}
+.auth-tab.active {
+  color: var(--accent);
+}
+.auth-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0;
+  width: 100%; height: 2px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+}
+
+/* Form görünümü */
+.auth-form {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+}
+.auth-form.active {
+  display: flex;
+}
+
+/* Input qrupları */
+.input-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.input-group > i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+  z-index: 2;
+  font-size: 0.9rem;
+}
+.input-group input {
+  width: 100%;
+  padding: 13px 14px 13px 42px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  font-size: 0.92rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-group input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+.input-group.half {
+  flex: 1;
+}
+.input-group.half input {
+  padding-left: 38px;
+}
+.input-group.half i {
+  left: 12px;
+}
+
+/* Ad + Soyad yan-yana */
+.name-row {
+  display: flex;
+  gap: 10px;
+}
+
+/* Şifrə yoxlama mesajları */
+.check-message {
+  font-size: 0.78rem;
+  min-height: 0;
+  padding-left: 2px;
+  transition: color 0.2s;
+  margin-top: -6px;
+}
+.check-message:empty { display: none; }
+.check-message.success { color: var(--success); }
+.check-message.error   { color: var(--danger); }
+
+/* Şifrəni göstər/gizlət düyməsi */
+.password-toggle-btn {
+  position: absolute;
+  right: 0; top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.88rem;
+  padding: 0 13px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  flex-shrink: 0;
+  z-index: 2;
+}
+.password-toggle-btn:hover {
+  color: var(--accent);
+}
+.input-group:has(.password-toggle-btn) input {
+  padding-right: 44px;
+}
+
+/* Şifrəni unutdunuzmu */
+.forgot-password-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  padding: 0;
+  transition: opacity 0.2s;
+}
+.forgot-password-link:hover { opacity: 0.7; }
+
+/* Submit düyməsi */
+.submit-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 13px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 0.97rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  letter-spacing: 0.2px;
+}
+.submit-btn:hover {
+  background: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.submit-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Ayırıcı xətt */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--text);
+  opacity: 0.15;
+}
+
+.auth-divider span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+/* Google düyməsi */
+.google-btn {
+  width: 100%;
+  background: #fff;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.google-btn:hover {
+  background: #f3f4f6;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+.google-btn:active {
+  transform: translateY(0);
+}
+.google-btn img {
+  width: 20px; height: 20px;
+}
+
+/* Auth header düyməsi */
+#authMainBtn {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+}
+#authMainBtn:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* Animasiyalar */
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Light tema */
+[data-theme="light"] .auth-modal-card {
+  background: #ffffff;
+}
+[data-theme="light"] .auth-divider span {
+  background: #ffffff;
+}
+[data-theme="light"] .google-btn {
+  background: #fff;
+  color: #1f2937;
+  border-color: #d1d5db;
+}
+[data-theme="light"] .google-btn:hover {
+  background: #f3f4f6;
+}
+
+/* Mobil uyğunluğu */
+@media (max-width: 480px) {
+  .auth-modal-card {
+    max-width: 100%;
+  }
+  .auth-modal-body {
+    padding: 18px 16px 24px;
+  }
+  .name-row {
+    flex-direction: row;
+    gap: 8px;
+  }
+}
+
+#closeAuthModal {
+  display: none;
+}
+
+#authModalTitle {
+    display: block;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+}
+body, input, button, select, textarea {
+    font-family: 'Varela Round', sans-serif;
+}
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+/* --- BUTTONS --- */
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.3s ease;
+}
+
+.icon-btn:hover {
+  background: var(--surface);
+  outline: 2px solid var(--accent);
+}
+
+.icon-btn i {
+  font-size: 20px;
+}
+.icon-btn .fa-circle-user {
+  font-size: 25px;
+}
+  </style>
+</head>
+<body data-theme="dark">
+
+  <header>
+    <a href="../../index.html" class="logo-container">
+      <div class="logo-icon">
+        <i class="fa-solid fa-gamepad"></i>
+      </div>
+      <div class="logo-text">KINOFLIX<span>+ GAMES</span></div>
+    </a>
+
+    <div class="header-actions">
+    <button id="themeToggle" aria-label="Temanı dəyiş">
+      <i class="fa-solid fa-sun"></i>
+    </button>
+      <button id="authMainBtn" class="icon-btn" title="Hesab" aria-label="Hesab">
+            <i class="fa-solid fa-circle-user"></i>
+        </button>
+    </div>
+  </header>
+
+  <main class="game-container" id="gameWrap">
+    <h2 class="section-title">Tetris</h2>
+
+    <div class="game-frame-card">
+      <div id="tetris"></div>
+      <div class="game-bar">
+        <div class="game-bar-info">
+          <div class="game-bar-title">Tetris</div>
+          <div class="game-bar-category">Məntiq</div>
+        </div>
+        <button type="button" class="pause-btn" id="pauseBtn" hidden><i class="fa-solid fa-pause"></i><span>Pauza</span></button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Mobil idarəetmə -->
+  <div class="touch-pad" id="touchPad">
+    <button type="button" class="pad-btn" data-key="left"  aria-label="Sola"><i class="fa-solid fa-arrow-left"></i></button>
+    <button type="button" class="pad-btn" data-key="right" aria-label="Sağa"><i class="fa-solid fa-arrow-right"></i></button>
+    <button type="button" class="pad-btn" data-key="up"    aria-label="Fırlat"><i class="fa-solid fa-rotate-right"></i></button>
+    <button type="button" class="pad-btn" data-key="down"  aria-label="Aşağı"><i class="fa-solid fa-arrow-down"></i></button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+  <!-- BlockRain.js 0.2.0 — © 2015 Aerolab, MIT lisenziyası (başlıq qeydi faylın içindədir) -->
+  <script>
+/*!
+ * BlockRain.js 0.2.0
+ * jQuery plugin that lets you put a playable (and configurable) game of Tetris in your site or just leave it in auto in the background.
+ * http://aerolab.github.io/blockrain.js/
+ *
+ * Copyright (c) 2015 Aerolab <hey@aerolab.co>
+ *
+ * Released under the MIT license
+ * http://aerolab.github.io/blockrain.js/LICENSE.txt
+ */
+ !function(t){"function"==typeof define&&define.amd?define(["jquery"],t):t(jQuery)}(function(t){var e=0,i=Array.prototype.slice;t.cleanData=function(e){return function(i){var o,n,s;for(s=0;null!=(n=i[s]);s++)try{o=t._data(n,"events"),o&&o.remove&&t(n).triggerHandler("remove")}catch(r){}e(i)}}(t.cleanData),t.widget=function(e,i,o){var n,s,r,a,h={},l=e.split(".")[0];return e=e.split(".")[1],n=l+"-"+e,o||(o=i,i=t.Widget),t.expr[":"][n.toLowerCase()]=function(e){return!!t.data(e,n)},t[l]=t[l]||{},s=t[l][e],r=t[l][e]=function(t,e){return this._createWidget?void(arguments.length&&this._createWidget(t,e)):new r(t,e)},t.extend(r,s,{version:o.version,_proto:t.extend({},o),_childConstructors:[]}),a=new i,a.options=t.widget.extend({},a.options),t.each(o,function(e,o){return t.isFunction(o)?void(h[e]=function(){var t=function(){return i.prototype[e].apply(this,arguments)},n=function(t){return i.prototype[e].apply(this,t)};return function(){var e,i=this._super,s=this._superApply;return this._super=t,this._superApply=n,e=o.apply(this,arguments),this._super=i,this._superApply=s,e}}()):void(h[e]=o)}),r.prototype=t.widget.extend(a,{widgetEventPrefix:s?a.widgetEventPrefix||e:e},h,{constructor:r,namespace:l,widgetName:e,widgetFullName:n}),s?(t.each(s._childConstructors,function(e,i){var o=i.prototype;t.widget(o.namespace+"."+o.widgetName,r,i._proto)}),delete s._childConstructors):i._childConstructors.push(r),t.widget.bridge(e,r),r},t.widget.extend=function(e){for(var o,n,s=i.call(arguments,1),r=0,a=s.length;a>r;r++)for(o in s[r])n=s[r][o],s[r].hasOwnProperty(o)&&void 0!==n&&(e[o]=t.isPlainObject(n)?t.isPlainObject(e[o])?t.widget.extend({},e[o],n):t.widget.extend({},n):n);return e},t.widget.bridge=function(e,o){var n=o.prototype.widgetFullName||e;t.fn[e]=function(s){var r="string"==typeof s,a=i.call(arguments,1),h=this;return s=!r&&a.length?t.widget.extend.apply(null,[s].concat(a)):s,r?this.each(function(){var i,o=t.data(this,n);return"instance"===s?(h=o,!1):o?t.isFunction(o[s])&&"_"!==s.charAt(0)?(i=o[s].apply(o,a),i!==o&&void 0!==i?(h=i&&i.jquery?h.pushStack(i.get()):i,!1):void 0):t.error("no such method '"+s+"' for "+e+" widget instance"):t.error("cannot call methods on "+e+" prior to initialization; attempted to call method '"+s+"'")}):this.each(function(){var e=t.data(this,n);e?(e.option(s||{}),e._init&&e._init()):t.data(this,n,new o(s,this))}),h}},t.Widget=function(){},t.Widget._childConstructors=[],t.Widget.prototype={widgetName:"widget",widgetEventPrefix:"",defaultElement:"<div>",options:{disabled:!1,create:null},_createWidget:function(i,o){o=t(o||this.defaultElement||this)[0],this.element=t(o),this.uuid=e++,this.eventNamespace="."+this.widgetName+this.uuid,this.bindings=t(),this.hoverable=t(),this.focusable=t(),o!==this&&(t.data(o,this.widgetFullName,this),this._on(!0,this.element,{remove:function(t){t.target===o&&this.destroy()}}),this.document=t(o.style?o.ownerDocument:o.document||o),this.window=t(this.document[0].defaultView||this.document[0].parentWindow)),this.options=t.widget.extend({},this.options,this._getCreateOptions(),i),this._create(),this._trigger("create",null,this._getCreateEventData()),this._init()},_getCreateOptions:t.noop,_getCreateEventData:t.noop,_create:t.noop,_init:t.noop,destroy:function(){this._destroy(),this.element.unbind(this.eventNamespace).removeData(this.widgetFullName).removeData(t.camelCase(this.widgetFullName)),this.widget().unbind(this.eventNamespace).removeAttr("aria-disabled").removeClass(this.widgetFullName+"-disabled ui-state-disabled"),this.bindings.unbind(this.eventNamespace),this.hoverable.removeClass("ui-state-hover"),this.focusable.removeClass("ui-state-focus")},_destroy:t.noop,widget:function(){return this.element},option:function(e,i){var o,n,s,r=e;if(0===arguments.length)return t.widget.extend({},this.options);if("string"==typeof e)if(r={},o=e.split("."),e=o.shift(),o.length){for(n=r[e]=t.widget.extend({},this.options[e]),s=0;o.length-1>s;s++)n[o[s]]=n[o[s]]||{},n=n[o[s]];if(e=o.pop(),1===arguments.length)return void 0===n[e]?null:n[e];n[e]=i}else{if(1===arguments.length)return void 0===this.options[e]?null:this.options[e];r[e]=i}return this._setOptions(r),this},_setOptions:function(t){var e;for(e in t)this._setOption(e,t[e]);return this},_setOption:function(t,e){return this.options[t]=e,"disabled"===t&&(this.widget().toggleClass(this.widgetFullName+"-disabled",!!e),e&&(this.hoverable.removeClass("ui-state-hover"),this.focusable.removeClass("ui-state-focus"))),this},enable:function(){return this._setOptions({disabled:!1})},disable:function(){return this._setOptions({disabled:!0})},_on:function(e,i,o){var n,s=this;"boolean"!=typeof e&&(o=i,i=e,e=!1),o?(i=n=t(i),this.bindings=this.bindings.add(i)):(o=i,i=this.element,n=this.widget()),t.each(o,function(o,r){function a(){return e||s.options.disabled!==!0&&!t(this).hasClass("ui-state-disabled")?("string"==typeof r?s[r]:r).apply(s,arguments):void 0}"string"!=typeof r&&(a.guid=r.guid=r.guid||a.guid||t.guid++);var h=o.match(/^([\w:-]*)\s*(.*)$/),l=h[1]+s.eventNamespace,c=h[2];c?n.delegate(c,l,a):i.bind(l,a)})},_off:function(e,i){i=(i||"").split(" ").join(this.eventNamespace+" ")+this.eventNamespace,e.unbind(i).undelegate(i),this.bindings=t(this.bindings.not(e).get()),this.focusable=t(this.focusable.not(e).get()),this.hoverable=t(this.hoverable.not(e).get())},_delay:function(t,e){function i(){return("string"==typeof t?o[t]:t).apply(o,arguments)}var o=this;return setTimeout(i,e||0)},_hoverable:function(e){this.hoverable=this.hoverable.add(e),this._on(e,{mouseenter:function(e){t(e.currentTarget).addClass("ui-state-hover")},mouseleave:function(e){t(e.currentTarget).removeClass("ui-state-hover")}})},_focusable:function(e){this.focusable=this.focusable.add(e),this._on(e,{focusin:function(e){t(e.currentTarget).addClass("ui-state-focus")},focusout:function(e){t(e.currentTarget).removeClass("ui-state-focus")}})},_trigger:function(e,i,o){var n,s,r=this.options[e];if(o=o||{},i=t.Event(i),i.type=(e===this.widgetEventPrefix?e:this.widgetEventPrefix+e).toLowerCase(),i.target=this.element[0],s=i.originalEvent)for(n in s)n in i||(i[n]=s[n]);return this.element.trigger(i,o),!(t.isFunction(r)&&r.apply(this.element[0],[i].concat(o))===!1||i.isDefaultPrevented())}},t.each({show:"fadeIn",hide:"fadeOut"},function(e,i){t.Widget.prototype["_"+e]=function(o,n,s){"string"==typeof n&&(n={effect:n});var r,a=n?n===!0||"number"==typeof n?i:n.effect||i:e;n=n||{},"number"==typeof n&&(n={duration:n}),r=!t.isEmptyObject(n),n.complete=s,n.delay&&o.delay(n.delay),r&&t.effects&&t.effects.effect[a]?o[e](n):a!==e&&o[a]?o[a](n.duration,n.easing,s):o.queue(function(i){t(this)[e](),s&&s.call(o[0]),i()})}}),t.widget}),function(t){"use strict";t.widget("aerolab.blockrain",{options:{autoplay:!1,autoplayRestart:!0,showFieldOnStart:!0,theme:null,blockWidth:10,autoBlockWidth:!1,autoBlockSize:24,difficulty:"normal",speed:20,asdwKeys:!0,playText:"Let's play some Tetris",playButtonText:"Play",gameOverText:"Game Over",restartButtonText:"Play Again",scoreText:"Score",onStart:function(){},onRestart:function(){},onGameOver:function(t){},onPlaced:function(){},onLine:function(t,e,i){}},start:function(){this._doStart(),this.options.onStart.call(this.element)},restart:function(){this._doStart(),this.options.onRestart.call(this.element)},gameover:function(){this.showGameOverMessage(),this._board.gameover=!0,this.options.onGameOver.call(this.element,this._filled.score)},_doStart:function(){this._filled.clearAll(),this._filled._resetScore(),this._board.cur=this._board.nextShape(),this._board.started=!0,this._board.gameover=!1,this._board.dropDelay=5,this._board.render(!0),this._board.animate(),this._$start.fadeOut(150),this._$gameover.fadeOut(150),this._$score.fadeIn(150)},pause:function(){this._board.paused=!0},resume:function(){this._board.paused=!1},autoplay:function(t){"boolean"!=typeof t&&(t=!0),this.options.autoplay=t,t&&!this._board.started&&this._doStart(),this._setupControls(!t),this._setupTouchControls(!t)},controls:function(t){"boolean"!=typeof t&&(t=!0),this._setupControls(t)},touchControls:function(t){"boolean"!=typeof t&&(t=!0),this._setupTouchControls(t)},score:function(t){return"undefined"!=typeof t&&parseInt(t)>=0&&(this._filled.score=parseInt(t),this._$scoreText.text(this._filled_score)),this._filled.score},freesquares:function(){return this._filled.getFreeSpaces()},showStartMessage:function(){this._$start.show()},showGameOverMessage:function(){this._$gameover.show()},updateSizes:function(){this._PIXEL_WIDTH=this.element.innerWidth(),this._PIXEL_HEIGHT=this.element.innerHeight(),this._BLOCK_WIDTH=this.options.blockWidth,this._BLOCK_HEIGHT=Math.floor(this.element.innerHeight()/this.element.innerWidth()*this._BLOCK_WIDTH),this._block_size=Math.floor(this._PIXEL_WIDTH/this._BLOCK_WIDTH),this._border_width=2,this._PIXEL_WIDTH=this._block_size*this._BLOCK_WIDTH,this._PIXEL_HEIGHT=this._block_size*this._BLOCK_HEIGHT,this._$canvas.attr("width",this._PIXEL_WIDTH).attr("height",this._PIXEL_HEIGHT)},theme:function(e){return"undefined"==typeof e?this.options.theme||this._theme:("string"==typeof e?(this.options.theme=e,this._theme=t.extend(!0,{},BlockrainThemes[e])):(this.options.theme=null,this._theme=e),"undefined"!=typeof this._theme&&null!==this._theme||(this._theme=t.extend(!0,{},BlockrainThemes.retro),this.options.theme="retro"),(isNaN(parseInt(this._theme.strokeWidth))||"number"!=typeof parseInt(this._theme.strokeWidth))&&(this._theme.strokeWidth=2),this._preloadThemeAssets(),void(null!==this._board&&("string"==typeof this._theme.background&&this._$canvas.css("background-color",this._theme.background),this._board.render())))},_theme:{},_$game:null,_$canvas:null,_$gameholder:null,_$start:null,_$gameover:null,_$score:null,_$scoreText:null,_canvas:null,_ctx:null,_create:function(){var e=this;this.theme(this.options.theme),this._createHolder(),this._createUI(),this._refreshBlockSizes(),this.updateSizes(),t(window).resize(function(){}),this._SetupShapeFactory(),this._SetupFilled(),this._SetupInfo(),this._SetupBoard(),this._info.init(),this._board.init();var i=function(){requestAnimationFrame(i),e._board.render()};i(),this.options.autoplay?(this.autoplay(!0),this._setupTouchControls(!1)):(this._setupControls(!0),this._setupTouchControls(!1))},_checkCollisions:function(t,e,i,o){for(var n,s,r=0,a=i.length;r<a;r+=2){if(n=t+i[r],s=e+i[r+1],s>=this._BLOCK_HEIGHT||this._filled.check(n,s))return!0;if(!o&&n<0||n>=this._BLOCK_WIDTH)return!0}return!1},_board:null,_info:null,_filled:null,_drawBackground:function(){if("string"==typeof this._theme.background){if(this._theme.backgroundGrid instanceof Image){if(0===this._theme.backgroundGrid.width||0===this._theme.backgroundGrid.height)return;this._ctx.globalAlpha=1;for(var t=0;t<this._BLOCK_WIDTH;t++)for(var e=0;e<this._BLOCK_HEIGHT;e++){var i=t*this._block_size,o=e*this._block_size;this._ctx.drawImage(this._theme.backgroundGrid,0,0,this._theme.backgroundGrid.width,this._theme.backgroundGrid.height,i,o,this._block_size,this._block_size)}}else if("string"==typeof this._theme.backgroundGrid){var n=this._theme.strokeWidth;Math.round(.23*this._block_size),Math.round(.3*this._block_size);this._ctx.globalAlpha=1,this._ctx.fillStyle=this._theme.backgroundGrid;for(var t=0;t<this._BLOCK_WIDTH;t++)for(var e=0;e<this._BLOCK_HEIGHT;e++){var i=t*this._block_size,o=e*this._block_size;this._ctx.fillRect(i+n,o+n,this._block_size-2*n,this._block_size-2*n)}}this._ctx.globalAlpha=1}},_shapeFactory:null,_shapes:{line:[[0,-1,0,-2,0,-3,0,-4],[2,-2,1,-2,0,-2,-1,-2],[0,-4,0,-3,0,-2,0,-1],[-1,-2,0,-2,1,-2,2,-2]],square:[[0,0,1,0,0,-1,1,-1],[1,0,1,-1,0,0,0,-1],[1,-1,0,-1,1,0,0,0],[0,-1,0,0,1,-1,1,0]],arrow:[[0,-1,1,-1,2,-1,1,-2],[1,0,1,-1,1,-2,0,-1],[2,-1,1,-1,0,-1,1,0],[1,-2,1,-1,1,0,2,-1]],rightHook:[[2,0,1,0,1,-1,1,-2],[2,-2,2,-1,1,-1,0,-1],[0,-2,1,-2,1,-1,1,0],[0,0,0,-1,1,-1,2,-1]],leftHook:[[0,0,1,0,1,-1,1,-2],[2,0,2,-1,1,-1,0,-1],[2,-2,1,-2,1,-1,1,0],[0,-2,0,-1,1,-1,2,-1]],leftZag:[[0,0,0,-1,1,-1,1,-2],[2,-1,1,-1,1,-2,0,-2],[1,-2,1,-1,0,-1,0,0],[0,-2,1,-2,1,-1,2,-1]],rightZag:[[1,0,1,-1,0,-1,0,-2],[2,-1,1,-1,1,0,0,0],[0,-2,0,-1,1,-1,1,0],[0,0,1,0,1,-1,2,-1]]},_SetupShapeFactory:function(){function e(e,i,o,n){return t.extend(this,{x:0,y:0,symmetrical:o,init:function(){return t.extend(this,{orientation:0,x:Math.floor(e._BLOCK_WIDTH/2)-1,y:-1}),this},blockType:n,blockVariation:null,blocksLen:i[0].length,orientations:i,orientation:0,rotate:function(t){var i=(this.orientation+("left"===t?1:-1)+4)%4;if(e._checkCollisions(this.x,this.y,this.getBlocks(i))){var o=this.orientation,n=this.x,s=this.y;for(this.orientation=i;this.x>=e._BLOCK_WIDTH-2;)this.x--;for(;this.x<0;)this.x++;"line"===this.blockType&&0===this.x&&this.x++,e._checkCollisions(this.x,this.y,this.getBlocks(i))&&(this.y--,e._checkCollisions(this.x,this.y,this.getBlocks(i))&&(this.x=n,this.y=s,this.orientation=o)),e._board.renderChanged=!0}else this.orientation=i,e._board.renderChanged=!0},moveRight:function(){e._checkCollisions(this.x+1,this.y,this.getBlocks())||(this.x++,e._board.renderChanged=!0)},moveLeft:function(){e._checkCollisions(this.x-1,this.y,this.getBlocks())||(this.x--,e._board.renderChanged=!0)},drop:function(){e._checkCollisions(this.x,this.y+1,this.getBlocks())||(this.y++,e._board.dropCount=-1,e._board.animate(),e._board.renderChanged=!0)},getBlocks:function(t){return this.orientations[void 0!==t?t:this.orientation]},draw:function(t,i,o){for(var n=this.getBlocks(o),s=void 0===t?this.x:t,r=void 0===i?this.y:i,a=0,h=0;a<this.blocksLen;a+=2)e._board.drawBlock(s+n[a],r+n[a+1],this.blockType,this.blockVariation,h,this.orientation,!0),h++},getBounds:function(e){for(var i=t.isArray(e)?e:this.getBlocks(e),o=0,n=i.length,s=999,r=-999,a=999,h=-999;o<n;o+=2)i[o]<s&&(s=i[o]),i[o]>r&&(r=i[o]),i[o+1]<a&&(a=i[o+1]),i[o+1]>h&&(h=i[o+1]);return{left:s,right:r,top:a,bottom:h,width:r-s,height:h-a}}}),this.init()}var i=this;null===this._shapeFactory&&(this._shapeFactory={line:function(){return new e(i,i._shapes.line,(!1),"line")},square:function(){return new e(i,i._shapes.square,(!1),"square")},arrow:function(){return new e(i,i._shapes.arrow,(!1),"arrow")},leftHook:function(){return new e(i,i._shapes.leftHook,(!1),"leftHook")},rightHook:function(){return new e(i,i._shapes.rightHook,(!1),"rightHook")},leftZag:function(){return new e(i,i._shapes.leftZag,(!1),"leftZag")},rightZag:function(){return new e(i,i._shapes.rightZag,(!1),"rightZag")}})},_SetupFilled:function(){var t=this;null===this._filled&&(this._filled={data:new Array(t._BLOCK_WIDTH*t._BLOCK_HEIGHT),score:0,toClear:{},check:function(t,e){return this.data[this.asIndex(t,e)]},add:function(e,i,o,n,s,r){e>=0&&e<t._BLOCK_WIDTH&&i>=0&&i<t._BLOCK_HEIGHT&&(this.data[this.asIndex(e,i)]={blockType:o,blockVariation:n,blockIndex:s,blockOrientation:r})},getFreeSpaces:function(){for(var t=0,e=0;e<this.data.length;e++)t+=this.data[e]?1:0},asIndex:function(e,i){return e+i*t._BLOCK_WIDTH},asX:function(e){return e%t._BLOCK_WIDTH},asY:function(e){return Math.floor(e/t._BLOCK_WIDTH)},clearAll:function(){delete this.data,this.data=new Array(t._BLOCK_WIDTH*t._BLOCK_HEIGHT)},_popRow:function(e){for(var i=t._BLOCK_WIDTH*(e+1)-1;i>=0;i--)this.data[i]=i>=t._BLOCK_WIDTH?this.data[i-t._BLOCK_WIDTH]:void 0},checkForClears:function(){var e,i,o,n,s=t._board.lines,r=[];for(e=0,i=this.data.length;e<i;e++)n=this.asX(e),0==n&&(o=0),this.data[e]&&"undefined"!=typeof this.data[e]&&"string"==typeof this.data[e].blockType&&(o+=1),n==t._BLOCK_WIDTH-1&&o==t._BLOCK_WIDTH&&r.push(this.asY(e));for(e=0,i=r.length;e<i;e++)this._popRow(r[e]),t._board.lines++,t._board.lines%10==0&&t._board.dropDelay>1&&(t._board.dropDelay*=.9);var a=t._board.lines-s;this._updateScore(a)},_updateScore:function(e){if(!(e<=0)){var i=[0,400,1e3,3e3,12e3];e>=i.length&&(e=i.length-1),this.score+=i[e],t._$scoreText.text(this.score),t.options.onLine.call(t.element,e,i[e],this.score)}},_resetScore:function(){this.score=0,t._$scoreText.text(this.score)},draw:function(){for(var e,i=0,o=this.data.length;i<o;i++)if(void 0!==this.data[i]){e=this.asY(i);var n=this.data[i];t._board.drawBlock(this.asX(i),e,n.blockType,n.blockVariation,n.blockIndex,n.blockOrientation)}}})},_SetupInfo:function(){var t=this;this._info={mode:t.options.difficulty,modes:["normal","nice","evil"],modesY:170,autopilotY:null,init:function(){this.mode=t.options.difficulty},setMode:function(e){this.mode=e,t._board.nextShape(!0)}}},_SetupBoard:function(){var e=this,i=this._info;this._board={animateDelay:1e3/e.options.speed,animateTimeoutId:null,cur:null,lines:0,dropCount:0,dropDelay:5,holding:{left:null,right:null,drop:null},holdingThreshold:200,started:!1,gameover:!1,renderChanged:!0,init:function(){this.cur=this.nextShape(),e.options.showFieldOnStart&&(e._drawBackground(),e._board.createRandomBoard(),e._board.render()),this.showStartMessage()},showStartMessage:function(){e._$start.show()},showGameOverMessage:function(){e._$gameover.show()},nextShape:function(o){var n,s,r,a=this.next;if(n="nice"==i.mode||"evil"==i.mode?e._niceShapes:e._randomShapes(),e.options.no_preview){if(this.next=null,o)return null;if(s=n(e._filled,e._checkCollisions,e._BLOCK_WIDTH,e._BLOCK_HEIGHT,i.mode),!s)throw new Error("No shape returned from shape function!",n);s.init(),r=s}else{if(s=n(e._filled,e._checkCollisions,e._BLOCK_WIDTH,e._BLOCK_HEIGHT,i.mode),!s)throw new Error("No shape returned from shape function!",n);if(s.init(),this.next=s,o)return null;r=a||this.nextShape()}return e.options.autoplay&&(e._niceShapes(e._filled,e._checkCollisions,e._BLOCK_WIDTH,e._BLOCK_HEIGHT,"normal",r),r.orientation=r.best_orientation,r.x=r.best_x),"undefined"!=typeof e._theme.complexBlocks?t.isArray(e._theme.complexBlocks[r.blockType])?r.blockVariation=e._randInt(0,e._theme.complexBlocks[r.blockType].length-1):r.blockVariation=null:"undefined"!=typeof e._theme.blocks&&(t.isArray(e._theme.blocks[r.blockType])?r.blockVariation=e._randInt(0,e._theme.blocks[r.blockType].length-1):r.blockVariation=null),r},animate:function(){var t=!1,i=!1,o=!1,n=Date.now();if(this.animateTimeoutId&&clearTimeout(this.animateTimeoutId),!this.paused&&!this.gameover&&(this.dropCount++,(this.dropCount>=this.dropDelay||e.options.autoplay||this.holding.drop&&n-this.holding.drop>=this.holdingThreshold)&&(t=!0,i=!0,this.dropCount=0),this.holding.left&&n-this.holding.left>=this.holdingThreshold&&(i=!0,this.cur.moveLeft()),this.holding.right&&n-this.holding.right>=this.holdingThreshold&&(i=!0,this.cur.moveRight()),t)){var s=this.cur,r=s.x,a=s.y,h=s.getBlocks();if(e._checkCollisions(r,a+1,h,!0)){t=!1;for(var l=0,c=0;c<s.blocksLen;c+=2)e._filled.add(r+h[c],a+h[c+1],s.blockType,s.blockVariation,l,s.orientation),a+h[c]<0&&(o=!0),l++;e._filled.checkForClears(),this.cur=this.nextShape(),this.renderChanged=!0,this.holding.left=null,this.holding.right=null,this.holding.drop=null,e.options.onPlaced.call(e.element)}}t&&(i=!0,this.cur.y++),(t||i)&&(this.renderChanged=!0),o?(this.gameover=!0,e.gameover(),e.options.autoplay&&e.options.autoplayRestart&&e.restart(),this.renderChanged=!0):(this.animateDelay=1e3/e.options.speed,this.animateTimeoutId=window.setTimeout(function(){e._board.animate()},this.animateDelay))},createRandomBoard:function(){var t,i,o,n,s,r=[];for(r=Object.keys(e._shapeFactory),t=0,i=e._BLOCK_WIDTH;t<i;t++)for(o=0,n=e._randChoice([e._randInt(0,8),e._randInt(5,9)]);o<n;o++)s&&e._randInt(0,3)||(s=e._randChoice(r)),e._filled.add(t,e._BLOCK_HEIGHT-o,s,e._randInt(0,3),null,e._randInt(0,3));e._board.render(!0)},render:function(t){(this.renderChanged||t)&&(this.renderChanged=!1,e._ctx.clearRect(0,0,e._PIXEL_WIDTH,e._PIXEL_HEIGHT),e._drawBackground(),e._filled.draw(),this.cur.draw())},drawBlock:function(t,i,o,n,s,r,a){t*=e._block_size,i*=e._block_size,a="boolean"==typeof a&&a;var h=e._theme.strokeWidth,l=Math.round(.23*e._block_size),c=Math.round(.3*e._block_size),d=this.getBlockColor(o,n,s,a);if(e._ctx.globalAlpha=1,d instanceof Image){if(e._ctx.globalAlpha=1,0===d.width||0===d.height)return;if("undefined"!=typeof e._theme.blocks&&null!==e._theme.blocks)e._ctx.drawImage(d,0,0,d.width,d.height,t,i,e._block_size,e._block_size);else if("undefined"!=typeof e._theme.complexBlocks&&null!==e._theme.complexBlocks){"undefined"!=typeof s&&null!==s||(s=0);var u=function(t,i,o){var n=e._shapes[i][0],s=Math.min(n[0],n[2],n[4],n[6]),r=Math.max(n[0],n[2],n[4],n[6]),a=Math.min(n[1],n[3],n[5],n[7]),h=Math.max(n[1],n[3],n[5],n[7]),l=r-s+1,c=h-a+1,d=t.width/l,u=t.height/c;return{x:d*(n[2*o]-s),y:u*Math.abs(a-n[2*o+1]),w:d,h:u}},g=u(d,o,s);e._ctx.save(),e._ctx.translate(t,i),e._ctx.translate(e._block_size/2,e._block_size/2),e._ctx.rotate(-Math.PI/2*r),e._ctx.drawImage(d,g.x,g.y,g.w,g.h,-e._block_size/2,-e._block_size/2,e._block_size,e._block_size),e._ctx.restore()}else e._ctx.fillStyle="#ff0000",e._ctx.fillRect(t,i,e._block_size,e._block_size)}else"string"==typeof d&&(e._ctx.fillStyle=d,e._ctx.fillRect(t,i,e._block_size,e._block_size),"string"==typeof e._theme.innerShadow&&(e._ctx.globalAlpha=1,e._ctx.strokeStyle=e._theme.innerShadow,e._ctx.lineWidth=1,e._ctx.strokeRect(t+1,i+1,e._block_size-2,e._block_size-2)),"string"==typeof e._theme.stroke&&(e._ctx.globalAlpha=1,e._ctx.fillStyle=e._theme.stroke,e._ctx.strokeStyle=e._theme.stroke,e._ctx.lineWidth=h,e._ctx.strokeRect(t,i,e._block_size,e._block_size)),"string"==typeof e._theme.innerStroke&&(e._ctx.fillStyle=e._theme.innerStroke,e._ctx.fillRect(t+l,i+l,e._block_size-2*l,h),e._ctx.fillRect(t+l,i+l+h,h,e._block_size-2*l-h)),"string"==typeof e._theme.innerSquare&&(e._ctx.fillStyle=e._theme.innerSquare,e._ctx.globalAlpha=.2,e._ctx.fillRect(t+c,i+c,e._block_size-2*c,e._block_size-2*c)));e._ctx.globalAlpha=1},getBlockColor:function(i,o,n,s){var r=function(e,i){return t.isArray(e)?null!==i&&"undefined"!=typeof e[i]?e[i]:e.length>0?e[0]:null:e};return"boolean"!=typeof s&&(s=!0),s?"string"==typeof e._theme.primary&&""!==e._theme.primary?e._theme.primary:"undefined"!=typeof e._theme.blocks&&null!==e._theme.blocks?r(e._theme.blocks[i],o):r(e._theme.complexBlocks[i],o):"string"==typeof e._theme.secondary&&""!==e._theme.secondary?e._theme.secondary:"undefined"!=typeof e._theme.blocks&&null!==e._theme.blocks?r(e._theme.blocks[i],o):r(e._theme.complexBlocks[i],o)}},e._niceShapes=e._getNiceShapes()},_randInt:function(t,e){return t+Math.floor(Math.random()*(1+e-t))},_randSign:function(){return 2*this._randInt(0,1)-1},_randChoice:function(t){return t[this._randInt(0,t.length-1)]},_preloadThemeAssets:function(){var e=this,i=new RegExp("^#[A-F0-9+]{3,6}","i"),o=(new RegExp("^data:image/(png|gif|jpg);base64,","i"),function(){e._board&&e._board.render(!0)}),n=function(t){var e=t;return i.test(e)?t=e:(t=new Image,t.src=e,t.onload=o),t},s=function(e){if(t.isArray(e)&&e.length>0)for(var i=0;i<e.length;i++)e[i]=n(e[i]);else"string"==typeof e&&(e=n(e));return e};if("undefined"!=typeof this._theme.complexBlocks)for(var r=Object.keys(this._theme.complexBlocks),a=0;a<r.length;a++)this._theme.complexBlocks[r[a]]=s(this._theme.complexBlocks[r[a]]);else if("undefined"!=typeof this._theme.blocks)for(var r=Object.keys(this._theme.blocks),a=0;a<r.length;a++)this._theme.blocks[r[a]]=s(this._theme.blocks[r[a]]);if("undefined"!=typeof this._theme.backgroundGrid&&"string"==typeof this._theme.backgroundGrid&&!i.test(this._theme.backgroundGrid)){var h=this._theme.backgroundGrid;this._theme.backgroundGrid=new Image,this._theme.backgroundGrid.src=h,this._theme.backgroundGrid.onload=o}},_createHolder:function(){this._$gameholder=t('<div class="blockrain-game-holder"></div>'),this._$gameholder.css("position","relative").css("width","100%").css("height","100%"),this.element.html("").append(this._$gameholder),this._$canvas=t('<canvas style="display:block; width:100%; height:100%; padding:0; margin:0; border:none;" />'),"string"==typeof this._theme.background&&this._$canvas.css("background-color",this._theme.background),this._$gameholder.append(this._$canvas),this._canvas=this._$canvas.get(0),this._ctx=this._canvas.getContext("2d")},_createUI:function(){var e=this;e._$score=t('<div class="blockrain-score-holder" style="position:absolute;"><div class="blockrain-score"><div class="blockrain-score-msg">'+this.options.scoreText+'</div><div class="blockrain-score-num">0</div></div></div>').hide(),e._$scoreText=e._$score.find(".blockrain-score-num"),e._$gameholder.append(e._$score),e._$start=t('<div class="blockrain-start-holder" style="position:absolute;"><div class="blockrain-start"><div class="blockrain-start-msg">'+this.options.playText+'</div><a class="blockrain-btn blockrain-start-btn">'+this.options.playButtonText+"</a></div></div>").hide(),e._$gameholder.append(e._$start),e._$start.find(".blockrain-start-btn").click(function(t){t.preventDefault(),e.start()}),e._$gameover=t('<div class="blockrain-game-over-holder" style="position:absolute;"><div class="blockrain-game-over"><div class="blockrain-game-over-msg">'+this.options.gameOverText+'</div><a class="blockrain-btn blockrain-game-over-btn">'+this.options.restartButtonText+"</a></div></div>").hide(),e._$gameover.find(".blockrain-game-over-btn").click(function(t){t.preventDefault(),e.restart()}),e._$gameholder.append(e._$gameover),this._createControls()},_createControls:function(){var e=this;e._$touchLeft=t('<a class="blockrain-touch blockrain-touch-left" />').appendTo(e._$gameholder),e._$touchRight=t('<a class="blockrain-touch blockrain-touch-right" />').appendTo(e._$gameholder),e._$touchRotateRight=t('<a class="blockrain-touch blockrain-touch-rotate-right" />').appendTo(e._$gameholder),e._$touchRotateLeft=t('<a class="blockrain-touch blockrain-touch-rotate-left" />').appendTo(e._$gameholder),e._$touchDrop=t('<a class="blockrain-touch blockrain-touch-drop" />').appendTo(e._$gameholder)},_refreshBlockSizes:function(){this.options.autoBlockWidth&&(this.options.blockWidth=Math.ceil(this.element.width()/this.options.autoBlockSize))},_getNiceShapes:function(){function t(t,e,i,n,s,r,a){var h,l,c,d,u=e.length,g=0,A={};for(h=0;h<u;h+=2)g+=t[o._filled.asIndex(i+e[h],n+e[h+1])]||0;for(h=0;h<u;h+=2)l=e[h],c=e[h+1],(void 0===A[l]||A[l]<c)&&(A[l]=c);d=0;for(l in A)for(l=parseInt(l),c=A[l]+1,h=0;n+c<a;c++,h++)if(!o._filled.check(i+l,n+c)){d+=0==h?2:1;break}return g-=d}function e(){for(var t in n)n[t].x=0,n[t].y=-1}var i,o=this,n={};for(var i in this._shapeFactory)n[i]=this._shapeFactory[i]();var s=function(i,s,r,a,h,l){l||e();var c,d,u,g,A,f,b,p,m,k,_,I,v,y,C,w=new Array(r*a),B="evil"==h,G=999*(B?1:-1);for(c=0;c<r;c++)for(d=0;d<=a;d++)if(d==a||i.check(c,d)){for(u=d-4;u<d;u++)w[i.asIndex(c,u)]=u;break}var D=void 0===l?n:{cur:l};for(g in D){for(A=D[g],v=-999,f=0;f<(A.symmetrical?2:4);f++)for(b=A.getBlocks(f),p=A.getBounds(b),c=-p.left;c<r-p.width;c++)for(d=-1;d<a-p.bottom;d++)if(o._checkCollisions(c,d+1,b,!0)){m=t(w,b,c,d,i,r,a),m>v&&(v=m,y=f,C=c);break}(B&&v<G||!B&&v>G)&&(k=A,G=v,_=y,I=C)}return k.best_orientation=_,k.best_x=I,k};return s.no_preview=!0,s},_randomShapes:function(){var e=[];return t.each(this._shapeFactory,function(t,i){e.push(i)}),this._randChoice(e)},_setupControls:function(e){function i(t){var e={stopKeys:{37:1,38:1,39:1,40:1}},i=e.stopKeys[t.keyCode]||e.moreStopKeys&&e.moreStopKeys[t.keyCode];return i&&t.preventDefault(),i}function o(t){return"safekeypress."+t.keyCode}function n(e){var i=o(e);return t.data(this,i,(t.data(this,i)||0)-1),c.call(this,e)}function s(e){return t.data(this,o(e),0),d.call(this,e),i(e)}var r=this,a=function(t){return t?void(r._board.holding.left||(r._board.cur.moveLeft(),r._board.holding.left=Date.now(),r._board.holding.right=null)):void(r._board.holding.left=null)},h=function(t){return t?void(r._board.holding.right||(r._board.cur.moveRight(),r._board.holding.right=Date.now(),r._board.holding.left=null)):void(r._board.holding.right=null)},l=function(t){return t?void(r._board.holding.drop||(r._board.cur.drop(),r._board.holding.drop=Date.now())):void(r._board.holding.drop=null)},c=function(t){if(!r._board.cur)return!0;var e=!1;if(e=!0,r.options.asdwKeys)switch(t.keyCode){case 65:a(!0);break;case 68:h(!0);break;case 83:l(!0);break;case 87:r._board.cur.rotate("right")}switch(t.keyCode){case 37:a(!0);break;case 39:h(!0);break;case 40:l(!0);break;case 38:r._board.cur.rotate("right");break;case 88:r._board.cur.rotate("right");break;case 90:r._board.cur.rotate("left");break;default:e=!1}return e&&t.preventDefault(),!e},d=function(t){if(!r._board.cur)return!0;var e=!1;if(e=!0,r.options.asdwKeys)switch(t.keyCode){case 65:a(!1);break;case 68:h(!1);break;case 83:l(!1)}switch(t.keyCode){case 37:a(!1);break;case 39:h(!1);break;case 40:l(!1);break;default:e=!1}return e&&t.preventDefault(),!e};t(document).unbind("keydown.blockrain").unbind("keyup.blockrain"),r.options.autoplay||e&&t(document).bind("keydown.blockrain",n).bind("keyup.blockrain",s)},_setupTouchControls:function(t){var e=this,i=function(t){t.preventDefault(),e._board.cur.moveLeft(),e._board.holding.left=Date.now(),e._board.holding.right=null,e._board.holding.drop=null},o=function(t){t.preventDefault(),e._board.cur.moveRight(),e._board.holding.right=Date.now(),e._board.holding.left=null,e._board.holding.drop=null},n=function(t){t.preventDefault(),e._board.cur.drop(),e._board.holding.drop=Date.now()},s=function(t){t.preventDefault(),e._board.holding.left=null},r=function(t){t.preventDefault(),e._board.holding.right=null},a=function(t){t.preventDefault(),e._board.holding.drop=null},h=function(t){t.preventDefault(),e._board.cur.rotate("left")},l=function(t){t.preventDefault(),e._board.cur.rotate("right")};e._$touchLeft.unbind("touchstart touchend click"),e._$touchRight.unbind("touchstart touchend click"),e._$touchRotateLeft.unbind("touchstart touchend click"),e._$touchRotateRight.unbind("touchstart touchend click"),e._$touchDrop.unbind("touchstart touchend click"),!e.options.autoplay&&t?(e._$touchLeft.show().bind("touchstart click",i).bind("touchend",s),e._$touchRight.show().bind("touchstart click",o).bind("touchend",r),e._$touchDrop.show().bind("touchstart click",n).bind("touchend",a),e._$touchRotateLeft.show().bind("touchstart click",h),e._$touchRotateRight.show().bind("touchstart click",l)):(e._$touchLeft.hide(),e._$touchRight.hide(),e._$touchRotateLeft.hide(),e._$touchRotateRight.hide(),e._$touchDrop.hide())}})}(jQuery),window.BlockrainThemes={custom:{background:"#040304",backgroundGrid:"data:image/png;base64,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",
+complexBlocks:{line:["assets/blocks/custom/line.png","assets/blocks/custom/line.png"],square:["assets/blocks/custom/square.png"],arrow:"assets/blocks/custom/arrow.png",rightHook:["assets/blocks/custom/rightHook.png"],leftHook:"assets/blocks/custom/leftHook.png",rightZag:["assets/blocks/custom/rightZag.png"],leftZag:"assets/blocks/custom/leftZag.png"}},candy:{background:"#040304",backgroundGrid:"data:image/png;base64,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",blocks:{line:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAIAAADZrBkAAAACuklEQVR4Xi2MzW4cRRSFz/2p6p4eT2zjjE2MHBQWvAALNjwDS8SOFc/FIyCxQgh2LFHkBQgJyQo/wXKCEZ7x9E9VV93LBPNJ516dxXfo/U8+HTZ9uzrZympTjLo4DbtDiBpXSBGMocI5lkaMhKv0fz+LVX9P6ZuvvxqBby+3L3eJu6Zt27DL4qgIWW0KsxPC3Kjxz5fPT3z48csvtHSHd0C/1374RddPX/9xK6JdcjEutNfqFJMBsQat3By+i/7VxqJ6c/zd5avvn1+N7dl2V9Ad92M2ViI2ksyWSJ2QXQXc5/H25jYcHHKl1YYebcJqw/rW03OOzfr89NHbR8vH3Wq9Olofrddni+XhycXJhBSkKFLxWeHBZFFDVyD343Rzc/0XeYSXeXZIJaam2V9pLsBOtRIKYAorXqvAg8giaKsCKw1zJAGFbKhwtxrdG9E3BQxAIW1xyYUKUIwNxMAwDEwuSgA5iAw2l5ITOeE/GLRMihIOsnQZnKqOlWXRUWidyYkFpCxtCF1s8D+seBggYVYRhChkqqjmld3NKhhu1XKuKUf4g6egEitkvqc5ewo+3ZOVZJO4Q4OSEDGRRyAQkYH8QfMUCR07KS8DIsO8xhjcnUXnSv4GMRYShSUG2MFCeby/awOJFyvF3TU22ckk3E3FQjci+mJVggwz12rKVEvWOk3dwWpIr7ezrU4XZ+9ciBAxWCVlhDb2o5cZTgBR17R3w45hgg8/fu+Dj643adZVXzCmebsbp5T6fhr2L9W8z5xLNsyDpl2btrsXPynS9NvVVc28xzMLPDCUYbVUMy+TMgdinupCEapdvPv0lqGwjW9fHsXjF39eIzRpnFbLdiy918qCWmclnq3mcWhVnzw5v+83XYz0+LPP/8lL704NB3BBdbCDKlChAq8QgRvmGSFouyo3vz7Lr/8FMHqie3VCpNQAAAAASUVORK5CYII=",square:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAIAAADZrBkAAAACfUlEQVR4Xh3LvY5cRRBA4VNV3ffe+fEaZARgWfBExEhEZEg8A69AgkC8AzEiICMgJCdAxggsGRuW3Z3dmenbXVWskT6d7MiXnz3qclu87esm1qW3NteRuqaCIAmQABwPvPU2NyeaUa6P159/9QV3l/HqlWqN41El0PaadEJAoZBKqS9+eybL/tvvvi8PrHA4ku33pz9v5rafKmc0I7QhbiGaJSikyeCh1T7OG6fMluOvP/5+8csb+/RxhUtlEXA5KUMpiEpWwZKU3D799Zl1CtpEjsoh++HRxUMBVhgry4yUXLvstnE8qWi/HZndTEwpppj5XLIg7fZ4+fJlb91jzSlGhjc2O7RMj995nApRIRW0BHRl9UXLona6PYiGGKpaa50qPtQ96/5BCgkpBKghpI7VJZK5bmYju5IxQkZONqtbu+txd5ZEQFI0KaRRJxEZY0wjh/dqKqbZ/z9tqmJIqpQSnaD8T9sYkGqWmuTIZHgoWYupKh4SqSQimqrJfeV1gTECF4NKmUHwDFRqNSuJjMTxFQANNKGUyTBxYqSX6J6USdc1BquYFhEMFEQCUvSeC5rheL/Y74kAvX/OPXRZojIkqHkaLpMwWdYJm1fHlZIJotdXN7tFtczvvfuB5MIyRZwQ11pora2BTKOvva3zPKtStpsKLNNmmcr53xtFMtLaGLSR61IKKaPHenO1L2+qThqrn5FvPuGjjz8s4x+NI6Ptdvtxckywo0cjstZZZfZhNhSWNuoPP/5Udhebc8+tbp4//zPd6dcaGtJtWtUiVkhTWSJkTn3y5P15M19ervL1p9UZFzX9zHYmO1Ph3KFQK+rkIBMScbY7DicOzn+QRoW5iamqhgAAAABJRU5ErkJggg==",arrow:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAIAAADZrBkAAAACsklEQVR4XhWPu25bVxREZz/OuQ9RVKhXjBSu8gX5h+QD0udD8ilByjRpUqZxa6RxY8DuYlhwHhAc2qRIieK9vOfsvUMNBoPVrGLoh6+++7y7mbFfTNIVdShCxCGuAgE8tSilhOVWU6lrtPjPK33ffvvb6xd4KG9/+f1kenIYoAgOIc+AF9u5Rdteuvubty9LU168fqW9z7AFanr36uPZSOIgWHB1IJABKE0keSr3QdLolXitjw1n717++sfPP/7Ula6pfbYmeU7eaBybnzg6ewwpT8DW/vth2acFkzf9Pi0OOU1+/eVlM2/m14vZ+Rfz88t+Np+fnZ8tns1OL66vLss0FIughgppDumLzIpmYBrHz+uVsZVSsraorJoMQU5dOs3K3jaiSXGciNYoG3cQcbJjwiKC3Ny9ljhEEUlGBnh4IJwR+qQ6q7FbuMPBLEQCVjaYA0mYwcyIY6p5qYFQQqOexRMhHOqg6sV8mtiqQki51gSHV6YAMYMMxgIC2IOcBcIsQipBBCIjNqEQBWARjjAOHAtSh1eqk9bqLpBKQUSZE4ccIqpJFnWQiRSKypjUA1DgEDw5janNkgA4zKmGQtpgsNqhMoRCmRni4AgKJh6DB842TffENWWqU+m448eYje186GZT31nXo5EqPhUGIqoGwd1gtWFtRBeLxcXF1TydYh+td1E5lMdpOOxGr9bPOzdrtFGWk2lAg84e9/fYbGmsync0xD7mfkITgUMbJaKc26GOVn2sB61Gf958OE992wsoQjSSjBHUwEmlISTsxjEsOIsxP3v+/M3tey3wrRVh29wuA2Vo3Xoe3KP6Endhzh3v92NjKefcXZzETKxR+Sa+vt2s3/3z127YrYfN+mGz2m4+rT+tNuu77d3yfvn3+vbh8eH4bb3dLrer97c3q7L6H15gvODKB5u4AAAAAElFTkSuQmCC",rightHook:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAIAAADZrBkAAAACqElEQVR4Xh3PO2tlZRSH8f9a73XvPTkTExl1dLAIKFpNY2Fl4UcT7G3FwmIaO3sbEfQjWAxDAkIORDHJyXFf3stayzC/9qke+ubrF0u7zqwfsJNFXEKtCAJriBGBoB0gNAZ5WIekcC0f+br8++3Pr1AP5Y/f6Xgfx4RqoB2kI27QgkYQw5BA2L95M+vTn379y0c2HI+Y5Ob6z3B/M/ZmlTieV7ISj9rXZ2n338NciEMedGshJacbZ9X16vK3H76vh/1paCOWiWvos5M1U9llLIebKeqz0zG4PmZ/dfl6XWc/9p4Ox/fMwnIcXrwL6ohPg54OZhYTUUc+w1YQ83z3kMadEKdp8EmE54cnKifTBLOr17cqtwIf4gAuKhUd8Lh4+TKPowjyOK1l8cxAm9nK2nWnsQeAyNtgldnClCLntkrRrTBcFyPjYRg8AEAY4JDhkhp7uOBIRbyqrmK+KcBm1qU30UbSxHcGnIGpKYk63dQxnC2sPcWo2slZUCCGYXPkkBnUqjcCSAGFsaOUQk5koqUqPFV5G2sDai+tG3vv6ZF3BojBzFrvpeij4KtDZTjPXTWGBA91uWJTo1WkqTAZoAbpT3ejd0YOBW1zoAHE/tG8FThm52KOLnDv1dA8DACTwbRU6TxSaX1WZII/1qBgwLvWtgN6ieQc2hC9hwLGTFS35eTJ7uOL5xxTkZI44l7BDGpwBke8FFCA9Pj2EAipHbd8Qre3fxOMDWykGryyM2Vv67JwmCJ7cQRRM6JXX+CrLz97/uHJ4bgHFUdKBi8B5gECLLAys4grAkr5Vt758ZdLTwhuPNvfHP7ZPzjrBAHYLBlChwPQ+jrtpq2UJv3i0/clni/Y03efYzxPvZdBkAzeAKATukENAoTA86ynZ3GrVQl3Eu/yJ/8D33mmeKR3Cz8AAAAASUVORK5CYII=",leftHook:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAIAAADZrBkAAAACq0lEQVR4Xg3HO24mVRBH8X/Vrfv4ut02BjS8GSBAQuyCmE0gwSLICFgCBLASAhLiiQjQICFBMAMSFn63v+77qCp89EsO5U+/rus/0zQPPW8thXRQABLAjtHAAZ2gzGk2HRCG1YMPwgdf/fnXj1fX+O7732s/A0kzbwEUCW5Fgh8HGVdFTOn5H79NiZ/98rPATBVS8OzX5xTehYsxd3KFwXcGEljVOGVJ8a7W4Q4YT8sb33z70xdf/oB8HufzhjI0m2a3JLykuAyV4RGxrLVN5+f/3dxSKXJc59qfUk77djhdXhGx0/mMAg/rpm30bXq97Fp3su1mrMe19e46BLLw9Nb1w0WaZoO+fPmCNbTW3D1Fcjci77Cnn3wMhCBpWU7vuwqo3evgaar6QHRqfRXKhQiELFG1O6H3MZUyLpTIx24UMkNASbqZwZiN3AQsgKhZ6/VYR9OcDw/blg5xmKqPnIRBLQUZw4iIWQKydRcEcvLOOZ2A80Nv8SRv1iiHQWPXewbztm3MbObMYgpGCMwiwgwAIhJCAGBmjMD+KDJJThJzTI8TKZm5E9S7U3c0s6PrkVujvYbm0Qr1iceJ+GZ9772OMawNDNAgVm8cADcAQSgzCSiChZj8MRLwXCTPufQEC8SlVKPWNTJJ4BTDcds58tCaMsVoIQ8Nq2AgS97uVg2h7v29Dz86W86MGqB922F+djjsdbWE0eu233fbwF0opd57KYU43l5ewQ43N7d17CwUHJnlsl4QmUwkJJKZ5uXaLdBrnzl6EGbTbV2nVIiMuMU44EMwMjn76GMHeWAKhKuLvyXoC+F3IvXrfy9zmO/WKyUM6c1riWUY7btKiA+9UkyvPnk7KFMPtLz/uS9vrjVFLNqTUSEJNLN5hQL7gIXpsGytO0ekCduR/fg/hV+olVqSm3YAAAAASUVORK5CYII=",rightZag:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAIAAADZrBkAAAACt0lEQVR4Xg3LOW6eVRQG4PcM937DP9hYlkgUQ6RQsAiEWAC7YCWUtGyAFqhpEHRI0CCBIjpHJBSxEhzkxP6H+93pHPz0D3358IsbuyY/XlCs7/YU5zjFZgdGp07BEDq4KXwA0PvuqIfDGbT0u69/+hZvr/DrH1gc1WENwUAGM3RDcXQGRbA9/e3nJPX3F5dqdY/ja8ztx++/+YhX5S6P47REODW2Pra+qsbOR5VFWwjHVPKJJF1FevPn019++O7jeYo3h5VG8Ua5OLnCh25T7+RwYfZavVz993q5OehccfImnV3nqdLjD54gTiDAF3cnEJrBAbZNSS//vTKP1FcTk0ppsfYzkpEt58Pls8vb29vTabDWYZJzjsqnJ+vHjx9tVvf3qG3QVpXJ0Y5L2xWmYbPt7W5WeK7RKUqICic7poQY6q4Fw2AUDSykUGUlQ0cUy3XUqCxm8Obe4SypVoRwOC7kLE5szIoBHsmlO6NJO3Qv5GEozI3IiE25K2EeLAiYADiBOwi51NLdCRrGcQ5xTLVUcg1BVeFszXtaWinkIAcALigQDwISby0Vq3dpR8IA2r1cKNfZRTq9F2c1iLuYqQcHg2Dmvbam08QUG1V07zASqDCLouSSE0tojCbGablFoMgkpMxht9QukvICASIXtNLy7rDDakVDeGepzpIUup1mlIZs5Dbo9OknnwEELGgZJgBhHHDYIx/v8/r98+d/P2cVVSOkitRPN9uXfz0j2rRSh1CZDKRmFomgnns62Wyvrq+ncTy2JJ/rRXv76vx04ymr83pci9gYRYISS4N3cgRKvYb15EHOHzy8fPaPgtMe8zHG5y8uH6y3wa7LPbNOIIkQRpCOZt7KzatHFx+Ww0Ki9NX8ZHWy7Sltchtz2aj32nicjZkpLr1m760vp5tN2e8jtHX0Yf4f3da+1L4oEEQAAAAASUVORK5CYII=",leftZag:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAIAAADZrBkAAAACtElEQVR4Xg2Lu25cZRhF93f5L3OOPeOQmJuDhEIHDa/CC/B4SHSICqS0CERDE2MJAYKEmITEcewZz/nvH7O0taq16eTL++P66nhCDegOAEhghFYhDDM0hSgowQkKkDIwJi0pP/72G9j24vIi8S7nN34lYG1VyOKg0uVKFFIiY/XL+R8s977+6nvttBMkovTDz9/Np3G3fTlvYkoFJswzaxtya2haQ0nUdGa2PLY6GD/9+vjJ+Y+bD+K2vFxtrLS3cQq9t1rLwUZ7IpuOAmQQ8u9/PgFDWbG5708/jK/Ti9OzExErhYVU1TMrCZqV7fY2Or2+uQ5H7zgPMNQF5HL7+upZeFeHLU//etrraM2YedQBAXsnoPXHn8yrcHVzE0LICWoECTQf+SG19dRqK3tMUxSRZtkIZtqbsblW+vF8/Pzy1XoNvdthjDas7He7swdno+JkM21v997r6A1MIKNBwiCiXssqhNsbcAwQosPTeek1MzBa947NmnewYcGR8Oh1sZG8s5LvQoACaK0Yegi+965MNWXnxIAx0AdyWnqDMjuh1KoIkYGNUPqh0zHaYcpwoin1ZiBFjFBVEWLm1ppzTkQAsAQYQdwhTap+dBCRXzkW6g2lIpdqRkYE1v1+AZgEuiRo8G2YaCBo75ZylSCdiMnoYPVefO1k8AYm7rlAjUDi7/ZN18HIffbp5zFO22Vf0bzXfsBQUu4DIJ6P1/t/XowB9RGl4Xj94M62zy+vou2sDUySyhJjTDXpAeL9YFKXaxYnuoL2BRfnzxghj7YKm4liHkszGkOUjtxIYjKM9ncpTnPr4+HDj8j+U5/B5R5k/vfv344m6rfXHb3NSqKvdrs5xKUWeN95nUd69Oi9vpQI0PtfTAn7eE/eLF0Y92eUjrcDISBmrBjbgkrIDPFYCfoCLPgflXOjuIEFgMYAAAAASUVORK5CYII="}},modern:{background:"#000000",backgroundGrid:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAIAAAC0Ujn1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3RpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpjZTg0NzU4MC00ODk3LTRkNjAtOWNhYi1mZTk1NzQ5NzhiNjkiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MTEzOEQwMDc5MDQyMTFFNDlBMzlFNzY4RjBCNkNENzMiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MTEzOEQwMDY5MDQyMTFFNDlBMzlFNzY4RjBCNkNENzMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTQgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDplNDRjOWZiNC0yNzE5LTQ3NDYtYmRmMi0wMmY2ZTA4ZjAxMmUiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MzMwNTNEOTk5MDM1MTFFNDlBMzlFNzY4RjBCNkNENzMiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7Y01+zAAAAMklEQVR42mJgGAWjYBSMgkEJGIlUd+j/WjjbjjGYGC1MtHP10DR6FIyCUTAKBikACDAA0NoDCLGGjH8AAAAASUVORK5CYII=",primary:null,secondary:null,stroke:null,blocks:{line:"#fa1e1e",square:"#f1fa1e",arrow:"#d838cb",rightHook:"#f5821f",leftHook:"#42c6f0",rightZag:"#4bd838",leftZag:"#fa1e1e"}},retro:{background:"#000000",backgroundGrid:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAIAAAC0Ujn1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3RpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpjZTg0NzU4MC00ODk3LTRkNjAtOWNhYi1mZTk1NzQ5NzhiNjkiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MTEzOEQwMDc5MDQyMTFFNDlBMzlFNzY4RjBCNkNENzMiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MTEzOEQwMDY5MDQyMTFFNDlBMzlFNzY4RjBCNkNENzMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTQgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDplNDRjOWZiNC0yNzE5LTQ3NDYtYmRmMi0wMmY2ZTA4ZjAxMmUiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MzMwNTNEOTk5MDM1MTFFNDlBMzlFNzY4RjBCNkNENzMiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7Y01+zAAAAMklEQVR42mJgGAWjYBSMgkEJGIlUd+j/WjjbjjGYGC1MtHP10DR6FIyCUTAKBikACDAA0NoDCLGGjH8AAAAASUVORK5CYII=",primary:null,secondary:null,stroke:"#000000",innerStroke:"#000000",blocks:{line:"#fa1e1e",square:"#f1fa1e",arrow:"#d838cb",rightHook:"#f5821f",leftHook:"#42c6f0",rightZag:"#4bd838",leftZag:"#fa1e1e"}},monochrome:{background:"#000000",backgroundGrid:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAIAAAC0Ujn1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3RpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpjZTg0NzU4MC00ODk3LTRkNjAtOWNhYi1mZTk1NzQ5NzhiNjkiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MTEzOEQwMDc5MDQyMTFFNDlBMzlFNzY4RjBCNkNENzMiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MTEzOEQwMDY5MDQyMTFFNDlBMzlFNzY4RjBCNkNENzMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTQgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDplNDRjOWZiNC0yNzE5LTQ3NDYtYmRmMi0wMmY2ZTA4ZjAxMmUiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MzMwNTNEOTk5MDM1MTFFNDlBMzlFNzY4RjBCNkNENzMiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7Y01+zAAAAMklEQVR42mJgGAWjYBSMgkEJGIlUd+j/WjjbjjGYGC1MtHP10DR6FIyCUTAKBikACDAA0NoDCLGGjH8AAAAASUVORK5CYII=",primary:"#ffffff",secondary:"#ffffff",stroke:"#000000",innerStroke:"#000000"},aerolab:{background:"#ffffff",primary:"#ff7b00",secondary:"#000000"},gameboy:{background:"#C4CFA1",primary:null,secondary:null,stroke:"#414141",innerStroke:"#414141",innerSquare:"#000000",blocks:{line:"#88926A",square:"#585E44",arrow:"#A4AC8C",rightHook:"#6B7353",leftHook:"#6B7353",rightZag:"#595F45",leftZag:"#595F45"}},vim:{background:"#000000",backgroundGrid:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAIAAAC0Ujn1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3RpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpjZTg0NzU4MC00ODk3LTRkNjAtOWNhYi1mZTk1NzQ5NzhiNjkiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MTEzOEQwMDc5MDQyMTFFNDlBMzlFNzY4RjBCNkNENzMiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MTEzOEQwMDY5MDQyMTFFNDlBMzlFNzY4RjBCNkNENzMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTQgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDplNDRjOWZiNC0yNzE5LTQ3NDYtYmRmMi0wMmY2ZTA4ZjAxMmUiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MzMwNTNEOTk5MDM1MTFFNDlBMzlFNzY4RjBCNkNENzMiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7Y01+zAAAAMklEQVR42mJgGAWjYBSMgkEJGIlUd+j/WjjbjjGYGC1MtHP10DR6FIyCUTAKBikACDAA0NoDCLGGjH8AAAAASUVORK5CYII=",primary:"#C2FFAE",secondary:"#C2FFAE",stroke:"#000000",strokeWidth:3,innerStroke:null}};
+  </script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    // Bloklar (BlockRain "custom" mövzusunun şəkilləri, data-URI)
+    var BLOCK_IMG = {"line": "data:image/png;base64,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", "square": "data:image/png;base64,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", "arrow": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAACACAYAAABdhGZrAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABTVJREFUeNrs3V9rXEUYx/FZDShYbCRgoYKtXigoSBUEb/z3CqyvIOYV1LwC4yuweQX6DmouvbL1pgUvWrwQFKytEMGLYIMKFpSYx/XgotucPX93zp7PF0KhaTdPZuc7c+bsnPlNElL64uhotL/7G5PJmN/6h/R+EAAgAEAAgAAAAQACAAQACAAQACAAQACAAAABgAGzpgn65/yjKV06m9KFU8dfj6W0fvwu3PotpTu/p7R3kNInP2mjvphogtTb8wDR0T96NqX3zpz870KE7dspfXrQQ1GeB0AfxEj/+Uvlnb+YIa68MJUFBBg8MfJ//PxUgiq8/9T0CwQYNB88Xb3zF8QsEDMCCDDYBW/TUTwEAgEGycWN5q+xyLoBBMiSdzbaeZ23TmtLAoz8UgoEIAAIMEau3tMGBBggt35t53Xu3NeWBBgg1w5bkOiffUIgwOCI/TzRgZuwu68dCTBgtr9rcO1/aHcoAYa+gD3uxFvf1rv0efdr7UeAFSBG8ejM9/5YXJq3v1r834MAg1gPPPNlSpf3y2cLnb8fPBATLCEg4+j1///dE9eX0Ok9EINcMOITACAAQACAAAABAAIABAAIABAAIABAAIAAAAEAAgAEAAgAECBLHnTMYaTCOAmaACvL30kxz6X0/avzvx9HqRffv7ihvQiwQsgII8C4R34ZYQQYKzLCCDDqBa+MMAKMFhlhBBg1MsIIgJYupUAAAoAAY0RGGAEGiYwwAowaGWF5M1nG0eBj4+Yr9T8ICyIvQEySGWCwyAgjwLgXsDLCCDB2ZIQRYPQUGWEf/lA+W+j8FsErTTYZYWYA5ILOTwCAAAABAAIABAAIABAAIABAAIAAAAEAAgAEAAgAEAAgAFDOWpsvFkd/bJ45/vPUv4e5xoPdcTjUtSWebhDHCl46O60raozAijhnJ2rbO5g+qtjnwygnZYRFPX23U1n7LPN9i9O144Dh/9ZV9Kem71srj0RGoZFtVXaCcRQfz7tePeynAaPBImCi7HjxaMSoK0RQz/z3bft29/XM1hWZCGW5CtFO8Xz15f0lClBkX61XmEv6OOgp6qoaSxQNGW+0evqvZ7bzR3+qUlf0pTrHzgQPp62dnSYj//UL1Tp/ENPa3fvTqayrRrzyYvXT2F57PKXDP1O68Yt6+qxnluhPVeuKS7f4nT77uedFcFz2rNdcRcTUu77WTSPmlskVr6mecnbO1a8rLpfqhIjUFiB+WJPUkuj8XSQg5pbJFfU0jTha5Xpm+0MsxBvVda5HATZbyK3afLL9hmwrk6ut2Sm3jLBcM8uirqZtHgNy1dmptgBx3dXGaNT2dNpWJleT05y7qKetjLBcM8vePL2cumrfBZp3shmwbOK26M7dnhbBwNCpLYDEEuRI1U+GawvQ1T18oAlVM9lqC7B3oLGR3+hfdZtN7RtP8fFz3A9uchcnzsDvYl9Qbplc6lmM2ALR5O7S7o89rgGCJvtCogG72hS39U39/9tFJldu9eSaWRZi1d3dGZfkVe7+tCJA7A48Ke3kpGK73FQVr59TJldu9eSaWVbsFq5z6VN3kGl8GzSsq2JujB59xP/klsmlnsUH1So/J6R8+Wb9mzKtRSTFWiDWBA/6SDt+sd39/p4FKCj2HMU+k3l1RT1RV5973dWzeF2xXWbeOjM6fNTV9HKsk4yw4umd2WJziP/JrS71LD64nn+km7qE5GHU2AoBAgAEAAgAEAAgAEAAgAAAAQACAAQACAAQACAAQACAAAABAAIABAAIABAAyJa/BBgA9O7yChudBRsAAAAASUVORK5CYII=", "rightHook": "data:image/png;base64,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", "leftHook": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAADACAYAAADMZmunAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAADY0lEQVR4Xu3dsWrbQACA4UshixdBm1mzh+oJ6mcoWfMiCbR7oH2RjAl9BucJ3CGzujqDlywZWp05SGmFpHCSjfL/HxyRplzKDzYn3fUkwL2/vf2dLpHepZ+CMgA4A4AzADgDgDMAOAOAMwA4A4AzADgDgPNZwMjPAj4WRbiuqnQ3nZu63o9cBjByAJ/OzsKP1SrdTef7w0P41oxcfgTAGQCcAcAZAJwBwBkAnAHAGQCcAcAZAJwBwBkAnAHAGQCcAcAZAJwBwBkAnAHAGQCcAcAZAJwBwLkvYOR9AeViES7KMt11u1wu09WL+L7/EOvtNtw3I5cBHPGUsMfz83T14sPdXbo6DD8C4AwAzgDgDADOAOAMAM4A4FwHOOIJIfEwiX8NXdzxhJCReEKI0AwAzgDgDADOAOAMAM4A4AwAzgDgDADOAOAMAM4A4AwAzgDgDADOAOAMAM4A4AwAzgDgDADOAODcFzDyvoDi9HS/OWSItv0Dn9frdNXt19NTqJuRywA8IURkBgBnAHAGAGcAcAYAZwBwrgN4QITIDADOAOAMAM4A4AwAzgDgDADOAOAMAM4A4AwAzgDgDADOAOAMAM4A4AwAzgDgDADOAOAMAM4A4AwAzo0hHhAhMgOAMwA4A4AzADgDgDMAONcBPCmUzRNChGYAcAYAZwBwBgBnAHAGAGcAcAYAZwBwBgBnAHAGAHdyzNei3yKfBmpWDADOAOAMAM4A4AwAzgDgDADOAOAMAM6l4CPyhBAdnQHAGQCcAcAZAJwBwBkAXNY6QHz9adWMqd3Ude9pGFfLZbqaTpxDnEuXcrEIF2WZ7rpdtsw5vuo1xHq7DffNyJUVQPxHb/sjxhaPTen7Y9sWVcYW59B3hIvvBGpWDADOAOAMAM4A4AwAzgDgDABuFgFURbFfYOkahxDPAW773X+PONc5mcVKoP7nSqBGYQBwBgA3i+8AP3e7sHt+Tnft4hewqcU5xLl0ec1/GJFjrO8APg5+BR8H680xADgDgDMAOAOAMwA4A4AzALishaC4AWLoJogcXzab3hW4Qyy+bJo5fG3m0iWuAl5XVbqbTtyg0rdJZYisADR/fgTAGQCcAcAZAJwBwBkAnAHAGQCcAcAZAJwBwBkAnAHAGQCcAcAZAJwBwBkAWgh/ANRf9NRLsMF8AAAAAElFTkSuQmCC", "rightZag": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAADACAYAAADMZmunAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAAC9klEQVR4Xu3dQWrUUACA4YwWRCm0gruewRt059ZFz6FeoCfwAuo5XLh11xt4A8GdYItiEdTKaECQgoVmmpn5v2+TvP1PEl7eSxafXuxdDGH3n50txtOkW+ORKAHECSBOAHECiBNAnADiBBAngDgBxAkgTgBxAogTQJwA4iZfD7B79GbYOTgcR6tz+nJ/PLse6wFIE0CcAOIEECeAOAHECSBOAHECiBNAnADiBBAngDgBxAkgTgBxAogTQJwA4gQQJ4A4AcQJIE4AcbN+KHL/6el49tdUGz6uysYQ0gQQJ4A4AcQJIE4AcQKIE0CcAOIEECeAOAHECSBOAHECiBNAnADiBBAngDgBxAkgTgBx+WXhda4AcQKIE0CcAOIEECeAOAHECSBOAHECiBNAnADiBBAngDgBxAkgTgBxAogTQJwA4rZqUejdw+fD7QcPx9Fq/Pj4bjg/OR5Hm2+rAtg9ejPsHByOo9X4/uFk+PL68TjafG4BcQKIE0CcAOIEECeAOAHECSBu7SaCSpazil/fPvl9nIsrwIyW09b3Hr0aR/MQwMxW/e7if2YNYM5LH3/MGsDy/vfz8/txxBxmfQic2ia8DVy37yJ5BogTQJwA4gQQJ4A4AcQJIE4AcQKI26qZwOWLlcWdvXG0Ghffzq71DmPdZgK3KoBNYCqYtSKAOAHECSBOAHECiBNAnADiBBAngDgBxAkgTgBxAogTQJwA4hbjMeumF8RYEMJaEUCcAOIEECeAOAHECSBOAHECiBNAnADiBBAngDgBxAkgTgBxAogTQJwA4gQQZ1HoRItCr/qjiuVPLf511R9QXPcTdZcRwEQB3MQv8K77t5LLuAXECSBOAHECiBNAnADiBBAngDgBxAkgTgBxAogTQJwA4gQQJ4A4AcQJIE4AcQKIE0CcAOIEEGdfwET7Ai7b8DG15aaQ85PjcTQNAdzw5+LXjVtAnADiBBAngDgBxAkgTgBxAogTQJwA4gQQJ4A4AcQJIE4AcQJIG4Zfq4+GVTXPfQUAAAAASUVORK5CYII=", "leftZag": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAADACAYAAADMZmunAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAAEn0lEQVR4Xu3dP2gWZxzA8UuVhop/CiWCYrAgdLA6iA5iB6GD0MFBcBAchA7dKjq4dbObg+LYzUFwEBw6FDIIDi0ZGlzEgiAoEYUEwVYoWCjVX3hKVQzW5H7Pc+f3+1lyl5Asz/d97nLve/dMdHBTv57/p2wifVC+CsoA4AwAzgDgDADOAOAMAM4A4AwAzgDgDADOAOAMAM4A4AwAzgDgDADOAOAMAM4A4AwAzgDgDADOAOAMoLFjn+zszmzdv/S1Be8Manhn0PfTB7tvNu8pe133w8LN7rv5G2WvDmeAhl4e/PD6fg0GAGcAcAYAZwBwBgBnAHAGAGcAcAYAZwBwBgBnAHAGAGcAcAYAZwBwBgBnAHAGAGcAcAYAZwBwBgBnAHAGAGcAcAZQ2fSHG7uLnx7q5nZ/Xb7zqvjZFxu2lb183hxa6ebQTWsmu7PTB//3XcC/PH3QfXtvppv/64/ynRzOABXsWjfVXfvs6DvdAn7gxSxwfefxpd/NZADJ4pV/acfhFQ1k/G6EkxmBASSLwY/j/kpFBBe3Hyp7/TOARHEyF1P5asUMkPUEEQNIdGbL/rK1evEYmQwGkCSm7j5e/f+Kw0jGuYABJMkYrAPr+78+YABJPv+o/wA2rZ0sW/2ZoK+fnyWO2X2eA4Rzj2a7cw9ny14/nAGSzD/LvYLXFwNIknEJ99afi2WrPwaQ5OenD7rf/35W9vphACPz05O7ZWv14m9lzCoGkChO2PqaBeIxshkMIFG8Yvs4a4/Bj0NKBgNIFoN35fHtsvfu4rif+QBpA6jg5L2ZFU3hEc6RO1fLXg4vBFUU7w7GxaG3vUcQh4541fd5ErkcA2gg3if46uMdb7xS+OVvl1P+3VuOh4AGYoCXOzmsOfjBAOAMAM4A4AwAzgDgDADOAOAMAM4A4AwAzgDgDADOAOAMAM4A4AwAzgDgDADOAOCafig0PhwZD0DKeJjCWG2eu1C26mg6Azj47TUNwMFvz3OAAan9kfBgAAMRdwOdvD9T9uppehK4sPdU2fpP7ZMgOmcAOAOAMwA4A4AzADgDgDMAOAOAMwA4A4AzADgDgDMAOAOAMwA4A4AzALjqAQxt/Xy6ah8JG+r6+XRVZoD4+PdQ18+nSw9g6Ovn06UHMPT18+lSAxjD+vl0qQGMYf18urQAxrJ+Pl1aABmDlbF+Pl1aAGNZP58u7ULQWNbPX9x3eqJsIqXNAGNZP58uL4CES7gt7p9/36UFMJb18+nSAghjWD+fLjWAMayfT5caQLxih75+Pl1qAGHo6+fTpQcQhrx+Pl2VAEK8imMw45M+bxOHjhN3f1wKp+//JPSqJk8Ji/cJhrJ+vlcCG4gBHsr6+XRNAtBwGACcAcAZAJwBwBkAnAHAGQCcAcAZAJwBwBkAnAHAGQCcAcAZAJwBwBkAnAHAGQCcAcAZAJwBwBkAnAHAGQCcAcA1DeD1W8Z9Ckh9Te4Oflk8BHp6cuPSY+VW8yCJlaLfHdw8gNa8PVxoBgBnAHAGAGcAcAYAZwBwBgBnAHAGAGcAcAYAZwBwBgBnAHAGAGcAcAYAZwBwBgBnAHAGgNZ1zwEWzjnIebCdDQAAAABJRU5ErkJggg=="};
+
+    var themeToggle = document.getElementById('themeToggle');
+    var wrap = document.getElementById('gameWrap');
+    var stage = document.getElementById('tetris');
+    var pad = document.getElementById('touchPad');
+    var game = null;
+    var curW = 0;
+    var userPaused = false;
+    var pauseBtn = document.getElementById('pauseBtn');
+    var pauseHolder = null;
+
+    // ---------- REKORD (brauzerin yaddaşında saxlanır) ----------
+    var BEST_KEY = 'tetris-best-score';
+    var best = 0;
+    var roundRecord = false;   // bu oyunda rekord qırıldı?
+    try { best = parseInt(localStorage.getItem(BEST_KEY), 10) || 0; } catch (e) {}
+    function showBest() { jQuery('#bestNum').text(best); }
+    function updateBest(score) {
+      if (score <= best) return;
+      best = score;
+      roundRecord = true;
+      try { localStorage.setItem(BEST_KEY, String(best)); } catch (e) {}
+      showBest();
+    }
+
+    // ---------- OYUN MÖVZUSU (saytın tünd / açıq temasına uyğun) ----------
+    function makeTheme(mode) {
+      var dark = mode !== 'light';
+      return {
+        background: dark ? '#0a121c' : '#e6edf5',
+        backgroundGrid: dark ? '#101b29' : '#f6f9fc',
+        strokeWidth: 1,
+        complexBlocks: {
+          line:      [BLOCK_IMG.line, BLOCK_IMG.line],
+          square:    [BLOCK_IMG.square],
+          arrow:     [BLOCK_IMG.arrow],
+          rightHook: [BLOCK_IMG.rightHook],
+          leftHook:  [BLOCK_IMG.leftHook],
+          rightZag:  [BLOCK_IMG.rightZag],
+          leftZag:   [BLOCK_IMG.leftZag]
+        }
+      };
+    }
+
+    // ---------- TEMA SİSTEMİ ----------
+    function applyTheme(theme) {
+      document.body.setAttribute('data-theme', theme);
+      try { localStorage.setItem('flix-theme', theme); } catch (e) {}
+      themeToggle.innerHTML = theme === 'dark'
+        ? '<i class="fa-solid fa-sun"></i>'
+        : '<i class="fa-solid fa-moon"></i>';
+      if (game) game.blockrain('theme', makeTheme(theme));
+    }
+
+    themeToggle.addEventListener('click', function () {
+      applyTheme(document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+
+    // ---------- ÖLÇÜ: lövhə həmişə 10×20 blok, ekrana sığır ----------
+    function fit() {
+      var vw = document.documentElement.clientWidth;
+      var vh = window.innerHeight;
+      var padShown = getComputedStyle(pad).display !== 'none';
+      var padH = padShown ? pad.offsetHeight + parseFloat(getComputedStyle(pad).marginTop) : 0;
+      var top = parseFloat(getComputedStyle(document.body).paddingTop) || 0;
+      var chrome = (wrap.offsetHeight - stage.offsetHeight) + padH + top + 28;
+
+      var w = Math.min(Math.floor(vw * 0.94) - 2, 400, Math.floor((vh - chrome) / 2));
+      w = Math.max(Math.floor(w / 10) * 10, 150);   // 10 blokun misli → bloklar kvadrat qalır
+      if (w === curW) return;
+      curW = w;
+
+      wrap.classList.toggle('is-compact', w < 200);
+      wrap.style.width = (w + 2) + 'px';              // +2 = kartın haşiyəsi
+      stage.style.width = w + 'px';
+      stage.style.height = (w * 2) + 'px';
+
+      if (game) {
+        game.blockrain('updateSizes');
+        try { game.blockrain('instance')._board.render(true); } catch (e) {}
+      }
+    }
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(fit, 120);
+    });
+    window.addEventListener('load', fit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+
+    // ---------- İDARƏETMƏ ----------
+    function sendKey(type, code) {
+      jQuery(document).trigger(jQuery.Event(type, { keyCode: code, which: code }));
+    }
+
+    // Mobil düymələr klaviatura hadisəsi göndərir (basılı saxlamaq da işləyir)
+    var KEY = { left: 37, up: 38, right: 39, down: 40 };
+    Array.prototype.forEach.call(pad.querySelectorAll('.pad-btn'), function (btn) {
+      var code = KEY[btn.getAttribute('data-key')];
+      var isDown = false;
+      btn.addEventListener('pointerdown', function (e) {
+        e.preventDefault();
+        if (isDown) return;
+        isDown = true;
+        btn.classList.add('is-down');
+        try { btn.setPointerCapture(e.pointerId); } catch (_) {}
+        sendKey('keydown', code);
+      });
+      function release() {
+        if (!isDown) return;
+        isDown = false;
+        btn.classList.remove('is-down');
+        sendKey('keyup', code);
+      }
+      btn.addEventListener('pointerup', release);
+      btn.addEventListener('pointercancel', release);
+      btn.addEventListener('lostpointercapture', release);
+      btn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    });
+
+    function releaseKeys() { [37, 39, 40].forEach(function (c) { sendKey('keyup', c); }); }
+
+    // ---------- PAUZA ----------
+    function canPause() {
+      try { var b = game.blockrain('instance')._board; return b.started && !b.gameover; } catch (e) { return false; }
+    }
+    function setPaused(p) {
+      if (!game || p === userPaused || (p && !canPause())) return;
+      userPaused = p;
+      game.blockrain(p ? 'pause' : 'resume');
+      if (!modalOpen()) game.blockrain('controls', !p);
+      if (!p) releaseKeys();
+      pauseHolder.toggleClass('show', p);
+      pauseBtn.innerHTML = p
+        ? '<i class="fa-solid fa-play"></i><span>Davam et</span>'
+        : '<i class="fa-solid fa-pause"></i><span>Pauza</span>';
+    }
+    pauseBtn.addEventListener('click', function () { setPaused(!userPaused); });
+    document.addEventListener('visibilitychange', function () { if (document.hidden) setPaused(true); });
+
+    // Giriş pəncərəsi (səhifənin aşağısında yerləşir) açıqdırsa oyun dayansın,
+    // oxlar və hərflər inputlara dəyməsin
+    function modalOpen() {
+      var m = document.getElementById('authModal');
+      return !!m && m.style.display === 'flex';
+    }
+    var modalWasOpen = false;
+    function syncWithModal() {
+      var open = modalOpen();
+      if (!game || open === modalWasOpen) return;
+      modalWasOpen = open;
+      if (open) {
+        game.blockrain('pause');
+        game.blockrain('controls', false);
+      } else if (!userPaused) {
+        game.blockrain('resume');
+        game.blockrain('controls', true);
+        releaseKeys();
+      }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      var m = document.getElementById('authModal');
+      if (m) new MutationObserver(syncWithModal).observe(m, { attributes: true, attributeFilter: ['style'] });
+      syncWithModal();
+    });
+
+    // Enter / Boşluq → Başla və ya Yenidən oyna
+    document.addEventListener('keydown', function (e) {
+      if (!game || modalOpen()) return;
+      if (/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName || ''))) return;
+      if (e.key === 'p' || e.key === 'P') { setPaused(!userPaused); return; }
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      if (e.target.tagName === 'BUTTON') return;
+      var btn = game.find('.blockrain-start-holder:visible .blockrain-btn, .blockrain-game-over-holder:visible .blockrain-btn, .pause-holder:visible .blockrain-btn').first();
+      if (btn.length) { e.preventDefault(); btn.trigger('click'); }
+    });
+
+    // ---------- OYUNU BAŞLAT ----------
+    function initGame() {
+      if (!window.jQuery || !jQuery.fn.blockrain) {
+        stage.innerHTML = '<p style="padding:24px;text-align:center;color:var(--muted)">Oyun yüklənmədi. Səhifəni yeniləyin.</p>';
+        return;
+      }
+      fit();
+      function onRoundStart() { roundRecord = false; pauseBtn.hidden = false; setPaused(false); }
+      game = jQuery(stage).blockrain({
+        theme: makeTheme(document.body.getAttribute('data-theme')),
+        blockWidth: 10,
+        difficulty: 'normal',
+        speed: 20,
+        playText: 'Tetris oynamağa hazırsan?',
+        playButtonText: '<i class="fa-solid fa-play"></i> Başla',
+        gameOverText: 'Oyun bitdi',
+        restartButtonText: '<i class="fa-solid fa-rotate-right"></i> Yenidən oyna',
+        scoreText: 'Xal',
+        onStart: onRoundStart,
+        onRestart: onRoundStart,
+        onLine: function (lines, inc, score) { updateBest(score); },
+        onGameOver: function (score) {
+          pauseBtn.hidden = true;
+          updateBest(score);
+          var record = roundRecord && score > 0;
+          game.find('.blockrain-game-over-msg').html(
+            'Oyun bitdi<div class="final-score' + (record ? ' is-record' : '') + '">Xal: <b>' + score + '</b>' +
+            (record ? ' · Yeni rekord!' : ' · Rekord: ' + best) + '</div>');
+        }
+      });
+
+      // Rekord (sol üst küncdə, xalın qarşısında)
+      game.find('.blockrain-score-holder').after(
+        '<div class="best-holder"><div class="blockrain-score-msg">Rekord</div>' +
+        '<div class="blockrain-score-num" id="bestNum">0</div></div>'
+      );
+      showBest();
+
+      // Pauza pəncərəsi
+      pauseHolder = jQuery(
+        '<div class="pause-holder"><div class="blockrain-start">' +
+          '<div class="blockrain-start-msg">Pauza</div>' +
+          '<a class="blockrain-btn"><i class="fa-solid fa-play"></i> Davam et</a>' +
+        '</div></div>'
+      ).appendTo(game.find('.blockrain-game-holder'));
+      pauseHolder.find('.blockrain-btn').on('click', function () { setPaused(false); });
+
+      // Klaviatura göstərişləri başlanğıc pəncərəsində (mobildə CSS gizlədir)
+      game.find('.blockrain-start').append(
+        '<div class="key-hints">' +
+          '<div><span class="keys"><kbd>←</kbd><kbd>→</kbd></span>Hərəkət</div>' +
+          '<div><span class="keys"><kbd>↑</kbd></span>Fırlat</div>' +
+          '<div><span class="keys"><kbd>↓</kbd></span>Sürətlə endir</div>' +
+          '<div><span class="keys"><kbd>P</kbd></span>Pauza</div>' +
+        '</div>'
+      );
+    }
+
+    var saved = 'dark';
+    try { saved = localStorage.getItem('flix-theme') || 'dark'; } catch (e) {}
+    applyTheme(saved);
+    initGame();
+  })();
+  </script>
+
+      <!-- ========================================================= -->
+<!-- 🔐 AUTH MODAL (Login/Register)                            -->
+<!-- ========================================================= -->
+<div id="authModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card auth-modal-card">
+    <div class="modal-header">
+      <h3 id="authModalTitle">Hesaba daxil ol və ödənişsiz izləməyə başla!</h3>
+      <button id="closeAuthModal" class="close-modal-btn">&times;</button>
+    </div>
+    <div class="modal-body auth-modal-body">
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab active">Daxil Ol</button>
+        <button id="tabRegister" class="auth-tab">Qeydiyyat</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="loginForm" class="auth-form active">
+        <div class="input-group">
+          <i class="fa-solid fa-envelope"></i>
+          <input type="text" id="loginEmailOrUsername" placeholder="E-poçt və ya istifadəçi adı" required>
+        </div>
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="loginPassword" placeholder="Şifrə" required>
+          <button type="button" id="toggleLoginPassword" class="password-toggle-btn" tabindex="-1">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <div style="text-align:right; margin-top:-8px;">
+          <button type="button" id="forgotPasswordBtn" class="forgot-password-link">Şifrəni unutdunuzmu?</button>
+        </div>
+        <button type="submit" class="submit-btn">Daxil ol</button>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="registerForm" class="auth-form">
+        <div class="input-group">
+          <i class="fa-solid fa-at"></i>
+          <input type="text" id="regUsername" placeholder="İstifadəçi adı (3-30 simvol)" required autocomplete="off">
+        </div>
+        <div id="usernameCheckMsg" class="check-message"></div>
+
+        <div class="name-row">
+          <div class="input-group half">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="regFirstName" placeholder="Adınız" required>
+          </div>
+          <div class="input-group half">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="regLastName" placeholder="Soyadınız" required>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <i class="fa-solid fa-envelope"></i>
+          <input type="email" id="regEmail" placeholder="E-poçt ünvanı" required>
+        </div>
+
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="regPassword" placeholder="Şifrə (Min. 6 simvol)" required>
+          <button type="button" id="toggleRegPassword" class="password-toggle-btn" tabindex="-1">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="regPasswordConfirm" placeholder="Şifrəni təkrarlayın" required>
+          <button type="button" id="toggleRegPasswordConfirm" class="password-toggle-btn" tabindex="-1">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <div id="passwordCheckMsg" class="check-message"></div>
+
+        <button type="submit" class="submit-btn">Qeydiyyatı tamamla</button>
+      </form>
+
+      <div class="auth-divider"><span>və ya</span></div>
+
+      <button id="googleAuthBtn" class="google-btn">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
+        Google ilə davam et
+      </button>
+
+    </div><!-- /.auth-modal-body -->
+  </div><!-- /.modal-card -->
+</div><!-- /#authModal -->
+
+<!-- ========================================================= -->
+<!-- FIREBASE MODUL SCRIPT (əsas səhifə üçün auth)            -->
+<!-- ========================================================= -->
+<script type="importmap">
+{
+  "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js",
+    "firebase/database": "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
+  }
+}
+</script>
+
+<script type="module">
+// ============================================================
+// 1. FIREBASE IMPORTLARI VƏ KONFİQ
+// ============================================================
+import { initializeApp } from "firebase/app";
+import { 
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
+  sendPasswordResetEmail, updateProfile, deleteUser
+} from "firebase/auth";
+import { 
+  getFirestore, doc, setDoc, getDoc, serverTimestamp, 
+  query, collection, where, getDocs, onSnapshot
+} from "firebase/firestore";
+import {
+  getDatabase, ref, set, onValue, onDisconnect,
+  serverTimestamp as rtdbTimestamp
+} from "firebase/database";
+
+// Konfiqurasiya faylını import et
+import { firebaseConfig } from "https://kinoflix.github.io/chat/JS/config.js";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const rtdb = getDatabase(app);
+const provider = new GoogleAuthProvider();
+
+// ============================================================
+// 2. DOM REFERANSLARI
+// ============================================================
+const authModal = document.getElementById('authModal');
+const closeAuthModal = document.getElementById('closeAuthModal');
+const authMainBtn = document.getElementById('authMainBtn');
+
+const tabLogin = document.getElementById('tabLogin');
+const tabRegister = document.getElementById('tabRegister');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+
+const loginEmailOrUsername = document.getElementById('loginEmailOrUsername');
+const loginPassword = document.getElementById('loginPassword');
+const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+
+const regUsername = document.getElementById('regUsername');
+const regFirstName = document.getElementById('regFirstName');
+const regLastName = document.getElementById('regLastName');
+const regEmail = document.getElementById('regEmail');
+const regPassword = document.getElementById('regPassword');
+const regPasswordConfirm = document.getElementById('regPasswordConfirm');
+const usernameCheckMsg = document.getElementById('usernameCheckMsg');
+const passwordCheckMsg = document.getElementById('passwordCheckMsg');
+
+const googleBtn = document.getElementById('googleAuthBtn');
+
+// Toggle şifrə düymələri
+document.getElementById('toggleLoginPassword').addEventListener('click', () => {
+  const inp = document.getElementById('loginPassword');
+  const icon = document.querySelector('#toggleLoginPassword i');
+  if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+  else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+});
+document.getElementById('toggleRegPassword').addEventListener('click', () => {
+  const inp = document.getElementById('regPassword');
+  const icon = document.querySelector('#toggleRegPassword i');
+  if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+  else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+});
+document.getElementById('toggleRegPasswordConfirm').addEventListener('click', () => {
+  const inp = document.getElementById('regPasswordConfirm');
+  const icon = document.querySelector('#toggleRegPasswordConfirm i');
+  if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+  else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+});
+
+// ============================================================
+// 3. KÖMƏKÇİ FUNKSİYALAR
+// ============================================================
+
+// Toast — sağ yuxarı
+function showToast(message, type = "info") {
+  if (!document.getElementById("flix-toast-styles")) {
+    const style = document.createElement("style");
+    style.id = "flix-toast-styles";
+    style.innerHTML = `
+      .flix-toast-container {
+        position: fixed;
+        top: 20px; right: 20px; z-index: 99999;
+        display: flex; flex-direction: column; gap: 10px;
+        pointer-events: none;
+      }
+      .flix-toast {
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(12px);
+        color: #1a1a1a;
+        padding: 14px 20px;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.14);
+        font-size: 14px; font-weight: 500;
+        display: flex; align-items: center; gap: 12px;
+        transform: translateX(120%);
+        animation: flixSlideIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+        border-left: 5px solid #ccc;
+        max-width: 360px;
+        pointer-events: auto;
+      }
+      [data-theme="dark"] .flix-toast {
+        background: rgba(28,28,30,0.94);
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      }
+      .flix-toast.success { border-left-color: #2ecc71; }
+      .flix-toast.error   { border-left-color: #e74c3c; }
+      .flix-toast.warning { border-left-color: #f39c12; }
+      .flix-toast.info    { border-left-color: #3498db; }
+      @keyframes flixSlideIn { to { transform: translateX(0); } }
+      @keyframes flixFadeOut { to { opacity: 0; transform: translateY(-15px); } }
+    `;
+    document.head.appendChild(style);
+  }
+  let container = document.querySelector(".flix-toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "flix-toast-container";
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement("div");
+  toast.className = `flix-toast ${type}`;
+  const icons = { success: "✅", error: "❌", warning: "⚠️", info: "💡" };
+  toast.innerHTML = `<span>${icons[type] || "💡"}</span><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = "flixFadeOut 0.4s forwards";
+    setTimeout(() => toast.remove(), 400);
+  }, 4000);
+}
+
+function localizeFirebaseError(err) {
+  switch(err.code) {
+    case "auth/email-already-in-use": return "Bu e-poçt ünvanı ilə artıq qeydiyyatdan keçilib.";
+    case "auth/invalid-credential": return "İstifadəçi adı, e-poçt və ya şifrə yanlışdır.";
+    case "auth/weak-password": return "Şifrə çox zəifdir. Ən azı 6 simvoldan ibarət olmalıdır.";
+    case "auth/invalid-email": return "Daxil etdiyiniz e-poçt strukturu düzgün deyil.";
+    case "auth/user-disabled": return "Hesabınız rəhbərlik tərəfindən deaktiv edilib!";
+    case "auth/wrong-password": return "Şifrəniz yanlışdır. Zəhmət olmasa yenidən cəhd edin.";
+    case "auth/too-many-requests": return "Çox sayda uğursuz cəhd. Bir qədər gözləyin.";
+    case "auth/requires-recent-login": return "Bu əməliyyat üçün yenidən giriş etməlisiniz.";
+    case "auth/user-not-found": return "Daxil etdiyiniz e-poçt mövcud deyil.";
+    case "auth/cancelled-popup-request": return "Google ilə giriş əməliyyatı dayandırıldı.";
+    case "auth/popup-closed-by-user": return "Google ilə giriş əməliyyatı dayandırıldı.";
+    default: return err.message || "Gözlənilməz texniki xəta baş verdi.";
+  }
+}
+
+function isValidUsername(str) {
+  if (!str) return false;
+  const regex = /^(?!\d+$)[A-Za-z0-9](?!.*\.\.)[A-Za-z0-9._]{1,28}[A-Za-z0-9]$/;
+  return regex.test(str);
+}
+function normalizeUsername(str) { return str.toLowerCase().trim(); }
+function isValidName(str) { return /^[\p{L}]+(?:[\s][\p{L}]+)*$/u.test(str.trim()); }
+
+// ============================================================
+// 4. İSTİFADƏÇİ ADI YOXLAMA
+// ============================================================
+let usernameCheckTimeout = null;
+async function checkUsernameAvailability(username) {
+  if (!username) return null;
+  const normalized = normalizeUsername(username);
+  if (!isValidUsername(normalized)) return false;
+  try {
+    const q = query(collection(db, 'users'), where('username', '==', normalized));
+    const snap = await getDocs(q);
+    return snap.empty;
+  } catch { return null; }
+}
+
+regUsername.addEventListener('input', () => {
+  clearTimeout(usernameCheckTimeout);
+  const val = regUsername.value.trim();
+  const normalized = normalizeUsername(val);
+  if (!val) { usernameCheckMsg.textContent = ''; usernameCheckMsg.className = 'check-message'; return; }
+  if (!isValidUsername(normalized)) {
+    usernameCheckMsg.textContent = 'uyğun deyil';
+    usernameCheckMsg.className = 'check-message error';
+    return;
+  }
+  usernameCheckMsg.textContent = 'yoxlanılır...';
+  usernameCheckMsg.className = 'check-message';
+  usernameCheckTimeout = setTimeout(async () => {
+    const available = await checkUsernameAvailability(normalized);
+    if (available === null) {
+      usernameCheckMsg.textContent = 'xəta baş verdi';
+      usernameCheckMsg.className = 'check-message error';
+    } else if (available) {
+      usernameCheckMsg.textContent = 'uyğundur';
+      usernameCheckMsg.className = 'check-message success';
+    } else {
+      usernameCheckMsg.textContent = 'bu istifadəçi adı artıq alınıb';
+      usernameCheckMsg.className = 'check-message error';
+    }
+  }, 400);
+});
+
+regPasswordConfirm.addEventListener('input', () => {
+  const p1 = regPassword.value;
+  const p2 = regPasswordConfirm.value;
+  if (!p2) { passwordCheckMsg.textContent = ''; passwordCheckMsg.className = 'check-message'; return; }
+  if (p1 === p2) {
+    passwordCheckMsg.textContent = 'Şifrələr eynidir!';
+    passwordCheckMsg.className = 'check-message success';
+  } else {
+    passwordCheckMsg.textContent = 'Şifrələr eyni deyil!';
+    passwordCheckMsg.className = 'check-message error';
+  }
+});
+
+// ============================================================
+// 5. LOGIN (EMAIL / USERNAME)
+// ============================================================
+async function loginWithEmailOrUsername(identifier, password) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (emailRegex.test(identifier)) {
+    await signInWithEmailAndPassword(auth, identifier, password);
+    return;
+  }
+  const normalized = normalizeUsername(identifier);
+  try {
+    const q = query(collection(db, 'users'), where('username', '==', normalized));
+    const snap = await getDocs(q);
+    if (snap.empty) throw { code: 'auth/user-not-found', message: 'İstifadəçi tapılmadı.' };
+    const userData = snap.docs[0].data();
+    await signInWithEmailAndPassword(auth, userData.email, password);
+  } catch (err) {
+    if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+      throw { code: 'auth/invalid-credential', message: 'İstifadəçi adı və ya şifrə yanlışdır.' };
+    }
+    throw err;
+  }
+}
+
+// ============================================================
+// 6. AUTH FORM SUBMITLƏR
+// ============================================================
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const identifier = loginEmailOrUsername.value.trim();
+  const password = loginPassword.value;
+  try {
+    await loginWithEmailOrUsername(identifier, password);
+    loginForm.reset();
+    showToast("Uğurla giriş edildi. Xoş gəldiniz!", "success");
+    closeAuthModal.click();
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+
+registerForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const usernameRaw = regUsername.value.trim();
+  const username = normalizeUsername(usernameRaw);
+  const firstName = regFirstName.value.trim();
+  const lastName = regLastName.value.trim();
+  const email = regEmail.value.trim();
+  const password = regPassword.value;
+  const passwordConfirm = regPasswordConfirm.value;
+
+  if (!isValidUsername(username)) {
+    showToast("İstifadəçi adı qaydalara uyğun deyil (3-10 simvol, yalnız A-Z, 0-9, . _, . başda/sonda olmaz, .. olmaz).", "error");
+    return;
+  }
+  const available = await checkUsernameAvailability(username);
+  if (available === false) {
+    showToast("Bu istifadəçi adı artıq alınıb.", "error");
+    return;
+  } else if (available === null) {
+    showToast("İstifadəçi adı yoxlanılarkən xəta baş verdi.", "error");
+    return;
+  }
+  if (!isValidName(firstName) || !isValidName(lastName)) {
+    showToast("Ad və Soyad yalnız hərflər və boşluqdan ibarət ola bilər.", "error");
+    return;
+  }
+  if (password !== passwordConfirm) {
+    showToast("Şifrələr eyni deyil!", "error");
+    return;
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const displayName = `${firstName} ${lastName}`.trim();
+    await updateProfile(userCredential.user, { displayName, photoURL: "https://kinoflix.github.io/chat/img/avatar.jpg" });
+
+    await setDoc(doc(db, 'users', userCredential.user.uid), {
+      uid: userCredential.user.uid,
+      username,
+      firstName,
+      lastName,
+      displayName,
+      email,
+      photoURL: "https://kinoflix.github.io/chat/img/avatar.jpg",
+      role: 'user',
+      isBanned: false,
+      createdAt: serverTimestamp()
+    });
+
+    registerForm.reset();
+    usernameCheckMsg.textContent = '';
+    passwordCheckMsg.textContent = '';
+    showToast("Qeydiyyat uğurla tamamlandı!", "success");
+    closeAuthModal.click();
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+
+// ============================================================
+// 7. GOOGLE LOGIN
+// ============================================================
+googleBtn.addEventListener('click', async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+    if (!userDoc.exists()) {
+      const username = result.user.email.split('@')[0].replace(/[^A-Za-z0-9._]/g, '').slice(0, 30).toLowerCase();
+      const displayName = result.user.displayName || username;
+      const nameParts = displayName.split(' ');
+      const firstName = nameParts[0] || username;
+      const lastName = nameParts.slice(1).join(' ') || '';
+      await setDoc(doc(db, 'users', result.user.uid), {
+        uid: result.user.uid,
+        username,
+        firstName,
+        lastName,
+        displayName,
+        email: result.user.email,
+        photoURL: result.user.photoURL || "https://kinoflix.github.io/chat/img/avatar.jpg",
+        role: 'user',
+        isBanned: false,
+        createdAt: serverTimestamp()
+      });
+    }
+    showToast("Google ilə uğurla giriş edildi!", "success");
+    closeAuthModal.click();
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+
+// ============================================================
+// 8. ŞİFRƏ SIFIRLAMA
+// ============================================================
+forgotPasswordBtn.addEventListener('click', async () => {
+  const email = loginEmailOrUsername.value.trim();
+  if (!email) { showToast("Zəhmət olmasa əvvəlcə e-poçt ünvanınızı daxil edin.", "warning"); return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    showToast("Şifrə sıfırlama linki e-poçt ünvanınıza göndərildi.", "success");
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+
+// ============================================================
+// 9. TABS (Login / Register)
+// ============================================================
+tabLogin.addEventListener('click', () => {
+  tabLogin.classList.add('active'); tabRegister.classList.remove('active');
+  loginForm.classList.add('active'); registerForm.classList.remove('active');
+  document.getElementById('authModalTitle').textContent = "Hesaba daxil ol və ödənişsiz izləməyə başla!";
+});
+
+tabRegister.addEventListener('click', () => {
+  tabRegister.classList.add('active'); tabLogin.classList.remove('active');
+  registerForm.classList.add('active'); loginForm.classList.remove('active');
+  document.getElementById('authModalTitle').textContent = "Yeni hesab yarat və üstünlüklərdən yararlan!";
+});
+
+// ============================================================
+// 10. MODAL AÇ / BAĞLA
+// ============================================================
+function openAuthModal() {
+  authModal.style.display = 'flex';
+  tabLogin.click(); // default login tab
+}
+function closeAuthModalFunc() {
+  authModal.style.display = 'none';
+}
+
+closeAuthModal.addEventListener('click', () => {
+  if (auth.currentUser) closeAuthModalFunc();
+});
+authModal.addEventListener('click', (e) => {
+  if (e.target === authModal && auth.currentUser) closeAuthModalFunc();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && authModal.style.display === 'flex' && auth.currentUser) closeAuthModalFunc();
+});
+
+// ============================================================
+// 11. AUTH STATE İZLƏMƏ VƏ UI YENİLƏMƏ
+// ============================================================
+
+// Presence və ban izləmə dəyişənləri
+let presenceUnsubscribeConnected = null;
+let banWatcherUnsubscribe = null;
+
+// Presence qur — istifadəçi chat açmadan belə onlayn görünsün
+function setupPresence(user) {
+  if (presenceUnsubscribeConnected) {
+    presenceUnsubscribeConnected();
+    presenceUnsubscribeConnected = null;
+  }
+
+  const statusRef = ref(rtdb, `presence/${user.uid}`);
+
+  const connectedRef = ref(rtdb, '.info/connected');
+  const unsubConn = onValue(connectedRef, (snap) => {
+    if (snap.val() === true) {
+      onDisconnect(statusRef).set({
+        status: 'offline',
+        lastChanged: rtdbTimestamp()
+      }).then(() => {
+        set(statusRef, {
+          status: 'online',
+          lastChanged: rtdbTimestamp()
+        });
+      });
+    }
+  });
+
+  // Away timer — 5 dəqiqə aktivlik olmasa "away" göstər
+  let isAway = false;
+  let idleTimer;
+  const resetIdle = () => {
+    clearTimeout(idleTimer);
+    if (isAway) {
+      isAway = false;
+      set(statusRef, { status: 'online', lastChanged: rtdbTimestamp() });
+    }
+    idleTimer = setTimeout(() => {
+      isAway = true;
+      set(statusRef, { status: 'away', lastChanged: rtdbTimestamp() });
+    }, 5 * 60 * 1000);
+  };
+  resetIdle();
+  window.addEventListener('mousemove', resetIdle);
+  window.addEventListener('keypress', resetIdle);
+  window.addEventListener('touchstart', resetIdle);
+
+  presenceUnsubscribeConnected = () => {
+    unsubConn();
+    clearTimeout(idleTimer);
+    window.removeEventListener('mousemove', resetIdle);
+    window.removeEventListener('keypress', resetIdle);
+    window.removeEventListener('touchstart', resetIdle);
+  };
+}
+
+// Ban izləyicisi — ban gəldikdə əsas səhifədən çıxış et
+function setupBanWatcher(user) {
+  if (banWatcherUnsubscribe) {
+    banWatcherUnsubscribe();
+    banWatcherUnsubscribe = null;
+  }
+
+  let isFirstSnapshot = true;
+  banWatcherUnsubscribe = onSnapshot(doc(db, 'users', user.uid), async (snapshot) => {
+    const wasFirst = isFirstSnapshot;
+    isFirstSnapshot = false;
+
+    if (!snapshot.exists()) {
+      set(ref(rtdb, `presence/${user.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+      showToast("Hesabınız sistemdən silindi!", "error");
+      try {
+        await deleteUser(user);
+      } catch (err) {
+        await signOut(auth).catch(() => {});
+      }
+      setTimeout(() => window.location.reload(), 2000);
+      return;
+    }
+
+    const data = snapshot.data();
+
+    // Ban yoxdursa ilk snapshot-u keç — normal login, yanlış trigger olmasın
+    if (wasFirst && !data.isBanned && !data.networkBanned) return;
+
+    if (data.isBanned && data.banExpires) {
+      // Müvəqqəti ban
+      const expires = data.banExpires.toDate ? data.banExpires.toDate() : new Date(data.banExpires);
+      if (expires <= new Date()) {
+        return;
+      }
+      const minsLeft = Math.ceil((expires - new Date()) / 60000);
+      const dStr = minsLeft < 60
+        ? `${minsLeft} dəqiqə`
+        : minsLeft < 1440
+          ? `${Math.floor(minsLeft / 60)} saat`
+          : `${Math.floor(minsLeft / 1440)} gün`;
+      showToast(`Hesabınız ${dStr} müddətinə banlandı! Sistemdən çıxarılırsınız.`, "error");
+      set(ref(rtdb, `presence/${user.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+      await signOut(auth).catch(() => {});
+      setTimeout(() => window.location.reload(), 2500);
+    } else if (data.isBanned || data.networkBanned) {
+      // Daimi ban
+      showToast("Hesabınız ban edildi! Sistemdən çıxarılırsınız.", "error");
+      set(ref(rtdb, `presence/${user.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+      await signOut(auth).catch(() => {});
+      setTimeout(() => window.location.reload(), 2500);
+    }
+  });
+}
+
+// Presence-i təmizlə (logout zamanı)
+function cleanupPresence(uid) {
+  if (uid) {
+    set(ref(rtdb, `presence/${uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+  }
+  if (presenceUnsubscribeConnected) {
+    presenceUnsubscribeConnected();
+    presenceUnsubscribeConnected = null;
+  }
+  if (banWatcherUnsubscribe) {
+    banWatcherUnsubscribe();
+    banWatcherUnsubscribe = null;
+  }
+}
+
+function updateAuthUI(user) {
+  const btn = authMainBtn;
+  if (user) {
+    btn.innerHTML = `<i class="fa-solid fa-right-from-bracket"></i>`;
+    btn.title = 'Çıxış';
+    btn.onclick = () => {
+      if (confirm("Hesabdan çıxmaq istədiyinizə əminsiniz?")) {
+        cleanupPresence(user.uid);
+        signOut(auth);
+        showToast("Hesabdan çıxış edildi.", "info");
+      }
+    };
+  } else {
+    btn.innerHTML = `<i class="fa-solid fa-circle-user"></i>`;
+    btn.title = 'Hesaba daxil ol';
+    btn.onclick = openAuthModal;
+  }
+}
+
+onAuthStateChanged(auth, async (user) => {
+  updateAuthUI(user);
+  if (user) {
+    // Modal açıqdırsa bağla
+    if (authModal.style.display === 'flex') {
+      closeAuthModalFunc();
+    }
+
+    // Sənəd yoxlanışı + 2 saniyə gözləmə (Google qeydiyyatı üçün)
+    try {
+      let userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (!userDoc.exists()) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (!userDoc.exists()) {
+          try {
+            await deleteUser(user);
+            showToast("Hesabınız sistemdən silindi.", "error");
+            window.location.reload();
+            return;
+          } catch (authError) {
+            if (authError.code === 'auth/requires-recent-login') {
+              showToast("Təhlükəsizlik doğrulaması tələb olunur. Yenidən daxil olun.", "info");
+              await signOut(auth);
+              window.location.reload();
+              return;
+            }
+            throw authError;
+          }
+        }
+      }
+    } catch (error) {
+      if (error.code === 'permission-denied') {
+        try {
+          const retryDoc = await getDoc(doc(db, 'users', user.uid));
+          if (!retryDoc.exists()) {
+            await deleteUser(user);
+            window.location.reload();
+            return;
+          }
+        } catch (_) {
+          await deleteUser(user);
+          window.location.reload();
+          return;
+        }
+      }
+      console.error("Auth yoxlanışı xətası:", error);
+    }
+
+    setupPresence(user);
+    setupBanWatcher(user);
+  } else {
+    // Çıxış — presence və ban listener-ləri təmizlə
+    cleanupPresence(null);
+  }
+});
+
+// ============================================================
+// AVTOMATİK LOGİN MODAL AÇILIŞI (Tam Təhlükəsiz Versiya)
+// ============================================================
+(function() {
+    var isInitialPhase = true; // Səhifənin ilk yüklənmə fazası (Kilid)
+
+    setTimeout(function() {
+        isInitialPhase = false;
+    }, 3000);
+
+    function triggerModalIfLoggedOut() {
+        var btn = document.getElementById('authMainBtn');
+        if (!btn) return;
+
+        var isLoggedOut = btn.innerHTML.indexOf('fa-circle-user') !== -1;
+
+        if (isLoggedOut) {
+            if (typeof window.openAuthModal === 'function') {
+                window.openAuthModal();
+            } else {
+                var modal = document.getElementById('authModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    var tabLogin = document.getElementById('tabLogin');
+                    var tabRegister = document.getElementById('tabRegister');
+                    var loginForm = document.getElementById('loginForm');
+                    var registerForm = document.getElementById('registerForm');
+                    if (tabLogin && tabRegister && loginForm && registerForm) {
+                        tabLogin.classList.add('active');
+                        tabRegister.classList.remove('active');
+                        loginForm.classList.add('active');
+                        registerForm.classList.remove('active');
+                    }
+                }
+            }
+        }
+    }
+
+    // 1. İLKİN AÇILIŞ: 2 saniyə gözlə və aç
+    setTimeout(function() {
+        triggerModalIfLoggedOut();
+    }, 2000);
+
+    // 2. LOGOUT İZLƏYİCİSİ (Ağıllı Kilid ilə)
+    var targetBtn = document.getElementById('authMainBtn');
+    if (targetBtn) {
+        var observer = new MutationObserver(function(mutations) {
+            if (isInitialPhase) return;
+
+            mutations.forEach(function(mutation) {
+                if (targetBtn.innerHTML.indexOf('fa-circle-user') !== -1) {
+                    var registerForm = document.getElementById('registerForm');
+                    if (registerForm && registerForm.classList.contains('active')) {
+                        return; 
+                    }
+
+                    setTimeout(triggerModalIfLoggedOut, 300);
+                }
+            });
+        });
+        observer.observe(targetBtn, { childList: true, characterData: true, subtree: true });
+    }
+})();
+  </script>
+
+  <!-- İlkin Yüklənmə Ekranı (Loader) - Başlanğıc -->
+<div id="appLoader" class="app-loader">
+    <div class="app-loader-spinner"></div>
+    <style>
+        .app-loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg, #11141a); 
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .app-loader-spinner {
+            width: 42px;
+            height: 42px;
+            border: 3px solid var(--glass-border, rgba(255, 255, 255, 0.08));
+            border-top-color: var(--accent, #3b82f6);
+            border-radius: 50%;
+            animation: appLoaderSpin 0.8s linear infinite;
+        }
+        @keyframes appLoaderSpin { to { transform: rotate(360deg); } }
+
+        .app-loader-hidden {
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+    </style>
+    <script>
+        window.addEventListener('load', function() {
+            var loader = document.getElementById('appLoader');
+            if (loader) {
+                setTimeout(function() {
+                    loader.classList.add('app-loader-hidden');
+                    setTimeout(function() { loader.remove(); }, 400);
+                }, 600); 
+            }
+        });
+    </script>
+</div>
+<!-- İlkin Yüklənmə Ekranı (Loader) - Son -->
+</body>
+</html>
