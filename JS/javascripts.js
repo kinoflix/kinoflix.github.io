@@ -5,6 +5,7 @@ const MOVIES = [
   { title: "MARVEL", cover:"https://kinoflix.github.io/FILES/IMG/logos/marvel.jpg", src:"../marvel", year:2026, genre:"Fantastik", id:"marvel", special:"yes", trend:"yes" },
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "Gece vurgunu / Nightcrawler", cover:"https://m.media-amazon.com/images/M/MV5BYjMwMmI5MWQtOTU4OS00OTAyLTg0OTYtNmQ5YzExZTQ3ZWJhXkEyXkFqcGc@._V1_.jpg", src:"https://my.mail.ru/video/embed/2413417861075698896", year:2014, genre:"Triller", id: "nightcrawler" },
   { title: "Masterplan", cover:"https://m.media-amazon.com/images/M/MV5BNjIyYjlmOTAtYTMzZC00OTM1LWE5YWUtZWMzZTQ1OWEyYWIzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/16345702009449", year:2026, genre:"Aksiyon", id: "masterplan" },
   { title: "Lev Yashin", cover:"https://m.media-amazon.com/images/M/MV5BYjUwMDgwZWQtNWZhZS00MjgwLWE5ZDMtOTA1OTdlY2I3MjdlXkEyXkFqcGc@._V1_.jpg", src:"https://vidmoly.me/dl/gluhxdj8uba2", year:2019, genre:"Bioqrafiya", id: "levyashin" },
   { title: "Tenzing", cover:"https://m.media-amazon.com/images/M/MV5BZWY5NzQxOWQtZmFjYS00YmQ1LTk4NDktNDliMGZmYzM3ZmM1XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/16346887293545", year:2026, genre:"Dram", id: "tenzing" },
