@@ -2,6 +2,15 @@
 <html lang="az">
 <head>
     <meta charset="utf-8" />
+    <script>
+        /* DİAQNOSTİKA: ?fx&nofb  -> Firebase/giriş modul skriptləri bloklanır; ?fx&nofit -> miqyaslama izləyicisi söndürülür */
+        (function () {
+            var u = location.href;
+            if (!/[?&#]fx(\b|=)/.test(u)) return;
+            if (/nofb/.test(u)) document.write('<meta http-equiv="Content-Security-Policy" content="script-src \'unsafe-inline\'">');
+            if (/nofit/.test(u)) window.ResizeObserver = function () { this.observe = function () {}; this.disconnect = function () {}; };
+        })();
+    </script>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>KINOFLIX / Nailiyyətlər</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%231db954' d='M27.5 162.2L9 187.1h90.5l6.9-130.7-78.9 105.8zM396.3 45.7L267.7 32l135.7 147.2-7.1-133.5zM112.2 218.3l-11.2-22H9.9L234.8 458zm2-31.2h284l-81.5-88.5L256.3 33zm297.3 9.1L277.6 458l224.8-261.7h-90.9zM415.4 69L406 56.4l.9 17.3 6.1 113.4h90.3zM113.5 93.5l-4.6 85.6L244.7 32 116.1 45.7zm287.7 102.7h-290l42.4 82.9L256.3 480l144.9-283.8z'/%3E%3C/svg%3E">
@@ -1704,47 +1713,51 @@ onAuthStateChanged(auth, async (user) => {
 <!-- İlkin Yüklənmə Ekranı (Loader) - Son -->
 
 
-<!-- ============ DİAQNOSTİKA (yalnız ünvana ?fx əlavə ediləndə işləyir) ============ -->
 <script>
 (function () {
     if (!/[?&#]fx(\b|=)/.test(location.href)) return;
     var T = [
-        ['pane-blur',  'Çərçivə blur-u (backdrop-filter)',        '.cert-pane{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}'],
-        ['header-blur','Header blur-u',                            'header{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}'],
-        ['shadows',    'Kölgə və qızılı parıltılar',               '.cert-pane,.glass{box-shadow:none!important}'],
-        ['svgfilter',  'Xətlərdəki SVG parıltı filtri',            '.achv-lines path{filter:none!important}'],
-        ['radius',     'Panelin yuvarlaq künc kəsimi',             '.achv-panel{border-radius:0!important}'],
-        ['mask',       'Çərçivə kənar xətləri (mask)',             '.cert-pane::before,.cert-face::after{display:none!important}'],
-        ['glass',      'Şüşə lövhələr',                            '.glass{display:none!important}'],
-        ['lines',      'İncə xətlər (SVG)',                        '.achv-lines{display:none!important}'],
-        ['bodybg',     'Səhifə fonundakı qızılı işıq',             'body{background:var(--bg)!important}'],
-        ['ovx',        'Son düzəlişdəki overflow-x:hidden',        'html,body{overflow-x:visible!important}'],
-        ['bf',         'Son düzəlişdəki backface-visibility',      '.cert,.glass,.cert-face,.cert-face img,.cert-pane,header{-webkit-backface-visibility:visible!important;backface-visibility:visible!important;-webkit-transform:none}'],
-        ['imgs',       'Sertifikat şəkilləri (gizlət)',            '.cert-face img{visibility:hidden!important}']
+        ['panel',   '1) BÜTÜN sertifikat bölməsini gizlət (başlıq + panel)',  '.achv{display:none!important}'],
+        ['stage',   '2) Yalnız sertifikat/şüşə/xətlər (panel qutusu qalır)',  '.achv-stage{display:none!important}'],
+        ['flat3d',  '3) 3D əyilməni ləğv et (düzülüş pozulur, yalnız test)',   '.cert,.glass{transform:none!important}'],
+        ['hdr-fix', '4) Header sabit olmasın (scroll ilə getsin)',            'header{position:absolute!important}'],
+        ['hdr-off', '5) Header-i tam gizlət',                                 'header{display:none!important}'],
+        ['menu',    '6) Menyunu gizlət',                                      '.menu-container{display:none!important}'],
+        ['anim',    '7) Bütün animasiya və keçidləri söndür',                 '*,*::before,*::after{transition:none!important;animation:none!important}'],
+        ['modal',   '8) Giriş modalını və onun blur-unu söndür',              '#authModal,.modal-overlay{display:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}'],
+        ['loader',  '9) Yüklənmə ekranını (loader) gizlət',                    '#appLoader{display:none!important}'],
+        ['bodybg',  '10) Səhifə fonundakı qızılı işıq',                       'body{background:var(--bg)!important}'],
+        ['blurs',   '11) Bütün blur-lar (header, çərçivə, modal)',            '*{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}'],
+        ['ovx',     '12) overflow-x:hidden-i ləğv et',                        'html,body{overflow-x:visible!important}']
     ];
     var st = document.createElement('style'); document.head.appendChild(st);
     var on = {};
     function apply() { st.textContent = T.filter(function (t) { return on[t[0]]; }).map(function (t) { return t[2]; }).join('\n'); }
 
     var box = document.createElement('div');
-    box.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483647;background:#000;color:#fff;font:13px/1.35 Arial,sans-serif;max-height:42vh;overflow:auto;padding:8px 10px;border-top:2px solid #ccab64';
+    box.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483647;background:#000;color:#fff;font:13px/1.35 Arial,sans-serif;max-height:44vh;overflow:auto;padding:8px 10px;border-top:2px solid #ccab64';
     var head = document.createElement('div');
-    head.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap';
-    head.innerHTML = '<b style="color:#ccab64">Diaqnostika</b>';
+    head.style.cssText = 'display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap';
+    head.innerHTML = '<b style="color:#ccab64">Diaqnostika 2</b>';
     function btn(txt, fn) { var b = document.createElement('button'); b.textContent = txt; b.style.cssText = 'background:#ccab64;color:#000;border:0;border-radius:6px;padding:5px 9px;font:inherit'; b.onclick = fn; head.appendChild(b); return b; }
-    var list = document.createElement('div');
-    var checks = {};
+    var list = document.createElement('div'); var checks = {};
     T.forEach(function (t) {
         var l = document.createElement('label'); l.style.cssText = 'display:block;padding:3px 0';
         var c = document.createElement('input'); c.type = 'checkbox'; c.style.marginRight = '7px';
         c.onchange = function () { on[t[0]] = c.checked; apply(); };
         checks[t[0]] = c; l.appendChild(c); l.appendChild(document.createTextNode(t[1])); list.appendChild(l);
     });
-    btn('Hamısını söndür', function () { T.forEach(function (t) { on[t[0]] = true; checks[t[0]].checked = true; }); apply(); });
+    btn('Hamısını söndür', function () { T.forEach(function (t) { if (t[0] !== 'panel' && t[0] !== 'stage' && t[0] !== 'flat3d') { on[t[0]] = true; checks[t[0]].checked = true; } }); apply(); });
     btn('Hamısını qaytar', function () { T.forEach(function (t) { on[t[0]] = false; checks[t[0]].checked = false; }); apply(); });
     var hide = btn('Gizlət', function () { var h = list.style.display === 'none'; list.style.display = h ? '' : 'none'; hide.textContent = h ? 'Gizlət' : 'Göstər'; });
-    box.appendChild(head); box.appendChild(list); document.body.appendChild(box);
-    document.body.style.paddingBottom = '45vh';
+    var row2 = document.createElement('div'); row2.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;margin:6px 0';
+    function btn2(txt, q) { var b = document.createElement('button'); b.textContent = txt; b.style.cssText = 'background:#444;color:#fff;border:0;border-radius:6px;padding:5px 9px;font:inherit'; b.onclick = function () { location.href = location.pathname + q; }; row2.appendChild(b); }
+    btn2('Firebase/giriş skriptləri OLMADAN aç', '?fx&nofb');
+    btn2('Miqyas izləyicisi OLMADAN aç', '?fx&nofit');
+    btn2('İkisi OLMADAN aç', '?fx&nofb&nofit');
+    btn2('Normal diaqnostika', '?fx');
+    box.appendChild(head); box.appendChild(row2); box.appendChild(list); document.body.appendChild(box);
+    document.body.style.paddingBottom = '46vh';
 })();
 </script>
 </body>
