@@ -686,6 +686,21 @@ body, input, button, select, textarea {
         [data-theme="light"] .cert:hover .cert-pane, [data-theme="light"] .cert:focus-visible .cert-pane {
             box-shadow: 0 0 56px 8px rgba(204,171,100,.80), 0 24px 50px rgba(90,60,10,.38);
         }
+
+        /* ---------- MOBİL SCROLL: yanıb-sönmənin qarşısı ----------
+           Yalnız mobildə işləyir. Heç bir rəng, effekt və ölçünü dəyişmir:
+           sabit header və 3D-əyilmiş sertifikat/şüşə təbəqələrini GPU-da sabit saxlayır. */
+        @media (max-width: 768px), (hover: none) and (pointer: coarse) {
+            html, body { overflow-x: hidden; }
+            header {
+                -webkit-backface-visibility: hidden; backface-visibility: hidden;
+                -webkit-transform: translateZ(0); transform: translateZ(0);
+            }
+            .achv-panel { contain: paint; }
+            .cert, .glass, .cert-face, .cert-face img, .cert-pane {
+                -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            }
+        }
     </style>
 </head>
 <body data-theme="dark">
@@ -770,6 +785,10 @@ body, input, button, select, textarea {
     (function () {
         var panel = document.getElementById('achvPanel');
         if (!panel) return;
+        /* mobil: ikinci şəkil scroll zamanı gec yüklənib birdən "çıxmasın" */
+        if (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches) {
+            panel.querySelectorAll('img[loading="lazy"]').forEach(function (i) { i.loading = 'eager'; });
+        }
         function fit() {
             var s = Math.min(panel.clientWidth / 768, 0.88);
             panel.style.setProperty('--s', s.toFixed(4));
