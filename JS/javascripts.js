@@ -5,6 +5,7 @@ const MOVIES = [
   { title: "MARVEL", cover:"https://kinoflix.github.io/FILES/IMG/logos/marvel.jpg", src:"../marvel", year:2026, genre:"Fantastik", id:"marvel", special:"yes", trend:"yes" },
   { title: "Spider-Noir", cover:"https://m.media-amazon.com/images/M/MV5BYjU3NjEwNTItMzc1Mi00Y2QyLTljNDItOTQ4YjU4NjZjN2EyXkEyXkFqcGc@._V1_.jpg", src:"../spider-noir", year:2026, genre:"Fantastik", id:"spidernoir", special:"yes" },
   { title: "Beyblade: Bakuten Shoot", cover:"../beyblade/beyblade.jpg", src:"../beyblade", year:2000, genre:"Cizgi serial", id:"beyblade", special:"yes" },
+  { title: "Oppenheimer", cover:"https://m.media-amazon.com/images/M/MV5BN2JkMDc5MGQtZjg3YS00NmFiLWIyZmQtZTJmNTM5MjVmYTQ4XkEyXkFqcGc@._V1_.jpg", src:"https://vidmoly.me/dl/wnfmzix4ozeh", year:2023, genre:"Bioqrafiya", id: "oppenheimer" },
   { title: "The Mongoosed", cover:"https://m.media-amazon.com/images/M/MV5BNDBmN2E2YTQtMWE2Ni00ZjMxLWE4NGItODk2ZDZjZDU0MjdlXkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/16595747146345", year:2026, genre:"Aksiyon", id: "themongoose" },
   { title: "One Last Shot", cover:"https://m.media-amazon.com/images/M/MV5BYWQ5NzhmYWUtMWE3MS00MmI0LThjZjEtN2ZkZDk2MGIyMzM1XkEyXkFqcGc@._V1_.jpg", src:"https://ok.ru/video/16593205201513", year:2026, genre:"Aksiyon", id: "onelastshot" },
   { title: "En yakın arkadaşım / My Best Friend", cover:"https://m.media-amazon.com/images/M/MV5BY2JmYTEyZGQtNTdjZi00Zjc0LWE5NWEtZDVkZmRiM2M1NTNjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", src:"https://ok.ru/video/16571603028585", year:2026, genre:"Komediya", id: "mybestfriend" },
