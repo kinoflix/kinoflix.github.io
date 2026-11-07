@@ -1,0 +1,3127 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>KINOFLIX+ Office</title>
+    <link rel="icon" href="../logo/favicon.ico" type="image/x-icon" />
+
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%231db954' d='M27.5 162.2L9 187.1h90.5l6.9-130.7-78.9 105.8zM396.3 45.7L267.7 32l135.7 147.2-7.1-133.5zM112.2 218.3l-11.2-22H9.9L234.8 458zm2-31.2h284l-81.5-88.5L256.3 33zm297.3 9.1L277.6 458l224.8-261.7h-90.9zM415.4 69L406 56.4l.9 17.3 6.1 113.4h90.3zM113.5 93.5l-4.6 85.6L244.7 32 116.1 45.7zm287.7 102.7h-290l42.4 82.9L256.3 480l144.9-283.8z'/%3E%3C/svg%3E">
+<style>
+
+        /* --- KINOFLIX+ DİZAYN SİSTEMİ --- */
+
+        :root {
+
+            --bg: #08101a; 
+
+            --surface: #0f1720; 
+
+            --editor-surface: #151f2b;
+
+            --muted: #94a3b8; 
+
+            --accent: #1db954; 
+
+            --text: #e6eef6; 
+
+            --glass: rgba(255,255,255,0.05); 
+
+            --glass-hover: rgba(255,255,255,0.1);
+
+            --border: rgba(255,255,255,0.08);
+
+            --radius: 12px; 
+
+            --header-h: 70px;
+
+        }
+
+        [data-theme="light"] {
+
+            --bg: #f0f2f5; 
+
+            --surface: #ffffff; 
+
+            --editor-surface: #f8fafc;
+
+            --muted: #64748b; 
+
+            --accent: #0b74ff; 
+
+            --text: #1e293b; 
+
+            --glass: rgba(0,0,0,0.05); 
+
+            --glass-hover: rgba(0,0,0,0.08);
+
+            --border: rgba(0,0,0,0.1);
+
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+
+        body {
+
+            background: var(--bg);
+
+            color: var(--text);
+
+            font-family: "Varela Round", sans-serif;
+
+            height: 100vh;
+
+            overflow: hidden;
+
+            display: flex;
+
+            flex-direction: column;
+
+            transition: background 0.3s, color 0.3s;
+
+        }
+
+        /* --- HEADER --- */
+
+        header {
+
+            height: var(--header-h);
+
+            background: var(--bg);
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 25px;
+
+            z-index: 100;
+
+        }
+
+        .brand {
+
+            font-size: 1.3rem;
+
+            font-weight: bold;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            text-decoration: none; /* Link üçün */
+
+            color: var(--text);
+
+            cursor: pointer;
+
+            transition: 0.3s;
+
+        }
+
+        .brand:hover { opacity: 0.8; }
+
+        .brand span { color: var(--accent); }
+
+        
+
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+
+        /* TEMA DÜYMƏSİ (Digər səhifələrə uyğunlaşdırıldı) */
+
+        .theme-btn {
+
+            background: var(--glass);
+
+            border: none;
+
+            color: var(--text);
+
+            width: 40px;
+
+            height: 40px;
+
+            border-radius: 50%;
+
+            cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            transition: 0.3s;
+
+            font-size: 1.1rem;
+
+        }
+
+        .theme-btn:hover { background: var(--glass-hover); transform: scale(1.05); }
+
+        /* --- EDITOR LAYOUT --- */
+
+        .main-workspace {
+
+            flex: 1;
+
+            display: flex;
+
+            flex-direction: column;
+
+            padding: 10px;
+
+            gap: 10px;
+
+            height: calc(100vh - var(--header-h));
+
+        }
+
+        .editors-container {
+
+            flex: 1;
+
+            display: flex;
+
+            gap: 10px;
+
+            min-height: 40%; 
+
+        }
+
+        .editor-box {
+
+            flex: 1;
+
+            display: flex;
+
+            flex-direction: column;
+
+            background: var(--surface);
+
+            border-radius: var(--radius);
+
+            border: 1px solid var(--border);
+
+            position: relative;
+
+            overflow: hidden;
+
+        }
+
+        .editor-header {
+
+            padding: 8px 12px;
+
+            background: var(--glass);
+
+            font-size: 0.85rem;
+
+            font-weight: bold;
+
+            color: var(--muted);
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+        }
+
+        textarea {
+
+            flex: 1;
+
+            width: 100%;
+
+            background: var(--editor-surface);
+
+            color: var(--text);
+
+            border: none;
+
+            padding: 15px;
+
+            font-family: 'Consolas', 'Monaco', monospace;
+
+            font-size: 14px;
+
+            resize: none;
+
+            line-height: 1.5;
+
+        }
+
+        
+
+        textarea::placeholder { opacity: 0.5; }
+
+        .tools-overlay {
+
+            position: absolute;
+
+            bottom: 10px;
+
+            right: 10px;
+
+            display: flex;
+
+            gap: 5px;
+
+            background: var(--surface);
+
+            padding: 5px;
+
+            border-radius: 8px;
+
+            border: 1px solid var(--border);
+
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+
+        }
+
+        .tool-btn {
+
+            width: 32px;
+
+            height: 32px;
+
+            border: none;
+
+            background: var(--glass);
+
+            color: var(--text);
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            transition: 0.2s;
+
+        }
+
+        .tool-btn:hover { background: var(--accent); color: white; }
+
+        
+
+        .output-container {
+
+            flex: 1;
+
+            background: white;
+
+            border-radius: var(--radius);
+
+            overflow: hidden;
+
+            border: 1px solid var(--border);
+
+            position: relative;
+
+        }
+
+        iframe {
+
+            width: 100%;
+
+            height: 100%;
+
+            border: none;
+
+            background: white;
+
+        }
+
+        @keyframes blink-red {
+
+            0%, 100% { box-shadow: inset 0 0 0 2px #ff4d4d; }
+
+            50% { box-shadow: none; }
+
+        }
+
+        @keyframes blink-green {
+
+            0%, 100% { box-shadow: inset 0 0 0 2px var(--accent); }
+
+            50% { box-shadow: none; }
+
+        }
+
+        .blink-red { animation: blink-red 0.5s ease-in-out 2; }
+
+        .blink-green { animation: blink-green 0.5s ease-in-out 2; }
+
+        @media (max-width: 768px) {
+
+            .editors-container { flex-direction: column; min-height: 60%; }
+
+            .output-container { min-height: 40%; }
+
+        }
+
+#themeToggle {
+
+    display: flex !important;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition: all 0.3s ease !important;
+
+}
+
+#themeToggle i {
+
+    pointer-events: none;
+
+}
+
+        /* Loqo İkonu üçün Neon və Animasiya */
+
+.brand i {
+
+    color: var(--accent);
+
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    filter: drop-shadow(0 0 5px var(--accent)); /* Daimi neon */
+
+}
+
+.brand:hover i {
+
+    transform: rotate(-20deg) scale(1.2); /* JS yerinə CSS ilə daha hamar hərəkət */
+
+    filter: drop-shadow(0 0 15px var(--accent)); /* Güclü neon */
+
+}
+
+/* Tema Butonu üçün Neon Effekti */
+
+.theme-btn {
+
+    transition: all 0.4s ease;
+
+}
+
+/* GECƏ REJİMİ – MAVİ NEON */
+
+body[data-theme="dark"] #themeToggle:hover {
+
+    background: #1db954 !important;
+
+    color: #fff !important;
+
+    transform: scale(1.1) rotate(-20deg);
+
+    box-shadow: 
+
+        0 0 10px #1db954,
+
+        0 0 25px #1db954,
+
+        0 0 45px rgba(11, 116, 255, 0.8);
+
+}
+
+/* GÜNDÜZ REJİMİ – YAŞIL NEON */
+
+body[data-theme="light"] #themeToggle:hover {
+
+    background: #0b74ff !important;
+
+    color: #fff !important;
+
+    transform: scale(1.1) rotate(-20deg);
+
+    box-shadow: 
+
+        0 0 10px #0b74ff,
+
+        0 0 25px #0b74ff,
+
+        0 0 45px rgba(29, 185, 84, 0.8);
+
+}
+
+            /* ============================================================
+   AUTH MODAL — DÜZƏLDİLMİŞ VERSİYA
+   Dəyişikliklər:
+   1. Yuvarlaq künclər (--radius → 20px, --radius-sm → 12px)
+   2. Toast sağ yuxarıda — showToast() JS-də tam yenilənib
+   3. Modal/input genişliyi max-width ilə məhdudlaşdırıldı
+   4. Hover effektləri düzgün işləyir (visibility bug həll edildi)
+   ============================================================ */
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(2, 6, 23, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
+}
+.modal-overlay.active {
+  display: flex;
+}
+
+/* Modal card əsası */
+.modal-card {
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;          /* FIX 1: daha yuvarlaq */
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow);
+  animation: scaleUp 0.22s ease-out;
+}
+
+/* Auth modal card — maksimum en */
+.auth-modal-card {
+  max-width: 400px;             /* FIX 3: çox enli görünmür */
+}
+
+/* Modal header */
+.modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* Bağla düyməsi */
+.close-modal-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.6rem;
+  cursor: pointer;
+  line-height: 1;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+}
+.close-modal-btn:hover {
+  background: var(--glass);
+  color: var(--text);
+}
+
+/* Modal body */
+.auth-modal-body {
+  padding: 22px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Tabs */
+.auth-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: 4px;
+}
+.auth-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 11px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+  position: relative;
+}
+.auth-tab.active {
+  color: var(--accent);
+}
+.auth-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0;
+  width: 100%; height: 2px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+}
+
+/* Form görünümü */
+.auth-form {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+}
+.auth-form.active {
+  display: flex;
+}
+
+/* Input qrupları */
+.input-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.input-group > i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+  z-index: 2;
+  font-size: 0.9rem;
+}
+.input-group input {
+  width: 100%;
+  padding: 13px 14px 13px 42px;
+  border-radius: 12px;          /* FIX 1: yuvarlaq input */
+  border: 1px solid var(--glass-border);
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  font-size: 0.92rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-group input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+.input-group.half {
+  flex: 1;
+}
+.input-group.half input {
+  padding-left: 38px;
+}
+.input-group.half i {
+  left: 12px;
+}
+
+/* Ad + Soyad yan-yana */
+.name-row {
+  display: flex;
+  gap: 10px;
+}
+
+/* Şifrə yoxlama mesajları */
+.check-message {
+  font-size: 0.78rem;
+  min-height: 0;
+  padding-left: 2px;
+  transition: color 0.2s;
+  margin-top: -6px;
+}
+.check-message:empty { display: none; }
+.check-message.success { color: var(--success); }
+.check-message.error   { color: var(--danger); }
+
+/* Şifrəni göstər/gizlət düyməsi */
+.password-toggle-btn {
+  position: absolute;
+  right: 0; top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.88rem;
+  padding: 0 13px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  flex-shrink: 0;
+  z-index: 2;
+}
+.password-toggle-btn:hover {
+  color: var(--accent);           /* FIX 4: yox olmur, rəng dəyişir */
+}
+.input-group:has(.password-toggle-btn) input {
+  padding-right: 44px;
+}
+
+/* Şifrəni unutdunuzmu */
+.forgot-password-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  padding: 0;
+  transition: opacity 0.2s;
+}
+.forgot-password-link:hover { opacity: 0.7; }
+
+/* Submit düyməsi */
+.submit-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 13px;
+  border-radius: 12px;          /* FIX 1: yuvarlaq buton */
+  font-weight: bold;
+  font-size: 0.97rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  letter-spacing: 0.2px;
+}
+.submit-btn:hover {
+  background: var(--accent); /* FIX 4: hover düzgün işləyir */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.submit-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Ayırıcı xətt */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--text);
+  opacity: 0.15;
+}
+
+.auth-divider span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+/* Google düyməsi */
+.google-btn {
+  width: 100%;
+  background: #fff;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  border-radius: 12px;          /* FIX 1: yuvarlaq */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.google-btn:hover {
+  background: #f3f4f6;          /* FIX 4: düzgün hover, yox olmur */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+.google-btn:active {
+  transform: translateY(0);
+}
+.google-btn img {
+  width: 20px; height: 20px;
+}
+
+/* Auth header düyməsi */
+#authMainBtn {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+}
+#authMainBtn:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* Animasiyalar */
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Light tema */
+[data-theme="light"] .auth-modal-card {
+  background: #ffffff;
+}
+[data-theme="light"] .auth-divider span {
+  background: #ffffff;
+}
+[data-theme="light"] .google-btn {
+  background: #fff;
+  color: #1f2937;
+  border-color: #d1d5db;
+}
+[data-theme="light"] .google-btn:hover {
+  background: #f3f4f6;
+}
+
+/* Mobil uyğunluğu */
+@media (max-width: 480px) {
+  .auth-modal-card {
+    max-width: 100%;
+  }
+  .auth-modal-body {
+    padding: 18px 16px 24px;
+  }
+  .name-row {
+    flex-direction: row;
+    gap: 8px;
+  }
+}
+
+#closeAuthModal {
+  display: none;
+}
+
+#authModalTitle {
+    display: block;        /* Elementin bütün sətri tutmasını təmin edir */
+    width: 100%;           /* Enini 100% edir ki, mərkəzləmə tam işləsin */
+    text-align: center;    /* Həm tək, həm çox sətirli mətni ortalayır */
+    box-sizing: border-box;/* Padding varsa enin pozulmasının qarşısını alır */
+}
+body, input, button, select, textarea {
+    font-family: 'Varela Round', sans-serif;
+}
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+/* --- BUTTONS (YENİLƏNDİ) --- */
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.3s ease; /* Keçidləri yumşaltdıq */
+}
+
+/* Ümumi düymələr üçün köhnə hover effekti qalsın */
+.icon-btn:hover {
+  background: var(--surface);
+  outline: 2px solid var(--accent);
+}
+
+/* Buton içərisindəki ikonun öz ölçüsü */
+.icon-btn i {
+  font-size: 20px; /* İkonun ölçüsü */
+}
+/* Account İkonun ölçüsü */
+.icon-btn .fa-circle-user {
+  font-size: 25px; 
+}
+
+/* ===== Kinoflix+ Office: əlavə dəyişənlər (alət səhifələri üçün) ===== */
+:root{--accent-ink:#ffffff;--bad:#ff6b6b;--bad-soft:rgba(255,77,77,0.12);--focus:#7fb6ff;--f-mono:ui-monospace,Consolas,Menlo,monospace;--shadow:0 20px 50px rgba(0,0,0,.45);--success:#2ecc71;--danger:#e74c3c}
+[data-theme="light"]{--bad:#c0392b;--bad-soft:rgba(192,57,43,0.1);--focus:#0b74ff;--shadow:0 20px 50px rgba(0,0,0,.18)}
+:root,[data-theme]{--glass-border:var(--border)}
+html{-webkit-text-size-adjust:100%}
+.office-main{flex:1;min-height:0;overflow-y:auto;padding-bottom:56px}
+:focus-visible{outline:2px solid var(--focus)!important;outline-offset:2px}
+button,input,select,textarea{font:inherit;color:inherit}
+
+/* ===== Kinoflix+ Office: alət səhifələri ===== */
+.wrap{max-width:1180px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mono{font-family:var(--f-mono)}
+.hint{margin:8px 0 0;color:var(--muted);font-size:14px}
+
+/* ana səhifə */
+.hero{padding-block:44px 8px;max-width:760px}
+.eyebrow{margin:0 0 10px;color:var(--accent);font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:bold}
+.hero h1{margin:0;font-size:clamp(28px,6vw,46px);line-height:1.1;font-weight:700;text-wrap:balance}
+.hero .lead{margin:16px 0 0;color:var(--muted);font-size:17px;max-width:58ch}
+.finder{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-block:26px 4px}
+.search{flex:1 1 260px;min-width:0;padding:13px 16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text)}
+.search:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent);outline:none}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--border);background:var(--glass);border-radius:99px;padding:8px 15px;font-size:14px;cursor:pointer;transition:.2s}
+.chip:hover{background:var(--glass-hover)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:transparent;font-weight:bold}
+.grp{margin-top:36px}
+.grp h2{display:flex;align-items:center;gap:10px;margin:0 0 14px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:bold}
+.grp h2 span{background:var(--glass);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:0 8px;letter-spacing:0;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,255px),1fr));gap:14px}
+.card{display:flex;flex-direction:column;gap:10px;padding:18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);text-decoration:none;color:inherit;min-width:0;transition:border-color .2s,box-shadow .2s,transform .2s}
+.card:hover{border-color:var(--accent);box-shadow:0 6px 22px color-mix(in srgb,var(--accent) 16%,transparent);transform:translateY(-2px)}
+.card h3{margin:0;font-size:17px;line-height:1.25;font-weight:bold}
+.card p{margin:0;color:var(--muted);font-size:14px}
+.ico{display:grid;place-items:center;width:42px;height:42px;flex:none;border-radius:10px;background:var(--glass);color:var(--accent)}
+.ico svg{width:22px;height:22px}
+.empty{color:var(--muted);padding-block:30px}
+.foot{margin-top:60px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:14px}
+.foot p{margin:0 0 8px;max-width:72ch}
+
+/* iş sahəsi */
+.ws{max-width:920px;padding-block:8px 24px}
+.back{display:inline-flex;gap:6px;padding-block:12px;color:var(--muted);text-decoration:none;font-size:14px;transition:.2s}
+.back:hover{color:var(--accent)}
+.wsh{display:flex;gap:16px;align-items:flex-start;margin-top:6px}
+.wsh .ico{width:54px;height:54px;border-radius:14px}
+.wsh .ico svg{width:28px;height:28px}
+.wsh h2{margin:0;font-size:clamp(24px,5vw,34px);line-height:1.15;font-weight:bold}
+.wsh p{margin:6px 0 0;color:var(--muted)}
+.blk{margin-top:28px}
+.lab{margin:0 0 10px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:bold}
+.drop{position:relative;border:2px dashed var(--border);border-radius:18px;background:var(--surface);padding:36px 18px;text-align:center;transition:border-color .2s,background .2s}
+.drop.over,.drop:focus-within,.drop:hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,var(--surface))}
+.drop label{display:block;cursor:pointer}
+.drop strong{background:var(--accent);color:var(--accent-ink);padding:5px 14px;border-radius:var(--radius);margin-right:4px}
+.flist,.rlist{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.flist li,.rlist li{display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);min-width:0}
+.fbadge{flex:none;width:42px;height:42px;border-radius:9px;display:grid;place-items:center;background:var(--glass);color:var(--accent);font-size:11px;font-weight:bold;letter-spacing:.04em}
+.fthumb{flex:none;width:42px;height:42px;border-radius:9px;object-fit:cover;background:var(--bg)}
+.fmeta,.rmeta{flex:1;min-width:0;display:flex;flex-direction:column}
+.fmeta b,.rmeta b{font-weight:bold;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fmeta span,.rmeta span{font-size:12.5px;color:var(--muted)}
+.rmeta span{white-space:normal}
+.fact{display:flex;gap:4px;flex:none}
+.ib{width:34px;height:34px;border:1px solid var(--border);background:var(--glass);border-radius:9px;cursor:pointer;line-height:1;transition:.2s}
+.ib:hover:not(:disabled){background:var(--glass-hover);border-color:var(--accent)}
+.ib:disabled{opacity:.35;cursor:not-allowed}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border:1px solid var(--border);border-radius:var(--radius);background:var(--glass);font-size:14px;cursor:pointer;text-decoration:none;transition:background .2s,transform .15s,box-shadow .2s}
+.btn:hover:not(:disabled){background:var(--glass-hover);border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent;font-weight:bold;font-size:15px;padding:13px 24px}
+.btn.primary:hover:not(:disabled){background:var(--accent);transform:translateY(-1px);box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 38%,transparent)}
+.btn.primary:active:not(:disabled){transform:translateY(0);box-shadow:none}
+.btn.sm{padding:8px 14px;font-size:13.5px}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.runbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:28px}
+.runbar .hint{margin:0}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:16px}
+.fld{min-width:0;margin-bottom:16px}
+.fields .fld{margin-bottom:0}
+.fl{display:block;margin-bottom:6px;font-size:14px;font-weight:bold}
+.in{width:100%;min-width:0;padding:11px 13px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text);transition:border-color .2s,box-shadow .2s}
+.in:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent);outline:none}
+textarea.in{resize:vertical;min-height:150px;font:13px/1.5 var(--f-mono)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px;flex:none}
+.chk{display:flex;align-items:center;gap:10px;cursor:pointer}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg label{position:relative;cursor:pointer}
+.seg span{display:block;padding:9px 15px;border:1px solid var(--border);border-radius:var(--radius);background:var(--glass);font-size:14px;transition:.2s}
+.seg label:hover span{background:var(--glass-hover)}
+.seg input:checked+span{background:var(--accent);color:var(--accent-ink);border-color:transparent;font-weight:bold}
+.seg input:focus-visible+span{outline:2px solid var(--focus);outline-offset:2px}
+.prog{margin-top:20px}
+.track{height:10px;border-radius:5px;background:var(--glass-hover);overflow:hidden}
+.fill{height:100%;width:0;background:var(--accent);border-radius:5px;transition:width .2s;box-shadow:0 0 10px var(--accent)}
+.prog p{margin:8px 0 0;font-size:13px;color:var(--muted)}
+.err{margin-top:18px;padding:13px 16px;border-radius:var(--radius);background:var(--bad-soft);border:1px solid var(--bad);border-left-width:5px;color:var(--text)}
+.rbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+
+/* səhifə düzənləyici */
+.otools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,128px),1fr));gap:12px}
+.th{display:flex;flex-direction:column;gap:6px;padding:8px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);min-width:0}
+.th.del{opacity:.4}
+.th .box{aspect-ratio:1;display:grid;place-items:center;background:var(--bg);border-radius:8px;overflow:hidden}
+.th img{max-width:100%;max-height:100%;background:#fff;transition:transform .2s;box-shadow:0 1px 4px rgb(0 0 0 / .3)}
+.th .cap{font-size:12px;color:var(--muted);text-align:center}
+.th .acts{display:flex;justify-content:space-between;gap:4px}
+.th .ib{width:100%;height:30px;font-size:15px}
+
+/* imza və mətn */
+.sg-bar{display:flex;gap:8px;flex-wrap:wrap}
+.sg-panel{margin-top:12px;padding:14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface)}
+#pad{display:block;width:100%;max-width:560px;height:auto;aspect-ratio:14/5;background:#fff;border:1px solid var(--border);border-radius:10px;touch-action:none;cursor:crosshair}
+.sg-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.sg-row .in{flex:1 1 200px}
+.sg-tray{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.as{position:relative}
+.asb{display:block;width:96px;height:54px;padding:4px;border:2px solid var(--border);border-radius:10px;background:#fff;cursor:pointer}
+.as.on .asb{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.asb img{width:100%;height:100%;object-fit:contain}
+.asx{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;border:1px solid var(--border);background:var(--surface);cursor:pointer;line-height:1;font-size:14px}
+.sg-pager{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:13px}
+.sg-stage{position:relative;max-width:760px;margin-top:10px;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:#fff;line-height:0}
+.sg-stage canvas{display:block;width:100%;height:auto}
+#sgOver{position:absolute;inset:0;touch-action:none}
+#sgOver.armed{cursor:crosshair}
+.pl{position:absolute;transform:translate(-50%,-50%);cursor:move;user-select:none;-webkit-user-select:none;outline:1px dashed transparent;height:auto}
+.pl.on{outline-color:#2057e8}
+.sg-sel{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.sg-sel label{font-size:14px;font-weight:bold}
+.sg-sel input[type=range]{flex:1 1 180px;max-width:320px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+</style>
+</head>
+
+<body data-theme="dark">
+
+    <header>
+
+        <a href="../../index.html" class="brand">
+
+            <i class="fa-solid fa-file-pdf" style="color:var(--accent)"></i>
+
+            <div>KINOFLIX<span>+</span> Office</div>
+
+        </a>
+
+        <div class="header-actions">
+
+            <button id="themeToggle" class="theme-btn" title="Temanı dəyiş">
+
+                <i class="fa-solid fa-sun"></i>
+
+            </button>
+          
+          <button id="authMainBtn" class="icon-btn" title="Hesab" aria-label="Hesab">
+            <i class="fa-solid fa-circle-user"></i>
+        </button>
+
+        </div>
+
+    </header>
+
+<main class="office-main" id="officeMain">
+<div id="home" class="wrap">
+  <section class="hero">
+    <p class="eyebrow">Office alətləri</p>
+    <h1>PDF və şəkil alətləri</h1>
+    <p class="lead">Birləşdirin, bölün, sıxın, çevirin və imzalayın. Hər əməliyyat brauzerinizdə işləyir, fayllar serverə göndərilmir.</p>
+  </section>
+  <div class="finder">
+    <input class="search" id="search" type="search" placeholder="Alət axtarın: birləşdir, sıx, su nişanı…" aria-label="Alət axtar" autocomplete="off">
+    <div class="chips" id="chips" role="group" aria-label="Kateqoriya"></div>
+  </div>
+  <div id="groups"></div>
+  <footer class="foot">
+    <p>Bütün əməliyyatlar brauzerinizdə aparılır, fayllar heç bir serverə göndərilmir.</p>
+    <p>Word, Excel və PowerPoint çevirmələri, OCR və parol qoyma/açma server tələb etdiyi üçün bu səhifədə yoxdur.</p>
+  </footer>
+</div>
+<section id="work" class="wrap ws" hidden></section>
+</main>
+
+<script>
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    // --- TEMA SİSTEMİ (FLIX-THEME) ---
+
+    // 2. Temanı tətbiq edən əsas funksiya
+    function applyTheme(theme) {
+        // Body atributunu dəyiş
+        body.setAttribute('data-theme', theme);
+        
+        // Yaddaşa 'flix-theme' adı ilə yaz (Bütün sayt üçün ortaq)
+        localStorage.setItem('flix-theme', theme);
+        
+        // İkonu dəyiş
+        const icon = themeToggle.querySelector('i');
+        if (icon) {
+            icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        }
+    }
+
+    // 3. Səhifə açılanda yaddaşdakı temanı oxu
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedTheme = localStorage.getItem('flix-theme') || 'dark';
+        applyTheme(savedTheme);
+    });
+
+    // 4. Düyməyə basanda temanı dəyiş
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+    });
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script id="app-js">
+var TOAST_CSS=`
+      .flix-toast-container {
+        position: fixed;
+        top: 20px; right: 20px; z-index: 99999;
+        display: flex; flex-direction: column; gap: 10px;
+        pointer-events: none;
+      }
+      .flix-toast {
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(12px);
+        color: #1a1a1a;
+        padding: 14px 20px;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.14);
+        font-size: 14px; font-weight: 500;
+        display: flex; align-items: center; gap: 12px;
+        transform: translateX(120%);
+        animation: flixSlideIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+        border-left: 5px solid #ccc;
+        max-width: 360px;
+        pointer-events: auto;
+      }
+      [data-theme="dark"] .flix-toast {
+        background: rgba(28,28,30,0.94);
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      }
+      .flix-toast.success { border-left-color: #2ecc71; }
+      .flix-toast.error   { border-left-color: #e74c3c; }
+      .flix-toast.warning { border-left-color: #f39c12; }
+      .flix-toast.info    { border-left-color: #3498db; }
+      @keyframes flixSlideIn { to { transform: translateX(0); } }
+      @keyframes flixFadeOut { to { opacity: 0; transform: translateY(-15px); } }
+    `;
+(function(){
+'use strict';
+document.documentElement.lang='az';
+var PL=window.PDFLib||{};
+var PDFDocument=PL.PDFDocument,StandardFonts=PL.StandardFonts,rgb=PL.rgb,degrees=PL.degrees;
+var WORKER='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+/* ---------- ümumi köməkçilər ---------- */
+var $=function(s,r){return (r||document).querySelector(s);};
+var $$=function(s,r){return Array.from((r||document).querySelectorAll(s));};
+var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+var fmtSize=function(n){return n<1024?n+' B':n<1048576?(n/1024).toFixed(0)+' KB':(n/1048576).toFixed(n<10485760?2:1)+' MB';};
+var baseName=function(n){return n.replace(/\.[^.]+$/,'');};
+var uid=0;
+var MM=2.83465;
+
+var IC={
+ word:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/><path d="M8 9h2"/>',
+ sheet:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/>',
+ slide:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>',
+ code:'<path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/>',
+ merge:'<path d="m8 6 4-4 4 4"/><path d="M12 2v10.3a4 4 0 0 1-1.17 2.87L4 22"/><path d="m20 22-5-5"/>',
+ split:'<path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.17-2.87L3 3"/><path d="m15 9 6-6"/>',
+ trash:'<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+ extract:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m9 15 3-3 3 3"/><path d="M12 12v7"/>',
+ grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
+ compress:'<path d="M4 14h6v6"/><path d="M20 10h-6V4"/><path d="m14 10 7-7"/><path d="m3 21 7-7"/>',
+ wrench:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/>',
+ image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>',
+ text:'<path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/>',
+ rotate:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
+ hash:'<path d="M4 9h16"/><path d="M4 15h16"/><path d="M10 3 8 21"/><path d="M16 3l-2 18"/>',
+ drop:'<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>',
+ crop:'<path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/>',
+ pen:'<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>',
+ tag:'<path d="M12.59 2.59A2 2 0 0 0 11.17 2H4a2 2 0 0 0-2 2v7.17a2 2 0 0 0 .59 1.41l8.7 8.7a2.43 2.43 0 0 0 3.42 0l6.58-6.58a2.43 2.43 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5"/>',
+ layers:'<path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>'
+};
+function icon(n){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(IC[n]||'')+'</svg>';}
+
+/* ---------- səhifə aralıqları ---------- */
+function parseTok(p,max){
+  var a,b,m;
+  if(/^\d+$/.test(p)){a=b=+p;}
+  else if((m=p.match(/^(\d*)-(\d*)$/))&&(m[1]||m[2])){a=m[1]?+m[1]:1;b=m[2]?+m[2]:max;}
+  else throw new Error('Yanlış aralıq: "'+p+'". Nümunə: 1-3, 5, 8-');
+  if(a<1||b<1||a>max||b>max) throw new Error('Səhifə nömrəsi 1 ilə '+max+' arasında olmalıdır.');
+  if(a>b) throw new Error('"'+p+'" aralığı tərs yazılıb.');
+  var r=[];for(var i=a;i<=b;i++)r.push(i-1);return r;
+}
+function parseGroups(s,max){
+  var toks=String(s||'').replace(/\s*-\s*/g,'-').split(/[,;\s]+/).filter(Boolean);
+  if(!toks.length) throw new Error('Səhifə aralığını daxil edin. Nümunə: 1-3, 5, 8-');
+  return toks.map(function(t){return parseTok(t,max);});
+}
+function parseRanges(s,max){return [].concat.apply([],parseGroups(s,max));}
+
+/* ---------- PDF və şəkil köməkçiləri ---------- */
+function stamp(d){d.setProducer('Kinoflix+ Office');d.setCreator('Kinoflix+ Office');return d;}
+async function docBlob(d){var bytes=await d.save();return new Blob([bytes],{type:'application/pdf'});}
+async function openPdf(file){
+  var buf=await file.arrayBuffer(),doc;
+  try{doc=await PDFDocument.load(buf,{ignoreEncryption:true,updateMetadata:false});}
+  catch(e){throw new Error('"'+file.name+'" faylı oxuna bilmədi. Fayl zədələnmiş ola bilər, "PDF təmir et" alətini yoxlayın.');}
+  if(doc.isEncrypted) throw new Error('"'+file.name+'" şifrəlidir. Şifrəli PDF-lər bu alətdə dəstəklənmir.');
+  return doc;
+}
+async function pdfjsOpen(file){
+  var lib=window.pdfjsLib;
+  if(!lib) throw new Error('PDF oxuyucu yüklənmədi. İnternet bağlantısını yoxlayıb səhifəni yeniləyin.');
+  if(!lib.GlobalWorkerOptions.workerSrc) lib.GlobalWorkerOptions.workerSrc=WORKER;
+  var buf=await file.arrayBuffer();
+  try{return await lib.getDocument({data:new Uint8Array(buf)}).promise;}
+  catch(e){
+    if(e&&e.name==='PasswordException') throw new Error('"'+file.name+'" şifrəlidir. Şifrəli PDF-lər bu alətdə dəstəklənmir.');
+    throw new Error('"'+file.name+'" faylı oxuna bilmədi.');
+  }
+}
+async function renderPage(pdf,n,scale,opt){
+  var maxDim=(opt&&opt.maxDim)||4096;
+  var page=await pdf.getPage(n);
+  var base=page.getViewport({scale:1});
+  var vp=page.getViewport({scale:scale});
+  var m=Math.max(vp.width,vp.height);
+  if(m>maxDim) vp=page.getViewport({scale:scale*maxDim/m});
+  var c=document.createElement('canvas');c.width=Math.ceil(vp.width);c.height=Math.ceil(vp.height);
+  var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+  await page.render({canvasContext:x,viewport:vp}).promise;
+  page.cleanup();
+  return {canvas:c,width:base.width,height:base.height};
+}
+function canvasBlob(c,type,q){return new Promise(function(res,rej){c.toBlob(function(b){b?res(b):rej(new Error('Şəkil yaradıla bilmədi.'));},type,q);});}
+async function fileToCanvas(file,opt){
+  var url=URL.createObjectURL(file);
+  try{
+    var img=new Image();img.src=url;
+    try{await img.decode();}catch(e){throw new Error('"'+file.name+'" şəkli açıla bilmədi.');}
+    var w=img.naturalWidth,h=img.naturalHeight;
+    var k=Math.min(1,(opt.maxDim||8000)/Math.max(w,h));
+    if(opt.maxW) k=Math.min(k,opt.maxW/w);
+    var cw=Math.max(1,Math.round(w*k)),ch=Math.max(1,Math.round(h*k));
+    var c=document.createElement('canvas');c.width=cw;c.height=ch;
+    var x=c.getContext('2d');
+    if(opt.bg){x.fillStyle=opt.bg;x.fillRect(0,0,cw,ch);}
+    x.drawImage(img,0,0,cw,ch);
+    return {canvas:c,w:cw,h:ch};
+  }finally{URL.revokeObjectURL(url);}
+}
+function drawCentered(page,img,cx,cy,w,h,deg,opacity){
+  var t=deg*Math.PI/180,c=Math.cos(t),s=Math.sin(t);
+  var x=cx-(w/2*c-h/2*s),y=cy-(w/2*s+h/2*c);
+  page.drawImage(img,{x:x,y:y,width:w,height:h,rotate:degrees(deg),opacity:opacity});
+}
+function dataUrlBytes(u){var b=atob(u.split(',')[1]);var a=new Uint8Array(b.length);for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;}
+function mapMargins(R,t,r,b,l){
+  R=((R%360)+360)%360;
+  if(R===90) return {left:t,top:r,right:b,bottom:l};
+  if(R===180) return {left:r,top:b,right:l,bottom:t};
+  if(R===270) return {left:b,top:l,right:t,bottom:r};
+  return {left:l,top:t,right:r,bottom:b};
+}
+
+/* ---------- seçim sahələri üçün şablonlar ---------- */
+function seg(name,items,def){
+  return '<div class="seg">'+items.map(function(it){
+    return '<label><input class="sr" type="radio" name="'+name+'" value="'+it[0]+'"'+(it[0]===def?' checked':'')+'><span>'+it[1]+'</span></label>';
+  }).join('')+'</div>';
+}
+function sel(id,items,def){
+  return '<select class="in" id="o-'+id+'">'+items.map(function(it){return '<option value="'+it[0]+'"'+(it[0]===def?' selected':'')+'>'+it[1]+'</option>';}).join('')+'</select>';
+}
+function fld(label,id,control,hint,when){
+  return '<div class="fld"'+(when?' data-when="'+when+'"':'')+'><label class="fl"'+(id?' for="o-'+id+'"':'')+'>'+label+'</label>'+control+(hint?'<p class="hint">'+hint+'</p>':'')+'</div>';
+}
+function num(id,val,min,max){return '<input class="in" id="o-'+id+'" type="number" value="'+val+'"'+(min!==undefined?' min="'+min+'"':'')+(max!==undefined?' max="'+max+'"':'')+'>';}
+function txt(id,ph,val){return '<input class="in" id="o-'+id+'" type="text" autocomplete="off" placeholder="'+(ph||'')+'"'+(val?' value="'+val+'"':'')+'>';}
+
+/* ---------- alətlər ---------- */
+var CATS=[{id:'topdf',name:'PDF-ə çevir'},{id:'frompdf',name:'PDF-dən çevir'},{id:'org',name:'Təşkil et'},{id:'opt',name:'Optimallaşdır'},{id:'edit',name:'Redaktə et'}];
+var state={tool:null,files:[],busy:false,results:[],ext:{}};
+var ACC={
+ pdf:{attr:'.pdf,application/pdf',label:'PDF seçin',badge:'PDF',err:'Yalnız PDF faylları qəbul olunur.',test:function(f){return f.type==='application/pdf'||/\.pdf$/i.test(f.name);}},
+ image:{attr:'image/*',label:'Şəkil seçin',badge:'IMG',err:'Yalnız şəkil faylları qəbul olunur.',test:function(f){return /^image\//.test(f.type);}},
+ html:{attr:'.html,.htm,.txt',label:'HTML və ya mətn faylı seçin',badge:'HTML',err:'Yalnız .html, .htm və ya .txt faylları qəbul olunur.',test:function(f){return /\.(html?|txt)$/i.test(f.name);}}
+};
+
+var TOOLS=[
+{id:'merge',cat:'org',icon:'merge',title:'PDF birləşdir',desc:'Bir neçə PDF faylını seçdiyiniz sıra ilə tək sənədə yığın.',kw:'merge join combine yığ birləşdir',
+ accept:'pdf',multi:true,min:2,hint:'Faylların sırasını ↑ ↓ düymələri ilə dəyişin.',cta:'Birləşdir',libs:['pdflib'],
+ async run(files,o,ctx){
+  var out=stamp(await PDFDocument.create());
+  for(var i=0;i<files.length;i++){
+    ctx.progress(i/files.length,files[i].name);
+    var src=await openPdf(files[i].file);
+    (await out.copyPages(src,src.getPageIndices())).forEach(function(p){out.addPage(p);});
+  }
+  return [{name:'birləşdirilmiş.pdf',blob:await docBlob(out),note:out.getPageCount()+' səhifə'}];
+ }},
+
+{id:'split',cat:'org',icon:'split',title:'PDF böl',desc:'Sənədi aralıqlara, hər səhifəyə və ya sabit hissələrə bölün.',kw:'split divide ayır böl',
+ accept:'pdf',cta:'Böl',libs:['pdflib'],
+ options:function(){
+  return fld('Bölmə üsulu','',seg('mode',[['ranges','Aralıqlara görə'],['each','Hər səhifə ayrıca'],['every','Sabit hissələrə']],'ranges'))+
+   fld('Aralıqlar','ranges',txt('ranges','1-3, 4-6, 7-'),'Hər aralıq ayrıca fayl olur. "7-" sənədin sonuna qədər deməkdir.','mode=ranges')+
+   fld('Hər hissədə səhifə sayı','every',num('every',2,1),'','mode=every');
+ },
+ async run(files,o,ctx){
+  var f=files[0],src=await openPdf(f.file),n=src.getPageCount(),b=baseName(f.name),groups;
+  if(o.mode==='each') groups=Array.from({length:n},function(_,i){return [i];});
+  else if(o.mode==='every'){
+    var k=Math.max(1,parseInt(o.every,10)||1);groups=[];
+    for(var i=0;i<n;i+=k) groups.push(Array.from({length:Math.min(k,n-i)},function(_,j){return i+j;}));
+  } else groups=parseGroups(o.ranges,n);
+  var out=[],w=String(groups.length).length;
+  for(var g=0;g<groups.length;g++){
+    ctx.progress(g/groups.length,'Hissə '+(g+1)+' / '+groups.length);
+    var d=stamp(await PDFDocument.create());
+    (await d.copyPages(src,groups[g])).forEach(function(p){d.addPage(p);});
+    out.push({name:b+'_'+String(g+1).padStart(w,'0')+'.pdf',blob:await docBlob(d),note:groups[g].length+' səhifə'});
+  }
+  return out;
+ }},
+
+{id:'remove',cat:'org',icon:'trash',title:'Səhifələri sil',desc:'Lazım olmayan səhifələri sənəddən çıxarın.',kw:'remove delete sil çıxar',
+ accept:'pdf',cta:'Səhifələri sil',libs:['pdflib'],
+ options:function(){return fld('Silinəcək səhifələr','pages',txt('pages','2, 5-7'),'Vergüllə ayırın. Nümunə: 1, 3-4, 9-');},
+ async run(files,o){
+  var f=files[0],src=await openPdf(f.file),n=src.getPageCount();
+  var del=new Set(parseRanges(o.pages,n)),keep=[];
+  for(var i=0;i<n;i++) if(!del.has(i)) keep.push(i);
+  if(!keep.length) throw new Error('Bütün səhifələri silmək olmaz.');
+  var d=stamp(await PDFDocument.create());
+  (await d.copyPages(src,keep)).forEach(function(p){d.addPage(p);});
+  return [{name:baseName(f.name)+'_redaktə.pdf',blob:await docBlob(d),note:del.size+' səhifə silindi, '+keep.length+' qaldı'}];
+ }},
+
+{id:'extract',cat:'org',icon:'extract',title:'Səhifələri çıxar',desc:'Yalnız seçdiyiniz səhifələrdən yeni PDF yaradın.',kw:'extract select çıxar seç',
+ accept:'pdf',cta:'Çıxar',libs:['pdflib'],
+ options:function(){return fld('Çıxarılacaq səhifələr','pages',txt('pages','1-3, 8'),'Səhifələr yazdığınız ardıcıllıqla yerləşəcək.');},
+ async run(files,o){
+  var f=files[0],src=await openPdf(f.file),idx=parseRanges(o.pages,src.getPageCount());
+  var d=stamp(await PDFDocument.create());
+  (await d.copyPages(src,idx)).forEach(function(p){d.addPage(p);});
+  return [{name:baseName(f.name)+'_çıxarılmış.pdf',blob:await docBlob(d),note:idx.length+' səhifə'}];
+ }},
+
+{id:'organize',cat:'org',icon:'grid',title:'Səhifələri düzənlə',desc:'Səhifələri görün, sürüşdürərək yerini dəyişin, çevirin və ya silin.',kw:'organize reorder sort sırala düzənlə yerini dəyiş',
+ accept:'pdf',cta:'Yeni PDF yarat',libs:['pdflib','pdfjs'],dyn:true,optsLabel:'Səhifələr',
+ onFiles:function(box,st){mountOrganize(box,st);},
+ async run(files,o,ctx){
+  var f=files[0],O=f.org;
+  if(!O||!O.pages.length) throw new Error('Səhifələr hələ yüklənməyib. Bir az gözləyin.');
+  var keep=O.pages.filter(function(p){return !p.del;});
+  if(!keep.length) throw new Error('Ən azı bir səhifə saxlayın.');
+  var src=await openPdf(f.file),out=stamp(await PDFDocument.create());
+  var pages=await out.copyPages(src,keep.map(function(p){return p.src;}));
+  pages.forEach(function(pg,i){
+    var r=keep[i].rot;
+    if(r) pg.setRotation(degrees((((pg.getRotation().angle+r)%360)+360)%360));
+    out.addPage(pg);
+  });
+  return [{name:baseName(f.name)+'_düzənlənmiş.pdf',blob:await docBlob(out),note:keep.length+' səhifə'}];
+ }},
+
+{id:'compress',cat:'opt',icon:'compress',title:'PDF sıx',desc:'Faylın həcmini kiçildin. Üç səviyyə arasından seçin.',kw:'compress reduce shrink sıx kiçilt həcm',
+ accept:'pdf',multi:true,cta:'Sıx',libs:['pdflib','pdfjs'],
+ options:function(){
+  return fld('Sıxma səviyyəsi','',seg('level',[['light','Yüngül'],['medium','Orta'],['strong','Güclü']],'medium'),
+   'Yüngül: mətn və keyfiyyət dəyişmir, kiçilmə az olur. Orta və Güclü: səhifələr şəkilə çevrilir, mətn seçilə bilməz.');
+ },
+ async run(files,o,ctx){
+  var out=[],lvl=o.level||'medium';
+  for(var i=0;i<files.length;i++){
+    var f=files[i],base=i/files.length,share=1/files.length,blob;
+    if(lvl==='light'){
+      ctx.progress(base,f.name);
+      blob=await docBlob(stamp(await openPdf(f.file)));
+    }else{
+      var pdf=await pdfjsOpen(f.file),n=pdf.numPages,d=stamp(await PDFDocument.create());
+      var scale=lvl==='medium'?1.5:1,q=lvl==='medium'?0.72:0.5;
+      for(var p=1;p<=n;p++){
+        ctx.progress(base+share*((p-1)/n),f.name+' · '+p+' / '+n);
+        var r=await renderPage(pdf,p,scale);
+        var jb=await canvasBlob(r.canvas,'image/jpeg',q);
+        var im=await d.embedJpg(await jb.arrayBuffer());
+        var pg=d.addPage([r.width,r.height]);
+        pg.drawImage(im,{x:0,y:0,width:r.width,height:r.height});
+      }
+      pdf.destroy();
+      blob=await docBlob(d);
+    }
+    var res=blob,note;
+    if(blob.size>=f.size){res=f.file;note='Bu fayl kiçilmədi, orijinal saxlanıldı.';}
+    else note='Əvvəl '+fmtSize(f.size)+' → '+fmtSize(blob.size)+' (−'+Math.round((1-blob.size/f.size)*100)+'%)';
+    out.push({name:baseName(f.name)+'_sıxılmış.pdf',blob:res,note:note});
+  }
+  return out;
+ }},
+
+{id:'repair',cat:'opt',icon:'wrench',title:'PDF təmir et',desc:'Açılmayan və ya xəta verən faylın quruluşunu yenidən qurun.',kw:'repair fix broken təmir bərpa zədələnmiş',
+ accept:'pdf',cta:'Təmir et',libs:['pdflib'],
+ async run(files){
+  var f=files[0],d;
+  try{d=await PDFDocument.load(await f.file.arrayBuffer(),{ignoreEncryption:false,throwOnInvalidObject:false,updateMetadata:false});}
+  catch(e){throw new Error('Bu fayl bərpa oluna bilmədi. Şifrəli və ya ciddi zədələnmiş ola bilər.');}
+  stamp(d);
+  return [{name:baseName(f.name)+'_təmir.pdf',blob:await docBlob(d),note:d.getPageCount()+' səhifə bərpa olundu'}];
+ }},
+
+{id:'img2pdf',cat:'topdf',icon:'image',title:'Şəkildən PDF',desc:'JPG, PNG və digər şəkilləri tək PDF sənədində yığın.',kw:'jpg png image picture to pdf şəkil foto',
+ accept:'image',multi:true,cta:'PDF yarat',libs:['pdflib'],hint:'Şəkillərin sırasını ↑ ↓ düymələri ilə dəyişin.',
+ options:function(){
+  return '<div class="fields">'+
+   fld('Səhifə ölçüsü','size',sel('size',[['a4','A4'],['letter','Letter'],['fit','Şəklin ölçüsü']],'a4'))+
+   fld('Istiqamət','orient',sel('orient',[['auto','Avtomatik'],['portrait','Şaquli'],['landscape','Üfüqi']],'auto'),'','size!=fit')+
+   fld('Kənar boşluq','margin',sel('margin',[['0','Yoxdur'],['10','Kiçik (10 mm)'],['20','Böyük (20 mm)']],'0'))+'</div>';
+ },
+ async run(files,o,ctx){
+  var out=stamp(await PDFDocument.create()),m=(+o.margin||0)*MM;
+  var PS={a4:[595.28,841.89],letter:[612,792]};
+  for(var i=0;i<files.length;i++){
+    ctx.progress(i/files.length,files[i].name);
+    var isPng=files[i].file.type==='image/png';
+    var r=await fileToCanvas(files[i].file,{maxDim:6000,bg:isPng?null:'#fff'});
+    var blob=await canvasBlob(r.canvas,isPng?'image/png':'image/jpeg',0.92);
+    var bytes=await blob.arrayBuffer();
+    var im=isPng?await out.embedPng(bytes):await out.embedJpg(bytes);
+    var W,H,dw,dh,dx,dy;
+    if(o.size==='fit'){
+      dw=r.w*0.75;dh=r.h*0.75;W=dw+2*m;H=dh+2*m;dx=m;dy=m;
+    }else{
+      var ps=PS[o.size]||PS.a4;W=ps[0];H=ps[1];
+      var land=o.orient==='landscape'||(o.orient!=='portrait'&&r.w>r.h);
+      if(land){var t=W;W=H;H=t;}
+      var k=Math.min((W-2*m)/r.w,(H-2*m)/r.h);
+      dw=r.w*k;dh=r.h*k;dx=(W-dw)/2;dy=(H-dh)/2;
+    }
+    out.addPage([W,H]).drawImage(im,{x:dx,y:dy,width:dw,height:dh});
+  }
+  return [{name:'şəkillər.pdf',blob:await docBlob(out),note:files.length+' səhifə'}];
+ }},
+
+{id:'pdf2img',cat:'frompdf',icon:'image',title:'PDF-dən şəkil',desc:'Hər səhifəni JPG və ya PNG şəkli kimi saxlayın.',kw:'pdf to jpg png image şəkilə çevir',
+ accept:'pdf',cta:'Şəkilə çevir',libs:['pdfjs'],
+ options:function(){
+  return '<div class="fields">'+
+   fld('Format','format',sel('format',[['jpg','JPG'],['png','PNG']],'jpg'))+
+   fld('Keyfiyyət','dpi',sel('dpi',[['96','Aşağı (96 dpi)'],['150','Standart (150 dpi)'],['220','Yüksək (220 dpi)']],'150'))+
+   fld('Səhifələr','pages',txt('pages','Boş buraxsanız, hamısı'),'Nümunə: 1-3, 7')+'</div>';
+ },
+ async run(files,o,ctx){
+  var f=files[0],pdf=await pdfjsOpen(f.file),n=pdf.numPages;
+  var idx=(o.pages||'').trim()?parseRanges(o.pages,n):Array.from({length:n},function(_,i){return i;});
+  var png=o.format==='png',ext=png?'png':'jpg',w=String(n).length,b=baseName(f.name),dpi=+o.dpi||150,out=[];
+  for(var k=0;k<idx.length;k++){
+    ctx.progress(k/idx.length,'Səhifə '+(idx[k]+1));
+    var r=await renderPage(pdf,idx[k]+1,dpi/72);
+    var blob=await canvasBlob(r.canvas,png?'image/png':'image/jpeg',0.92);
+    out.push({name:b+'_'+String(idx[k]+1).padStart(w,'0')+'.'+ext,blob:blob});
+  }
+  pdf.destroy();
+  return out;
+ }},
+
+{id:'pdf2text',cat:'frompdf',icon:'text',title:'PDF-dən mətn',desc:'Sənədin mətnini .txt faylına çıxarın.',kw:'pdf to text txt extract text mətn',
+ accept:'pdf',cta:'Mətni çıxar',libs:['pdfjs'],
+ options:function(){return '<label class="chk"><input type="checkbox" name="sep" id="o-sep" checked> Səhifələr arasına ayırıcı əlavə et</label>';},
+ async run(files,o,ctx){
+  var f=files[0],pdf=await pdfjsOpen(f.file),n=pdf.numPages,all='',chars=0;
+  for(var p=1;p<=n;p++){
+    ctx.progress((p-1)/n,'Səhifə '+p+' / '+n);
+    var pg=await pdf.getPage(p),tc=await pg.getTextContent(),s='',lastY=null;
+    for(var j=0;j<tc.items.length;j++){
+      var it=tc.items[j];
+      if(typeof it.str!=='string') continue;
+      var y=it.transform?it.transform[5]:0;
+      if(lastY!==null&&Math.abs(y-lastY)>2&&s&&s.charAt(s.length-1)!=='\n') s+='\n';
+      s+=it.str;if(it.hasEOL) s+='\n';
+      lastY=y;
+    }
+    pg.cleanup();
+    s=s.trim();chars+=s.length;
+    all+=(o.sep?'\n\n----- Səhifə '+p+' -----\n\n':(p>1?'\n\n':''))+s;
+  }
+  pdf.destroy();
+  if(!chars) throw new Error('Mətn tapılmadı. Bu PDF skan edilmiş şəkillərdən ibarət ola bilər.');
+  return [{name:baseName(f.name)+'.txt',blob:new Blob([all.trim()+'\n'],{type:'text/plain;charset=utf-8'}),note:chars.toLocaleString('az')+' simvol'}];
+ }},
+
+{id:'imgconv',cat:'opt',icon:'image',title:'Şəkil çevir və sıx',desc:'Formatı dəyişin, ölçünü kiçildin, keyfiyyəti seçin.',kw:'image convert resize compress jpg png webp şəkil ölçü format',
+ accept:'image',multi:true,cta:'Çevir',libs:[],
+ options:function(){
+  return '<div class="fields">'+
+   fld('Yeni format','fmt',sel('fmt',[['jpg','JPG'],['png','PNG'],['webp','WEBP']],'jpg'))+
+   fld('Maksimum en (piksel)','maxw',num('maxw','',100,12000),'Boş buraxsanız, ölçü dəyişmir.')+
+   fld('Keyfiyyət','quality','<input id="o-quality" type="range" min="40" max="100" value="85">','','fmt!=png')+'</div>';
+ },
+ async run(files,o,ctx){
+  var fmt=o.fmt||'jpg',mime={jpg:'image/jpeg',png:'image/png',webp:'image/webp'}[fmt];
+  var q=(+o.quality||85)/100,mw=parseInt(o.maxw,10)||0,out=[];
+  for(var i=0;i<files.length;i++){
+    var f=files[i];ctx.progress(i/files.length,f.name);
+    var r=await fileToCanvas(f.file,{maxDim:12000,maxW:mw||0,bg:fmt==='jpg'?'#fff':null});
+    var blob=await canvasBlob(r.canvas,mime,q);
+    out.push({name:baseName(f.name)+'.'+fmt,blob:blob,note:fmtSize(f.size)+' → '+fmtSize(blob.size)+' · '+r.w+'×'+r.h});
+  }
+  return out;
+ }},
+
+{id:'rotate',cat:'edit',icon:'rotate',title:'Səhifələri çevir',desc:'Bütün və ya seçilmiş səhifələri 90°, 180° və ya 270° döndərin.',kw:'rotate turn çevir döndər',
+ accept:'pdf',cta:'Çevir',libs:['pdflib'],
+ options:function(){
+  return fld('Döndərmə','',seg('angle',[['90','90° sağa'],['180','180°'],['270','90° sola']],'90'))+
+   fld('Səhifələr','pages',txt('pages','Boş buraxsanız, hamısı'),'Nümunə: 1-3, 7');
+ },
+ async run(files,o){
+  var f=files[0],d=stamp(await openPdf(f.file)),n=d.getPageCount(),a=+o.angle||90;
+  var idx=(o.pages||'').trim()?new Set(parseRanges(o.pages,n)):null;
+  d.getPages().forEach(function(p,i){
+    if(!idx||idx.has(i)) p.setRotation(degrees((((p.getRotation().angle+a)%360)+360)%360));
+  });
+  return [{name:baseName(f.name)+'_çevrilmiş.pdf',blob:await docBlob(d)}];
+ }},
+
+{id:'pagenum',cat:'edit',icon:'hash',title:'Səhifə nömrələri',desc:'Hər səhifəyə nömrə əlavə edin.',kw:'page numbers number nömrə nömrələ',
+ accept:'pdf',cta:'Nömrələ',libs:['pdflib'],
+ options:function(){
+  return '<div class="fields">'+
+   fld('Yer','pos',sel('pos',[['bc','Aşağı, mərkəz'],['br','Aşağı, sağ'],['bl','Aşağı, sol'],['tc','Yuxarı, mərkəz'],['tr','Yuxarı, sağ'],['tl','Yuxarı, sol']],'bc'))+
+   fld('Format','fmt',sel('fmt',[['n','1'],['of','1 / 9'],['dash','- 1 -']],'n'))+
+   fld('Başlanğıc nömrəsi','start',num('start',1))+
+   fld('Şrift ölçüsü','size',num('size',11,6,48))+
+   fld('Kənardan məsafə (mm)','margin',num('margin',10,2,60))+'</div>'+
+   '<div class="fld" style="margin-top:16px"><label class="chk"><input type="checkbox" name="skip" id="o-skip"> Birinci səhifəni nömrələmə</label></div>';
+ },
+ async run(files,o){
+  var f=files[0],d=stamp(await openPdf(f.file)),font=await d.embedFont(StandardFonts.Helvetica);
+  var pages=d.getPages(),n=pages.length,size=+o.size||11,st=parseInt(o.start,10);if(isNaN(st))st=1;
+  var m=(+o.margin||10)*MM,first=o.skip?1:0,last=st+(n-first)-1,pos=o.pos||'bc';
+  pages.forEach(function(p,i){
+    if(i<first) return;
+    var num=st+(i-first);
+    var t=o.fmt==='of'?num+' / '+last:o.fmt==='dash'?'- '+num+' -':String(num);
+    var s=p.getSize(),tw=font.widthOfTextAtSize(t,size),h=pos.charAt(1),v=pos.charAt(0);
+    var x=h==='l'?m:h==='r'?s.width-m-tw:(s.width-tw)/2,y=v==='t'?s.height-m-size:m;
+    p.drawText(t,{x:x,y:y,size:size,font:font,color:rgb(0.15,0.15,0.15)});
+  });
+  return [{name:baseName(f.name)+'_nömrəli.pdf',blob:await docBlob(d)}];
+ }},
+
+{id:'watermark',cat:'edit',icon:'drop',title:'Su nişanı',desc:'Hər səhifəyə mətn damğası vurun.',kw:'watermark stamp su nişanı damğa',
+ accept:'pdf',cta:'Su nişanı vur',libs:['pdflib'],
+ options:function(){
+  return '<div class="fields">'+
+   fld('Mətn','text',txt('text','','Kinoflix+'))+
+   fld('Ölçü','size',num('size',60,10,300))+
+   fld('Şəffaflıq (az: solğun)','opacity','<input id="o-opacity" type="range" min="5" max="100" value="25">')+
+   fld('Bucaq','angle',sel('angle',[['45','45° çəp'],['0','Üfüqi'],['-45','−45° çəp']],'45'))+
+   fld('Rəng','color',sel('color',[['#808080','Boz'],['#C0392B','Qırmızı'],['#2457C5','Mavi'],['#000000','Qara']],'#808080'))+'</div>'+
+   fld('Yerləşmə','',seg('layout',[['center','Mərkəzdə'],['tile','Bütün səhifədə']],'center')).replace('class="fld"','class="fld" style="margin-top:16px"');
+ },
+ async run(files,o){
+  var f=files[0],d=stamp(await openPdf(f.file)),t=(o.text||'').trim();
+  if(!t) throw new Error('Su nişanı mətnini yazın.');
+  var size=Math.max(10,+o.size||60),S=3;
+  try{await document.fonts.load('700 40px "Hanken Grotesk"');}catch(e){}
+  var fnt='700 '+(size*S)+'px "Hanken Grotesk", Arial, sans-serif';
+  var mc=document.createElement('canvas').getContext('2d');mc.font=fnt;
+  var tw=Math.ceil(mc.measureText(t).width),pad=Math.ceil(size*S*0.3);
+  if(tw>15000) throw new Error('Mətn çox uzundur. Daha qısa yazın və ya ölçünü kiçildin.');
+  var c=document.createElement('canvas');c.width=tw+pad*2;c.height=Math.ceil(size*S*1.5);
+  var x=c.getContext('2d');x.font=fnt;x.fillStyle=o.color||'#808080';x.textBaseline='middle';x.fillText(t,pad,c.height/2);
+  var img=await d.embedPng(await (await canvasBlob(c,'image/png')).arrayBuffer());
+  var w=c.width/S,h=c.height/S,op=Math.min(1,Math.max(0.05,(+o.opacity||25)/100)),ang=+o.angle||0;
+  d.getPages().forEach(function(p){
+    var s=p.getSize();
+    if(o.layout==='tile'){
+      var sx=w*1.35,sy=Math.max(h*2.4,100);
+      for(var yy=-sy/2;yy<s.height+sy;yy+=sy){
+        var off=(Math.abs(Math.round(yy/sy))%2)*sx/2;
+        for(var xx=-sx/2+off;xx<s.width+sx;xx+=sx) drawCentered(p,img,xx,yy,w,h,ang,op);
+      }
+    }else drawCentered(p,img,s.width/2,s.height/2,w,h,ang,op);
+  });
+  return [{name:baseName(f.name)+'_su-nişanı.pdf',blob:await docBlob(d)}];
+ }},
+
+{id:'crop',cat:'edit',icon:'crop',title:'PDF kəs',desc:'Səhifələrin kənar boşluqlarını kəsin.',kw:'crop trim margin kəs kənar',
+ accept:'pdf',cta:'Kəs',libs:['pdflib'],
+ options:function(){
+  return '<div class="fields">'+
+   fld('Yuxarıdan (mm)','top',num('top',10,0,200))+fld('Sağdan (mm)','right',num('right',10,0,200))+
+   fld('Aşağıdan (mm)','bottom',num('bottom',10,0,200))+fld('Soldan (mm)','left',num('left',10,0,200))+'</div>'+
+   '<p class="hint">Ölçülər hər səhifəyə eyni tətbiq olunur. Səhifə döndərilibsə, kənarlar ekranda göründüyü kimi sayılır.</p>';
+ },
+ async run(files,o){
+  var f=files[0],t=(+o.top||0)*MM,r=(+o.right||0)*MM,b=(+o.bottom||0)*MM,l=(+o.left||0)*MM;
+  if(!(t>0||r>0||b>0||l>0)) throw new Error('Ən azı bir kənardan kəsmə ölçüsü daxil edin.');
+  var d=stamp(await openPdf(f.file));
+  d.getPages().forEach(function(p,i){
+    var mb=p.getMediaBox(),m=mapMargins(p.getRotation().angle,t,r,b,l);
+    var nx=mb.x+m.left,ny=mb.y+m.bottom,nw=mb.width-m.left-m.right,nh=mb.height-m.top-m.bottom;
+    if(nw<20||nh<20) throw new Error('Səhifə '+(i+1)+' üçün kəsmə ölçüsü çox böyükdür.');
+    p.setCropBox(nx,ny,nw,nh);p.setMediaBox(nx,ny,nw,nh);
+  });
+  return [{name:baseName(f.name)+'_kəsilmiş.pdf',blob:await docBlob(d)}];
+ }},
+
+{id:'sign',cat:'edit',icon:'pen',title:'İmza və mətn',desc:'İmzanızı çəkin, mətn və ya şəkil əlavə edib səhifədə istədiyiniz yerə qoyun.',kw:'sign signature imza mətn əlavə et edit',
+ accept:'pdf',cta:'Sənədə yaz',libs:['pdflib','pdfjs'],dyn:true,optsLabel:'İmza və yerləşdirmə',
+ onFiles:function(box,st){mountSign(box,st);},
+ async run(files,o,ctx){
+  var f=files[0],S=state.ext.sign;
+  if(!S||!S.placed.length) throw new Error('Əvvəlcə səhifədə imza, mətn və ya şəkil yerləşdirin.');
+  var d=stamp(await openPdf(f.file)),cache={},pages=d.getPages();
+  for(var i=0;i<S.placed.length;i++){
+    var it=S.placed[i],a=S.assets.find(function(x){return x.id===it.aid;});
+    if(!a) continue;
+    var im=cache[a.id]||(cache[a.id]=await d.embedPng(dataUrlBytes(a.url)));
+    var pg=pages[it.page-1];if(!pg) continue;
+    var s=pg.getSize(),W=s.width,H=s.height,R=((pg.getRotation().angle%360)+360)%360;
+    var dispW=(R===90||R===270)?H:W,sw=it.w*dispW,sh=sw*a.aspect,u=it.cx,v=it.cy,px,py;
+    if(R===0){px=u*W;py=(1-v)*H;}
+    else if(R===90){px=v*W;py=u*H;}
+    else if(R===180){px=(1-u)*W;py=v*H;}
+    else{px=(1-v)*W;py=(1-u)*H;}
+    drawCentered(pg,im,px,py,sw,sh,R,1);
+  }
+  return [{name:baseName(f.name)+'_imzalı.pdf',blob:await docBlob(d),note:S.placed.length+' element yerləşdirildi'}];
+ }},
+
+{id:'metadata',cat:'edit',icon:'tag',title:'Sənəd məlumatları',desc:'Başlıq, müəllif, mövzu və açar sözləri dəyişin.',kw:'metadata properties title author başlıq müəllif məlumat',
+ accept:'pdf',cta:'Yadda saxla',libs:['pdflib'],
+ options:function(){
+  return '<div class="fields">'+fld('Başlıq','title',txt('title'))+fld('Müəllif','author',txt('author'))+
+   fld('Mövzu','subject',txt('subject'))+fld('Açar sözlər','keywords',txt('keywords','vergüllə ayırın'))+'</div>';
+ },
+ async onFiles(box,st){
+  var f=st.files[0],ids=['title','author','subject','keywords'];
+  if(!f){ids.forEach(function(k){var e=$('#o-'+k,box);if(e)e.value='';});st.ext.metaFid=null;return;}
+  if(st.ext.metaFid===f.id) return;
+  st.ext.metaFid=f.id;
+  try{
+    var d=await PDFDocument.load(await f.file.arrayBuffer(),{ignoreEncryption:true,updateMetadata:false});
+    var vals={title:d.getTitle(),author:d.getAuthor(),subject:d.getSubject(),keywords:d.getKeywords()};
+    ids.forEach(function(k){var e=$('#o-'+k,box);if(e)e.value=vals[k]||'';});
+  }catch(e){}
+ },
+ async run(files,o){
+  var f=files[0],d=await openPdf(f.file);
+  d.setTitle(o.title||'');d.setAuthor(o.author||'');d.setSubject(o.subject||'');
+  d.setKeywords((o.keywords||'').split(',').map(function(s){return s.trim();}).filter(Boolean));
+  d.setModificationDate(new Date());
+  return [{name:baseName(f.name)+'_məlumat.pdf',blob:await docBlob(d)}];
+ }},
+
+{id:'flatten',cat:'edit',icon:'layers',title:'Formanı düzləşdir',desc:'Doldurulmuş form sahələrini sənədin daimi hissəsinə çevirin.',kw:'flatten form fill düzləşdir forma sahə',
+ accept:'pdf',cta:'Düzləşdir',libs:['pdflib'],
+ async run(files){
+  var f=files[0],d=stamp(await openPdf(f.file)),form=d.getForm();
+  if(!form.getFields().length) throw new Error('Bu PDF-də doldurula bilən form sahəsi tapılmadı.');
+  try{form.flatten();}catch(e){throw new Error('Form düzləşdirilə bilmədi: '+(e&&e.message?e.message:'naməlum xəta'));}
+  return [{name:baseName(f.name)+'_düz.pdf',blob:await docBlob(d)}];
+ }},
+
+{id:'html2pdf',cat:'topdf',icon:'code',title:'HTML-dən PDF',desc:'HTML kodunu və ya adi mətni PDF-ə çevirin.',kw:'html code web page text txt kod mətn',
+ accept:'html',min:0,alwaysOpts:true,optsLabel:'Kod və seçimlər',cta:'PDF-ə çevir',libs:['pdflib'],
+ options:function(){
+  return fld('Növ','',seg('mode',[['html','HTML kodu'],['text','Adi mətn']],'html'))+
+   fld('Səhifə istiqaməti','',seg('orient',[['portrait','Şaquli'],['landscape','Üfüqi']],'portrait'))+
+   fld('Kod və ya mətn','code','<textarea class="in" id="o-code" spellcheck="false" placeholder="&lt;h1&gt;Salam&lt;/h1&gt;&#10;&lt;p&gt;HTML kodunu bura yapışdırın…&lt;/p&gt;"></textarea>',
+    'Fayl seçsəniz, yapışdırılan mətn nəzərə alınmır. Skriptlər və xarici şəkillər daxil edilmir.');
+ },
+ async run(files,o,ctx){
+  var src='',txtFile=false;
+  if(files.length){src=await files[0].file.text();txtFile=/\.txt$/i.test(files[0].name);}
+  else src=o.code||'';
+  if(!String(src).trim()) throw new Error('HTML kodunu yapışdırın və ya fayl seçin.');
+  var land=o.orient==='landscape',d=pageDims(land),html,css='';
+  if(o.mode==='text'||txtFile) html='<div style="white-space:pre-wrap">'+esc(src)+'</div>';
+  else{var s=sanitizeHtml(src,d);html=s.html;css=s.css;}
+  ctx.progress(0.05,'Səhifələr hazırlanır…');
+  var r=await htmlToPdf(html,{landscape:land,css:css,onProgress:function(p,l){ctx.progress(0.1+0.9*p,l);}});
+  return [{name:(files.length?baseName(files[0].name):'sənəd')+'.pdf',blob:r.blob,note:r.pages+' səhifə'}];
+ }}
+];
+
+/* ---------- HTML → PDF mühərriki: brauzerin öz render mühərriki ilə səhifələrə bölünür ---------- */
+var DOC_CSS=
+ '.kfx-doc{display:flow-root;font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","DejaVu Sans",sans-serif;font-size:14px;line-height:22px;color:#111;background:#fff;overflow-wrap:break-word}'+
+ '.kfx-doc p{margin:0 0 10px}.kfx-doc h1{font-size:28px;line-height:34px;margin:4px 0 12px}.kfx-doc h2{font-size:22px;line-height:28px;margin:14px 0 8px}.kfx-doc h3{font-size:18px;line-height:24px;margin:12px 0 6px}.kfx-doc h4,.kfx-doc h5,.kfx-doc h6{font-size:15px;line-height:22px;margin:10px 0 4px}'+
+ '.kfx-doc ul,.kfx-doc ol{margin:0 0 12px;padding-left:24px}.kfx-doc li{margin:2px 0}'+
+ '.kfx-doc table{border-collapse:collapse;margin:6px 0 14px;max-width:100%}.kfx-doc td,.kfx-doc th{border:1px solid #9aa0a6;padding:4px 8px;vertical-align:top;text-align:left}.kfx-doc th{background:#f1f3f4;font-weight:bold}'+
+ '.kfx-doc img{max-width:100%;height:auto}.kfx-doc a{color:#0b57d0}.kfx-doc blockquote{margin:0 0 12px;padding-left:14px;border-left:3px solid #ccc;color:#444}'+
+ '.kfx-doc pre{white-space:pre-wrap;font:13px/20px Consolas,Menlo,monospace;background:#f6f8fa;padding:10px;border-radius:6px}.kfx-doc code{font-family:Consolas,Menlo,monospace}'+
+ '.kfx-doc.kfx-sheet table{max-width:none;margin:4px 0 20px}.kfx-doc.kfx-sheet td,.kfx-doc.kfx-sheet th{font-size:12px;line-height:16px;padding:3px 7px;white-space:pre-wrap}.kfx-doc.kfx-sheet h2{font-size:18px;line-height:24px;margin:0 0 8px}';
+
+function pageDims(land){
+  var PW=land?1123:794,PH=land?794:1123,M=56;
+  return {PW:PW,PH:PH,M:M,CW:PW-2*M,CH:PH-2*M,ptW:land?841.89:595.28,ptH:land?595.28:841.89};
+}
+function fixUnits(s,d){
+  return String(s)
+   .replace(/(-?\d*\.?\d+)vh\b/g,function(m,n){return (parseFloat(n)*d.CH/100).toFixed(1)+'px';})
+   .replace(/(-?\d*\.?\d+)vw\b/g,function(m,n){return (parseFloat(n)*d.CW/100).toFixed(1)+'px';})
+   .replace(/position\s*:\s*fixed/gi,'position:absolute');
+}
+function scopeSel(s){
+  s=s.trim();var m;
+  while((m=s.match(/^(html|body|:root)(?![\w-])\s*/i))) s=s.slice(m[0].length);
+  if(!s) return '.kfx-doc';
+  if(/^[:\[]/.test(s)) return '.kfx-doc'+s;
+  return '.kfx-doc '+s;
+}
+function scopeRules(rules,d){
+  var out='';
+  for(var i=0;i<rules.length;i++){
+    var r=rules[i];
+    if(r.type===1){
+      out+=r.selectorText.split(',').map(scopeSel).join(',')+'{'+fixUnits(r.style.cssText,d)+'}';
+    }else if(r.type===4){
+      var cond=(r.conditionText||(r.media&&r.media.mediaText)||'');
+      if(/width|height|orientation|aspect/i.test(cond)) continue;
+      out+='@media '+cond+'{'+scopeRules(r.cssRules,d)+'}';
+    }
+  }
+  return out;
+}
+function scopeCss(css,d){
+  try{
+    var doc=document.implementation.createHTMLDocument('');
+    var st=doc.createElement('style');st.textContent=css;doc.head.appendChild(st);
+    if(st.sheet) return scopeRules(st.sheet.cssRules,d);
+  }catch(e){}
+  try{var sh=new CSSStyleSheet();sh.replaceSync(css);return scopeRules(sh.cssRules,d);}catch(e){}
+  return '';
+}
+function sanitizeHtml(src,d){
+  src=String(src).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'');
+  var doc=new DOMParser().parseFromString(src,'text/html'),css='';
+  doc.querySelectorAll('style').forEach(function(s){css+=scopeCss(s.textContent||'',d)+'\n';});
+  doc.querySelectorAll('script,style,iframe,frame,frameset,object,embed,link,meta,base,noscript,template,audio,video,canvas').forEach(function(e){e.remove();});
+  doc.querySelectorAll('*').forEach(function(el){
+    Array.from(el.attributes).forEach(function(a){
+      var n=a.name.toLowerCase(),v=a.value;
+      if(n.indexOf('on')===0){el.removeAttribute(a.name);return;}
+      if(n==='srcset'||n==='poster'){el.removeAttribute(a.name);return;}
+      if(n==='href'||n==='src'||n==='xlink:href'||n==='action'||n==='formaction'){
+        if(/^\s*javascript:/i.test(v)) el.removeAttribute(a.name);
+        else if(n==='src'&&el.tagName==='IMG'&&!/^\s*data:image\//i.test(v)) el.removeAttribute('src');
+        return;
+      }
+      if(n==='style') el.setAttribute('style',fixUnits(v,d));
+    });
+  });
+  return {html:doc.body?doc.body.innerHTML:'',css:css};
+}
+
+async function htmlToPdf(html,opt){
+  opt=opt||{};
+  var d=pageDims(!!opt.landscape),CW=d.CW,CH=d.CH,PW=d.PW,PH=d.PH,M=d.M;
+  var report=opt.onProgress||function(){};
+  var wrap=document.createElement('div');
+  wrap.setAttribute('aria-hidden','true');
+  wrap.style.cssText='position:fixed;left:-40000px;top:0;overflow:hidden;background:#fff;pointer-events:none;width:'+CW+'px';
+  var st=document.createElement('style');
+  st.textContent=DOC_CSS+(opt.css||'');
+  var host=document.createElement('div');
+  host.className='kfx-doc'+(opt.cls?' '+opt.cls:'');
+  host.style.cssText='position:relative;top:0;width:'+CW+'px';
+  host.innerHTML=String(html).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'');
+  wrap.appendChild(st);wrap.appendChild(host);document.body.appendChild(wrap);
+  var urls=[];
+  try{
+    await Promise.all(Array.from(host.querySelectorAll('img')).map(function(im){return im.decode?im.decode().catch(function(){}):Promise.resolve();}));
+    var W=CW;
+    if(opt.fit){
+      host.style.width='max-content';wrap.style.width='40000px';
+      W=Math.min(3600,Math.max(CW,Math.ceil(host.offsetWidth)));
+    }
+    host.style.width=W+'px';wrap.style.width=W+'px';
+    var total=Math.ceil(host.offsetHeight),k=CW/W,sliceH=CH/k;
+    var bgm=getComputedStyle(host).backgroundColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/),pageBg=null;
+    if(bgm&&(bgm[4]===undefined||parseFloat(bgm[4])>0.05)&&!(+bgm[1]===255&&+bgm[2]===255&&+bgm[3]===255)) pageBg=[+bgm[1],+bgm[2],+bgm[3]];
+    var base=host.getBoundingClientRect().top,bs=[],forced=[];
+    host.querySelectorAll('p,h1,h2,h3,h4,h5,h6,li,tr,img,pre,blockquote,hr,figure').forEach(function(el){
+      if(el.tagName!=='TR'&&el.closest('td,th')) return;
+      var r=el.getBoundingClientRect();
+      if(r.height>0) bs.push(Math.ceil(r.bottom-base));
+    });
+    host.querySelectorAll('.kfx-sec').forEach(function(el,i){if(i>0) forced.push(Math.floor(el.getBoundingClientRect().top-base));});
+    bs.sort(function(a,b){return a-b;});
+    var cuts=[0],guard=0;
+    while(cuts[cuts.length-1]<total-1&&guard++<400){
+      var last=cuts[cuts.length-1],target=Math.floor(last+sliceH),nf=null,cut;
+      for(var i=0;i<forced.length;i++) if(forced[i]>last+1){nf=forced[i];break;}
+      if(nf!==null&&nf<=target) cut=nf;
+      else if(target>=total) cut=total;
+      else{
+        cut=null;
+        for(var j=bs.length-1;j>=0;j--) if(bs[j]<=target+0.5){if(bs[j]>last+sliceH*0.4) cut=bs[j];break;}
+        if(cut===null) cut=target;
+      }
+      cuts.push(cut);
+    }
+    var n=cuts.length-1;
+    if(n>100||guard>=400) throw new Error('Sənəd çox uzundur (100 səhifədən çox). Daha qısa hissə seçin.');
+    if(n<1) throw new Error('Sənəddə göstəriləcək məzmun tapılmadı.');
+    var inner=new XMLSerializer().serializeToString(host);
+    var styleTag=new XMLSerializer().serializeToString(st);
+    var out=await PDFDocument.create();stamp(out);
+    var f=d.ptW/PW,sc=Math.min(2,Math.max(1,1500/W));
+    for(var p=0;p<n;p++){
+      report(p/n,'Səhifə '+(p+1)+' / '+n);
+      var start=cuts[p],h=Math.max(1,Math.ceil(cuts[p+1]-start));
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+h+'" viewBox="0 0 '+W+' '+h+'"><foreignObject x="0" y="0" width="'+W+'" height="'+h+'">'+
+        '<div xmlns="http://www.w3.org/1999/xhtml" style="position:relative;width:'+W+'px;height:'+h+'px;overflow:hidden;background:#fff">'+styleTag+
+        '<div style="position:absolute;left:0;top:'+(-start)+'px;width:'+W+'px">'+inner+'</div></div></foreignObject></svg>';
+      var url='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      await new Promise(function(res,rej){img.onload=res;img.onerror=function(){rej(new Error('Səhifə şəkli yaradıla bilmədi. HTML kodunda xəta ola bilər.'));};img.src=url;});
+      await new Promise(function(r){setTimeout(r,20);});
+      var c=document.createElement('canvas');c.width=Math.max(1,Math.round(W*sc));c.height=Math.max(1,Math.round(h*sc));
+      var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);
+      var jb;
+      try{jb=await canvasBlob(c,'image/jpeg',0.92);}
+      catch(e){throw new Error('Bu brauzer səhifəni şəkilə çevirməyə icazə vermir. Chrome və ya Edge ilə yenidən cəhd edin.');}
+      var im=await out.embedJpg(await jb.arrayBuffer());
+      var page=out.addPage([d.ptW,d.ptH]);
+      if(pageBg) page.drawRectangle({x:0,y:0,width:d.ptW,height:d.ptH,color:rgb(pageBg[0]/255,pageBg[1]/255,pageBg[2]/255)});
+      var iw=CW*f,ih=h*k*f;
+      page.drawImage(im,{x:M*f,y:d.ptH-M*f-ih,width:iw,height:ih});
+    }
+    return {blob:await docBlob(out),pages:n};
+  }finally{
+    urls.forEach(function(u){URL.revokeObjectURL(u);});
+    wrap.remove();
+  }
+}
+
+
+/* ---------- ana səhifə ---------- */
+var home={q:'',cat:'all'};
+function renderHome(){
+  var q=home.q.trim().toLocaleLowerCase('az');
+  var html=CATS.filter(function(c){return home.cat==='all'||home.cat===c.id;}).map(function(c){
+    var list=TOOLS.filter(function(t){
+      return t.cat===c.id&&(!q||(t.title+' '+t.desc+' '+(t.kw||'')).toLocaleLowerCase('az').indexOf(q)>-1);
+    });
+    if(!list.length) return '';
+    return '<section class="grp"><h2>'+c.name+'<span>'+list.length+'</span></h2><div class="grid">'+
+      list.map(function(t){return '<a class="card" href="#'+t.id+'"><span class="ico">'+icon(t.icon)+'</span><h3>'+t.title+'</h3><p>'+t.desc+'</p></a>';}).join('')+'</div></section>';
+  }).join('');
+  $('#groups').innerHTML=html||'<p class="empty">Uyğun alət tapılmadı. Başqa söz yoxlayın.</p>';
+}
+function renderChips(){
+  var all=[{id:'all',name:'Hamısı'}].concat(CATS);
+  $('#chips').innerHTML=all.map(function(c){return '<button type="button" class="chip" data-cat="'+c.id+'" aria-pressed="'+(home.cat===c.id)+'">'+c.name+'</button>';}).join('');
+}
+
+/* ---------- ümumi interfeys ---------- */
+function toast(m,type){
+  type=type||'info';
+  if(!document.getElementById('flix-toast-styles')){
+    var st=document.createElement('style');st.id='flix-toast-styles';
+    st.innerHTML=TOAST_CSS;document.head.appendChild(st);
+  }
+  var box=document.querySelector('.flix-toast-container');
+  if(!box){box=document.createElement('div');box.className='flix-toast-container';document.body.appendChild(box);}
+  var t=document.createElement('div');t.className='flix-toast '+type;
+  var icons={success:'✅',error:'❌',warning:'⚠️',info:'💡'};
+  var ic=document.createElement('span');ic.textContent=icons[type]||'💡';
+  var tx=document.createElement('span');tx.textContent=m;
+  t.appendChild(ic);t.appendChild(tx);box.appendChild(t);
+  setTimeout(function(){t.style.animation='flixFadeOut 0.4s forwards';setTimeout(function(){t.remove();},400);},4000);
+}
+function showErr(m){var e=$('#err');if(!e)return;e.textContent=m;e.hidden=false;}
+function progress(f,label){
+  var p=$('#prog');if(!p)return;p.hidden=false;
+  $('#progFill').style.width=Math.round(Math.max(0,Math.min(1,f))*100)+'%';
+  $('#progTxt').textContent=label||'';
+}
+var dlP=null;
+function getDl(){
+  if(!dlP){
+    try{dlP=(window.claude&&typeof window.claude.use==='function')?Promise.resolve(window.claude.use('downloads')).catch(function(){return null;}):Promise.resolve(null);}
+    catch(e){dlP=Promise.resolve(null);}
+  }
+  return dlP;
+}
+async function saveFile(name,blob){
+  var dl=await getDl();
+  if(dl){
+    try{await dl.save({filename:name,data:blob});toast('Fayl saxlanıldı.','success');}
+    catch(e){if(e&&e.code==='declined') return;toast('Fayl saxlanıla bilmədi.','error');}
+    return;
+  }
+  var url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(url);},4000);
+}
+async function saveZip(){
+  if(!window.JSZip){toast('ZIP kitabxanası yüklənmədi.','error');return;}
+  var z=new JSZip(),used={};
+  state.results.forEach(function(x){var n=x.name;while(used[n])n='_'+n;used[n]=1;z.file(n,x.blob);});
+  var blob=await z.generateAsync({type:'blob'});
+  await saveFile('kinoflix-office.zip',blob);
+}
+
+function cleanup(){
+  state.files.forEach(releaseFile);
+  var S=state.ext&&state.ext.sign;if(S&&S.pdf){try{S.pdf.destroy();}catch(e){}}
+  state.files=[];state.results=[];state.ext={};
+}
+function releaseFile(f){if(f.thumb)URL.revokeObjectURL(f.thumb);}
+
+function showHome(){
+  cleanup();state.tool=null;
+  $('#home').hidden=false;$('#work').hidden=true;$('#work').innerHTML='';
+}
+
+function openTool(t){
+  cleanup();state.tool=t;state.busy=false;
+  $('#home').hidden=true;
+  var w=$('#work');w.hidden=false;
+  var hasOpts=!!(t.options&&t.options());
+  w.innerHTML=
+   '<a class="back" href="#">← Bütün alətlər</a>'+
+   '<div class="wsh"><span class="ico">'+icon(t.icon)+'</span><div><h2>'+t.title+'</h2><p>'+t.desc+'</p></div></div>'+
+   '<div class="blk"><h3 class="lab">Fayllar</h3>'+
+   '<div class="drop" id="drop"><input class="sr" id="fileInput" type="file" '+(t.multi?'multiple ':'')+'accept="'+ACC[t.accept].attr+'">'+
+   '<label for="fileInput"><strong>'+ACC[t.accept].label+'</strong> <span>və ya faylları bura sürüşdürün</span></label></div>'+
+   (t.hint?'<p class="hint">'+t.hint+'</p>':'')+'<ul class="flist" id="flist"></ul></div>'+
+   '<div class="blk" id="optsBlk" hidden><h3 class="lab">'+(t.optsLabel||'Seçimlər')+'</h3><div id="opts"></div></div>'+
+   '<div class="runbar"><button type="button" class="btn primary" id="runBtn" disabled>'+(t.cta||'Başla')+'</button><span class="hint" id="runHint"></span></div>'+
+   '<div class="prog" id="prog" hidden><div class="track"><div class="fill" id="progFill"></div></div><p class="mono" id="progTxt"></p></div>'+
+   '<div class="err" id="err" role="alert" hidden></div>'+
+   '<div class="blk" id="res" hidden></div>';
+  if(hasOpts){$('#opts').innerHTML=t.options();wireConditionals($('#opts'));}
+  var input=$('#fileInput'),drop=$('#drop');
+  input.addEventListener('change',function(){addFiles(input.files);input.value='';});
+  ['dragenter','dragover'].forEach(function(n){drop.addEventListener(n,function(e){e.preventDefault();drop.classList.add('over');});});
+  ['dragleave','drop'].forEach(function(n){drop.addEventListener(n,function(e){e.preventDefault();drop.classList.remove('over');});});
+  drop.addEventListener('drop',function(e){if(e.dataTransfer&&e.dataTransfer.files.length)addFiles(e.dataTransfer.files);});
+  $('#flist').addEventListener('click',onFileAction);
+  $('#runBtn').addEventListener('click',runTool);
+  $('#res').addEventListener('click',onResultClick);
+  renderFiles();afterFilesChanged();
+  var mm=document.getElementById('officeMain');if(mm)mm.scrollTop=0;
+}
+
+function wireConditionals(root){
+  function upd(){
+    $$('[data-when]',root).forEach(function(el){
+      var m=el.getAttribute('data-when').match(/^(\w+)(!?=)(.*)$/);if(!m)return;
+      var c=root.querySelector('input[name="'+m[1]+'"]:checked')||root.querySelector('#o-'+m[1]);
+      var cur=c?c.value:'';
+      el.hidden=m[2]==='='?cur!==m[3]:cur===m[3];
+    });
+  }
+  root.addEventListener('input',upd);root.addEventListener('change',upd);upd();
+}
+function collect(root){
+  var o={};
+  $$('input,select,textarea',root).forEach(function(el){
+    if(el.type==='radio'){if(el.checked)o[el.name]=el.value;}
+    else if(el.type==='checkbox')o[el.name||el.id.replace(/^o-/,'')]=el.checked;
+    else if(el.type==='file'){}
+    else if(el.id)o[el.id.replace(/^o-/,'')]=el.value;
+  });
+  return o;
+}
+
+/* ---------- fayl siyahısı ---------- */
+function isOk(t,f){return ACC[t.accept].test(f);}
+async function addFiles(list){
+  var t=state.tool,arr=Array.from(list),ok=arr.filter(function(f){return isOk(t,f);});
+  if(ok.length<arr.length) toast(ACC[t.accept].err,'warning');
+  if(!ok.length) return;
+  if(!t.multi){state.files.forEach(releaseFile);state.files=[];ok=ok.slice(0,1);}
+  ok.forEach(function(file){
+    var f={id:'f'+(++uid),file:file,name:file.name,size:file.size};
+    if(t.accept==='image') f.thumb=URL.createObjectURL(file);
+    state.files.push(f);
+    if(t.accept==='pdf') countPages(f);
+  });
+  clearResults();renderFiles();afterFilesChanged();
+}
+async function countPages(f){
+  try{
+    var d=await PDFDocument.load(await f.file.arrayBuffer(),{ignoreEncryption:true,updateMetadata:false});
+    f.pages=d.getPageCount();
+  }catch(e){f.pages=0;}
+  if(state.files.indexOf(f)>-1) renderFiles();
+}
+function renderFiles(){
+  var ul=$('#flist');if(!ul)return;
+  var t=state.tool,n=state.files.length;
+  ul.innerHTML=state.files.map(function(f,i){
+    return '<li data-id="'+f.id+'">'+
+     (f.thumb?'<img class="fthumb" src="'+f.thumb+'" alt="">':'<span class="fbadge">'+ACC[t.accept].badge+'</span>')+
+     '<div class="fmeta"><b title="'+esc(f.name)+'">'+esc(f.name)+'</b><span>'+fmtSize(f.size)+(f.pages?' · '+f.pages+' səhifə':'')+'</span></div>'+
+     '<div class="fact">'+(t.multi&&n>1?'<button type="button" class="ib" data-a="up" aria-label="Yuxarı"'+(i===0?' disabled':'')+'>↑</button><button type="button" class="ib" data-a="down" aria-label="Aşağı"'+(i===n-1?' disabled':'')+'>↓</button>':'')+
+     '<button type="button" class="ib" data-a="rm" aria-label="Faylı çıxar">×</button></div></li>';
+  }).join('');
+}
+function onFileAction(e){
+  var b=e.target.closest('button[data-a]');if(!b)return;
+  var li=b.closest('li'),i=state.files.findIndex(function(f){return f.id===li.getAttribute('data-id');});
+  if(i<0)return;
+  var a=b.getAttribute('data-a');
+  if(a==='up'&&i>0){var x=state.files[i];state.files[i]=state.files[i-1];state.files[i-1]=x;}
+  else if(a==='down'&&i<state.files.length-1){var y=state.files[i];state.files[i]=state.files[i+1];state.files[i+1]=y;}
+  else if(a==='rm'){releaseFile(state.files[i]);state.files.splice(i,1);clearResults();renderFiles();afterFilesChanged();return;}
+  renderFiles();
+}
+function afterFilesChanged(){
+  var t=state.tool,has=state.files.length>0;
+  var stat=!!(t.options&&t.options());
+  $('#optsBlk').hidden=!((has||t.alwaysOpts)&&(stat||t.dyn));
+  var need=t.min===undefined?1:t.min;
+  $('#runBtn').disabled=state.busy||state.files.length<need;
+  $('#runHint').textContent=state.files.length<need?(need>1?'En azı '+need+' fayl seçin.':'Əvvəlcə fayl seçin.'):(need===0&&!state.files.length?'Fayl seçmədən də işləyir.':'');
+  if(t.onFiles) t.onFiles($('#opts'),state);
+}
+
+/* ---------- icra və nəticə ---------- */
+var LIBCHK={pdflib:function(){return !!window.PDFLib;},pdfjs:function(){return !!window.pdfjsLib;},jszip:function(){return !!window.JSZip;}};
+function clearResults(){state.results=[];renderResults();var e=$('#err');if(e)e.hidden=true;}
+async function runTool(){
+  var t=state.tool;if(state.busy)return;
+  clearResults();state.busy=true;$('#runBtn').disabled=true;progress(0,'Hazırlanır…');
+  try{
+    var libs=t.libs||['pdflib'];
+    for(var i=0;i<libs.length;i++) if(!LIBCHK[libs[i]]()) throw new Error('Lazım olan kitabxana yüklənmədi. İnternet bağlantısını yoxlayıb səhifəni yeniləyin.');
+    var o=collect($('#opts'));
+    var out=await t.run(state.files,o,{progress:progress});
+    state.results=out;
+  }catch(e){
+    console.error(e);showErr((e&&e.message)||String(e));
+  }finally{
+    state.busy=false;$('#prog').hidden=true;afterRunUi();
+  }
+  renderResults();
+}
+function afterRunUi(){var b=$('#runBtn');if(b)b.disabled=state.files.length<(state.tool.min===undefined?1:state.tool.min);}
+function renderResults(){
+  var box=$('#res');if(!box)return;
+  var r=state.results;box.hidden=!r.length;
+  if(!r.length){box.innerHTML='';return;}
+  box.innerHTML='<h3 class="lab">Nəticə</h3><ul class="rlist">'+r.map(function(x,i){
+    return '<li><div class="rmeta"><b>'+esc(x.name)+'</b><span>'+fmtSize(x.blob.size)+(x.note?' · '+esc(x.note):'')+'</span></div><button type="button" class="btn primary sm" data-save="'+i+'">Saxla</button></li>';
+  }).join('')+'</ul><div class="rbar">'+(r.length>1?'<button type="button" class="btn" id="zipBtn">Hamısını ZIP kimi saxla</button>':'')+
+  '<button type="button" class="btn ghost" id="resetBtn">Yeni fayllarla başla</button></div>';
+}
+function onResultClick(e){
+  var s=e.target.closest('[data-save]');
+  if(s){var x=state.results[+s.getAttribute('data-save')];if(x)saveFile(x.name,x.blob);return;}
+  if(e.target.closest('#zipBtn')){saveZip();return;}
+  if(e.target.closest('#resetBtn')){openTool(state.tool);}
+}
+
+/* ---------- səhifə düzənləyici ---------- */
+function mountOrganize(box,st){
+  var f=st.files[0];
+  if(!f){box.innerHTML='';st.ext.org=null;return;}
+  if(st.ext.org&&st.ext.org.fid===f.id) return;
+  box.innerHTML='<div class="otools"><button type="button" class="btn sm" id="oRot">Hamısını sağa çevir</button><button type="button" class="btn sm" id="oRev">Sırani tərsinə çevir</button><button type="button" class="btn sm ghost" id="oReset">Dəyişiklikləri ləğv et</button></div>'+
+    '<div class="thumbs" id="thumbs"></div><p class="hint">Səhifəni sürüşdürərək yerini dəyişin və ya ‹ › düymələrindən istifadə edin. Silinən səhifələr solğun görünür.</p>';
+  var O=st.ext.org={fid:f.id,pages:[],thumbs:{}};
+  f.org=O;
+  var grid=$('#thumbs',box),dragIdx=null;
+  function draw(){
+    grid.innerHTML=O.pages.map(function(p,i){
+      return '<div class="th'+(p.del?' del':'')+'" draggable="true" data-i="'+i+'" data-src="'+p.src+'">'+
+       '<div class="box"><img alt="Səhifə '+(p.src+1)+'"'+(O.thumbs[p.src]?' src="'+O.thumbs[p.src]+'"':'')+' style="transform:rotate('+p.rot+'deg)"></div>'+
+       '<div class="cap">Səhifə '+(p.src+1)+'</div>'+
+       '<div class="acts"><button type="button" class="ib" data-a="rl" aria-label="Sola çevir">↺</button><button type="button" class="ib" data-a="rr" aria-label="Sağa çevir">↻</button><button type="button" class="ib" data-a="del" aria-label="Sil və ya bərpa et">'+(p.del?'↩':'×')+'</button></div>'+
+       '<div class="acts"><button type="button" class="ib" data-a="ml" aria-label="Sola apar"'+(i===0?' disabled':'')+'>‹</button><button type="button" class="ib" data-a="mr" aria-label="Sağa apar"'+(i===O.pages.length-1?' disabled':'')+'>›</button></div></div>';
+    }).join('');
+  }
+  function move(a,b){if(b<0||b>=O.pages.length||a===b)return;var x=O.pages.splice(a,1)[0];O.pages.splice(b,0,x);}
+  grid.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-a]');if(!b)return;
+    var i=+b.closest('.th').getAttribute('data-i'),p=O.pages[i],a=b.getAttribute('data-a');
+    if(a==='rl')p.rot=(p.rot-90)%360;else if(a==='rr')p.rot=(p.rot+90)%360;
+    else if(a==='del')p.del=!p.del;
+    else if(a==='ml')move(i,i-1);else if(a==='mr')move(i,i+1);
+    draw();
+  });
+  grid.addEventListener('dragstart',function(e){var th=e.target.closest('.th');if(!th)return;dragIdx=+th.getAttribute('data-i');try{e.dataTransfer.setData('text/plain',String(dragIdx));e.dataTransfer.effectAllowed='move';}catch(x){}});
+  grid.addEventListener('dragover',function(e){if(dragIdx===null)return;e.preventDefault();});
+  grid.addEventListener('drop',function(e){
+    var th=e.target.closest('.th');if(!th||dragIdx===null)return;e.preventDefault();
+    move(dragIdx,+th.getAttribute('data-i'));dragIdx=null;draw();
+  });
+  grid.addEventListener('dragend',function(){dragIdx=null;});
+  $('#oRot',box).addEventListener('click',function(){O.pages.forEach(function(p){p.rot=(p.rot+90)%360;});draw();});
+  $('#oRev',box).addEventListener('click',function(){O.pages.reverse();draw();});
+  $('#oReset',box).addEventListener('click',function(){O.pages=O.pages.map(function(p){return {src:p.src,rot:0,del:false};}).sort(function(a,b){return a.src-b.src;});draw();});
+  (async function(){
+    try{
+      var pdf=await pdfjsOpen(f.file),n=pdf.numPages;
+      O.pages=Array.from({length:n},function(_,i){return {src:i,rot:0,del:false};});
+      draw();
+      for(var i=0;i<n;i++){
+        if(st.ext.org!==O) break;
+        var r=await renderPage(pdf,i+1,0.4,{maxDim:400});
+        O.thumbs[i]=r.canvas.toDataURL('image/jpeg',0.7);
+        var im=grid.querySelector('.th[data-src="'+i+'"] img');if(im) im.src=O.thumbs[i];
+      }
+      pdf.destroy();
+    }catch(e){showErr((e&&e.message)||String(e));}
+  })();
+}
+
+/* ---------- imza və mətn ---------- */
+var SIGN_HTML=
+ '<div class="sg-bar"><button type="button" class="btn" data-sg="draw">İmza çək</button><button type="button" class="btn" data-sg="text">Mətn yaz</button>'+
+ '<label class="btn" for="sgImg">Şəkil yüklə</label><input class="sr" id="sgImg" type="file" accept="image/png,image/jpeg,image/webp"></div>'+
+ '<div class="sg-panel" id="sgDraw" hidden><canvas id="pad" width="700" height="250" aria-label="İmza sahəsi"></canvas>'+
+ '<div class="sg-row"><div class="seg"><label><input class="sr" type="radio" name="sgcolor" value="#111111" checked><span>Qara</span></label><label><input class="sr" type="radio" name="sgcolor" value="#1B3FA8"><span>Mavi</span></label></div>'+
+ '<button type="button" class="btn sm" id="padClear">Təmizlə</button><button type="button" class="btn primary sm" id="padAdd">İmzanı əlavə et</button></div></div>'+
+ '<div class="sg-panel" id="sgText" hidden><div class="sg-row" style="margin-top:0"><input class="in" id="sgTextVal" type="text" placeholder="Məsələn: Əli Məmmədov, 06.11.2026" autocomplete="off">'+
+ '<select class="in" id="sgTextColor" style="flex:0 0 auto;width:auto"><option value="#111111">Qara</option><option value="#1B3FA8">Mavi</option><option value="#C0392B">Qırmızı</option></select>'+
+ '<button type="button" class="btn primary sm" id="sgTextAdd">Əlavə et</button></div></div>'+
+ '<div class="sg-tray" id="sgTray"></div><p class="hint" id="sgHint"></p>'+
+ '<div class="sg-pager"><button type="button" class="ib" id="sgPrev" aria-label="Əvvəlki səhifə">‹</button><span id="sgPage">1 / 1</span><button type="button" class="ib" id="sgNext" aria-label="Sonrakı səhifə">›</button></div>'+
+ '<div class="sg-stage" id="sgStage"><canvas id="sgCanvas" width="10" height="10"></canvas><div id="sgOver"></div></div>'+
+ '<div class="sg-sel" id="sgSel" hidden><label for="sgSize">Ölçü</label><input type="range" id="sgSize" min="5" max="90" value="25"><button type="button" class="btn sm" id="sgDel">Elementi sil</button></div>';
+
+function mountSign(box,st){
+  var f=st.files[0];
+  if(!f){
+    if(st.ext.sign&&st.ext.sign.pdf){try{st.ext.sign.pdf.destroy();}catch(e){}}
+    box.innerHTML='';st.ext.sign=null;return;
+  }
+  if(st.ext.sign&&st.ext.sign.fid===f.id) return;
+  if(st.ext.sign&&st.ext.sign.pdf){try{st.ext.sign.pdf.destroy();}catch(e){}}
+  box.innerHTML=SIGN_HTML;
+  var S=st.ext.sign={fid:f.id,pdf:null,page:1,pages:f.pages||1,assets:[],placed:[],sel:null,active:null,token:0};
+  var sid=0;
+  var stage=$('#sgStage',box),cv=$('#sgCanvas',box),ov=$('#sgOver',box);
+
+  function pager(){$('#sgPage',box).textContent=S.page+' / '+S.pages;$('#sgPrev',box).disabled=S.page<=1;$('#sgNext',box).disabled=S.page>=S.pages;}
+  async function drawPage(){
+    if(!S.pdf) return;
+    var tk=++S.token;
+    try{
+      var pg=await S.pdf.getPage(S.page),base=pg.getViewport({scale:1});
+      var w=Math.max(280,stage.clientWidth||640);
+      var scale=Math.min(2.5,(w*(window.devicePixelRatio||1))/base.width);
+      var r=await renderPage(S.pdf,S.page,scale);
+      if(tk!==S.token||st.ext.sign!==S) return;
+      cv.width=r.canvas.width;cv.height=r.canvas.height;
+      cv.getContext('2d').drawImage(r.canvas,0,0);
+      drawOverlay();
+    }catch(e){showErr((e&&e.message)||String(e));}
+  }
+  function drawOverlay(){
+    ov.innerHTML=S.placed.filter(function(p){return p.page===S.page;}).map(function(p){
+      var a=S.assets.find(function(x){return x.id===p.aid;});
+      return a?'<img class="pl'+(p.id===S.sel?' on':'')+'" data-pid="'+p.id+'" src="'+a.url+'" alt="" draggable="false" style="left:'+(p.cx*100)+'%;top:'+(p.cy*100)+'%;width:'+(p.w*100)+'%">':'';
+    }).join('');
+    ov.className=S.active?'armed':'';
+    updateSel();
+  }
+  function updateSel(){
+    var it=S.placed.find(function(p){return p.id===S.sel&&p.page===S.page;});
+    $('#sgSel',box).hidden=!it;
+    if(it) $('#sgSize',box).value=Math.round(it.w*100);
+  }
+  function drawTray(){
+    var tr=$('#sgTray',box);
+    tr.innerHTML=S.assets.length?S.assets.map(function(a){
+      return '<div class="as'+(a.id===S.active?' on':'')+'"><button type="button" class="asb" data-aid="'+a.id+'" aria-label="Yerləşdirmək üçün seç"><img src="'+a.url+'" alt=""></button><button type="button" class="asx" data-rm="'+a.id+'" aria-label="Sil">×</button></div>';
+    }).join(''):'';
+    $('#sgHint',box).textContent=S.active?'Seçildi. İndi səhifədə yerləşdirmək istədiyiniz yerə klikləyin.':(S.assets.length?'Yerləşdirmək üçün yuxarıdan birini seçin.':'İmza çəkin, mətn yazın və ya şəkil yükləyin, sonra səhifədə klikləyin.');
+  }
+  function addAsset(url,aspect,defW){
+    var a={id:'a'+(++sid),url:url,aspect:aspect,defW:defW};
+    S.assets.push(a);S.active=a.id;drawTray();drawOverlay();
+  }
+
+  (async function(){
+    try{S.pdf=await pdfjsOpen(f.file);S.pages=S.pdf.numPages;pager();await drawPage();}
+    catch(e){showErr((e&&e.message)||String(e));}
+  })();
+  pager();drawTray();
+
+  $('#sgPrev',box).addEventListener('click',function(){if(S.page>1){S.page--;S.sel=null;pager();drawPage();}});
+  $('#sgNext',box).addEventListener('click',function(){if(S.page<S.pages){S.page++;S.sel=null;pager();drawPage();}});
+
+  /* panelləri aç / bağla */
+  $$('[data-sg]',box).forEach(function(b){b.addEventListener('click',function(){
+    var k=b.getAttribute('data-sg');
+    $('#sgDraw',box).hidden=k!=='draw'?true:!$('#sgDraw',box).hidden;
+    $('#sgText',box).hidden=k!=='text'?true:!$('#sgText',box).hidden;
+  });});
+
+  /* imza lövhəsi */
+  var pad=$('#pad',box),pc=pad.getContext('2d'),drawing=false,bb=null;
+  function pcolor(){var c=box.querySelector('input[name="sgcolor"]:checked');return c?c.value:'#111111';}
+  function pt(e){var r=pad.getBoundingClientRect();return {x:(e.clientX-r.left)*pad.width/r.width,y:(e.clientY-r.top)*pad.height/r.height};}
+  function ink(p){if(!bb)bb={x0:p.x,y0:p.y,x1:p.x,y1:p.y};else{bb.x0=Math.min(bb.x0,p.x);bb.y0=Math.min(bb.y0,p.y);bb.x1=Math.max(bb.x1,p.x);bb.y1=Math.max(bb.y1,p.y);}}
+  pad.addEventListener('pointerdown',function(e){
+    drawing=true;try{pad.setPointerCapture(e.pointerId);}catch(x){}
+    var p=pt(e);pc.lineWidth=4;pc.lineCap='round';pc.lineJoin='round';pc.strokeStyle=pcolor();
+    pc.beginPath();pc.moveTo(p.x,p.y);pc.lineTo(p.x+0.01,p.y);pc.stroke();ink(p);e.preventDefault();
+  });
+  pad.addEventListener('pointermove',function(e){if(!drawing)return;var p=pt(e);pc.lineTo(p.x,p.y);pc.stroke();ink(p);});
+  ['pointerup','pointercancel'].forEach(function(n){pad.addEventListener(n,function(){drawing=false;});});
+  $('#padClear',box).addEventListener('click',function(){pc.clearRect(0,0,pad.width,pad.height);bb=null;});
+  $('#padAdd',box).addEventListener('click',function(){
+    if(!bb){toast('Əvvəlcə imzanızı çəkin.','warning');return;}
+    var m=14,x=Math.max(0,bb.x0-m),y=Math.max(0,bb.y0-m),w=Math.min(pad.width-x,bb.x1-bb.x0+2*m),h=Math.min(pad.height-y,bb.y1-bb.y0+2*m);
+    var c=document.createElement('canvas');c.width=Math.max(1,Math.round(w));c.height=Math.max(1,Math.round(h));
+    c.getContext('2d').drawImage(pad,x,y,w,h,0,0,c.width,c.height);
+    addAsset(c.toDataURL('image/png'),c.height/c.width,0.25);
+    pc.clearRect(0,0,pad.width,pad.height);bb=null;$('#sgDraw',box).hidden=true;
+  });
+
+  /* mətn */
+  $('#sgTextAdd',box).addEventListener('click',async function(){
+    var val=$('#sgTextVal',box).value.trim();if(!val){toast('Mətni yazın.','warning');return;}
+    try{await document.fonts.load('500 64px "Hanken Grotesk"');}catch(e){}
+    var fs=80,fnt='500 '+fs+'px "Hanken Grotesk", Arial, sans-serif';
+    var mc=document.createElement('canvas').getContext('2d');mc.font=fnt;
+    var w=Math.min(12000,Math.ceil(mc.measureText(val).width)+24),h=Math.ceil(fs*1.4);
+    var c=document.createElement('canvas');c.width=w;c.height=h;
+    var x=c.getContext('2d');x.font=fnt;x.fillStyle=$('#sgTextColor',box).value;x.textBaseline='middle';x.fillText(val,12,h/2);
+    addAsset(c.toDataURL('image/png'),h/w,Math.min(0.6,Math.max(0.12,val.length*0.022)));
+    $('#sgTextVal',box).value='';$('#sgText',box).hidden=true;
+  });
+
+  /* şəkil */
+  $('#sgImg',box).addEventListener('change',async function(e){
+    var file=e.target.files[0];e.target.value='';if(!file)return;
+    try{
+      var r=await fileToCanvas(file,{maxDim:1200});
+      addAsset(r.canvas.toDataURL('image/png'),r.h/r.w,0.3);
+    }catch(x){toast((x&&x.message)||'Şəkil açıla bilmədi.','error');}
+  });
+
+  /* tray */
+  $('#sgTray',box).addEventListener('click',function(e){
+    var rm=e.target.closest('[data-rm]');
+    if(rm){var id=rm.getAttribute('data-rm');S.assets=S.assets.filter(function(a){return a.id!==id;});S.placed=S.placed.filter(function(p){return p.aid!==id;});if(S.active===id)S.active=null;drawTray();drawOverlay();return;}
+    var b=e.target.closest('[data-aid]');
+    if(b){var aid=b.getAttribute('data-aid');S.active=S.active===aid?null:aid;drawTray();drawOverlay();}
+  });
+
+  /* yerləşdirmə və sürüşdürmə */
+  var drag=null;
+  function rel(e){var r=ov.getBoundingClientRect();return {x:Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)),y:Math.min(1,Math.max(0,(e.clientY-r.top)/r.height))};}
+  ov.addEventListener('pointerdown',function(e){
+    var el=e.target.closest('.pl'),p=rel(e);
+    if(el){
+      var it=S.placed.find(function(q){return q.id===el.getAttribute('data-pid');});if(!it)return;
+      S.sel=it.id;drag={id:it.id,dx:p.x-it.cx,dy:p.y-it.cy};
+      try{ov.setPointerCapture(e.pointerId);}catch(x){}
+      $$('.pl',ov).forEach(function(n){n.classList.toggle('on',n===el);});updateSel();e.preventDefault();
+    }else if(S.active){
+      var a=S.assets.find(function(x){return x.id===S.active;});if(!a)return;
+      var np={id:'p'+(++sid),aid:a.id,page:S.page,cx:p.x,cy:p.y,w:a.defW};
+      S.placed.push(np);S.sel=np.id;drawOverlay();
+    }else{S.sel=null;drawOverlay();}
+  });
+  ov.addEventListener('pointermove',function(e){
+    if(!drag)return;var p=rel(e),it=S.placed.find(function(q){return q.id===drag.id;});if(!it)return;
+    it.cx=Math.min(1,Math.max(0,p.x-drag.dx));it.cy=Math.min(1,Math.max(0,p.y-drag.dy));
+    var el=ov.querySelector('.pl[data-pid="'+it.id+'"]');if(el){el.style.left=(it.cx*100)+'%';el.style.top=(it.cy*100)+'%';}
+  });
+  ['pointerup','pointercancel'].forEach(function(n){ov.addEventListener(n,function(){drag=null;});});
+  $('#sgSize',box).addEventListener('input',function(e){
+    var it=S.placed.find(function(q){return q.id===S.sel;});if(!it)return;
+    it.w=(+e.target.value)/100;
+    var el=ov.querySelector('.pl[data-pid="'+it.id+'"]');if(el)el.style.width=(it.w*100)+'%';
+  });
+  $('#sgDel',box).addEventListener('click',function(){
+    S.placed=S.placed.filter(function(q){return q.id!==S.sel;});S.sel=null;drawOverlay();
+  });
+}
+
+/* ---------- başlanğıc ---------- */
+renderChips();renderHome();getDl();
+$('#search').addEventListener('input',function(e){home.q=e.target.value;renderHome();});
+$('#chips').addEventListener('click',function(e){
+  var b=e.target.closest('[data-cat]');if(!b)return;home.cat=b.getAttribute('data-cat');renderChips();renderHome();
+});
+function route(){
+  var id=location.hash.replace(/^#/,'');
+  var t=TOOLS.find(function(x){return x.id===id;});
+  if(t) openTool(t);else showHome();
+}
+window.addEventListener('hashchange',route);
+route();
+})();
+</script>
+
+<!-- ========================================================= -->
+<!-- 🔐 AUTH MODAL (Login/Register) – düzəldilmiş versiya     -->
+<!-- ========================================================= -->
+<div id="authModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card auth-modal-card">
+    <div class="modal-header">
+      <h3 id="authModalTitle">Hesaba daxil ol və ödənişsiz izləməyə başla!</h3>
+      <button id="closeAuthModal" class="close-modal-btn">&times;</button>
+    </div>
+    <div class="modal-body auth-modal-body">
+ 
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab active">Daxil Ol</button>
+        <button id="tabRegister" class="auth-tab">Qeydiyyat</button>
+      </div>
+ 
+      <!-- LOGIN FORM -->
+      <form id="loginForm" class="auth-form active">
+        <div class="input-group">
+          <i class="fa-solid fa-envelope"></i>
+          <input type="text" id="loginEmailOrUsername" placeholder="E-poçt və ya istifadəçi adı" required>
+        </div>
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="loginPassword" placeholder="Şifrə" required>
+          <button type="button" id="toggleLoginPassword" class="password-toggle-btn" tabindex="-1">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <div style="text-align:right; margin-top:-8px;">
+          <button type="button" id="forgotPasswordBtn" class="forgot-password-link">Şifrəni unutdunuzmu?</button>
+        </div>
+        <button type="submit" class="submit-btn">Daxil ol</button>
+      </form>
+ 
+      <!-- REGISTER FORM -->
+      <form id="registerForm" class="auth-form">
+        <div class="input-group">
+          <i class="fa-solid fa-at"></i>
+          <input type="text" id="regUsername" placeholder="İstifadəçi adı (3-30 simvol)" required autocomplete="off">
+        </div>
+        <div id="usernameCheckMsg" class="check-message"></div>
+ 
+        <div class="name-row">
+          <div class="input-group half">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="regFirstName" placeholder="Adınız" required>
+          </div>
+          <div class="input-group half">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="regLastName" placeholder="Soyadınız" required>
+          </div>
+        </div>
+ 
+        <div class="input-group">
+          <i class="fa-solid fa-envelope"></i>
+          <input type="email" id="regEmail" placeholder="E-poçt ünvanı" required>
+        </div>
+ 
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="regPassword" placeholder="Şifrə (Min. 6 simvol)" required>
+          <button type="button" id="toggleRegPassword" class="password-toggle-btn" tabindex="-1">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+ 
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="regPasswordConfirm" placeholder="Şifrəni təkrarlayın" required>
+          <button type="button" id="toggleRegPasswordConfirm" class="password-toggle-btn" tabindex="-1">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <div id="passwordCheckMsg" class="check-message"></div>
+ 
+        <button type="submit" class="submit-btn">Qeydiyyatı tamamla</button>
+      </form>
+ 
+      <div class="auth-divider"><span>və ya</span></div>
+ 
+      <button id="googleAuthBtn" class="google-btn">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
+        Google ilə davam et
+      </button>
+ 
+    </div><!-- /.auth-modal-body -->
+  </div><!-- /.modal-card -->
+</div><!-- /#authModal -->
+ 
+
+<!-- ========================================================= -->
+<!-- FIREBASE MODUL SCRIPT (əsas səhifə üçün auth)            -->
+<!-- ========================================================= -->
+<script type="importmap">
+{
+  "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js",
+    "firebase/database": "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
+  }
+}
+</script>
+ 
+<script type="module">
+// ============================================================
+// 1. FIREBASE IMPORTLARI VƏ KONFİQ
+// ============================================================
+import { initializeApp } from "firebase/app";
+import { 
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
+  sendPasswordResetEmail, updateProfile, deleteUser
+} from "firebase/auth";
+import { 
+  getFirestore, doc, setDoc, getDoc, serverTimestamp, 
+  query, collection, where, getDocs, onSnapshot
+} from "firebase/firestore";
+import {
+  getDatabase, ref, set, onValue, onDisconnect,
+  serverTimestamp as rtdbTimestamp
+} from "firebase/database";
+ 
+// Konfiqurasiya faylını import et
+import { firebaseConfig } from "https://kinoflix.github.io/chat/JS/config.js";
+ 
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const rtdb = getDatabase(app);
+const provider = new GoogleAuthProvider();
+ 
+// ============================================================
+// 2. DOM REFERANSLARI
+// ============================================================
+const authModal = document.getElementById('authModal');
+const closeAuthModal = document.getElementById('closeAuthModal');
+const authMainBtn = document.getElementById('authMainBtn');
+ 
+const tabLogin = document.getElementById('tabLogin');
+const tabRegister = document.getElementById('tabRegister');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+ 
+const loginEmailOrUsername = document.getElementById('loginEmailOrUsername');
+const loginPassword = document.getElementById('loginPassword');
+const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+ 
+const regUsername = document.getElementById('regUsername');
+const regFirstName = document.getElementById('regFirstName');
+const regLastName = document.getElementById('regLastName');
+const regEmail = document.getElementById('regEmail');
+const regPassword = document.getElementById('regPassword');
+const regPasswordConfirm = document.getElementById('regPasswordConfirm');
+const usernameCheckMsg = document.getElementById('usernameCheckMsg');
+const passwordCheckMsg = document.getElementById('passwordCheckMsg');
+ 
+const googleBtn = document.getElementById('googleAuthBtn');
+ 
+// Toggle şifrə düymələri
+document.getElementById('toggleLoginPassword').addEventListener('click', () => {
+  const inp = document.getElementById('loginPassword');
+  const icon = document.querySelector('#toggleLoginPassword i');
+  if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+  else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+});
+document.getElementById('toggleRegPassword').addEventListener('click', () => {
+  const inp = document.getElementById('regPassword');
+  const icon = document.querySelector('#toggleRegPassword i');
+  if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+  else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+});
+document.getElementById('toggleRegPasswordConfirm').addEventListener('click', () => {
+  const inp = document.getElementById('regPasswordConfirm');
+  const icon = document.querySelector('#toggleRegPasswordConfirm i');
+  if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+  else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+});
+ 
+// ============================================================
+// 3. KÖMƏKÇİ FUNKSİYALAR
+// ============================================================
+ 
+// Toast — app.js-dəki showToast ilə eyni sistem (sağ yuxarı)
+function showToast(message, type = "info") {
+  if (!document.getElementById("flix-toast-styles")) {
+    const style = document.createElement("style");
+    style.id = "flix-toast-styles";
+    style.innerHTML = `
+      .flix-toast-container {
+        position: fixed;
+        top: 20px; right: 20px; z-index: 99999;
+        display: flex; flex-direction: column; gap: 10px;
+        pointer-events: none;
+      }
+      .flix-toast {
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(12px);
+        color: #1a1a1a;
+        padding: 14px 20px;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.14);
+        font-size: 14px; font-weight: 500;
+        display: flex; align-items: center; gap: 12px;
+        transform: translateX(120%);
+        animation: flixSlideIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+        border-left: 5px solid #ccc;
+        max-width: 360px;
+        pointer-events: auto;
+      }
+      [data-theme="dark"] .flix-toast {
+        background: rgba(28,28,30,0.94);
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      }
+      .flix-toast.success { border-left-color: #2ecc71; }
+      .flix-toast.error   { border-left-color: #e74c3c; }
+      .flix-toast.warning { border-left-color: #f39c12; }
+      .flix-toast.info    { border-left-color: #3498db; }
+      @keyframes flixSlideIn { to { transform: translateX(0); } }
+      @keyframes flixFadeOut { to { opacity: 0; transform: translateY(-15px); } }
+    `;
+    document.head.appendChild(style);
+  }
+  let container = document.querySelector(".flix-toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "flix-toast-container";
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement("div");
+  toast.className = `flix-toast ${type}`;
+  const icons = { success: "✅", error: "❌", warning: "⚠️", info: "💡" };
+  toast.innerHTML = `<span>${icons[type] || "💡"}</span><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = "flixFadeOut 0.4s forwards";
+    setTimeout(() => toast.remove(), 400);
+  }, 4000);
+}
+ 
+function localizeFirebaseError(err) {
+  switch(err.code) {
+    case "auth/email-already-in-use": return "Bu e-poçt ünvanı ilə artıq qeydiyyatdan keçilib.";
+    case "auth/invalid-credential": return "İstifadəçi adı, e-poçt və ya şifrə yanlışdır.";
+    case "auth/weak-password": return "Şifrə çox zəifdir. Ən azı 6 simvoldan ibarət olmalıdır.";
+    case "auth/invalid-email": return "Daxil etdiyiniz e-poçt strukturu düzgün deyil.";
+    case "auth/user-disabled": return "Hesabınız rəhbərlik tərəfindən deaktiv edilib!";
+    case "auth/wrong-password": return "Şifrəniz yanlışdır. Zəhmət olmasa yenidən cəhd edin.";
+    case "auth/too-many-requests": return "Çox sayda uğursuz cəhd. Bir qədər gözləyin.";
+    case "auth/requires-recent-login": return "Bu əməliyyat üçün yenidən giriş etməlisiniz.";
+    case "auth/user-not-found": return "Daxil etdiyiniz e-poçt mövcud deyil.";
+    case "auth/cancelled-popup-request": return "Google ilə giriş əməliyyatı dayandırıldı.";
+    case "auth/popup-closed-by-user": return "Google ilə giriş əməliyyatı dayandırıldı.";
+    default: return err.message || "Gözlənilməz texniki xəta baş verdi.";
+  }
+}
+ 
+function isValidUsername(str) {
+  if (!str) return false;
+  const regex = /^(?!\d+$)[A-Za-z0-9](?!.*\.\.)[A-Za-z0-9._]{1,28}[A-Za-z0-9]$/;
+  return regex.test(str);
+}
+function normalizeUsername(str) { return str.toLowerCase().trim(); }
+function isValidName(str) { return /^[\p{L}]+(?:[\s][\p{L}]+)*$/u.test(str.trim()); }
+ 
+// ============================================================
+// 4. İSTİFADƏÇİ ADI YOXLAMA
+// ============================================================
+let usernameCheckTimeout = null;
+async function checkUsernameAvailability(username) {
+  if (!username) return null;
+  const normalized = normalizeUsername(username);
+  if (!isValidUsername(normalized)) return false;
+  try {
+    const q = query(collection(db, 'users'), where('username', '==', normalized));
+    const snap = await getDocs(q);
+    return snap.empty;
+  } catch { return null; }
+}
+ 
+regUsername.addEventListener('input', () => {
+  clearTimeout(usernameCheckTimeout);
+  const val = regUsername.value.trim();
+  const normalized = normalizeUsername(val);
+  if (!val) { usernameCheckMsg.textContent = ''; usernameCheckMsg.className = 'check-message'; return; }
+  if (!isValidUsername(normalized)) {
+    usernameCheckMsg.textContent = 'uyğun deyil';
+    usernameCheckMsg.className = 'check-message error';
+    return;
+  }
+  usernameCheckMsg.textContent = 'yoxlanılır...';
+  usernameCheckMsg.className = 'check-message';
+  usernameCheckTimeout = setTimeout(async () => {
+    const available = await checkUsernameAvailability(normalized);
+    if (available === null) {
+      usernameCheckMsg.textContent = 'xəta baş verdi';
+      usernameCheckMsg.className = 'check-message error';
+    } else if (available) {
+      usernameCheckMsg.textContent = 'uyğundur';
+      usernameCheckMsg.className = 'check-message success';
+    } else {
+      usernameCheckMsg.textContent = 'bu istifadəçi adı artıq alınıb';
+      usernameCheckMsg.className = 'check-message error';
+    }
+  }, 400);
+});
+ 
+regPasswordConfirm.addEventListener('input', () => {
+  const p1 = regPassword.value;
+  const p2 = regPasswordConfirm.value;
+  if (!p2) { passwordCheckMsg.textContent = ''; passwordCheckMsg.className = 'check-message'; return; }
+  if (p1 === p2) {
+    passwordCheckMsg.textContent = 'Şifrələr eynidir!';
+    passwordCheckMsg.className = 'check-message success';
+  } else {
+    passwordCheckMsg.textContent = 'Şifrələr eyni deyil!';
+    passwordCheckMsg.className = 'check-message error';
+  }
+});
+ 
+// ============================================================
+// 5. LOGIN (EMAIL / USERNAME)
+// ============================================================
+async function loginWithEmailOrUsername(identifier, password) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (emailRegex.test(identifier)) {
+    await signInWithEmailAndPassword(auth, identifier, password);
+    return;
+  }
+  const normalized = normalizeUsername(identifier);
+  try {
+    const q = query(collection(db, 'users'), where('username', '==', normalized));
+    const snap = await getDocs(q);
+    if (snap.empty) throw { code: 'auth/user-not-found', message: 'İstifadəçi tapılmadı.' };
+    const userData = snap.docs[0].data();
+    await signInWithEmailAndPassword(auth, userData.email, password);
+  } catch (err) {
+    if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+      throw { code: 'auth/invalid-credential', message: 'İstifadəçi adı və ya şifrə yanlışdır.' };
+    }
+    throw err;
+  }
+}
+ 
+// ============================================================
+// 6. AUTH FORM SUBMITLƏR
+// ============================================================
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const identifier = loginEmailOrUsername.value.trim();
+  const password = loginPassword.value;
+  try {
+    await loginWithEmailOrUsername(identifier, password);
+    loginForm.reset();
+    showToast("Uğurla giriş edildi. Xoş gəldiniz!", "success");
+    closeAuthModal.click();
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+ 
+registerForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const usernameRaw = regUsername.value.trim();
+  const username = normalizeUsername(usernameRaw);
+  const firstName = regFirstName.value.trim();
+  const lastName = regLastName.value.trim();
+  const email = regEmail.value.trim();
+  const password = regPassword.value;
+  const passwordConfirm = regPasswordConfirm.value;
+ 
+  if (!isValidUsername(username)) {
+    showToast("İstifadəçi adı qaydalara uyğun deyil (3-10 simvol, yalnız A-Z, 0-9, . _, . başda/sonda olmaz, .. olmaz).", "error");
+    return;
+  }
+  const available = await checkUsernameAvailability(username);
+  if (available === false) {
+    showToast("Bu istifadəçi adı artıq alınıb.", "error");
+    return;
+  } else if (available === null) {
+    showToast("İstifadəçi adı yoxlanılarkən xəta baş verdi.", "error");
+    return;
+  }
+  if (!isValidName(firstName) || !isValidName(lastName)) {
+    showToast("Ad və Soyad yalnız hərflər və boşluqdan ibarət ola bilər.", "error");
+    return;
+  }
+  if (password !== passwordConfirm) {
+    showToast("Şifrələr eyni deyil!", "error");
+    return;
+  }
+ 
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const displayName = `${firstName} ${lastName}`.trim();
+    await updateProfile(userCredential.user, { displayName, photoURL: "https://kinoflix.github.io/chat/img/avatar.jpg" });
+ 
+    await setDoc(doc(db, 'users', userCredential.user.uid), {
+      uid: userCredential.user.uid,
+      username,
+      firstName,
+      lastName,
+      displayName,
+      email,
+      photoURL: "https://kinoflix.github.io/chat/img/avatar.jpg",
+      role: 'user',
+      isBanned: false,
+      createdAt: serverTimestamp()
+    });
+ 
+    registerForm.reset();
+    usernameCheckMsg.textContent = '';
+    passwordCheckMsg.textContent = '';
+    showToast("Qeydiyyat uğurla tamamlandı!", "success");
+    closeAuthModal.click();
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+ 
+// ============================================================
+// 7. GOOGLE LOGIN
+// ============================================================
+googleBtn.addEventListener('click', async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+    if (!userDoc.exists()) {
+      const username = result.user.email.split('@')[0].replace(/[^A-Za-z0-9._]/g, '').slice(0, 30).toLowerCase();
+      const displayName = result.user.displayName || username;
+      const nameParts = displayName.split(' ');
+      const firstName = nameParts[0] || username;
+      const lastName = nameParts.slice(1).join(' ') || '';
+      await setDoc(doc(db, 'users', result.user.uid), {
+        uid: result.user.uid,
+        username,
+        firstName,
+        lastName,
+        displayName,
+        email: result.user.email,
+        photoURL: result.user.photoURL || "https://kinoflix.github.io/chat/img/avatar.jpg",
+        role: 'user',
+        isBanned: false,
+        createdAt: serverTimestamp()
+      });
+    }
+    showToast("Google ilə uğurla giriş edildi!", "success");
+    closeAuthModal.click();
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+ 
+// ============================================================
+// 8. ŞİFRƏ SIFIRLAMA
+// ============================================================
+forgotPasswordBtn.addEventListener('click', async () => {
+  const email = loginEmailOrUsername.value.trim();
+  if (!email) { showToast("Zəhmət olmasa əvvəlcə e-poçt ünvanınızı daxil edin.", "warning"); return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    showToast("Şifrə sıfırlama linki e-poçt ünvanınıza göndərildi.", "success");
+  } catch (err) {
+    showToast(localizeFirebaseError(err), "error");
+  }
+});
+ 
+// ============================================================
+// 9. TABS (Login / Register)
+// ============================================================
+tabLogin.addEventListener('click', () => {
+  tabLogin.classList.add('active'); tabRegister.classList.remove('active');
+  loginForm.classList.add('active'); registerForm.classList.remove('active');
+  
+  // LOGIN başlığını buraya əlavə etdik:
+  document.getElementById('authModalTitle').textContent = "Hesaba daxil ol və ödənişsiz izləməyə başla!";
+});
+
+tabRegister.addEventListener('click', () => {
+  tabRegister.classList.add('active'); tabLogin.classList.remove('active');
+  registerForm.classList.add('active'); loginForm.classList.remove('active');
+  
+  // REGISTER başlığını buraya əlavə etdik:
+  document.getElementById('authModalTitle').textContent = "Yeni hesab yarat və üstünlüklərdən yararlan!";
+});
+ 
+// ============================================================
+// 10. MODAL AÇ / BAĞLA
+// ============================================================
+function openAuthModal() {
+  authModal.style.display = 'flex';
+  tabLogin.click(); // default login tab
+}
+function closeAuthModalFunc() {
+  authModal.style.display = 'none';
+}
+  
+//closeAuthModal.addEventListener('click', closeAuthModalFunc);
+//authModal.addEventListener('click', (e) => {
+  //if (e.target === authModal) closeAuthModalFunc();
+//});
+//document.addEventListener('keydown', (e) => {
+  //if (e.key === 'Escape' && authModal.style.display === 'flex') closeAuthModalFunc();
+//});
+
+  closeAuthModal.addEventListener('click', () => {
+  if (auth.currentUser) closeAuthModalFunc();
+});
+authModal.addEventListener('click', (e) => {
+  if (e.target === authModal && auth.currentUser) closeAuthModalFunc();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && authModal.style.display === 'flex' && auth.currentUser) closeAuthModalFunc();
+});
+ 
+// ============================================================
+// 11. AUTH STATE İZLƏMƏ VƏ UI YENİLƏMƏ
+// ============================================================
+
+// Presence və ban izləmə dəyişənləri
+let presenceUnsubscribeConnected = null;
+let banWatcherUnsubscribe = null;
+
+// Presence qur — istifadəçi chat açmadan belə onlayn görünsün
+function setupPresence(user) {
+  // Əvvəlki listener-ləri təmizlə
+  if (presenceUnsubscribeConnected) {
+    presenceUnsubscribeConnected();
+    presenceUnsubscribeConnected = null;
+  }
+
+  const statusRef = ref(rtdb, `presence/${user.uid}`);
+
+  // RTDB bağlantı statusunu izlə
+  const connectedRef = ref(rtdb, '.info/connected');
+  const unsubConn = onValue(connectedRef, (snap) => {
+    if (snap.val() === true) {
+      // Bağlantı kəsildikdə offline yaz
+      onDisconnect(statusRef).set({
+        status: 'offline',
+        lastChanged: rtdbTimestamp()
+      }).then(() => {
+        // Onlayn olduğunu qeyd et
+        set(statusRef, {
+          status: 'online',
+          lastChanged: rtdbTimestamp()
+        });
+      });
+    }
+  });
+
+  // Away timer — 5 dəqiqə aktivlik olmasa "away" göstər
+  let isAway = false;
+  let idleTimer;
+  const resetIdle = () => {
+    clearTimeout(idleTimer);
+    if (isAway) {
+      isAway = false;
+      set(statusRef, { status: 'online', lastChanged: rtdbTimestamp() });
+    }
+    idleTimer = setTimeout(() => {
+      isAway = true;
+      set(statusRef, { status: 'away', lastChanged: rtdbTimestamp() });
+    }, 5 * 60 * 1000);
+  };
+  resetIdle();
+  window.addEventListener('mousemove', resetIdle);
+  window.addEventListener('keypress', resetIdle);
+  window.addEventListener('touchstart', resetIdle);
+
+  // Unsubscribe saxla
+  presenceUnsubscribeConnected = () => {
+    unsubConn();
+    clearTimeout(idleTimer);
+    window.removeEventListener('mousemove', resetIdle);
+    window.removeEventListener('keypress', resetIdle);
+    window.removeEventListener('touchstart', resetIdle);
+  };
+}
+
+// Ban izləyicisi — ban gəldikdə əsas səhifədən çıxış et
+function setupBanWatcher(user) {
+  // Əvvəlki listener-i təmizlə
+  if (banWatcherUnsubscribe) {
+    banWatcherUnsubscribe();
+    banWatcherUnsubscribe = null;
+  }
+
+  let isFirstSnapshot = true;
+  banWatcherUnsubscribe = onSnapshot(doc(db, 'users', user.uid), async (snapshot) => {
+    const wasFirst = isFirstSnapshot;
+    isFirstSnapshot = false;
+
+    if (!snapshot.exists()) {
+  set(ref(rtdb, `presence/${user.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+  showToast("Hesabınız sistemdən silindi!", "error");
+  try {
+    await deleteUser(user);
+  } catch (err) {
+    await signOut(auth).catch(() => {});
+  }
+  setTimeout(() => window.location.reload(), 2000);
+  return;
+                                     }
+
+    const data = snapshot.data();
+
+    // Ban yoxdursa ilk snapshot-u keç — normal login, yanlış trigger olmasın
+    if (wasFirst && !data.isBanned && !data.networkBanned) return;
+
+    if (data.isBanned && data.banExpires) {
+      // Müvəqqəti ban
+      const expires = data.banExpires.toDate ? data.banExpires.toDate() : new Date(data.banExpires);
+      if (expires <= new Date()) {
+        // Ban bitib — heç nə etmə
+        return;
+      }
+      const minsLeft = Math.ceil((expires - new Date()) / 60000);
+      const dStr = minsLeft < 60
+        ? `${minsLeft} dəqiqə`
+        : minsLeft < 1440
+          ? `${Math.floor(minsLeft / 60)} saat`
+          : `${Math.floor(minsLeft / 1440)} gün`;
+      showToast(`Hesabınız ${dStr} müddətinə banlandı! Sistemdən çıxarılırsınız.`, "error");
+      set(ref(rtdb, `presence/${user.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+      await signOut(auth).catch(() => {});
+      setTimeout(() => window.location.reload(), 2500);
+    } else if (data.isBanned || data.networkBanned) {
+      // Daimi ban
+      showToast("Hesabınız ban edildi! Sistemdən çıxarılırsınız.", "error");
+      set(ref(rtdb, `presence/${user.uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+      await signOut(auth).catch(() => {});
+      setTimeout(() => window.location.reload(), 2500);
+    }
+  });
+}
+
+// Presence-i təmizlə (logout zamanı)
+function cleanupPresence(uid) {
+  if (uid) {
+    set(ref(rtdb, `presence/${uid}`), { status: 'offline', lastChanged: rtdbTimestamp() });
+  }
+  if (presenceUnsubscribeConnected) {
+    presenceUnsubscribeConnected();
+    presenceUnsubscribeConnected = null;
+  }
+  if (banWatcherUnsubscribe) {
+    banWatcherUnsubscribe();
+    banWatcherUnsubscribe = null;
+  }
+}
+
+function updateAuthUI(user) {
+  const btn = authMainBtn;
+  if (user) {
+    btn.innerHTML = `<i class="fa-solid fa-right-from-bracket"></i>`;
+    btn.title = 'Çıxış';
+    btn.onclick = () => {
+      if (confirm("Hesabdan çıxmaq istədiyinizə əminsiniz?")) {
+        cleanupPresence(user.uid);
+        signOut(auth);
+        showToast("Hesabdan çıxış edildi.", "info");
+      }
+    };
+  } else {
+    btn.innerHTML = `<i class="fa-solid fa-circle-user"></i>`;
+    btn.title = 'Hesaba daxil ol';
+    btn.onclick = openAuthModal;
+  }
+}
+
+onAuthStateChanged(auth, async (user) => {
+  updateAuthUI(user);
+  if (user) {
+  // Modal açıqdırsa bağla
+  if (authModal.style.display === 'flex') {
+    closeAuthModalFunc();
+  }
+
+  // 👇 Sənəd yoxlanışı + 2 saniyə gözləmə (Google qeydiyyatı üçün)
+  try {
+    let userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (!userDoc.exists()) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (!userDoc.exists()) {
+        try {
+          await deleteUser(user);
+          showToast("Hesabınız sistemdən silindi.", "error");
+          window.location.reload();
+          return;
+        } catch (authError) {
+          if (authError.code === 'auth/requires-recent-login') {
+            showToast("Təhlükəsizlik doğrulaması tələb olunur. Yenidən daxil olun.", "info");
+            await signOut(auth);
+            window.location.reload();
+            return;
+          }
+          throw authError;
+        }
+      }
+    }
+  } catch (error) {
+    if (error.code === 'permission-denied') {
+      try {
+        const retryDoc = await getDoc(doc(db, 'users', user.uid));
+        if (!retryDoc.exists()) {
+          await deleteUser(user);
+          window.location.reload();
+          return;
+        }
+      } catch (_) {
+        await deleteUser(user);
+        window.location.reload();
+        return;
+      }
+    }
+    console.error("Auth yoxlanışı xətası:", error);
+  }
+
+  setupPresence(user);
+  setupBanWatcher(user);
+} else {
+  // Çıxış — presence və ban listener-ləri təmizlə
+  cleanupPresence(null);
+}
+});
+
+
+  // ============================================================
+// AVTOMATİK LOGİN MODAL AÇILIŞI (Tam Təhlükəsiz Versiya)
+// ============================================================
+(function() {
+    var isInitialPhase = true; // Səhifənin ilk yüklənmə fazası (Kilid)
+
+    // İlk 3 saniyə ərzində MutationObserver-in çaşmasının qarşısını alırıq
+    setTimeout(function() {
+        isInitialPhase = false;
+    }, 3000);
+
+    function triggerModalIfLoggedOut() {
+        var btn = document.getElementById('authMainBtn');
+        if (!btn) return;
+
+        var isLoggedOut = btn.innerHTML.indexOf('fa-circle-user') !== -1;
+
+        if (isLoggedOut) {
+            if (typeof window.openAuthModal === 'function') {
+                window.openAuthModal();
+            } else {
+                var modal = document.getElementById('authModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    var tabLogin = document.getElementById('tabLogin');
+                    var tabRegister = document.getElementById('tabRegister');
+                    var loginForm = document.getElementById('loginForm');
+                    var registerForm = document.getElementById('registerForm');
+                    if (tabLogin && tabRegister && loginForm && registerForm) {
+                        tabLogin.classList.add('active');
+                        tabRegister.classList.remove('active');
+                        loginForm.classList.add('active');
+                        registerForm.classList.remove('active');
+                    }
+                }
+            }
+        }
+    }
+
+    // 1. İLKİN AÇILIŞ: 2 saniyə gözlə və aç
+    setTimeout(function() {
+        triggerModalIfLoggedOut();
+    }, 2000);
+
+    // 2. LOGOUT İZLƏYİCİSİ (Ağıllı Kilid ilə)
+    var targetBtn = document.getElementById('authMainBtn');
+    if (targetBtn) {
+        var observer = new MutationObserver(function(mutations) {
+            // Əgər hələ ilk yüklənmə fazasındadısa (Firebase yoxlanışı gedirsə), heç nə etmə
+            if (isInitialPhase) return;
+
+            mutations.forEach(function(mutation) {
+                if (targetBtn.innerHTML.indexOf('fa-circle-user') !== -1) {
+                    // Mövcud açıq modal varsa və istifadəçi qeydiyyatdadırsa, müdaxilə etmə
+                    var registerForm = document.getElementById('registerForm');
+                    if (registerForm && registerForm.classList.contains('active')) {
+                        return; 
+                    }
+                    
+                    setTimeout(triggerModalIfLoggedOut, 300);
+                }
+            });
+        });
+        observer.observe(targetBtn, { childList: true, characterData: true, subtree: true });
+    }
+})();
+  </script>
+    <!-- İlkin Yüklənmə Ekranı (Loader) - Başlanğıc -->
+<div id="appLoader" class="app-loader">
+    <div class="app-loader-spinner"></div>
+    <style>
+        .app-loader {
+            position: fixed;
+            inset: 0;
+            /* Əsas CSS yüklənənə qədər ehtiyat olaraq tünd fon təyin edilir, sonra var(--bg) aktiv olur */
+            background: var(--bg, #11141a); 
+            z-index: 99999; /* Səhifədəki hər şeyin önündə görünməsi üçün artırıldı */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .app-loader-spinner {
+            width: 42px;
+            height: 42px;
+            border: 3px solid var(--glass-border, rgba(255, 255, 255, 0.08));
+            border-top-color: var(--accent, #3b82f6); /* Sizin rəng məntiqiniz */
+            border-radius: 50%;
+            animation: appLoaderSpin 0.8s linear infinite;
+        }
+        @keyframes appLoaderSpin { to { transform: rotate(360deg); } }
+        
+        /* Ekrandan yumşaq silinmə klassı */
+        .app-loader-hidden {
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+    </style>
+    <script>
+        window.addEventListener('load', function() {
+            var loader = document.getElementById('appLoader');
+            if (loader) {
+                /* Səhifə anında yüklənsə belə, loaderin görünməsi üçün 600ms gözlədir */
+                setTimeout(function() {
+                    loader.classList.add('app-loader-hidden');
+                    // Animasiya bitdikdən sonra elementi DOM-dan silir
+                    setTimeout(function() { loader.remove(); }, 400);
+                }, 600); 
+            }
+        });
+    </script>
+</div>
+<!-- İlkin Yüklənmə Ekranı (Loader) - Son -->
+
+</body>
+</html>
