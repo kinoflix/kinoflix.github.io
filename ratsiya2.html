@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<title>Ratsiya Market — Radiostansiyalar mağazası</title>
+<meta name="description" content="Portativ və avtomobil radiostansiyaları, baza stansiyaları, təkrarlayıcılar və aksesuarlar. Sifariş WhatsApp ilə.">
+<style>
+:root{
+  --navy:#1b2559; --navy2:#141b45; --red:#d9253a; --redD:#b81c2f; --or:var(--red);
+  --bg:#f7f7f7; --white:#fff; --text:#333a45; --muted:#7b8190; --line:#e4e6ea; --dark:#3c3c3e; --wa:#25d366;
+  --radius:4px; --shadow:0 4px 18px rgba(20,27,69,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Open Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;display:flex;flex-direction:column;font-size:15px}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font:inherit;color:var(--text);background:#fff;border:1px solid #cfd3da;border-radius:var(--radius);padding:10px 12px;width:100%;outline:none;transition:border .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--navy)}
+.container{max-width:1100px;margin:0 auto;padding:0 18px;width:100%}
+i.fa-solid,i.fa-brands{line-height:1}
+
+/* utility bar + header */
+.util{background:#fafafa;border-bottom:1px solid var(--line);font-size:.78rem;color:var(--muted)}
+.util .container{display:flex;justify-content:flex-end;align-items:center;gap:18px;height:32px;flex-wrap:nowrap;overflow:hidden;white-space:nowrap}
+.util a:hover{color:var(--red)}
+.util i{color:var(--red);margin-right:5px}
+header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.nav-wrap{display:flex;align-items:center;gap:16px;height:78px}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer}
+.logo-mark{width:44px;height:44px;border-radius:50%;background:var(--navy);display:grid;place-items:center;border:3px solid var(--red)}
+.logo b{display:block;font-size:1.25rem;letter-spacing:.5px;color:var(--navy);font-weight:700;line-height:1.05;text-transform:uppercase}
+.logo small{display:block;font-size:.62rem;color:var(--red);letter-spacing:1.6px;text-transform:uppercase;font-weight:600}
+nav{display:flex;gap:2px;margin-left:auto}
+nav a{padding:8px 11px;font-weight:600;font-size:.86rem;color:#6b7383;cursor:pointer;transition:.15s;border-bottom:2px solid transparent}
+nav a:hover{color:var(--navy)}
+nav a.active{color:var(--navy);border-bottom-color:var(--red)}
+.icons{display:flex;gap:8px}
+.ibtn{position:relative;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--navy);background:#f1f2f5;transition:.15s}
+.ibtn:hover{background:var(--navy);color:#fff}
+.badge{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:.66rem;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:grid;place-items:center;padding:0 4px}
+.burger{display:none}
+
+/* pages */
+main{flex:1}
+.page{display:none;animation:fade .35s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+section.block{padding:54px 0}
+.sec-title{text-align:center;margin-bottom:34px}
+.sec-title h2{font-size:1.7rem;font-weight:600;color:#5c7399;letter-spacing:.2px}
+.sec-title p{color:#555}
+.sec-title .ln{width:60%;max-width:590px;height:1px;background:#d8dce2;margin:18px auto 0;position:relative}
+.sec-title .ln::after{content:"";position:absolute;left:50%;top:-4px;width:8px;height:8px;border-radius:50%;background:#fff;border:1px solid #c5cad2;transform:translateX(-50%)}
+.hd{font-size:.95rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--navy);border-bottom:1px solid #d9dce2;padding-bottom:8px;margin-bottom:20px}
+.page-head{background:#fff;border-bottom:1px solid var(--line);padding:30px 0}
+.page-head h1{font-size:1.7rem;color:var(--navy);font-weight:600}
+.page-head p{color:var(--muted);margin-top:2px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;border-radius:var(--radius);font-weight:600;background:var(--red);color:#fff;transition:.15s;font-size:.92rem}
+.btn:hover{background:var(--redD)}
+.btn.navy{background:var(--navy)}.btn.navy:hover{background:var(--navy2)}
+.btn.ghost{background:transparent;border:1px solid #bcc2cd;color:var(--navy)}
+.btn.ghost:hover{border-color:var(--navy);background:var(--navy);color:#fff}
+.btn.wa{background:var(--wa);color:#06260f;font-size:1rem;padding:14px 20px}
+.btn.wa:hover{background:#1fba58}
+.btn.sm{padding:7px 12px;font-size:.82rem}
+.btn.full{width:100%}
+.lnk{color:var(--red);font-weight:600;cursor:pointer}.lnk:hover{text-decoration:underline}
+
+/* hero */
+.hero{background:linear-gradient(120deg,#3a3a3c,#4a4a4d);color:#fff;padding:78px 0;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:30px;align-items:center}
+.hero h1{font-size:2.6rem;line-height:1.15;font-weight:600;letter-spacing:.3px;margin-bottom:14px}
+.hero p{font-size:1.15rem;max-width:620px;margin-bottom:22px;opacity:.95}
+.cta{display:flex;gap:10px;flex-wrap:wrap}
+.hero-art{display:grid;place-items:center}
+.hero-art .disc{width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,#fff 0,#e8eaf0 55%,#c9cdd7 100%);display:grid;place-items:center;box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.hero-art svg{height:290px}
+
+/* cards grids */
+.grid{display:grid;gap:26px}
+.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
+.tile{cursor:pointer}
+.tile .tsv{height:170px;display:grid;place-items:center;background:linear-gradient(135deg,#eef0f5,#dfe3ec);border:1px solid #d5d9e2;margin-bottom:14px;transition:.2s}
+.tile:hover .tsv{box-shadow:var(--shadow)}
+.tile .tsv svg{height:78%}
+.tile h3{font-size:1.15rem;font-weight:600;color:#26303f;margin-bottom:4px}
+.tile p{color:var(--muted);font-size:.88rem;margin-bottom:6px}
+.feat{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.feat .ic{width:50px;height:50px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;margin-bottom:12px}
+.feat .ic i{font-size:1.15rem}
+.feat h3{margin-bottom:4px;color:var(--navy);font-size:1.05rem}.feat p{color:var(--muted);font-size:.9rem}
+
+/* brands */
+.brands{display:flex;flex-wrap:wrap;gap:12px 34px;justify-content:center;align-items:center}
+.brands span{font-size:1.5rem;font-weight:700;letter-spacing:1.5px;color:#9aa1b0;font-family:"Open Sans",sans-serif}
+.brands span:first-child{color:var(--navy)}
+
+/* news */
+.news{display:grid;grid-template-columns:1.1fr 1fr;gap:0;border-top:0}
+.news-main{padding:0 28px 0 0;border-right:1px solid #dcdfe5;cursor:pointer}
+.news-main .img{height:210px;border:1px solid #dcdfe5;padding:7px;background:#fff}
+.news-main .img>div{height:100%;display:grid;place-items:center;background:linear-gradient(135deg,var(--navy),#2f3d86);color:#fff;font-size:1.5rem;font-weight:700;padding:0 20px;text-align:left;line-height:1.25}
+.news-main .meta{font-size:.74rem;color:#9aa1b0;text-transform:uppercase;margin-top:10px}
+.news-main h4{font-size:1.05rem;font-weight:600;color:#222}
+.news-main p{font-size:.85rem;color:#777;margin-top:4px}
+.news-list{padding-left:28px}
+.n-item{display:grid;grid-template-columns:56px 1fr;gap:14px;padding:10px 0;border-bottom:1px solid #dcdfe5;cursor:pointer;align-items:center}
+.n-item:last-child{border:none}
+.n-item .th{width:56px;height:56px;border:1px solid #dcdfe5;padding:3px;background:#fff}
+.n-item .th div{height:100%;display:grid;place-items:center;background:linear-gradient(135deg,#e9ecf3,#d4d9e6);color:var(--navy)}
+.n-item .meta{font-size:.72rem;color:#9aa1b0;text-transform:uppercase}
+.n-item h5{font-size:.92rem;font-weight:600;color:#222;line-height:1.35}
+.n-item:hover h5,.news-main:hover h4{color:var(--red)}
+
+/* sectors */
+.sec-grid{display:grid;grid-template-columns:230px repeat(3,1fr);gap:22px;align-items:start}
+.sec-intro h3{font-size:.95rem;text-transform:uppercase;color:#222;margin-bottom:12px;font-weight:600}
+.sec-intro p{font-style:italic;color:#777;font-size:.88rem;margin-bottom:10px}
+.s-card{cursor:pointer}
+.s-card .im{height:150px;display:grid;place-items:center;color:#fff;font-size:2.8rem;background:linear-gradient(135deg,var(--navy),#3a4a9a);transition:.2s}
+.s-card:nth-child(3) .im{background:linear-gradient(135deg,#4a4a4d,#6a6a70)}
+.s-card:nth-child(4) .im{background:linear-gradient(135deg,var(--red),#e8604f)}
+.s-card:hover .im{box-shadow:var(--shadow)}
+.s-card h4{margin-top:8px;font-size:.98rem;font-weight:600;color:#222;line-height:1.35}
+.s-card p{font-size:.82rem;color:var(--muted)}
+.sec-more{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.pill{padding:6px 14px;border:1px solid #cfd3da;border-radius:20px;background:#fff;font-size:.84rem;font-weight:600;color:var(--navy);cursor:pointer}
+.pill:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* help */
+.help{background:linear-gradient(rgba(70,70,74,.82),rgba(70,70,74,.82)),linear-gradient(135deg,#9aa0ad,#555a66);padding:46px 0 52px;color:#fff;text-align:center}
+.help h2{font-size:1.8rem;font-weight:600;letter-spacing:.5px}
+.help>div>p{margin-bottom:34px}
+.h-card{background:#fff;color:#444;padding:0 24px 22px;position:relative;margin-top:26px;border-radius:2px}
+.h-card .ci{position:absolute;top:-27px;left:50%;transform:translateX(-50%);width:54px;height:54px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-size:1.2rem}
+.h-card h4{padding-top:36px;font-size:.98rem;letter-spacing:1.4px;text-transform:uppercase;font-weight:600;color:#222;margin-bottom:8px}
+.h-card p{font-size:.88rem;color:#666;margin-bottom:6px}
+
+/* about */
+.about{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:start}
+.about h2{font-size:1.9rem;font-weight:600;letter-spacing:1.4px;color:#444;text-align:right;margin-bottom:22px}
+.about .txt{text-align:right;color:#8a8f9b;font-size:.92rem}
+.about .txt p{margin-bottom:18px}.about .txt b{color:var(--red);font-weight:600}
+.tl{position:relative;padding-left:0}
+.tl::before{content:"";position:absolute;left:32px;top:50px;bottom:40px;border-left:1px dotted #c9ced8}
+.tl-i{display:grid;grid-template-columns:64px 1fr;gap:18px;margin-bottom:26px}
+.tl-i .c{width:64px;height:64px;border-radius:50%;background:#c8cbd2;color:#fff;display:grid;place-items:center;font-size:1.35rem;position:relative;z-index:1}
+.tl-i h4{font-size:1.1rem;font-weight:600;color:#222;line-height:1.3;margin-bottom:4px}
+.tl-i p{color:#9aa0ab;font-size:.9rem}.tl-i p b{color:var(--red);font-weight:600}
+
+/* why + form */
+.why{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:start}
+.hd2{display:flex;align-items:center;gap:14px;font-size:1.25rem;font-weight:600;color:#7b8190;margin-bottom:18px}
+.hd2::after{content:"";flex:1;height:1px;background:#dcdfe5}
+.why p{color:#6b7383;font-size:.9rem;margin-bottom:12px}.why p b{color:var(--red);font-weight:600}
+.bars{display:grid;gap:6px;margin:14px 0}
+.bar{background:var(--navy2);color:#fff;padding:7px 12px;font-size:.88rem;cursor:pointer;border-radius:2px;width:92%;display:flex;gap:8px;align-items:center;transition:.2s}
+.bar:hover{width:100%;background:var(--red)}
+.bar:first-child{background:repeating-linear-gradient(135deg,#5b8fd6,#5b8fd6 14px,#7ba7e4 14px,#7ba7e4 28px)}
+.quote{border-left:4px solid var(--red);padding:6px 0 6px 18px;font-size:1.1rem;color:#8a8f9b;margin-top:16px}.quote b{color:var(--red);font-weight:600}
+.formbox{background:#fff;border-radius:14px;padding:26px 30px;box-shadow:var(--shadow)}
+
+/* product card */
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:.2s;position:relative}
+.card:hover{box-shadow:var(--shadow);transform:translateY(-3px)}
+.card-img{height:190px;display:grid;place-items:center;cursor:pointer;position:relative;background:linear-gradient(135deg,#f3f4f8,#e2e5ee)}
+.card-img svg{height:82%;max-width:88%;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25))}
+.tag{position:absolute;top:10px;left:10px;background:var(--red);color:#fff;font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:2px;letter-spacing:.4px;text-transform:uppercase}
+.tag.dg{background:var(--navy)}
+.card-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:7px;flex:1}
+.card-cat{font-size:.7rem;color:var(--red);text-transform:uppercase;letter-spacing:1.2px;font-weight:700}
+.card h3{font-size:1rem;line-height:1.3;cursor:pointer;color:#222;font-weight:600}
+.chips-s{display:flex;gap:6px;flex-wrap:wrap}
+.cs{font-size:.72rem;padding:2px 8px;border-radius:3px;background:#f1f2f5;border:1px solid var(--line);color:#667}
+.price-row{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:8px}
+.price{font-size:1.2rem;font-weight:700;color:var(--navy)}
+.price s{font-size:.8rem;color:var(--muted);font-weight:400;margin-left:6px}
+.cmp{display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--muted);cursor:pointer;user-select:none}
+.cmp input{width:16px;height:16px;accent-color:var(--red);padding:0}
+
+/* filters */
+.toolbar{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-bottom:14px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.chip{padding:7px 16px;border-radius:20px;background:#fff;border:1px solid #cfd3da;font-weight:600;font-size:.84rem;color:var(--navy);transition:.15s}
+.chip.on,.chip:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.empty{text-align:center;padding:50px 10px;color:var(--muted)}
+.empty .e{font-size:3rem}.empty .e i{color:var(--red);opacity:.85}
+
+/* panels / forms */
+.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+.panel h3{margin-bottom:14px;color:var(--navy);font-weight:600}
+h3>i,h4>i{color:var(--red);margin-right:8px}
+.field{margin-bottom:14px}
+.field label{display:block;font-weight:600;font-size:.84rem;margin-bottom:5px;color:#555}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt-row{display:flex;gap:8px;flex-wrap:wrap}
+.opt{padding:8px 13px;border-radius:var(--radius);border:1px solid #cfd3da;background:#fff;font-size:.86rem;font-weight:600;transition:.15s}
+.opt.on{border-color:var(--red);color:var(--red);background:#fff3f4}
+.sel-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:22px;align-items:start}
+.reco{display:grid;grid-template-columns:90px 1fr auto;gap:14px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:var(--radius);background:#fafbfc;margin-bottom:10px}
+.reco.best{border-color:var(--red);background:#fff}
+.reco .rv{height:80px;display:grid;place-items:center}.reco .rv svg{height:100%}
+.notice{background:#f5f6f9;border-left:4px solid var(--red);padding:11px 14px;font-size:.85rem;color:#667;margin-top:14px}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:480px}
+th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line);font-size:.9rem}
+th{color:var(--navy);font-size:.78rem;text-transform:uppercase;letter-spacing:.8px;background:#f5f6f9}
+td.k{color:var(--muted);font-weight:600;white-space:nowrap}
+
+/* cart */
+.cart-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:22px;align-items:start}
+.cart-item{display:grid;grid-template-columns:70px 1fr auto;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.cart-item:last-of-type{border:none}
+.ci-img{height:70px;display:grid;place-items:center;background:#f1f2f6;border-radius:var(--radius)}.ci-img svg{height:88%}
+.qty{display:inline-flex;align-items:center;border:1px solid #cfd3da;border-radius:var(--radius);overflow:hidden}
+.qty button{width:32px;height:32px;font-size:.75rem;font-weight:700}.qty button:hover{background:#f1f2f6}
+.qty span{min-width:30px;text-align:center;font-weight:700}
+.rm{color:var(--red);font-size:.8rem;display:block;text-align:right;margin-top:4px}.rm i{margin-right:4px}
+.sum-row{display:flex;justify-content:space-between;padding:7px 0;color:var(--muted)}
+.sum-row.total{font-size:1.3rem;font-weight:700;color:var(--text);border-top:1px solid var(--line);margin-top:6px;padding-top:12px}
+.sum-row.total b{color:var(--navy)}
+.wa-steps{display:grid;gap:6px;margin:12px 0 4px;font-size:.84rem;color:var(--muted)}
+.stp{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#fde8ea;color:var(--red);font-size:.72rem;font-weight:700;margin-right:8px}
+
+/* faq */
+.faq-item{background:#fff;border:1px solid var(--line);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+.faq-q{width:100%;text-align:left;padding:15px 18px;font-weight:600;display:flex;justify-content:space-between;gap:10px;color:var(--navy)}
+.faq-q::after{content:"+";font-size:1.3rem;color:var(--red);transition:.2s}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 18px;color:var(--muted)}
+.faq-item.open .faq-a{max-height:300px;padding-bottom:16px}
+
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(20,24,40,.65);display:none;align-items:center;justify-content:center;z-index:100;padding:16px}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:6px;max-width:800px;width:100%;max-height:92vh;overflow:auto;position:relative;animation:fade .25s}
+.modal .x{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;background:#f1f2f6;z-index:2}
+.m-grid{display:grid;grid-template-columns:1fr 1.3fr}
+.m-img{display:grid;place-items:center;min-height:300px;background:linear-gradient(135deg,#f3f4f8,#dfe3ec);padding:20px}
+.m-img svg{height:260px;max-width:100%;filter:drop-shadow(0 8px 12px rgba(0,0,0,.25))}
+.m-body{padding:26px}
+.m-body h2{color:var(--navy)}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 20px;border-radius:4px;font-weight:600;z-index:200;transition:transform .3s,opacity .3s,visibility .3s;opacity:0;visibility:hidden;max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible}
+
+/* floating */
+.fab{position:fixed;right:18px;bottom:18px;z-index:60;width:56px;height:56px;border-radius:50%;background:var(--wa);display:grid;place-items:center;box-shadow:0 6px 22px rgba(37,211,102,.5);transition:.2s}
+.fab:hover{transform:scale(1.08)}.fab i{font-size:30px;color:#fff}
+.totop{position:fixed;right:22px;bottom:86px;z-index:59;width:48px;height:48px;background:#8c909a;color:#fff;display:grid;place-items:center;opacity:0;visibility:hidden;transition:.25s}
+.totop.show{opacity:.9;visibility:visible}.totop:hover{background:var(--navy)}
+.cmpbar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(100px);background:#fff;border:1px solid var(--navy);border-radius:6px;padding:10px 14px;display:flex;gap:12px;align-items:center;z-index:60;transition:transform .3s,opacity .3s,visibility .3s;font-weight:600;font-size:.9rem;visibility:hidden;opacity:0;pointer-events:none;box-shadow:none}
+.cmpbar.show{transform:translateX(-50%) translateY(0);visibility:visible;opacity:1;pointer-events:auto;box-shadow:var(--shadow)}
+
+/* footer */
+footer{background:var(--navy);color:#dfe3f2;margin-top:0;padding:46px 0 0}
+.f-grid{display:grid;grid-template-columns:1fr 1.1fr 1.2fr 1fr;gap:30px}
+footer h4{color:#fff;margin-bottom:12px;font-size:.95rem;text-transform:uppercase;letter-spacing:.8px}
+footer a{display:block;padding:3px 0;cursor:pointer;font-size:.9rem}
+footer a::before{content:"+ ";opacity:.7}
+footer a:hover{color:#ff8b98}
+footer p,footer span.fi{font-size:.9rem;display:block;margin-bottom:6px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags a{display:inline-block;border:1px solid #4a5588;padding:3px 9px;font-size:.78rem;margin:0}
+.tags a::before{content:""}
+.tags a:hover{background:var(--red);border-color:var(--red);color:#fff}
+.f-logo{display:flex;align-items:center;gap:10px;margin-top:16px}
+.f-logo .logo-mark{background:#fff}.f-logo b{color:#fff;font-size:1.3rem;text-transform:uppercase;letter-spacing:.5px}
+.copy{background:#2d3a6b;margin-top:36px;padding:14px 0;font-size:.8rem}
+.copy .container{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+@media(max-width:980px){
+  .g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}
+  .hero-grid,.cart-grid,.sel-grid,.news,.about,.why{grid-template-columns:1fr}
+  .hero h1{font-size:2rem}.hero-art{display:none}.hero{padding:50px 0}
+  .news-main{padding:0 0 22px;border-right:none}.news-list{padding-left:0}
+  .sec-grid{grid-template-columns:repeat(3,1fr)}.sec-intro{grid-column:1/-1}
+  .about h2,.about .txt{text-align:left}
+  .f-grid{grid-template-columns:1fr 1fr}
+  nav{position:absolute;top:100%;left:0;right:0;background:#fff;flex-direction:column;padding:6px 18px 14px;border-bottom:1px solid var(--line);display:none;margin:0}
+  nav.open{display:flex}
+  .burger{display:grid}.icons{margin-left:auto}
+}
+@media(max-width:600px){
+  .g4,.g3,.g2{grid-template-columns:1fr 1fr;gap:12px}
+  .g3.help3{grid-template-columns:1fr}
+  .toolbar{grid-template-columns:1fr}
+  .m-grid{grid-template-columns:1fr}.m-img{min-height:200px}.m-img svg{height:180px}
+  .two{grid-template-columns:1fr}.f-grid{grid-template-columns:1fr}
+  .card-img{height:140px}.logo small{display:none}
+  .cart-item{grid-template-columns:56px 1fr}
+  .cart-item .ci-r{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center}.rm{margin:0}
+  .reco{grid-template-columns:64px 1fr}.reco .btn{grid-column:1/-1}
+  .sec-grid{grid-template-columns:1fr 1fr}
+  .util .container{justify-content:center}.util .hide-s{display:none}
+  .hero h1{font-size:1.65rem}.hero p{font-size:1rem}
+  .formbox{padding:18px}
+  .tile .tsv{height:120px}
+}
+</style>
+</head>
+<body>
+
+<div class="util"><div class="container">
+  <span><i class="fa-solid fa-phone"></i><span id="uPhone"></span></span>
+  <span class="hide-s"><i class="fa-solid fa-envelope"></i><span id="uMail"></span></span>
+  <a class="hide-s" data-go="products">Kataloq</a>
+  <a class="hide-s" data-go="delivery">Çatdırılma</a>
+  <a id="uWa"><i class="fa-brands fa-whatsapp"></i>WhatsApp</a>
+</div></div>
+<header>
+  <div class="container nav-wrap">
+    <a class="logo" data-go="home"><span class="logo-mark" id="logoMark"></span><span><b>Ratsiya Market</b><small>Radiostansiyalar</small></span></a>
+    <nav id="nav">
+      <a data-go="products">Məhsullar</a>
+      <a data-go="selector">Seçim köməkçisi</a>
+      <a data-go="compare">Müqayisə</a>
+      <a data-go="services">Xidmətlər</a>
+      <a data-go="delivery">Çatdırılma</a>
+      <a data-go="faq">FAQ</a>
+      <a data-go="contact">Əlaqə</a>
+    </nav>
+    <div class="icons">
+      <button class="ibtn" data-go="cart" title="Səbət"><i class="fa-solid fa-cart-shopping"></i><span class="badge" id="cartCount">0</span></button>
+      <button class="ibtn burger" id="burger"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ANA SƏHİFƏ -->
+<div class="page" id="page-home">
+  <div class="hero"><div class="container hero-grid">
+    <div>
+      <h1>Radiostansiya və Rabitə Həlləri</h1>
+      <p>Komandanız üçün aydın və etibarlı rabitə qurun. Portativ və avtomobil radiostansiyaları, baza stansiyaları, təkrarlayıcılar və aksesuarlar. Sifarişi WhatsApp ilə bir klikdə göndərin.</p>
+      <div class="cta">
+        <button class="btn navy" data-go="products"><i class="fa-solid fa-radio"></i> Kataloq</button>
+        <button class="btn" id="heroWa"><i class="fa-solid fa-comment-dots"></i> Təklif alın!</button>
+      </div>
+    </div>
+    <div class="hero-art"><div class="disc" id="heroSvg"></div></div>
+  </div></div>
+
+  <section class="block"><div class="container">
+    <div class="grid g4" id="catTiles"></div>
+  </div></section>
+
+  <section class="block" style="background:#fff;border-block:1px solid var(--line)"><div class="container">
+    <div class="sec-title"><h2>Brendlərimiz</h2><p>Rabitə sahəsində etibarlı istehsalçı brendlər</p><div class="ln"></div></div>
+    <div class="brands" id="brands"></div>
+  </div></section>
+
+  <section class="block"><div class="container">
+    <div class="hd">Ən çox satılanlar</div>
+    <div class="grid g4" id="homeFeatured"></div>
+  </div></section>
+
+  <section class="block" style="padding-top:0"><div class="container">
+    <div class="hd">Faydalı məqalələr</div>
+    <div class="news" id="news"></div>
+  </div></section>
+
+  <section class="block" style="padding-top:0"><div class="container">
+    <div class="sec-grid" id="sectors"></div>
+  </div></section>
+
+  <section class="help"><div class="container">
+    <h2>Yardıma ehtiyacınız var?</h2>
+    <p>Bizimlə anlıq və sürətli əlaqə üçün seçimlər</p>
+    <div class="grid g3 help3" id="helpCards"></div>
+  </div></section>
+
+  <section class="block"><div class="container about">
+    <div><h2>Haqqımızda</h2><div class="txt">
+      <p><b>Ratsiya Market</b> radiostansiya və rabitə aksesuarları üzrə ixtisaslaşmış mağazadır. Hər müştərinin tapşırığına uyğun, etibarlı və dəstəklənən rabitə vasitəsi seçməsinə kömək edirik.</p>
+      <p><b>Düzgün model, düzgün qiymət.</b> Məsafə, mühit və büdcəyə görə uyğun cihazı birlikdə seçirik, kanalları və parametrləri sizin üçün qururuq.</p>
+      <p><b>Satışdan sonra da yanınızdayıq:</b> zəmanət, servis, ehtiyat hissələr və toplu sifarişlər.</p></div></div>
+    <div class="tl">
+      <div class="tl-i"><div class="c"><i class="fa-solid fa-magnifying-glass"></i></div><div><h4>Seçin: ehtiyacınıza uyğun model</h4><p>Kataloqdan və ya <b>seçim köməkçisindən</b> istifadə edərək modelləri tapın və müqayisə edin.</p></div></div>
+      <div class="tl-i"><div class="c"><i class="fa-solid fa-cart-shopping"></i></div><div><h4>Səbətə əlavə edin</h4><p>İstədiyiniz <b>model və sayı</b> seçin, kanal və proqramlaşdırma tələblərinizi qeyd edin.</p></div></div>
+      <div class="tl-i"><div class="c"><i class="fa-brands fa-whatsapp"></i></div><div><h4>WhatsApp ilə göndərin</h4><p>Mesaj <b>avtomatik yazılır</b>, sizə yalnız “Göndər” düyməsini basmaq qalır.</p></div></div>
+    </div>
+  </div></section>
+
+  <section class="block" style="padding-top:0"><div class="container why">
+    <div><div class="hd2">Niyə Ratsiya Market?</div>
+      <p>Rabitə ehtiyaclarınızı <b>tək ünvanda</b> həll edin: seçim, proqramlaşdırma, çatdırılma və servis.</p>
+      <div class="bars">
+        <div class="bar" data-go="products"><i class="fa-solid fa-tower-broadcast"></i> Portativ və avtomobil radiostansiyaları</div>
+        <div class="bar" data-go="products"><i class="fa-solid fa-satellite-dish"></i> Baza stansiyaları və təkrarlayıcılar</div>
+        <div class="bar" data-go="selector"><i class="fa-solid fa-wand-magic-sparkles"></i> Model seçim köməkçisi</div>
+        <div class="bar" data-go="services"><i class="fa-solid fa-screwdriver-wrench"></i> Proqramlaşdırma və servis</div>
+        <div class="bar" data-go="delivery"><i class="fa-solid fa-truck-fast"></i> Sürətli çatdırılma və zəmanət</div>
+      </div>
+      <div class="quote">Düzgün seçilmiş radiostansiya komandanızın <b>təhlükəsizliyini və səmərəliliyini</b> artırır.</div>
+    </div>
+    <div><div class="hd2">Bizə yazın!</div>
+      <div class="formbox">
+        <div class="two"><div class="field"><label>Ad *</label><input id="hfName"></div><div class="field"><label>Telefon</label><input id="hfTel" placeholder="+994 50 000 00 00"></div></div>
+        <div class="field"><label>Hansı həllə marağınız var? *</label><select id="hfTopic"><option>Portativ radiostansiya</option><option>Avtomobil radiostansiyası</option><option>Baza stansiyası / təkrarlayıcı</option><option>Aksesuarlar</option><option>Toptan sifariş</option><option>Servis və təmir</option></select></div>
+        <div class="field"><label>Mesajınız</label><textarea id="hfMsg" rows="4"></textarea></div>
+        <button class="btn wa full" id="hfSend"><i class="fa-brands fa-whatsapp" style="font-size:1.3rem"></i> WhatsApp-da göndər</button>
+      </div>
+    </div>
+  </div></section>
+</div>
+
+<!-- MƏHSULLAR -->
+<div class="page" id="page-products">
+  <div class="page-head"><div class="container"><h1>Məhsullar</h1><p>Radiostansiyalar və aksesuarlar</p></div></div>
+  <section class="block"><div class="container">
+    <div class="toolbar">
+      <input type="search" id="q" placeholder="Model axtar...">
+      <select id="sort">
+        <option value="pop">Populyarlıq</option><option value="pa">Qiymət: ucuzdan bahaya</option><option value="pd">Qiymət: bahadan ucuza</option>
+        <option value="pw">Güc: çoxdan aza</option><option value="rg">Məsafə: çoxdan aza</option>
+      </select>
+      <select id="mode"><option value="">Analoq və rəqəmsal</option><option>Analoq</option><option>Rəqəmsal</option></select>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="grid g4" id="prodGrid"></div>
+  </div></section>
+</div>
+
+<!-- SEÇİM KÖMƏKÇİSİ -->
+<div class="page" id="page-selector">
+  <div class="page-head"><div class="container"><h1>Seçim köməkçisi</h1><p>Bir neçə sualı cavablandırın, sizə uyğun modelləri təklif edək</p></div></div>
+  <section class="block"><div class="container sel-grid">
+    <div class="panel">
+      <h3>Tələbləriniz</h3>
+      <div class="field"><label>İstifadə sahəsi</label><div class="opt-row" data-key="use">
+        <button class="opt on" data-v="field">Obyekt / tikinti / təhlükəsizlik</button><button class="opt" data-v="vehicle">Nəqliyyat / logistika</button><button class="opt" data-v="site">Ofis / otel / sahə bazası</button><button class="opt" data-v="outdoor">Ov / turizm / tədbir</button></div></div>
+      <div class="field"><label>Mühit</label><div class="opt-row" data-key="env">
+        <button class="opt on" data-v="open">Açıq sahə</button><button class="opt" data-v="indoor">Bina daxili</button><button class="opt" data-v="harsh">Toz, nəmlik, ağır şərait</button></div></div>
+      <div class="field"><label>Lazım olan məsafə</label><div class="opt-row" data-key="need">
+        <button class="opt on" data-v="2">1–2 km</button><button class="opt" data-v="5">3–5 km</button><button class="opt" data-v="10">5–10 km</button><button class="opt" data-v="30">10 km-dən çox</button></div></div>
+      <div class="field"><label>Rabitə növü</label><div class="opt-row" data-key="dig">
+        <button class="opt on" data-v="any">Fərq etmir</button><button class="opt" data-v="Rəqəmsal">Rəqəmsal</button><button class="opt" data-v="Analoq">Analoq</button></div></div>
+      <div class="field"><label>Büdcə (bir cihaz üçün): <b id="budV" style="color:var(--or)">500 ₼</b></label><input type="range" id="bud" min="50" max="1500" step="10" value="500" style="padding:0;border:none;accent-color:var(--or)"></div>
+    </div>
+    <div class="panel"><h3>Tövsiyə olunan modellər</h3><div id="recoRes"></div>
+      <div class="notice">Məsafələr açıq sahədə təxminidir. Binalarda, meşədə və sıx şəhər mühitində azala bilər.</div></div>
+  </div></section>
+</div>
+
+<!-- MÜQAYİSƏ -->
+<div class="page" id="page-compare">
+  <div class="page-head"><div class="container"><h1>Müqayisə</h1><p>Kataloqda “Müqayisə” xanasını işarələyin (maksimum 3 model)</p></div></div>
+  <section class="block"><div class="container" id="cmpRoot"></div></section>
+</div>
+
+<!-- SƏBƏT -->
+<div class="page" id="page-cart">
+  <div class="page-head"><div class="container"><h1>Səbət</h1><p>Seçdiyiniz modelləri yoxlayın və sifarişi WhatsApp ilə göndərin</p></div></div>
+  <section class="block"><div class="container" id="cartRoot"></div></section>
+</div>
+
+<!-- XİDMƏTLƏR -->
+<div class="page" id="page-services">
+  <div class="page-head"><div class="container"><h1>Xidmətlər</h1><p>Satışdan sonra da yanınızdayıq</p></div></div>
+  <section class="block"><div class="container">
+    <div class="grid g3">
+      <div class="feat"><div class="ic"><i class="fa-solid fa-gears"></i></div><h3>Proqramlaşdırma</h3><p>Kanallar, ton kodları, skan və ötürmə parametrləri sifarişinizə uyğun qurulur.</p></div>
+      <div class="feat"><div class="ic"><i class="fa-solid fa-screwdriver-wrench"></i></div><h3>Təmir və servis</h3><p>Diaqnostika, batareya və antena dəyişimi, yenidən kalibrləmə.</p></div>
+      <div class="feat"><div class="ic"><i class="fa-solid fa-calendar-days"></i></div><h3>İcarə</h3><p>Tədbirlər, tikinti və qısamüddətli layihələr üçün qrup icarəsi.</p></div>
+      <div class="feat"><div class="ic"><i class="fa-solid fa-building"></i></div><h3>Korporativ həllər</h3><p>Şirkətlər üçün şəbəkə layihələndirmə, təkrarlayıcı quraşdırma və toplu qiymətlər.</p></div>
+      <div class="feat"><div class="ic"><i class="fa-solid fa-graduation-cap"></i></div><h3>Təlimat</h3><p>İstifadəçilər üçün qısa təlim və təlimatnamələr.</p></div>
+      <div class="feat"><div class="ic"><i class="fa-solid fa-boxes-stacked"></i></div><h3>Toptan satış</h3><p>Çox sayda sifariş üçün fərdi kommersiya təklifi. WhatsApp-da yazın.</p></div>
+    </div>
+    <div class="panel" style="margin-top:20px"><h3>Haqqımızda</h3>
+      <p style="color:var(--muted)">Ratsiya Market radiostansiya və rabitə aksesuarları üzrə ixtisaslaşmış mağazadır. Məqsədimiz hər müştərinin tapşırığına uyğun, etibarlı və dəstəklənən rabitə vasitəsi seçməsinə kömək etməkdir.</p></div>
+  </div></section>
+</div>
+
+<!-- ÇATDIRILMA -->
+<div class="page" id="page-delivery">
+  <div class="page-head"><div class="container"><h1>Çatdırılma, ödəniş və zəmanət</h1><p>Şərtlər sifariş zamanı WhatsApp-da dəqiqləşdirilir</p></div></div>
+  <section class="block"><div class="container grid g2">
+    <div class="panel"><h3><i class="fa-solid fa-truck-fast"></i>Çatdırılma</h3>
+      <div class="tbl-wrap"><table><tr><th>Region</th><th>Müddət</th></tr><tr><td>Bakı</td><td>1–2 iş günü</td></tr><tr><td>Sumqayıt, Abşeron</td><td>1–2 iş günü</td></tr><tr><td>Digər rayonlar</td><td>2–4 iş günü</td></tr><tr><td>Mağazadan götürmə</td><td>Razılaşma ilə</td></tr></table></div>
+      <div class="notice">Çatdırılma qiyməti ünvana görə operator tərəfindən bildirilir.</div></div>
+    <div class="panel"><h3><i class="fa-solid fa-credit-card"></i>Ödəniş</h3>
+      <p style="color:var(--muted);margin-bottom:14px">Ödəniş üsulu (nağd, köçürmə və s.) sifarişi təsdiqlədikdə WhatsApp-da razılaşdırılır.</p>
+      <h3 style="margin-bottom:8px"><i class="fa-solid fa-shield-halved"></i>Zəmanət</h3>
+      <p style="color:var(--muted)">Yeni cihazlara istehsalçı və satıcı zəmanəti verilir. Müddət məhsula görə dəqiqləşdirilir. Mexaniki zədə zəmanətə daxil deyil.</p></div>
+  </div></section>
+</div>
+
+<!-- FAQ -->
+<div class="page" id="page-faq">
+  <div class="page-head"><div class="container"><h1>Tez-tez verilən suallar</h1><p>Cavabını axtardığınız sual burada ola bilər</p></div></div>
+  <section class="block"><div class="container" style="max-width:820px" id="faqRoot"></div></section>
+</div>
+
+<!-- ƏLAQƏ -->
+<div class="page" id="page-contact">
+  <div class="page-head"><div class="container"><h1>Əlaqə</h1><p>Sual və ya fərdi təklif üçün bizə yazın</p></div></div>
+  <section class="block"><div class="container grid g2">
+    <div class="panel"><h3>WhatsApp-da yazın</h3>
+      <div class="field"><label>Adınız</label><input id="cfName"></div>
+      <div class="field"><label>Mövzu</label><select id="cfTopic"><option>Ümumi sual</option><option>Toptan sifariş</option><option>Model seçimi</option><option>Servis və təmir</option><option>İcarə</option></select></div>
+      <div class="field"><label>Mesaj</label><textarea rows="4" id="cfMsg"></textarea></div>
+      <button class="btn wa full" id="cfSend"><i class="fa-brands fa-whatsapp" style="font-size:1.3rem"></i> WhatsApp-da göndər</button></div>
+    <div class="panel"><h3>Əlaqə məlumatları</h3>
+      <p style="margin-bottom:10px"><i class="fa-solid fa-location-dot" style="color:var(--or);width:20px"></i> <b>Ünvan:</b> <span id="cAddr"></span></p>
+      <p style="margin-bottom:10px"><i class="fa-solid fa-phone" style="color:var(--or);width:20px"></i> <b>Telefon:</b> <span id="cPhone"></span></p>
+      <p style="margin-bottom:10px"><i class="fa-solid fa-envelope" style="color:var(--or);width:20px"></i> <b>E-poçt:</b> <span id="cMail"></span></p>
+      <p style="margin-bottom:10px"><i class="fa-solid fa-clock" style="color:var(--or);width:20px"></i> <b>İş saatları:</b> <span id="cHours"></span></p></div>
+  </div></section>
+</div>
+
+
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="f-grid">
+      <div><h4>Sürətli menyu</h4><a data-go="products">Məhsullar</a><a data-go="selector">Seçim köməkçisi</a><a data-go="compare">Müqayisə</a><a data-go="services">Xidmətlər</a><a data-go="delivery">Çatdırılma</a><a data-go="faq">FAQ</a><a data-go="contact">Əlaqə</a></div>
+      <div><h4>Bizimlə əlaqə</h4><p><b>Ratsiya Market</b></p><p id="fAddr"></p><span class="fi" id="fPhone"></span><span class="fi" id="fMail"></span><span class="fi" id="fHours"></span></div>
+      <div><h4>Etiketlər</h4><div class="tags" id="tags"></div></div>
+      <div><h4>Bizi izləyin</h4><a id="fWa">WhatsApp</a><div class="f-logo"><span class="logo-mark" id="fLogoMark"></span><b>Ratsiya Market</b></div></div>
+    </div>
+  </div>
+  <div class="copy"><div class="container"><span>© <span id="yr"></span> Bütün hüquqlar qorunur — Ratsiya Market</span><span>Radiostansiyalar və rabitə aksesuarları</span></div></div>
+</footer>
+
+<a class="fab" id="fab" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+<button class="totop" id="toTop" title="Yuxarı"><i class="fa-solid fa-chevron-up"></i></button>
+<div class="cmpbar" id="cmpBar"><span id="cmpTxt"></span><button class="btn sm" data-go="compare">Müqayisə et</button><button class="btn sm ghost" id="cmpClear">Təmizlə</button></div>
+
+<div class="overlay" id="ovProd"><div class="modal" id="modalProd"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ CONFIG — BUranı real məlumatlarla dəyişin ============ */
+const CONFIG={
+  whatsapp:"994772094969",          // WhatsApp nömrəsi (ölkə kodu ilə, + və boşluqsuz)
+  phone:"+994 50 000 00 00",
+  email:"info@example.az",
+  address:"Bakı şəhəri, nümunə küçəsi 1",
+  hours:"B.e–Şən 09:00–19:00",
+  store:"Ratsiya Market",
+  cur:"₼"
+};
+
+/* ============ ŞƏKİLLƏR (SVG) ============ */
+const OR="#ff8a1f";
+function svg(kind,tall){
+  const keys=(x0,y0,cw,ch,gx,gy,rows,cols)=>{let s="";for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)s+=`<rect x="${x0+c*gx}" y="${y0+r*gy}" width="${cw}" height="${ch}" rx="3" fill="#2d323c"/>`;return s};
+  if(kind==="portable")return `<svg viewBox="0 0 120 240" xmlns="http://www.w3.org/2000/svg"><rect x="27" y="2" width="9" height="72" rx="4.5" fill="#2a2d33"/><rect x="14" y="64" width="92" height="170" rx="18" fill="#15171b" stroke="#343944" stroke-width="2"/><rect x="50" y="48" width="14" height="22" rx="4" fill="#2a2d33"/><rect x="74" y="52" width="14" height="18" rx="4" fill="#2a2d33"/><circle cx="36" cy="78" r="3" fill="${OR}"/><rect x="42" y="74" width="50" height="9" rx="3" fill="#0e1013"/><g stroke="#343944" stroke-width="3" stroke-linecap="round"><line x1="30" y1="96" x2="90" y2="96"/><line x1="30" y1="106" x2="90" y2="106"/><line x1="30" y1="116" x2="90" y2="116"/></g><rect x="30" y="130" width="60" height="22" rx="3" fill="${OR}"/><rect x="34" y="136" width="30" height="4" fill="#7a3a00"/><rect x="34" y="143" width="20" height="3" fill="#7a3a00"/>${keys(30,162,17,9,21,13,4,3)}</svg>`;
+  if(kind==="portable2")return `<svg viewBox="0 0 120 240" xmlns="http://www.w3.org/2000/svg"><rect x="27" y="10" width="9" height="62" rx="4.5" fill="#2a2d33"/><rect x="16" y="64" width="88" height="170" rx="18" fill="#15171b" stroke="#343944" stroke-width="2"/><rect x="48" y="48" width="16" height="22" rx="4" fill="#2a2d33"/><rect x="74" y="52" width="14" height="18" rx="4" fill="#2a2d33"/><circle cx="36" cy="78" r="3" fill="#3a3f4a"/><g stroke="#343944" stroke-width="3" stroke-linecap="round"><line x1="30" y1="100" x2="90" y2="100"/><line x1="30" y1="110" x2="90" y2="110"/><line x1="30" y1="120" x2="90" y2="120"/><line x1="30" y1="130" x2="90" y2="130"/><line x1="30" y1="140" x2="90" y2="140"/></g><rect x="40" y="158" width="40" height="40" rx="20" fill="#1e2127" stroke="#343944" stroke-width="2"/><text x="60" y="184" text-anchor="middle" font-size="13" font-weight="700" fill="${OR}" font-family="monospace">PTT</text></svg>`;
+  if(kind==="mobile")return `<svg viewBox="0 0 220 130" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="14" width="208" height="70" rx="10" fill="#15171b" stroke="#343944" stroke-width="2"/><rect x="22" y="30" width="96" height="30" rx="4" fill="${OR}"/><rect x="28" y="37" width="50" height="5" fill="#7a3a00"/><rect x="28" y="47" width="30" height="4" fill="#7a3a00"/><circle cx="152" cy="46" r="15" fill="#1e2127" stroke="#343944" stroke-width="2"/><circle cx="190" cy="46" r="9" fill="#1e2127" stroke="#343944" stroke-width="2"/><path d="M40 84 C40 112 90 96 100 116" stroke="#343944" stroke-width="4" fill="none" stroke-linecap="round"/><rect x="92" y="108" width="30" height="16" rx="5" fill="#2a2d33"/></svg>`;
+  if(kind==="base")return `<svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg"><line x1="40" y1="64" x2="40" y2="8" stroke="#2a2d33" stroke-width="6" stroke-linecap="round"/><polygon points="14,124 206,124 192,62 28,62" fill="#15171b" stroke="#343944" stroke-width="2"/><rect x="56" y="76" width="76" height="24" rx="3" fill="${OR}"/><circle cx="160" cy="88" r="10" fill="#1e2127" stroke="#343944" stroke-width="2"/><path d="M178 76 C204 40 170 22 142 26" stroke="#343944" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="140" cy="26" r="7" fill="#2a2d33"/></svg>`;
+  if(kind==="repeater")return `<svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg"><line x1="56" y1="56" x2="56" y2="10" stroke="#2a2d33" stroke-width="5" stroke-linecap="round"/><line x1="164" y1="56" x2="164" y2="10" stroke="#2a2d33" stroke-width="5" stroke-linecap="round"/><rect x="14" y="54" width="192" height="70" rx="6" fill="#15171b" stroke="#343944" stroke-width="2"/><g stroke="#343944" stroke-width="3" stroke-linecap="round"><line x1="30" y1="78" x2="100" y2="78"/><line x1="30" y1="90" x2="100" y2="90"/><line x1="30" y1="102" x2="100" y2="102"/></g><circle cx="130" cy="78" r="5" fill="${OR}"/><circle cx="148" cy="78" r="5" fill="#35c26b"/><circle cx="166" cy="78" r="5" fill="#3a3f4a"/><rect x="124" y="94" width="68" height="16" rx="3" fill="#0e1013"/></svg>`;
+  if(kind==="headset")return `<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg"><path d="M44 92 C44 20 156 20 156 92" stroke="#343944" stroke-width="9" fill="none" stroke-linecap="round"/><rect x="28" y="84" width="30" height="46" rx="12" fill="#1e2127" stroke="${OR}" stroke-width="2"/><rect x="142" y="84" width="30" height="46" rx="12" fill="#1e2127" stroke="#343944" stroke-width="2"/><path d="M50 128 C60 146 100 146 112 138" stroke="#343944" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="116" cy="136" r="7" fill="${OR}"/></svg>`;
+  if(kind==="battery")return `<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg"><rect x="50" y="26" width="100" height="100" rx="14" fill="#15171b" stroke="#343944" stroke-width="2"/><rect x="72" y="14" width="56" height="14" rx="4" fill="#2a2d33"/><rect x="66" y="50" width="68" height="14" rx="3" fill="${OR}"/><rect x="66" y="74" width="48" height="8" rx="3" fill="#2d323c"/><rect x="66" y="92" width="36" height="8" rx="3" fill="#2d323c"/></svg>`;
+  if(kind==="charger")return `<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg"><path d="M30 120 L170 120 L160 84 L40 84 Z" fill="#15171b" stroke="#343944" stroke-width="2"/><rect x="62" y="30" width="76" height="70" rx="10" fill="#1e2127" stroke="#343944" stroke-width="2"/><circle cx="100" cy="106" r="4" fill="${OR}"/><rect x="82" y="46" width="36" height="6" rx="3" fill="#2d323c"/><rect x="82" y="60" width="36" height="6" rx="3" fill="#2d323c"/></svg>`;
+  if(kind==="antenna")return `<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg"><rect x="92" y="6" width="14" height="100" rx="7" fill="#2a2d33"/><rect x="84" y="104" width="30" height="20" rx="4" fill="#15171b" stroke="#343944" stroke-width="2"/><rect x="88" y="124" width="22" height="12" fill="${OR}"/></svg>`;
+  if(kind==="magnet")return `<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg"><rect x="96" y="8" width="8" height="90" rx="4" fill="#2a2d33"/><ellipse cx="100" cy="112" rx="46" ry="18" fill="#15171b" stroke="#343944" stroke-width="2"/><ellipse cx="100" cy="108" rx="34" ry="11" fill="#1e2127"/><circle cx="100" cy="108" r="5" fill="${OR}"/></svg>`;
+  if(kind==="case")return `<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg"><rect x="62" y="20" width="76" height="110" rx="12" fill="#15171b" stroke="#343944" stroke-width="2"/><rect x="74" y="34" width="52" height="14" rx="3" fill="#2d323c"/><rect x="68" y="62" width="64" height="8" rx="3" fill="${OR}"/><path d="M62 80 H138" stroke="#343944" stroke-dasharray="4 4"/></svg>`;
+  return "";
+}
+document.getElementById("logoMark").innerHTML='<i class="fa-solid fa-walkie-talkie" style="color:var(--or);font-size:1.15rem"></i>';
+document.getElementById("heroSvg").innerHTML=svg("portable");
+
+/* ============ MƏHSULLAR (nümunə — real model və qiymətlərlə əvəz edin) ============ */
+const CATS=[
+ {id:"portable",name:"Portativ ratsiyalar",d:"Əldə daşınan radiostansiyalar",k:"portable"},
+ {id:"mobile",name:"Avtomobil ratsiyaları",d:"Nəqliyyat vasitələri üçün",k:"mobile"},
+ {id:"base",name:"Baza & təkrarlayıcı",d:"Sabit stansiyalar və repeaterlər",k:"base"},
+ {id:"acc",name:"Aksesuarlar",d:"Antena, batareya, qulaqcıq, şarj",k:"headset"}
+];
+const P=[
+ {id:1,n:"HR-200 Mini",c:"portable",k:"portable2",mode:"Analoq",band:"UHF",pow:"2 W",ch:"16",ip:0,bat:"1500 mAh",rng:2,pop:70,p:89,o:0,b:"",d:"Yüngül və sadə istifadəli radiostansiya. Ailə, ov, turizm və kiçik tədbirlər üçün."},
+ {id:2,n:"HR-300 Analoq",c:"portable",k:"portable2",mode:"Analoq",band:"UHF",pow:"4 W",ch:"16",ip:54,bat:"2000 mAh",rng:5,pop:82,p:139,o:0,b:"",d:"Güclü və etibarlı analoq model. Tikinti, anbar və təhlükəsizlik üçün əsas seçim."},
+ {id:3,n:"HR-580 Rəqəmsal",c:"portable",k:"portable",mode:"Rəqəmsal",band:"VHF/UHF",pow:"5 W",ch:"1024",ip:67,bat:"2600 mAh",rng:8,pop:98,p:289,o:329,b:"Çox satılan",d:"Rəngli displey və klaviaturalı rəqəmsal (DMR) model. Aydın səs, geniş kanal tutumu və toz-suya davamlı gövdə."},
+ {id:4,n:"HR-780 Peşəkar GPS",c:"portable",k:"portable",mode:"Rəqəmsal",band:"VHF/UHF",pow:"5 W",ch:"2048",ip:67,bat:"3000 mAh",rng:10,pop:76,p:429,o:0,b:"Peşəkar",d:"Tam klaviatura, GPS və qabaqcıl rəqəmsal funksiyalar. Böyük komandalar və peşəkar istifadə üçün."},
+ {id:5,n:"HR-M50 Avtomobil",c:"mobile",k:"mobile",mode:"Analoq",band:"VHF",pow:"25 W",ch:"128",ip:0,bat:"12 V",rng:25,pop:64,p:249,o:0,b:"",d:"Avtomobil üçün analoq radiostansiya. Nəqliyyat və logistika üçün aydın və güclü siqnal."},
+ {id:6,n:"HR-M70 Rəqəmsal Mobil",c:"mobile",k:"mobile",mode:"Rəqəmsal",band:"VHF/UHF",pow:"45 W",ch:"1024",ip:0,bat:"12 V",rng:35,pop:60,p:389,o:0,b:"",d:"Rəqəmsal (DMR) avtomobil ratsiyası. Yüksək güc və geniş əhatə dairəsi."},
+ {id:7,n:"HR-B90 Baza stansiyası",c:"base",k:"base",mode:"Rəqəmsal",band:"UHF",pow:"40 W",ch:"1024",ip:0,bat:"220 V",rng:40,pop:45,p:459,o:0,b:"",d:"Masaüstü baza stansiyası. Ofis, otel və dispetçer mərkəzləri üçün."},
+ {id:8,n:"HR-RP1 Təkrarlayıcı",c:"base",k:"repeater",mode:"Rəqəmsal",band:"UHF",pow:"50 W",ch:"2",ip:0,bat:"220 V / 12 V",rng:80,pop:35,p:1190,o:0,b:"",d:"Əhatə dairəsini genişləndirən təkrarlayıcı (repeater). Böyük obyektlər və şəhər şəbəkələri üçün."},
+ {id:9,n:"Ehtiyat antena",c:"acc",k:"antenna",p:15,pop:50,d:"Portativ ratsiyalar üçün ehtiyat antena."},
+ {id:10,n:"Li-ion batareya 2600 mAh",c:"acc",k:"battery",p:49,pop:75,d:"Rəqəmsal portativ modellər üçün ehtiyat batareya."},
+ {id:11,n:"PTT qulaqcıq-mikrofon",c:"acc",k:"headset",p:29,pop:68,d:"Əl boş istifadə üçün qulaqcıq və PTT mikrofon."},
+ {id:12,n:"Masaüstü şarj cihazı",c:"acc",k:"charger",p:39,pop:55,d:"Portativ ratsiya və batareya üçün masaüstü şarj dok-stansiyası."},
+ {id:13,n:"Maqnitli avtomobil antenası",c:"acc",k:"magnet",p:35,pop:40,d:"Avtomobil damına maqnitlə bərkidilən antena."},
+ {id:14,n:"Qoruyucu çexol və kəmər klipsi",c:"acc",k:"case",p:12,pop:45,d:"Cihazı zərbə və cızıqlardan qoruyan çexol."}
+];
+const catName=id=>CATS.find(c=>c.id===id).name;
+const byId=id=>P.find(x=>x.id==id);
+const isRadio=p=>p.c!=="acc";
+
+/* ============ UTİLİTLƏR ============ */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const money=n=>(Math.round(n*100)/100).toString()+" "+CONFIG.cur;
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),2600)}
+let cart=load("rm2_cart",{}), cmp=load("rm2_cmp",[]), form=load("rm2_form",{});
+let F={cat:"all",q:"",sort:"pop",mode:""};
+
+/* ============ ROUTER ============ */
+const PAGES=["home","products","selector","compare","cart","services","delivery","faq","contact"];
+function go(p,fromHash){
+  if(!PAGES.includes(p))p="home";
+  $$(".page").forEach(s=>s.classList.toggle("active",s.id==="page-"+p));
+  $$("nav a").forEach(a=>a.classList.toggle("active",a.dataset.go===p));
+  if(!fromHash&&location.hash.slice(1)!==p)history.pushState(null,"","#"+p);
+  $("#nav").classList.remove("open");closeAll();
+  if(p==="products")renderProducts();
+  if(p==="cart")renderCart();
+  if(p==="compare")renderCompare();
+  if(p==="selector")recommend();
+  window.scrollTo({top:0});
+}
+document.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(g){e.preventDefault();go(g.dataset.go)}});
+window.addEventListener("popstate",()=>go(location.hash.slice(1)||"home",true));
+
+/* ============ KART ============ */
+function specChips(p){
+  if(!isRadio(p))return "";
+  return `<div class="chips-s"><span class="cs">${p.band}</span><span class="cs">${p.pow}</span><span class="cs">~${p.rng} km</span>${p.ip?`<span class="cs">IP${p.ip}</span>`:""}</div>`;
+}
+function cardHTML(p){
+  return `<div class="card"><div class="card-img" data-open="${p.id}">${svg(p.k)}${p.b?`<span class="tag">${p.b}</span>`:(p.mode==="Rəqəmsal"?`<span class="tag dg">DMR</span>`:"")}</div>
+  <div class="card-body"><div class="card-cat">${catName(p.c)}</div><h3 data-open="${p.id}">${p.n}</h3>${specChips(p)}
+  ${isRadio(p)?`<label class="cmp"><input type="checkbox" data-cmp="${p.id}" ${cmp.includes(p.id)?"checked":""}> Müqayisə</label>`:""}
+  <div class="price-row"><div class="price">${money(p.p)}${p.o?`<s>${money(p.o)}</s>`:""}</div><button class="btn sm" data-add="${p.id}"><i class="fa-solid fa-cart-plus"></i> Səbət</button></div></div></div>`;
+}
+document.addEventListener("click",e=>{
+  const a=e.target.closest("[data-add]");if(a){addCart(+a.dataset.add);return}
+  const o=e.target.closest("[data-open]");if(o){openProd(+o.dataset.open)}
+});
+document.addEventListener("change",e=>{
+  const c=e.target.closest("[data-cmp]");if(!c)return;
+  const id=+c.dataset.cmp;
+  if(c.checked){if(cmp.length>=3){c.checked=false;toast("Maksimum 3 model müqayisə oluna bilər");return}cmp.push(id)}else cmp=cmp.filter(x=>x!==id);
+  save("rm2_cmp",cmp);updCmpBar();
+});
+function updCmpBar(){
+  $("#cmpBar").classList.toggle("show",cmp.length>0);
+  $("#cmpTxt").textContent=cmp.length+" model seçildi";
+}
+$("#cmpClear").onclick=()=>{cmp=[];save("rm2_cmp",cmp);updCmpBar();$$("[data-cmp]").forEach(c=>c.checked=false);if($("#page-compare").classList.contains("active"))renderCompare()};
+
+/* ============ ANA SƏHİFƏ ============ */
+document.addEventListener("click",e=>{const c=e.target.closest("[data-cat]");if(c){F.cat=c.dataset.cat;go("products")}});
+
+/* ============ KATALOQ ============ */
+function initFilters(){
+  $("#q").oninput=e=>{F.q=e.target.value.trim().toLowerCase();renderProducts()};
+  $("#sort").onchange=e=>{F.sort=e.target.value;renderProducts()};
+  $("#mode").onchange=e=>{F.mode=e.target.value;renderProducts()};
+}
+function renderProducts(){
+  $("#chips").innerHTML=[{id:"all",name:"Hamısı"},...CATS].map(c=>`<button class="chip ${F.cat===c.id?"on":""}" data-chip="${c.id}">${c.name}</button>`).join("");
+  let l=P.filter(p=>(F.cat==="all"||p.c===F.cat)&&(!F.q||(p.n+" "+p.d).toLowerCase().includes(F.q))&&(!F.mode||p.mode===F.mode));
+  const s={pop:(a,b)=>b.pop-a.pop,pa:(a,b)=>a.p-b.p,pd:(a,b)=>b.p-a.p,pw:(a,b)=>parseFloat(b.pow||0)-parseFloat(a.pow||0),rg:(a,b)=>(b.rng||0)-(a.rng||0)}[F.sort];
+  l.sort(s);
+  $("#prodGrid").innerHTML=l.length?l.map(cardHTML).join(""):`<div class="empty" style="grid-column:1/-1"><div class="e"><i class="fa-solid fa-satellite-dish"></i></div><p>Heç nə tapılmadı. Filtrləri dəyişin.</p></div>`;
+  $("#q").value=F.q;$("#sort").value=F.sort;$("#mode").value=F.mode;
+}
+document.addEventListener("click",e=>{const c=e.target.closest("[data-chip]");if(c){F.cat=c.dataset.chip;renderProducts()}});
+
+/* ============ MODAL ============ */
+function closeAll(){$$(".overlay").forEach(o=>o.classList.remove("show"))}
+document.addEventListener("click",e=>{if(e.target.classList.contains("overlay")||e.target.closest("[data-close]"))closeAll()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeAll()});
+function openProd(id){
+  const p=byId(id);
+  const rows=isRadio(p)?`<div class="tbl-wrap"><table style="min-width:0">
+   <tr><td class="k">Rejim</td><td>${p.mode}</td></tr><tr><td class="k">Tezlik</td><td>${p.band}</td></tr><tr><td class="k">Güc</td><td>${p.pow}</td></tr>
+   <tr><td class="k">Kanal sayı</td><td>${p.ch}</td></tr><tr><td class="k">Qoruma</td><td>${p.ip?"IP"+p.ip:"—"}</td></tr>
+   <tr><td class="k">${p.c==="portable"?"Batareya":"Qidalanma"}</td><td>${p.bat}</td></tr><tr><td class="k">Təxmini məsafə</td><td>~${p.rng} km (açıq sahə)</td></tr></table></div>`:"";
+  $("#modalProd").innerHTML=`<button class="x" data-close><i class="fa-solid fa-xmark"></i></button><div class="m-grid"><div class="m-img">${svg(p.k)}</div>
+   <div class="m-body"><div class="card-cat">${catName(p.c)}</div><h2 style="margin:4px 0 8px">${p.n}</h2><p style="color:var(--muted);margin-bottom:14px">${p.d}</p>${rows}
+   <div class="price-row" style="margin-top:16px"><div class="price" style="font-size:1.7rem">${money(p.p)}${p.o?`<s>${money(p.o)}</s>`:""}</div><button class="btn" data-add="${p.id}"><i class="fa-solid fa-cart-plus"></i> Səbətə at</button></div></div></div>`;
+  $("#ovProd").classList.add("show");
+}
+
+/* ============ SEÇİM KÖMƏKÇİSİ ============ */
+const S={use:"field",env:"open",need:"2",dig:"any"};
+document.addEventListener("click",e=>{
+  const o=e.target.closest(".opt");if(!o)return;
+  const row=o.parentElement;row.querySelectorAll(".opt").forEach(x=>x.classList.remove("on"));o.classList.add("on");
+  S[row.dataset.key]=o.dataset.v;recommend();
+});
+$("#bud").oninput=()=>{$("#budV").textContent=$("#bud").value+" ₼";recommend()};
+function recommend(){
+  if(!$("#recoRes"))return;
+  const need=+S.need,bud=+$("#bud").value;
+  let pool=P.filter(p=>p.c==="portable");
+  if(S.use==="vehicle")pool=P.filter(p=>p.c==="mobile"||p.c==="portable");
+  if(S.use==="site")pool=P.filter(p=>p.c==="base"||p.c==="portable"||p.id===8);
+  if(need>=30)pool=P.filter(isRadio);
+  const scored=pool.map(p=>{
+    let s=0;
+    s+=p.rng>=need?4:-(need-p.rng);
+    if(S.dig!=="any")s+=p.mode===S.dig?3:-2;
+    if(S.env==="harsh")s+=p.ip>=67?4:(p.ip?1:-2);
+    if(S.env==="indoor")s+=p.mode==="Rəqəmsal"?2:0;
+    if(S.use==="outdoor"&&p.id<=2)s+=2;
+    s+=p.p<=bud?2:-Math.min(5,(p.p-bud)/100);
+    return {p,s};
+  }).sort((a,b)=>b.s-a.s).slice(0,3);
+  $("#recoRes").innerHTML=scored.map((x,i)=>`<div class="reco ${i===0?"best":""}"><div class="rv">${svg(x.p.k)}</div>
+   <div><b>${i===0?'<i class="fa-solid fa-star" style="color:var(--or)"></i> ':""}${x.p.n}</b><div class="chips-s" style="margin:4px 0">${specChips(x.p).replace(/<\/?div[^>]*>/g,"")}</div><span class="price" style="font-size:1.05rem">${money(x.p.p)}</span></div>
+   <button class="btn sm" data-add="${x.p.id}"><i class="fa-solid fa-cart-plus"></i> Səbət</button></div>`).join("");
+}
+
+/* ============ MÜQAYİSƏ ============ */
+function renderCompare(){
+  const root=$("#cmpRoot");
+  if(cmp.length<2){root.innerHTML=`<div class="empty"><div class="e"><i class="fa-solid fa-scale-balanced"></i></div><h3>Müqayisə üçün ən azı 2 model seçin</h3><p style="margin:8px 0 16px">Kataloqda “Müqayisə” xanasını işarələyin.</p><button class="btn" data-go="products">Kataloqa keç</button></div>`;return}
+  const L=cmp.map(byId);
+  const rows=[["Rejim",p=>p.mode],["Tezlik",p=>p.band],["Güc",p=>p.pow],["Kanal sayı",p=>p.ch],["Qoruma",p=>p.ip?"IP"+p.ip:"—"],["Batareya / qidalanma",p=>p.bat],["Təxmini məsafə",p=>"~"+p.rng+" km"],["Qiymət",p=>money(p.p)]];
+  root.innerHTML=`<div class="panel tbl-wrap"><table><tr><th></th>${L.map(p=>`<th style="text-align:center">${p.n}</th>`).join("")}</tr>
+   <tr><td></td>${L.map(p=>`<td style="text-align:center;height:120px"><div style="height:110px;display:grid;place-items:center">${svg(p.k).replace("<svg",'<svg style="height:100%"')}</div></td>`).join("")}</tr>
+   ${rows.map(r=>`<tr><td class="k">${r[0]}</td>${L.map(p=>`<td style="text-align:center">${r[1](p)}</td>`).join("")}</tr>`).join("")}
+   <tr><td></td>${L.map(p=>`<td style="text-align:center"><button class="btn sm" data-add="${p.id}"><i class="fa-solid fa-cart-plus"></i> Səbət</button></td>`).join("")}</tr></table></div>`;
+}
+
+/* ============ SƏBƏT & WHATSAPP ============ */
+function addCart(id){cart[id]=(cart[id]||0)+1;persist();toast("Səbətə əlavə edildi: "+byId(id).n)}
+function persist(){save("rm2_cart",cart);updBadge();if($("#page-cart").classList.contains("active"))renderCart()}
+function updBadge(){$("#cartCount").textContent=Object.values(cart).reduce((a,b)=>a+b,0)}
+function total(){return Object.entries(cart).reduce((s,[id,q])=>s+byId(id).p*q,0)}
+function renderCart(){
+  const ids=Object.keys(cart),root=$("#cartRoot");
+  if(!ids.length){root.innerHTML=`<div class="empty"><div class="e"><i class="fa-solid fa-cart-shopping"></i></div><h3>Səbətiniz boşdur</h3><p style="margin:8px 0 16px">Kataloqdan model seçin.</p><button class="btn" data-go="products">Kataloqa keç</button></div>`;return}
+  root.innerHTML=`<div class="cart-grid"><div class="panel"><h3>Seçilmiş məhsullar</h3>
+   ${ids.map(id=>{const p=byId(id);return `<div class="cart-item"><div class="ci-img">${svg(p.k)}</div><div><b>${p.n}</b><div style="color:var(--muted);font-size:.84rem">${money(p.p)} / ədəd</div></div>
+   <div class="ci-r"><div class="qty"><button data-q="-1" data-id="${id}"><i class="fa-solid fa-minus"></i></button><span>${cart[id]}</span><button data-q="1" data-id="${id}"><i class="fa-solid fa-plus"></i></button></div><b style="display:block;text-align:right;margin-top:4px;color:var(--or)">${money(p.p*cart[id])}</b><button class="rm" data-rm="${id}"><i class="fa-solid fa-trash-can"></i>Sil</button></div></div>`}).join("")}
+   <button class="btn ghost sm" id="clearCart" style="margin-top:12px">Səbəti təmizlə</button></div>
+   <div class="panel"><h3>Sifarişi tamamla</h3>
+    <div class="field"><label>Adınız (istəyə bağlı)</label><input id="fName" value="${form.name||""}"></div>
+    <div class="two"><div class="field"><label>Şəhər</label><input id="fCity" value="${form.city||""}"></div><div class="field"><label>Telefon</label><input id="fTel" value="${form.tel||""}"></div></div>
+    <div class="field"><label>Qeyd</label><textarea id="fNote" rows="2" placeholder="Məs: kanalların proqramlaşdırılması, çatdırılma ünvanı...">${form.note||""}</textarea></div>
+    <div class="sum-row"><span>Məhsul sayı</span><span>${Object.values(cart).reduce((a,b)=>a+b,0)}</span></div>
+    <div class="sum-row total"><span>Cəmi</span><b>${money(total())}</b></div>
+    <button class="btn wa full" id="waOrder" style="margin-top:10px"><i class="fa-brands fa-whatsapp" style="font-size:1.4rem"></i> WhatsApp ilə sifarişi tamamla</button>
+    <div class="wa-steps"><span><b class="stp">1</b>Düyməyə basın, WhatsApp açılacaq</span><span><b class="stp">2</b>Mesaj sizin seçimlərinizlə hazır yazılıb</span><span><b class="stp">3</b>Yalnız “Göndər”ə basın</span></div>
+   </div></div>`;
+  ["fName","fCity","fTel","fNote"].forEach(id=>$("#"+id).oninput=saveForm);
+  $("#clearCart").onclick=()=>{cart={};persist()};
+  $("#waOrder").onclick=sendOrder;
+}
+function saveForm(){form={name:$("#fName").value,city:$("#fCity").value,tel:$("#fTel").value,note:$("#fNote").value};save("rm2_form",form)}
+document.addEventListener("click",e=>{
+  const q=e.target.closest("[data-q]");
+  if(q){const id=q.dataset.id;cart[id]+=+q.dataset.q;if(cart[id]<=0)delete cart[id];persist();return}
+  const r=e.target.closest("[data-rm]");if(r){delete cart[r.dataset.rm];persist()}
+});
+function waLink(text){return "https://wa.me/"+String(CONFIG.whatsapp).replace(/\D/g,"")+"?text="+encodeURIComponent(text)}
+function openWA(text){
+  const url=waLink(text);
+  const w=window.open(url,"_blank");
+  if(!w)location.href=url;
+  if(CONFIG.whatsapp==="994500000000")toast("Diqqət: faylda CONFIG.whatsapp nömrəsini öz nömrənizlə əvəz edin");
+}
+function sendOrder(){
+  saveForm();
+  const lines=Object.entries(cart).map(([id,q],i)=>{const p=byId(id);return `${i+1}) ${p.n} — ${q} ədəd × ${money(p.p)} = ${money(p.p*q)}`});
+  let msg=`Salam! ${CONFIG.store} saytından sifariş vermək istəyirəm:\n\n${lines.join("\n")}\n\nCəmi: ${money(total())}`;
+  const extra=[];
+  if(form.name)extra.push("Ad: "+form.name);
+  if(form.city)extra.push("Şəhər / ünvan: "+form.city);
+  if(form.tel)extra.push("Telefon: "+form.tel);
+  if(form.note)extra.push("Qeyd: "+form.note);
+  if(extra.length)msg+="\n\n"+extra.join("\n");
+  msg+="\n\nÇatdırılma və ödəniş barədə məlumat verməyinizi xahiş edirəm. Təşəkkürlər!";
+  openWA(msg);
+}
+$("#fab").onclick=()=>openWA("Salam! "+CONFIG.store+" saytından yazıram. Radiostansiya seçimi ilə bağlı məlumat almaq istəyirəm.");
+$("#cfSend").onclick=()=>{
+  const n=$("#cfName").value.trim(),t=$("#cfTopic").value,m=$("#cfMsg").value.trim();
+  openWA(`Salam! ${n?"Mən "+n+". ":""}Mövzu: ${t}.${m?"\n\n"+m:""}`);
+};
+
+/* ============ FAQ ============ */
+const FAQ=[
+ ["Sifarişi necə verə bilərəm?","Məhsulları səbətə əlavə edin, səbət bölməsində “WhatsApp ilə sifarişi tamamla” düyməsini basın. WhatsApp açılacaq və mesaj seçdiyiniz modellərlə hazır olacaq. Sizə yalnız “Göndər”i basmaq qalır."],
+ ["Analoq və rəqəmsal (DMR) ratsiya arasında fərq nədir?","Analoq modellər sadə və sərfəlidir. Rəqəmsal modellər daha aydın səs, daha çox kanal tutumu, mətn mesajı və əlavə funksiyalar təklif edir."],
+ ["Ratsiya neçə kilometr məsafədə işləyir?","Kataloqdakı məsafələr açıq sahə üçün təxminidir. Binalarda, meşədə və şəhərdə azala bilər. Daha uzaq məsafə üçün avtomobil, baza ratsiyaları və təkrarlayıcılardan istifadə olunur."],
+ ["IP67 nə deməkdir?","Cihazın toza qarşı tam qorunduğunu və qısa müddət suya batırılmağa davamlı olduğunu göstərir. Tikinti, açıq hava və ağır şərait üçün tövsiyə olunur."],
+ ["Cihazlar proqramlaşdırılmış göndərilir?","Bəli, istəyinizə görə kanallar və əsas parametrlər qurulur. Sifariş zamanı “Qeyd” sahəsində tələblərinizi yazın."],
+ ["Radiotezlik istifadəsi üçün icazə lazımdır?","Bəzi tezliklər və güc səviyyələri üçün ölkənin qanunvericiliyinə uyğun icazə tələb oluna bilər. Konkret model üçün WhatsApp-da məsləhət verə bilərik."],
+ ["Zəmanət və servis varmı?","Bəli. Yeni cihazlara zəmanət verilir, satışdan sonra servis və ehtiyat hissələr təmin olunur."],
+ ["Toptan və ya icarə mümkündür?","Bəli. Şirkətlər və tədbirlər üçün toplu qiymətlər və qısamüddətli icarə təklif edirik. “Əlaqə” bölməsindən yazın."]
+];
+$("#faqRoot").innerHTML=FAQ.map(f=>`<div class="faq-item"><button class="faq-q">${f[0]}</button><div class="faq-a">${f[1]}</div></div>`).join("");
+document.addEventListener("click",e=>{const q=e.target.closest(".faq-q");if(q)q.parentElement.classList.toggle("open")});
+
+/* ============ YENİ BÖLMƏLƏR (ana səhifə) ============ */
+const BRANDS=["HYT","BRAND 2","BRAND 3","BRAND 4","BRAND 5","BRAND 6"]; // real brendlərlə əvəz edin
+const SECTORS=[
+ {i:"fa-helmet-safety",n:"Tikinti və sənaye",d:"Davamlı, toz və suya dözümlü cihazlar",use:"field"},
+ {i:"fa-truck",n:"Logistika və nəqliyyat",d:"Avtomobil və portativ ratsiyalar",use:"vehicle"},
+ {i:"fa-user-shield",n:"Təhlükəsizlik xidmətləri",d:"Aydın səs, GPS və rəqəmsal funksiyalar",use:"field"},
+ {i:"fa-hotel",n:"Otel və ofis",d:"Baza stansiyaları və yüngül cihazlar",use:"site"},
+ {i:"fa-tree",n:"Ov, turizm və tədbirlər",d:"Sadə və sərfəli modellər",use:"outdoor"}
+];
+const ARTICLES=[
+ {t:"DMR nədir və analoqdan nə ilə fərqlənir?",i:"fa-signal",s:"Rəqəmsal rabitə standartının əsas üstünlükləri.",b:"DMR (Digital Mobile Radio) rəqəmsal radio standartıdır. Analoq rabitədən fərqli olaraq səs rəqəmsal formada ötürülür, bu da küyü azaldır və səsi daha aydın edir. Bir tezlikdə iki söhbət aparmaq, mətn mesajı və GPS kimi əlavə funksiyalar mümkün olur. Analoq modellər isə sadə və sərfəlidir. Kiçik komandalar üçün çox vaxt kifayət edir."},
+ {t:"IP67 standartı nə deməkdir?",i:"fa-droplet",s:"Toz və su qorumasının mənası.",b:"IP kodunun ilk rəqəmi toz qorumasını, ikincisi su qorumasını göstərir. IP67 cihazın toza qarşı tam qorunduğunu və 1 metr dərinlikdə qısa müddət suya batırılmağa davam gətirdiyini bildirir. Tikinti, açıq hava və ağır şərait üçün bu qoruma tövsiyə olunur."},
+ {t:"Radiostansiyanın əhatə məsafəsinə nələr təsir edir?",i:"fa-tower-cell",s:"Antena, güc, relyef və maneələr.",b:"Əhatə məsafəsi cihazın gücündən, antenanın növündən, relyefdən və maneələrdən asılıdır. Açıq sahədə məsafə ən böyükdür. Binalarda, meşədə və sıx şəhər mühitində azalır. Daha uzaq məsafə üçün avtomobil və baza stansiyaları, təkrarlayıcılar (repeater) istifadə olunur."},
+ {t:"Düzgün radiostansiya necə seçilir?",i:"fa-list-check",s:"Seçərkən nəzərə alınmalı 5 məqam.",b:"1) Lazım olan məsafə. 2) İstifadə mühiti (açıq, bina daxili, ağır şərait). 3) Analoq və ya rəqəmsal rabitə. 4) Batareyanın ömrü və qorunma səviyyəsi. 5) Büdcə və aksesuarlar. Qərar verməkdə çətinlik çəksəniz, seçim köməkçimizdən istifadə edin."}
+];
+const HELP=[
+ {i:"fa-circle-question",t:"Satışdan əvvəl suallar",d:"Doğru modeli seçməkdə çətinlik çəkirsiniz?",a:"Dərhal danışaq!",m:"Salam! Model seçimi ilə bağlı sualım var."},
+ {i:"fa-life-ring",t:"Mütəxəssisə müraciət",d:"Texniki məlumat və ya proqramlaşdırma dəstəyi lazımdır?",a:"Mütəxəssisə yazın!",m:"Salam! Texniki məsləhət almaq istəyirəm."},
+ {i:"fa-screwdriver-wrench",t:"Servis sorğusu",d:"Cihazınızın təmiri və ya servisi üçün buradayıq.",a:"Servis sorğusu göndərin!",m:"Salam! Cihazım üçün servis sorğusu göndərmək istəyirəm."}
+];
+function renderHome(){
+  $("#catTiles").innerHTML=CATS.map(c=>`<div class="tile" data-cat="${c.id}"><div class="tsv">${svg(c.k)}</div><h3>${c.name}</h3><p>${c.d}</p><span class="lnk">Ətraflı bax ≥</span></div>`).join("");
+  $("#homeFeatured").innerHTML=[...P].filter(isRadio).sort((a,b)=>b.pop-a.pop).slice(0,4).map(cardHTML).join("");
+}
+function renderExtras(){
+  $("#brands").innerHTML=BRANDS.map(b=>`<span>${b}</span>`).join("");
+  const a0=ARTICLES[0];
+  $("#news").innerHTML=`<div class="news-main" data-art="0"><div class="img"><div>${a0.t}</div></div><div class="meta">Bloq</div><h4>${a0.t}</h4><p>${a0.s}</p></div>
+   <div class="news-list">${ARTICLES.slice(1).map((a,i)=>`<div class="n-item" data-art="${i+1}"><div class="th"><div><i class="fa-solid ${a.i}"></i></div></div><div><div class="meta">Bloq</div><h5>${a.t}</h5></div></div>`).join("")}</div>`;
+  $("#sectors").innerHTML=`<div class="sec-intro"><h3>İstifadə sahələri</h3><p>Hər sahənin ehtiyacına uyğun rabitə həlləri</p><span class="lnk" data-go="selector">Seçim köməkçisi ≥</span></div>`+
+   SECTORS.slice(0,3).map((x,i)=>`<div class="s-card" data-sec="${i}"><div class="im"><i class="fa-solid ${x.i}"></i></div><h4>${x.n}</h4><p>${x.d}</p></div>`).join("")+
+   `<div style="grid-column:1/-1" class="sec-more">${SECTORS.slice(3).map((x,i)=>`<span class="pill" data-sec="${i+3}"><i class="fa-solid ${x.i}" style="color:var(--red);margin-right:6px"></i>${x.n}</span>`).join("")}</div>`;
+  $("#helpCards").innerHTML=HELP.map((h,i)=>`<div class="h-card"><div class="ci"><i class="fa-solid ${h.i}"></i></div><h4>${h.t}</h4><p>${h.d}</p><span class="lnk" data-help="${i}">${h.a}</span></div>`).join("");
+  const tags=["DMR","Analoq","VHF","UHF","IP67","Portativ","Avtomobil","Baza stansiyası","Təkrarlayıcı","Batareya","Antena","Qulaqcıq"];
+  $("#tags").innerHTML=tags.map(t=>`<a data-tag="${t}">${t}</a>`).join("");
+}
+document.addEventListener("click",e=>{
+  const a=e.target.closest("[data-art]");
+  if(a){const x=ARTICLES[+a.dataset.art];
+    $("#modalProd").innerHTML=`<button class="x" data-close><i class="fa-solid fa-xmark"></i></button><div class="m-body" style="padding:34px"><div class="card-cat">Bloq</div><h2 style="margin:6px 0 12px">${x.t}</h2><p style="color:#555">${x.b}</p><div style="margin-top:18px"><button class="btn" data-go="selector">Seçim köməkçisi</button></div></div>`;
+    $("#ovProd").classList.add("show");return}
+  const s=e.target.closest("[data-sec]");
+  if(s){S.use=SECTORS[+s.dataset.sec].use;$$('[data-key=use] .opt').forEach(o=>o.classList.toggle("on",o.dataset.v===S.use));go("selector");return}
+  const h=e.target.closest("[data-help]");
+  if(h){openWA(HELP[+h.dataset.help].m);return}
+  const t=e.target.closest("[data-tag]");
+  if(t){F.q=t.dataset.tag.toLowerCase();F.cat="all";go("products")}
+});
+$("#hfSend").onclick=()=>{
+  const n=$("#hfName").value.trim(),t=$("#hfTel").value.trim(),tp=$("#hfTopic").value,m=$("#hfMsg").value.trim();
+  openWA(`Salam! ${n?"Mən "+n+". ":""}Maraqlandığım həll: ${tp}.${t?"\nTelefon: "+t:""}${m?"\n\n"+m:""}`);
+};
+$("#heroWa").onclick=()=>openWA("Salam! Radiostansiyalar üzrə təklif almaq istəyirəm.");
+$("#uWa").onclick=()=>openWA("Salam! "+CONFIG.store+" saytından yazıram.");
+$("#fWa").onclick=()=>openWA("Salam! "+CONFIG.store+" saytından yazıram.");
+const toTop=$("#toTop");
+window.addEventListener("scroll",()=>toTop.classList.toggle("show",window.scrollY>400));
+toTop.onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
+$("#uPhone").textContent=CONFIG.phone;$("#uMail").textContent=CONFIG.email;$("#fHours").innerHTML='<i class="fa-solid fa-clock" style="margin-right:6px"></i>'+CONFIG.hours;$("#fAddr").textContent=CONFIG.address;
+$("#fLogoMark").innerHTML='<i class="fa-solid fa-walkie-talkie" style="color:var(--navy);font-size:1.15rem"></i>';
+
+/* ============ INIT ============ */
+$("#burger").onclick=()=>$("#nav").classList.toggle("open");
+$("#cPhone").textContent=CONFIG.phone;$("#cMail").textContent=CONFIG.email;$("#cAddr").textContent=CONFIG.address;$("#cHours").textContent=CONFIG.hours;
+$("#fPhone").innerHTML='<i class="fa-solid fa-phone" style="color:var(--or);width:20px"></i> '+CONFIG.phone;$("#fMail").innerHTML='<i class="fa-solid fa-envelope" style="color:var(--or);width:20px"></i> '+CONFIG.email;$("#yr").textContent=new Date().getFullYear();
+renderHome();renderExtras();initFilters();updBadge();updCmpBar();
+go(location.hash.slice(1)||"home",true);
+</script>
+</body>
+</html>
