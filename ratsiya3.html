@@ -603,7 +603,7 @@ const P=[
 /* ===== YOUTUBE VİDEOLAR =====
    Hər model üçün video linkini və ya 11 simvollu ID-ni modelin nömrəsinin qarşısına yazın.
    Məs: 3:"https://www.youtube.com/watch?v=XXXXXXXXXXX". Boş qalan modellərdə video bölməsi görünmür. */
-const VIDEOS={1:"",2:"",3:"",4:"",5:"",6:"",7:"",8:"",9:"",10:"",11:"",12:"",13:"",14:""};
+const VIDEOS={1:"https://youtu.be/Zsct5_LXx3A?si=DXp5Y-r4nygNmSN4",2:"",3:"",4:"",5:"",6:"",7:"",8:"",9:"",10:"",11:"",12:"",13:"",14:""};
 function ytId(v){if(!v)return"";const m=String(v).match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);return m?m[1]:(/^[\w-]{11}$/.test(String(v).trim())?String(v).trim():"")}
 function videoHTML(p){const id=ytId(VIDEOS[p.id]);if(!id)return"";
   return `<div class="vid-t"><i class="fa-brands fa-youtube"></i>Video təqdimat</div><div class="vid" data-yt="${id}" title="Videonu oynat"><img loading="lazy" src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="${p.n} video"><span class="play"><i class="fa-solid fa-play"></i></span></div>`}
